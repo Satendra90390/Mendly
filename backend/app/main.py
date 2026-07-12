@@ -230,8 +230,8 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 async def google_login(request: Request):
     if not GOOGLE_CLIENT_ID or GOOGLE_CLIENT_ID == "your_google_client_id_here":
         raise HTTPException(status_code=500, detail="Google OAuth is not configured. Add GOOGLE_CLIENT_ID to .env")
-    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5500")
-    redirect_uri = str(request.base_url).rstrip("/") + "/api/auth/google/callback"
+    backend_url = os.getenv("BACKEND_URL", str(request.base_url).rstrip("/"))
+    redirect_uri = backend_url + "/api/auth/google/callback"
     params = {
         "client_id": GOOGLE_CLIENT_ID,
         "redirect_uri": redirect_uri,
@@ -250,7 +250,8 @@ async def google_callback(request: Request, code: str = None, error: str = None,
     if error or not code:
         return RedirectResponse(url=f"{frontend_url}?auth_error={error or 'denied'}")
 
-    redirect_uri = str(request.base_url).rstrip("/") + "/api/auth/google/callback"
+    backend_url = os.getenv("BACKEND_URL", str(request.base_url).rstrip("/"))
+    redirect_uri = backend_url + "/api/auth/google/callback"
     async with httpx.AsyncClient() as client:
         token_resp = await client.post(GOOGLE_TOKEN_URL, data={
             "code": code, "client_id": GOOGLE_CLIENT_ID, "client_secret": GOOGLE_CLIENT_SECRET,
