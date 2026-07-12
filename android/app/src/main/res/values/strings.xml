@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mendly</string>
+    <string name="title_activity_main">Mendly</string>
+    <string name="package_name">com.mendly.app</string>
+    <string name="custom_url_scheme">com.mendly.app</string>
+</resources>

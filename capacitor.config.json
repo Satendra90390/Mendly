@@ -1,0 +1,17 @@
+{
+  "appId": "com.mendly.app",
+  "appName": "Mendly",
+  "webDir": "frontend",
+  "server": {
+    "androidScheme": "https",
+    "url": "https://mendly-xi.vercel.app",
+    "cleartext": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#06b6d4",
+      "showSpinner": false
+    }
+  }
+}

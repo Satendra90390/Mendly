@@ -1,0 +1,14 @@
+{
+  "name": "mendly",
+  "version": "1.0.0",
+  "description": "AI-powered medicine and health information platform.",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site — no build needed'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1"
+  }
+}

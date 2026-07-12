@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Mendly is a professional AI-driven medicine information platform with drug search, health guidance, and nearby care resources.">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mendly">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo-192.png">
     <title>Mendly — Medicine & Health Information Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -999,5 +1005,10 @@
 <script src="config.js?v=17"></script>
 <script src="auth.js?v=17"></script>
 <script src="app.js?v=17"></script>
+<script>
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js"); }
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; });
+</script>
 </body>
 </html>

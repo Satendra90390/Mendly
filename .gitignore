@@ -1,6 +1,7 @@
 # Dependencies
 .venv/
 venv/
+.nodeenv/
 __pycache__/
 *.pyc
 node_modules/
@@ -34,3 +35,8 @@ build/
 backend/stderr.log
 backend/stdout.log
 backend/tmp_*
+
+# Android build
+android/app/build/
+android/.gradle/
+android/build/
