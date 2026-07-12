@@ -1,8 +1,7 @@
 services:
   - type: web
-    name: mediguide-backend
+    name: mendly-backend
     runtime: python
-    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
@@ -11,14 +10,11 @@ services:
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: "10080"
       - key: FRONTEND_ORIGINS
-        sync: false
-        value: "*"  # Change to your Vercel URL before deploying
+        value: "*"
       - key: FRONTEND_URL
-        sync: false
-        value: "*"  # Change to your Vercel URL before deploying
+        value: "*"
       - key: DATABASE_URL
-        sync: false
-        value: sqlite:///./mediguide.db  # Switch to Postgres for production
+        value: sqlite:///./mediguide.db
       - key: CHATBOT_PROVIDER
         value: nvidia
     healthCheckPath: /api/health
