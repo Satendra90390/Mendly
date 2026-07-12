@@ -50,11 +50,9 @@ app.add_middleware(
 @app.get("/api/test-email")
 def test_email():
     import smtplib
-    from .email_service import SMTP_USER, SMTP_PASS, SMTP_HOST, SMTP_PORT
+    from .email_service import SMTP_USER, SMTP_PASS, SMTP_HOST
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.ehlo()
-            server.starttls()
+        with smtplib.SMTP_SSL(SMTP_HOST, 465) as server:
             server.ehlo()
             server.login(SMTP_USER, SMTP_PASS)
         return {"status": "connected", "message": "SMTP login successful"}

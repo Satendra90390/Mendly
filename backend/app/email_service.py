@@ -43,9 +43,7 @@ def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> b
     msg.attach(MIMEText(html, "html"))
 
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.ehlo()
-            server.starttls()
+        with smtplib.SMTP_SSL(SMTP_HOST, 465) as server:
             server.ehlo()
             server.login(SMTP_USER, SMTP_PASS)
             server.sendmail(FROM_EMAIL, to_email, msg.as_string())
