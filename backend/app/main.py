@@ -47,6 +47,18 @@ app.add_middleware(
 # ACTIVITY LOGGING HELPER
 # ============================================================
 
+@app.get("/api/test-email")
+def test_email():
+    from .email_service import SMTP_USER, SMTP_PASS, SMTP_HOST, SMTP_PORT
+    result = send_otp_email("altvo871@gmail.com", "123456", "test")
+    return {
+        "sent": result,
+        "smtp_user": SMTP_USER or "NOT SET",
+        "smtp_pass_set": bool(SMTP_PASS),
+        "smtp_host": SMTP_HOST,
+        "smtp_port": SMTP_PORT,
+    }
+
 def _log_activity(db: Session, user_id: int, action: str, detail: str = "", request: Request = None):
     ip = ""
     if request:
