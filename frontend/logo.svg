@@ -1,0 +1,57 @@
+<svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Central Staff with Arrow -->
+  <line x1="100" y1="38" x2="100" y2="185" stroke="#1B2A4A" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="100,18 93,36 107,36" fill="#1B2A4A"/>
+
+  <!-- Left Snake - wraps around staff -->
+  <path d="
+    M 100 175
+    C 78 170, 62 155, 68 140
+    C 74 125, 95 128, 100 130
+    C 105 128, 126 125, 132 140
+    C 138 155, 122 170, 100 175
+    Z
+  " fill="none" stroke="#0D9488" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Left Snake body curves -->
+  <path d="M 68 140 C 58 132, 52 118, 60 105 C 68 92, 88 96, 100 100" fill="none" stroke="#0D9488" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 100 100 C 88 96, 68 92, 60 105" fill="none" stroke="#0D9488" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Right Snake - wraps around staff -->
+  <path d="
+    M 100 175
+    C 122 170, 138 155, 132 140
+    C 126 125, 105 128, 100 130
+  " fill="none" stroke="#0D9488" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Right Snake body curves -->
+  <path d="M 132 140 C 142 132, 148 118, 140 105 C 132 92, 112 96, 100 100" fill="none" stroke="#0D9488" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 100 100 C 112 96, 132 92, 140 105" fill="none" stroke="#0D9488" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Snake heads -->
+  <circle cx="66" cy="138" r="4" fill="#0D9488"/>
+  <circle cx="134" cy="138" r="4" fill="#0D9488"/>
+  <circle cx="63" cy="136" r="1.5" fill="#1B2A4A"/>
+  <circle cx="131" cy="136" r="1.5" fill="#1B2A4A"/>
+
+  <!-- Bottom curves forming M and D -->
+  <!-- Left curve (M left leg) -->
+  <path d="M 72 178 C 62 185, 55 195, 58 205" stroke="#1B2A4A" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Center dip of M -->
+  <path d="M 85 175 C 92 182, 100 185, 100 190" stroke="#1B2A4A" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Right side of M connecting to D -->
+  <path d="M 115 175 C 108 182, 100 185, 100 190" stroke="#1B2A4A" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- D curve -->
+  <path d="M 128 178 C 138 185, 145 195, 142 205 C 139 215, 128 218, 118 215 C 108 212, 100 205, 100 195" stroke="#1B2A4A" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- M bottom left -->
+  <path d="M 72 205 C 78 212, 88 215, 100 195" stroke="#1B2A4A" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Small decorative wings at top -->
+  <path d="M 92 42 C 80 38, 72 44, 70 50" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M 108 42 C 120 38, 128 44, 130 50" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M 88 46 C 78 42, 68 48, 66 55" stroke="#0D9488" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <path d="M 112 46 C 122 42, 132 48, 134 55" stroke="#0D9488" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/>
+
+  <!-- MENDLY text -->
+  <text x="100" y="232" text-anchor="middle" font-family="'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="5" fill="#1B2A4A">MENDLY</text>
+</svg>

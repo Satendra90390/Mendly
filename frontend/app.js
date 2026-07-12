@@ -1,0 +1,1019 @@
+// ============================================================
+// Mendly — App Controller (runs only after login)
+// ============================================================
+
+let state = {
+    medicines: [],
+    renderedMedicines: [],
+    currentFilter: "all",
+    userLocation: null,
+    savedSearches: [],
+    lastViewedMedicine: null,
+};
+
+let appInitialized = false;
+
+function initApp() {
+    if (appInitialized) return;
+    appInitialized = true;
+
+    loadDashboardStats();
+    loadAllMedicines();
+    loadDefaultEmergencyContacts();
+    getUserLocation();
+    loadChatHistoryFromServer();
+    loadSavedSearches();
+    loadChatStatus();
+    loadAccountStats();
+    loadActivityLog();
+}
+
+// ------------------------------------------------------------
+// Mobile menu toggle (dropdown)
+// ------------------------------------------------------------
+function toggleMobileMenu() {
+    const overlay = document.getElementById("mobile-menu-overlay");
+    const dropdown = document.getElementById("mobile-dropdown");
+    overlay.classList.toggle("open");
+    dropdown.classList.toggle("open");
+}
+
+// ------------------------------------------------------------
+// Authenticated fetch wrapper
+// ------------------------------------------------------------
+async function authFetch(path, options = {}) {
+    const res = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+            ...(options.body ? { "Content-Type": "application/json" } : {}),
+            ...authHeaders(),
+            ...(options.headers || {}),
+        },
+    });
+    if (res.status === 401) {
+        handleLogout();
+        throw new Error("Session expired. Please log in again.");
+    }
+    return res;
+}
+
+// ============================================================
+// VIEW ROUTING
+// ============================================================
+const VIEW_TITLES = {
+    dashboard: "Dashboard",
+    chatbot: "Elix",
+    medicines: "Medicines",
+    conditions: "Conditions",
+    interactions: "Interactions",
+    saved: "Saved Searches",
+    emergency: "Emergency",
+    hospitals: "Hospitals",
+    pharmacies: "Pharmacies",
+    activity: "Activity Log",
+    account: "Account Settings",
+};
+
+function switchView(view) {
+    document.querySelectorAll(".view-section").forEach((s) => s.classList.remove("active"));
+    document.querySelectorAll(".topnav-link, .mobile-dropdown-link, .mobile-nav-item").forEach((e) => e.classList.remove("active"));
+    document.getElementById(`view-${view}`).classList.add("active");
+    const nav = document.getElementById(`nav-${view}`);
+    if (nav) nav.classList.add("active");
+    const mob = document.getElementById(`mob-${view}`);
+    if (mob) mob.classList.add("active");
+    const mobBottom = document.getElementById(`mob-bottom-${view}`);
+    if (mobBottom) mobBottom.classList.add("active");
+
+    const title = document.getElementById("topbar-title");
+    if (title) title.textContent = VIEW_TITLES[view] || "Mendly";
+
+    if (view === "saved") renderSavedSearches();
+    if (view === "account") loadAccountStats();
+    if (view === "activity") loadActivityLog();
+    if (view === "hospitals") {
+        if (state.userLocation) loadNearbyHospitals();
+        else renderHospitals([], "Search by name above, or click <strong>Nearby</strong> to use your location.");
+    }
+    if (view === "pharmacies") {
+        if (state.userLocation) loadNearbyPharmacies();
+        else renderPharmacies([], "Search by name above, or click <strong>Nearby</strong> to use your location.");
+    }
+
+    // Close mobile menu if open
+    const dropdown = document.getElementById("mobile-dropdown");
+    if (dropdown && dropdown.classList.contains("open")) toggleMobileMenu();
+}
+
+// ============================================================
+// LOCATION
+// ============================================================
+function getUserLocation() {
+    const status = document.getElementById("location-status");
+    if (!navigator.geolocation) {
+        status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location not supported';
+        return;
+    }
+    status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Getting location...';
+    navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+            state.userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location detected';
+            await getAddress(pos.coords.latitude, pos.coords.longitude);
+            loadNearbyHospitals();
+            loadNearbyPharmacies();
+        },
+        () => {
+            status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location unavailable';
+            getLocationFromIP();
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+}
+
+async function getLocationFromIP() {
+    try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        state.userLocation = { lat: data.latitude, lng: data.longitude };
+        document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${data.city}, ${data.country_name}`;
+        loadNearbyHospitals();
+        loadNearbyPharmacies();
+    } catch (e) {
+        console.log("IP location failed", e);
+        state.userLocation = null;
+        document.getElementById("location-status").innerHTML = '<i class="fa-solid fa-location-dot"></i> Location unavailable';
+    }
+}
+
+async function getAddress(lat, lng) {
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
+        const data = await res.json();
+        if (data.display_name) {
+            const parts = data.display_name.split(",").slice(0, 3);
+            document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${parts.join(", ")}`;
+        }
+    } catch (e) {
+        console.log("Reverse geocoding failed");
+    }
+}
+
+function openDirections(address) {
+    if (!address) return;
+    const encodedAddress = encodeURIComponent(address);
+    window.open(`https://www.google.com/maps/search/${encodedAddress}`, "_blank");
+}
+
+// ============================================================
+// CHATBOT
+// ============================================================
+
+const _chatMemory = [];
+const MAX_HISTORY = 6;
+
+async function sendChatMessage() {
+    const input = document.getElementById("chat-input");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    _chatMemory.push({ role: "user", content: msg });
+    if (_chatMemory.length > MAX_HISTORY * 2) _chatMemory.splice(0, 2);
+
+    addChatMessage("user", msg);
+    input.value = "";
+    input.style.height = "auto";
+    addTypingIndicator();
+
+    try {
+        const res = await authFetch("/chat", {
+            method: "POST",
+            body: JSON.stringify({
+                message: msg,
+                location: state.userLocation,
+                history: _chatMemory.slice(-MAX_HISTORY),
+            }),
+        });
+        const data = await res.json();
+        removeTypingIndicator();
+        const reply = data.reply || data.response || "I couldn't process that. Try asking about a specific disease, symptom, or medicine.";
+        _chatMemory.push({ role: "bot", content: reply });
+        addChatMessage("bot", reply);
+    } catch (e) {
+        removeTypingIndicator();
+        if (!String(e.message).includes("Session expired")) {
+            addChatMessage("bot", "Connection error. Please try again later.");
+        }
+    }
+}
+
+function addChatMessage(sender, text) {
+    const container = document.getElementById("chat-messages");
+    const wrap = document.createElement("div");
+    wrap.className = `chat-bubble-wrap ${sender}`;
+
+    const bubble = document.createElement("div");
+    bubble.className = `chat-bubble ${sender}`;
+
+    const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+    if (sender === "bot") {
+        bubble.innerHTML = `
+            <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            <div class="bubble-content">
+                <div class="bubble-text">${renderMarkdown(text)}</div>
+                <div class="bubble-meta">
+                    <span class="bubble-time">${now}</span>
+                    <button class="copy-btn" title="Copy" onclick="copyBubble(this)"><i class="fa-regular fa-copy"></i></button>
+                </div>
+            </div>`;
+    } else {
+        bubble.innerHTML = `
+            <div class="bubble-content">
+                <div class="bubble-text">${escapeHtml(text)}</div>
+                <span class="bubble-time">${now}</span>
+            </div>`;
+    }
+
+    wrap.appendChild(bubble);
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+}
+
+function copyBubble(btn) {
+    const text = btn.closest(".bubble-content").querySelector(".bubble-text").innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        setTimeout(() => (btn.innerHTML = '<i class="fa-regular fa-copy"></i>'), 1500);
+    });
+}
+
+function renderMarkdown(text) {
+    if (!text) return "";
+    let html = escapeHtml(text);
+
+    html = html.replace(/^### (.+)$/gm, "<h4>$1</h4>");
+    html = html.replace(/^## (.+)$/gm, "<h3>$1</h3>");
+    html = html.replace(/^# (.+)$/gm, "<h2>$1</h2>");
+
+    html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+    html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+    html = html.replace(/((?:\|.+\|\n?)+)/g, (tableBlock) => {
+        const rows = tableBlock.trim().split("\n").filter(r => r.trim());
+        if (rows.length < 2) return tableBlock;
+        let tableHtml = "<table class='md-table'><thead><tr>";
+        const headers = rows[0].split("|").filter((_, i, a) => i > 0 && i < a.length - 1);
+        headers.forEach(h => tableHtml += `<th>${h.trim()}</th>`);
+        tableHtml += "</tr></thead><tbody>";
+        rows.slice(2).forEach(row => {
+            const cells = row.split("|").filter((_, i, a) => i > 0 && i < a.length - 1);
+            tableHtml += "<tr>" + cells.map(c => `<td>${c.trim()}</td>`).join("") + "</tr>";
+        });
+        tableHtml += "</tbody></table>";
+        return tableHtml;
+    });
+
+    html = html.replace(/^---+$/gm, "<hr>");
+    html = html.replace(/\*(⚠️[^*]+)\*/g, "<span class='disclaimer'>$1</span>");
+
+    html = html.replace(/^[•●][ \t](.+)$/gm, "<li>$1</li>");
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+    html = html.replace(/^\d+\.[ \t](.+)$/gm, "<li>$1</li>");
+
+    html = html.replace(/\n\n/g, "</p><p>");
+    html = html.replace(/\n/g, "<br>");
+    html = "<p>" + html + "</p>";
+
+    html = html.replace(/<p>\s*<\/p>/g, "");
+    html = html.replace(/<p>(<[hut])/g, "$1");
+    html = html.replace(/(<\/[hut][^>]*>)<\/p>/g, "$1");
+
+    return html;
+}
+
+function escapeHtml(str) {
+    if (typeof str !== "string") return str;
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function addTypingIndicator() {
+    const container = document.getElementById("chat-messages");
+    const wrap = document.createElement("div");
+    wrap.id = "typing-indicator";
+    wrap.className = "chat-bubble-wrap bot";
+    wrap.innerHTML = `
+        <div class="chat-bubble bot">
+            <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            <div class="bubble-content">
+                <div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>
+            </div>
+        </div>`;
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const el = document.getElementById("typing-indicator");
+    if (el) el.remove();
+}
+
+async function loadChatHistoryFromServer() {
+    try {
+        const res = await authFetch("/chat/history?limit=50");
+        const messages = await res.json();
+        const container = document.getElementById("chat-messages");
+        container.innerHTML = "";
+        if (messages.length === 0) {
+            container.innerHTML = `
+                <div class="chat-bubble-wrap bot">
+                    <div class="chat-bubble bot">
+                        <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                        <div class="bubble-content">
+                            <div class="bubble-text"><strong>Welcome to Elix!</strong><br>
+                            I can help you with disease information, medicine details, drug interactions, and finding nearby hospitals.<br><br>
+                            <strong>Try asking:</strong><br>
+                            "What are the symptoms of diabetes?"<br>
+                            "Tell me about Atorvastatin"<br>
+                            "How to treat a migraine?"</div>
+                        </div>
+                    </div>
+                </div>`;
+            return;
+        }
+        messages.forEach((m) => addChatMessage(m.role === "user" ? "user" : "bot", m.content));
+        messages.slice(-MAX_HISTORY).forEach(m => _chatMemory.push({ role: m.role === "user" ? "user" : "bot", content: m.content }));
+    } catch (e) {
+        console.error("Could not load chat history:", e);
+    }
+}
+
+async function clearChat() {
+    if (!confirm("Clear all chat history? This cannot be undone.")) return;
+    try {
+        await authFetch("/chat/history", { method: "DELETE" });
+    } catch (e) {
+        console.error(e);
+    }
+    _chatMemory.length = 0;
+    document.getElementById("chat-messages").innerHTML = `
+        <div class="chat-bubble-wrap bot">
+            <div class="chat-bubble bot">
+                <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                <div class="bubble-content">
+                    <div class="bubble-text"><strong>Chat cleared!</strong><br>How can I help you today?</div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function suggestQuery(q) {
+    document.getElementById("chat-input").value = q;
+    sendChatMessage();
+}
+
+// ============================================================
+// MEDICINES
+// ============================================================
+async function loadAllMedicines() {
+    try {
+        const res = await authFetch("/medicines");
+        state.medicines = await res.json();
+        renderMedicines(state.medicines);
+    } catch (e) {
+        console.error("Error loading medicines:", e);
+        renderMedicines([]);
+    }
+}
+
+function renderMedicines(medicines) {
+    const container = document.getElementById("medicine-results");
+    state.renderedMedicines = medicines || [];
+    if (!medicines || medicines.length === 0) {
+        container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p style="color:var(--text-muted);">No medicines found. Try a different name or spelling.</p></div>`;
+        return;
+    }
+    container.innerHTML = medicines.map((m, i) => `
+        <div class="medicine-card" onclick="showMedicineDetailIdx(${i})">
+            <h4>${escapeHtml(m.name)}</h4>
+            <p class="brand">${escapeHtml(m.brand || "")}</p>
+            <span class="category">${escapeHtml(m.category || "General")}</span>
+            <p class="uses">${(m.uses || []).slice(0, 2).map(escapeHtml).join(", ")}</p>
+            ${m.source && m.source.includes("Verified") ? '<p style="color:var(--success);font-size:0.7rem;margin-top:0.3rem;"><i class="fa-solid fa-check-circle"></i> Verified data</p>' : ""}
+        </div>
+    `).join("");
+}
+
+function showMedicineDetailIdx(idx) {
+    const med = (state.renderedMedicines || [])[idx];
+    if (med) showMedicineDetailObj(med);
+}
+
+async function searchMedicines() {
+    const q = document.getElementById("medicine-search").value.trim();
+    if (!q) { loadAllMedicines(); return; }
+    const container = document.getElementById("medicine-results");
+    container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;color:var(--primary);"></i><p style="color:var(--text-muted);margin-top:0.5rem;">Searching...</p></div>`;
+    try {
+        const res = await authFetch("/medicines/search", { method: "POST", body: JSON.stringify({ query: q }) });
+        const data = await res.json();
+        state.medicines = data.results || [];
+        renderMedicines(state.medicines);
+    } catch (e) {
+        console.error(e);
+        renderMedicines([]);
+    }
+}
+
+function filterMedicines(filter) {
+    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.toggle("active", b.dataset.filter === filter));
+    if (filter === "all") { renderMedicines(state.medicines); return; }
+    renderMedicines(state.medicines.filter(m => m.category && m.category.toLowerCase().includes(filter.toLowerCase())));
+}
+
+function showMedicineDetailObj(med) {
+    state.lastViewedMedicine = med;
+    document.getElementById("detail-name").textContent = med.name;
+    document.getElementById("detail-brand").textContent = med.brand || "";
+    document.getElementById("detail-content").innerHTML = `
+        <div class="detail-section"><h4>Uses</h4><ul>${(med.uses || []).map(u => `<li>${escapeHtml(u)}</li>`).join("")}</ul></div>
+        <div class="detail-section"><h4>Dosage</h4>
+            <p><strong>Adult:</strong> ${escapeHtml(med.dosage?.adult || "Consult doctor")}</p>
+            <p><strong>Child:</strong> ${escapeHtml(med.dosage?.child || "Consult doctor")}</p>
+            <p><strong>Elderly:</strong> ${escapeHtml(med.dosage?.elderly || "Consult doctor")}</p>
+        </div>
+        <div class="detail-section"><h4>Side Effects</h4>
+            <p><strong>Common:</strong> ${(med.side_effects?.common || []).map(escapeHtml).join(", ")}</p>
+            <p class="warning-text"><strong>Serious:</strong> ${(med.side_effects?.serious || []).map(escapeHtml).join(", ")}</p>
+        </div>
+        <div class="detail-section"><h4>Precautions</h4><ul>${(med.precautions || []).map(p => `<li>${escapeHtml(p)}</li>`).join("")}</ul></div>
+        <div class="detail-section"><h4>Pregnancy</h4><p>${escapeHtml(med.pregnancy || "Consult doctor")}</p></div>
+        ${med.source ? `<p style="color:var(--text-muted);font-size:0.75rem;margin-top:0.5rem;"><i class="fa-solid fa-circle-info"></i> Source: ${escapeHtml(med.source)}</p>` : ""}
+        <div style="margin-top:1rem;">
+            <button onclick="askChatbot('${med.name.replace(/'/g, "\\'")}')" class="btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(med.name)}</button>
+        </div>
+    `;
+    document.getElementById("medicine-detail").style.display = "block";
+    document.getElementById("medicine-detail").scrollIntoView({ behavior: "smooth" });
+}
+
+function closeDetail() { document.getElementById("medicine-detail").style.display = "none"; }
+
+function askChatbot(medicine) {
+    document.getElementById("chat-input").value = `Tell me about ${medicine}`;
+    switchView("chatbot");
+    sendChatMessage();
+}
+
+async function saveCurrentMedicine() {
+    if (!state.lastViewedMedicine) return;
+    await saveSearch("medicine", state.lastViewedMedicine.name);
+}
+
+// ============================================================
+// CONDITIONS / DISEASES
+// ============================================================
+async function searchByCondition() {
+    const q = document.getElementById("condition-search").value.trim();
+    if (!q) { alert("Please enter a symptom or condition."); return; }
+    try {
+        const res = await authFetch("/medicines/conditions", { method: "POST", body: JSON.stringify({ query: q }) });
+        const data = await res.json();
+        const container = document.getElementById("condition-results");
+        if (!data.possible_medicines || data.possible_medicines.length === 0) {
+            container.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:1rem 0;">No medicines found for "${escapeHtml(q)}".</p>`;
+            return;
+        }
+        container.innerHTML = `<h4 style="margin-bottom:0.75rem;">Medicines for "${escapeHtml(q)}":</h4>
+            <div class="grid-3">${data.possible_medicines.map(m => `
+                <div class="medicine-card" onclick="suggestQuery('Tell me about ${m.name.replace(/'/g, "\\'")}'); switchView('chatbot');">
+                    <h4>${escapeHtml(m.name)}</h4>
+                    <p class="brand">${escapeHtml(m.brand)}</p>
+                    <span class="category">${escapeHtml(m.category)}</span>
+                    <p class="uses">Dosage: ${escapeHtml(m.dosage)}</p>
+                </div>
+            `).join("")}</div>`;
+    } catch (e) { console.error(e); }
+}
+
+async function searchDiseaseProfiles() {
+    const q = document.getElementById("condition-search").value.trim();
+    if (!q) { alert("Please enter a disease name or symptom."); return; }
+    try {
+        const res = await authFetch("/diseases/search", { method: "POST", body: JSON.stringify({ query: q }) });
+        const data = await res.json();
+        const container = document.getElementById("condition-results");
+        if (!data.results || data.results.length === 0) {
+            container.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:1rem 0;">No disease profile found for "${escapeHtml(q)}".</p>`;
+            return;
+        }
+        container.innerHTML = data.results.map(d => `
+            <div class="glass-card" style="margin-top:0.75rem;">
+                <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <h3 style="text-transform:capitalize;font-size:1.1rem;">${escapeHtml(d.name)}</h3>
+                    <button onclick="saveSearch('disease', '${d.name.replace(/'/g, "\\'")}')" class="btn-secondary" style="padding:0.25rem 0.6rem;"><i class="fa-solid fa-bookmark"></i></button>
+                </div>
+                <div class="detail-section"><h4>Symptoms</h4><ul>${(d.symptoms || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>
+                <div class="detail-section"><h4>Treatment</h4><ul>${(d.treatment || []).map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul></div>
+                ${d.emergency_signs ? `<div class="detail-section warning-text"><h4>Emergency Signs</h4><ul>${d.emergency_signs.map(e => `<li>${escapeHtml(e)}</li>`).join("")}</ul></div>` : ""}
+            </div>
+        `).join("");
+    } catch (e) { console.error(e); }
+}
+
+// ============================================================
+// INTERACTIONS
+// ============================================================
+async function checkInteractions() {
+    const medicine = document.getElementById("interaction-medicine").value.trim();
+    const conditionsText = document.getElementById("interaction-conditions").value.trim();
+    const container = document.getElementById("interaction-results");
+    if (!medicine) { alert("Please enter a medicine name."); return; }
+    const conditions = conditionsText.split(",").map(c => c.trim()).filter(Boolean);
+    container.innerHTML = `<div style="text-align:center;padding:1rem 0;"><i class="fa-solid fa-spinner fa-spin" style="color:var(--primary);"></i></div>`;
+    try {
+        const res = await authFetch("/medicines/interactions", { method: "POST", body: JSON.stringify({ medication: medicine, conditions }) });
+        const data = await res.json();
+        if (data.error) { container.innerHTML = `<div class="interaction-result warning">${escapeHtml(data.error)}</div>`; return; }
+        let html = `<div class="interaction-result info"><strong>${escapeHtml(data.medication)}</strong></div>`;
+        if (data.warnings?.length) html += data.warnings.map(w => `<div class="interaction-result warning">${escapeHtml(w)}</div>`).join("");
+        else html += `<div class="interaction-result success">No significant interactions detected.</div>`;
+        if (data.recommendations?.length) html += data.recommendations.map(r => `<div class="interaction-result info">${escapeHtml(r)}</div>`).join("");
+        container.innerHTML = html;
+    } catch (e) { console.error(e); }
+}
+
+// ============================================================
+// SAVED SEARCHES
+// ============================================================
+async function loadSavedSearches() {
+    try {
+        const res = await authFetch("/saved-searches");
+        state.savedSearches = await res.json();
+    } catch (e) { console.error(e); }
+}
+
+async function saveSearch(queryType, queryValue) {
+    try {
+        const res = await authFetch("/saved-searches", { method: "POST", body: JSON.stringify({ query_type: queryType, query_value: queryValue }) });
+        if (res.ok) {
+            const item = await res.json();
+            state.savedSearches.unshift(item);
+            alert(`Saved "${queryValue}" to bookmarks.`);
+            renderSavedSearches();
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function deleteSavedSearch(id) {
+    try {
+        await authFetch(`/saved-searches/${id}`, { method: "DELETE" });
+        state.savedSearches = state.savedSearches.filter(s => s.id !== id);
+        renderSavedSearches();
+    } catch (e) { console.error(e); }
+}
+
+function renderSavedSearches() {
+    const container = document.getElementById("saved-results");
+    if (!state.savedSearches?.length) {
+        container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p style="color:var(--text-muted);">No saved searches yet.</p></div>`;
+        return;
+    }
+    container.innerHTML = state.savedSearches.map(s => `
+        <div class="medicine-card">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+                <div>
+                    <h4>${escapeHtml(s.query_value)}</h4>
+                    <span class="category">${s.query_type === "medicine" ? "Medicine" : "Disease"}</span>
+                </div>
+                <button onclick="deleteSavedSearch(${s.id})" class="btn-secondary" style="padding:0.2rem 0.5rem;"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+            <button onclick="suggestQuery('${s.query_type === "medicine" ? "Tell me about " : "What are the symptoms of "}${s.query_value.replace(/'/g, "\\'")}'); switchView('chatbot');" class="btn-secondary" style="width:100%;margin-top:0.5rem;font-size:0.78rem;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix
+            </button>
+        </div>
+    `).join("");
+}
+
+// ============================================================
+// EMERGENCY CONTACTS
+// ============================================================
+async function loadEmergencyContacts(country) {
+    try {
+        const res = await fetch(`${API_BASE}/emergency/contacts?country=${encodeURIComponent(country)}`);
+        const data = await res.json();
+        const contacts = Array.isArray(data) ? data[0] : data;
+        const container = document.getElementById("emergency-contacts");
+        const items = [
+            ["Ambulance", contacts.ambulance],
+            ["Police", contacts.police],
+            ["Fire", contacts.fire],
+            ["Emergency Medical", contacts.emergency_medical],
+            ["Mental Health", contacts.mental_health_helpline],
+            ["Poison Control", contacts.poison_control],
+        ];
+        container.innerHTML = `<h4 style="margin-bottom:0.5rem;">${escapeHtml(contacts.country || "Emergency")} Contacts</h4>
+            ${items.filter(i => i[1]).map(i => `<div class="emergency-contact"><span>${i[0]}</span><span class="number">${escapeHtml(String(i[1]))}</span></div>`).join("")}`;
+    } catch (e) { console.error(e); }
+}
+
+function loadDefaultEmergencyContacts() { loadEmergencyContacts("India"); }
+
+// ============================================================
+// HOSPITALS / PHARMACIES
+// ============================================================
+async function loadNearbyHospitals() {
+    if (!state.userLocation) { renderHospitals([], "Click <strong>Nearby</strong> to allow location access, or search by name above."); return; }
+    try {
+        const res = await fetch(`${API_BASE}/emergency/hospitals/nearby`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lat: state.userLocation.lat, lng: state.userLocation.lng, radius: 25 }) });
+        const data = await res.json();
+        renderHospitals(data.hospitals || data);
+        document.getElementById("dash-hospital-count").textContent = (data.hospitals || data).length || 0;
+    } catch (e) { console.error(e); renderHospitals([]); }
+}
+
+async function loadAllHospitals() {
+    try {
+        const res = await fetch(`${API_BASE}/emergency/hospitals`);
+        const data = await res.json();
+        renderHospitals(data);
+    } catch (e) { console.error(e); }
+}
+
+function renderHospitals(hospitals, emptyMessage = "No hospitals found.") {
+    const container = document.getElementById("hospital-results");
+    if (!hospitals?.length) { container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p style="color:var(--text-muted);">${emptyMessage}</p></div>`; return; }
+    hospitals.sort((a, b) => (a.distance || 999) - (b.distance || 999));
+    container.innerHTML = hospitals.map(h => `
+        <div class="location-card">
+            <h4>${escapeHtml(h.name)}</h4>
+            <p class="address">${escapeHtml(h.address || "Address not available")}</p>
+            <p class="phone">${escapeHtml(h.phone || "N/A")}</p>
+            ${h.distance ? `<p style="color:var(--text-muted);font-size:0.82rem;">${h.distance.toFixed(1)} km</p>` : ""}
+            <div style="margin-top:0.4rem;"><span class="badge available">${h.available !== false ? "Available" : "Unavailable"}</span></div>
+            <button onclick="openDirections('${escapeHtml(h.address || h.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
+                <i class="fa-solid fa-map"></i> Directions
+            </button>
+        </div>
+    `).join("");
+}
+
+async function searchHospitals() {
+    const q = document.getElementById("hospital-search").value.trim();
+    if (!q) {
+        if (state.userLocation) loadNearbyHospitals();
+        else renderHospitals([], "Type a hospital name to search, or click <strong>Nearby</strong> to use your location.");
+        return;
+    }
+    try {
+        const res = await fetch(`${API_BASE}/emergency/hospitals/search`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, lat: state.userLocation?.lat || 0, lng: state.userLocation?.lng || 0 }) });
+        const data = await res.json();
+        renderHospitals(data.hospitals || data, `No hospitals found for "${q}". Try a different name.`);
+    } catch (e) { console.error(e); renderHospitals([]); }
+}
+
+async function loadNearbyPharmacies() {
+    if (!state.userLocation) { renderPharmacies([], "Click <strong>Nearby</strong> to allow location access, or search by name above."); return; }
+    try {
+        const res = await fetch(`${API_BASE}/emergency/pharmacies/nearby`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lat: state.userLocation.lat, lng: state.userLocation.lng, radius: 25 }) });
+        const data = await res.json();
+        renderPharmacies(data.pharmacies || data);
+        document.getElementById("dash-pharmacy-count").textContent = (data.pharmacies || data).length || 0;
+    } catch (e) { console.error(e); renderPharmacies([]); }
+}
+
+async function loadAllPharmacies() {
+    try {
+        const res = await fetch(`${API_BASE}/emergency/pharmacies`);
+        const data = await res.json();
+        renderPharmacies(data);
+    } catch (e) { console.error(e); }
+}
+
+function renderPharmacies(pharmacies, emptyMessage = "No pharmacies found.") {
+    const container = document.getElementById("pharmacy-results");
+    if (!pharmacies?.length) { container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p style="color:var(--text-muted);">${emptyMessage}</p></div>`; return; }
+    pharmacies.sort((a, b) => (a.distance || 999) - (b.distance || 999));
+    container.innerHTML = pharmacies.map(p => `
+        <div class="location-card">
+            <h4>${escapeHtml(p.name)}</h4>
+            <p class="address">${escapeHtml(p.address || "Address not available")}</p>
+            <p class="phone">${escapeHtml(p.phone || "N/A")}</p>
+            ${p.distance ? `<p style="color:var(--text-muted);font-size:0.82rem;">${p.distance.toFixed(1)} km</p>` : ""}
+            <div style="margin-top:0.4rem;">${(p.services || []).map(s => `<span class="badge" style="background:var(--primary);color:white;">${escapeHtml(s)}</span> `).join("")}</div>
+            <button onclick="openDirections('${escapeHtml(p.address || p.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
+                <i class="fa-solid fa-map"></i> Directions
+            </button>
+        </div>
+    `).join("");
+}
+
+async function searchPharmacies() {
+    const q = document.getElementById("pharmacy-search").value.trim();
+    if (!q) {
+        if (state.userLocation) loadNearbyPharmacies();
+        else renderPharmacies([], "Type a pharmacy name to search, or click <strong>Nearby</strong> to use your location.");
+        return;
+    }
+    try {
+        const res = await fetch(`${API_BASE}/emergency/pharmacies/search`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, lat: state.userLocation?.lat || 0, lng: state.userLocation?.lng || 0 }) });
+        const data = await res.json();
+        renderPharmacies(data.pharmacies || data, `No pharmacies found for "${q}". Try a different name.`);
+    } catch (e) { console.error(e); renderPharmacies([]); }
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+async function loadDashboardStats() {
+    try {
+        const res = await authFetch("/medicines");
+        const meds = await res.json();
+        document.getElementById("dash-medicine-count").textContent = meds.length || 0;
+        const conditions = new Set();
+        meds.forEach(m => (m.uses || []).forEach(u => conditions.add(u)));
+        document.getElementById("dash-condition-count").textContent = conditions.size || 0;
+    } catch (e) { console.error(e); }
+    try {
+        const res = await authFetch("/profile/stats");
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById("dash-chat-count").textContent = data.total_messages || 0;
+        }
+    } catch (e) { console.error(e); }
+}
+
+// ============================================================
+// CHAT STATUS
+// ============================================================
+let chatStatus = { gemini_active: false };
+
+async function loadChatStatus() {
+    try {
+        const res = await authFetch("/chat/status");
+        if (res.ok) { chatStatus = await res.json(); updateChatStatusUI(); }
+    } catch (e) { console.error(e); }
+}
+
+function updateChatStatusUI() {
+    const badge = document.getElementById("chat-status-badge");
+    if (!badge) return;
+    if (chatStatus.provider === "nvidia") {
+        badge.innerHTML = '<span class="status-dot online"></span> Elix (NVIDIA)';
+        badge.className = "chat-status-badge online";
+    } else if (chatStatus.gemini_active) {
+        badge.innerHTML = '<span class="status-dot online"></span> Elix (Online)';
+        badge.className = "chat-status-badge online";
+    } else {
+        badge.innerHTML = '<span class="status-dot offline"></span> Elix Offline';
+        badge.className = "chat-status-badge offline";
+    }
+}
+
+// ============================================================
+// ACCOUNT / PROFILE
+// ============================================================
+async function loadAccountStats() {
+    try {
+        const res = await authFetch("/profile/stats");
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById("stat-messages").textContent = data.total_messages || 0;
+            document.getElementById("stat-searches").textContent = data.total_searches || 0;
+            document.getElementById("stat-activities").textContent = data.total_activities || 0;
+        }
+    } catch (e) { console.error(e); }
+}
+
+let selectedProfilePhoto = null;
+
+function handleProfilePhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+        const msg = document.getElementById("profile-update-msg");
+        msg.textContent = "Photo must be under 2MB."; msg.style.display = "block"; msg.className = "auth-error";
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        selectedProfilePhoto = e.target.result;
+        const avatar = document.getElementById("profile-avatar-large");
+        avatar.innerHTML = `<img src="${selectedProfilePhoto}" alt="Profile" style="width:100%;height:100%;border-radius:14px;object-fit:cover;">`;
+        document.getElementById("remove-photo-btn").style.display = "flex";
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeProfilePhoto() {
+    selectedProfilePhoto = "";
+    const user = getStoredUser();
+    const avatar = document.getElementById("profile-avatar-large");
+    avatar.innerHTML = (user?.name || "U").charAt(0).toUpperCase();
+    avatar.style.background = user?.avatar_color || "#4f46e5";
+    document.getElementById("remove-photo-btn").style.display = "none";
+    document.getElementById("photo-upload-input").value = "";
+}
+
+async function updateProfile() {
+    const name = document.getElementById("profile-name").value.trim();
+    const email = document.getElementById("profile-email").value.trim();
+    const dob = document.getElementById("profile-dob").value;
+    const blood = document.getElementById("profile-blood").value;
+    const msgEl = document.getElementById("profile-update-msg");
+    const btn = document.getElementById("profile-save-btn");
+
+    if (!name || !email) { msgEl.textContent = "Name and email are required."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+    try {
+        const body = { name, email };
+        if (dob) body.date_of_birth = dob;
+        if (blood) body.blood_type = blood;
+        if (selectedProfilePhoto !== null) body.profile_photo = selectedProfilePhoto;
+
+        const res = await authFetch("/profile", { method: "PUT", body: JSON.stringify(body) });
+        const data = await res.json();
+        if (!res.ok) { msgEl.textContent = data.detail || "Update failed."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+
+        const token = getToken();
+        setSession(token, data);
+        updateUserUI(data);
+
+        msgEl.textContent = "Profile updated successfully.";
+        msgEl.style.display = "block";
+        msgEl.className = "auth-success";
+        setTimeout(() => { msgEl.style.display = "none"; }, 3000);
+    } catch (e) {
+        msgEl.textContent = "Connection error."; msgEl.style.display = "block"; msgEl.className = "auth-error";
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Changes';
+    }
+}
+
+async function changePassword() {
+    const current = document.getElementById("current-password").value;
+    const newPw = document.getElementById("new-password").value;
+    const confirm = document.getElementById("confirm-password").value;
+    const msgEl = document.getElementById("password-msg");
+    const btn = document.getElementById("password-save-btn");
+
+    if (!current || !newPw) { msgEl.textContent = "Please fill in all fields."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+    if (newPw !== confirm) { msgEl.textContent = "New passwords do not match."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+    if (newPw.length < 6) { msgEl.textContent = "Password must be at least 6 characters."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Changing...';
+
+    try {
+        const res = await authFetch("/profile/change-password", { method: "POST", body: JSON.stringify({ current_password: current, new_password: newPw }) });
+        const data = await res.json();
+        if (!res.ok) { msgEl.textContent = data.detail || "Failed."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+
+        msgEl.textContent = "Password changed successfully.";
+        msgEl.style.display = "block";
+        msgEl.className = "auth-success";
+        document.getElementById("current-password").value = "";
+        document.getElementById("new-password").value = "";
+        document.getElementById("confirm-password").value = "";
+        setTimeout(() => { msgEl.style.display = "none"; }, 3000);
+    } catch (e) {
+        msgEl.textContent = "Connection error."; msgEl.style.display = "block"; msgEl.className = "auth-error";
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-key"></i> Change Password';
+    }
+}
+
+function confirmDeleteAccount() {
+    document.getElementById("delete-modal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+    document.getElementById("delete-modal").style.display = "none";
+}
+
+async function deleteAccount() {
+    const btn = document.getElementById("delete-confirm-btn");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+
+    try {
+        await authFetch("/profile", { method: "DELETE" });
+        closeDeleteModal();
+        clearSession();
+        document.getElementById("app-root").style.display = "none";
+        document.getElementById("landing-page").style.display = "block";
+        goToStep("email");
+        alert("Your account has been permanently deleted.");
+    } catch (e) {
+        alert("Failed to delete account. Please try again.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Yes, Delete';
+    }
+}
+
+// ============================================================
+// ACTIVITY LOG
+// ============================================================
+async function loadActivityLog() {
+    try {
+        const res = await authFetch("/activity?limit=30");
+        if (!res.ok) return;
+        const logs = await res.json();
+        const container = document.getElementById("activity-list");
+        if (!logs?.length) {
+            container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>No activity recorded yet.</p></div>`;
+            return;
+        }
+
+        const ACTION_META = {
+            chat_message: { icon: "fa-wand-magic-sparkles", cls: "chat", label: "Chat" },
+            logged_in: { icon: "fa-right-to-bracket", cls: "auth", label: "Login" },
+            account_created: { icon: "fa-user-plus", cls: "auth", label: "Account Created" },
+            profile_updated: { icon: "fa-user-pen", cls: "profile", label: "Profile Updated" },
+            password_changed: { icon: "fa-key", cls: "profile", label: "Password Changed" },
+            bookmark_added: { icon: "fa-bookmark", cls: "bookmark", label: "Bookmark Added" },
+            account_deleted: { icon: "fa-trash-can", cls: "system", label: "Account Deleted" },
+            admin_block_user: { icon: "fa-ban", cls: "system", label: "Admin: Block User" },
+            admin_unblock_user: { icon: "fa-unlock", cls: "system", label: "Admin: Unblock User" },
+        };
+
+        container.innerHTML = logs.map(log => {
+            const meta = ACTION_META[log.action] || { icon: "fa-circle-info", cls: "system", label: log.action };
+            const time = log.created_at ? new Date(log.created_at).toLocaleString() : "";
+            return `
+                <div class="activity-item">
+                    <div class="activity-icon ${meta.cls}"><i class="fa-solid ${meta.icon}"></i></div>
+                    <div class="activity-info">
+                        <div class="activity-action">${meta.label}</div>
+                        <div class="activity-detail">${escapeHtml(log.detail || "")}</div>
+                    </div>
+                    <div class="activity-time">${time}</div>
+                </div>`;
+        }).join("");
+    } catch (e) { console.error(e); }
+}
+
+async function clearActivity() {
+    if (!confirm("Clear all activity logs?")) return;
+    try {
+        await authFetch("/activity", { method: "DELETE" });
+        loadActivityLog();
+    } catch (e) { console.error(e); }
+}
+
+// ============================================================
+// THEME (light / dark / system)
+// ============================================================
+function initTheme() {
+    setTheme(localStorage.getItem("theme") || "light");
+}
+
+function setTheme(theme) {
+    if (theme === "system") {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+    } else {
+        document.documentElement.setAttribute("data-theme", theme);
+    }
+    localStorage.setItem("theme", theme);
+    updateThemeButtons(theme);
+}
+
+function updateThemeButtons(theme) {
+    document.querySelectorAll(".theme-toggle-btn").forEach(btn => {
+        const icon = btn.querySelector("i");
+        const label = btn.querySelector("span");
+        if (theme === "dark") {
+            if (icon) icon.className = "fa-solid fa-sun";
+            if (label) label.textContent = "Light Mode";
+            btn.title = "Switch to light mode";
+        } else if (theme === "system") {
+            if (icon) icon.className = "fa-solid fa-desktop";
+            if (label) label.textContent = "System";
+            btn.title = "Switch to light mode";
+        } else {
+            if (icon) icon.className = "fa-solid fa-moon";
+            if (label) label.textContent = "Dark Mode";
+            btn.title = "Switch to dark mode";
+        }
+    });
+}
+
+function toggleTheme() {
+    const current = localStorage.getItem("theme") || "light";
+    const next = current === "light" ? "dark" : current === "dark" ? "system" : "light";
+    setTheme(next);
+}
+
+document.addEventListener("DOMContentLoaded", initTheme);

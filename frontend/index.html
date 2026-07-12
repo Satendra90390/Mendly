@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mendly is a professional AI-driven medicine information platform with drug search, health guidance, and nearby care resources.">
+    <title>Mendly — Medicine & Health Information Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=17">
+</head>
+<body>
+
+<!-- ==================== LANDING PAGE (shown to visitors) ==================== -->
+<div id="landing-page" class="landing-page">
+
+    <!-- NAVBAR -->
+    <nav class="landing-nav" id="landing-nav">
+        <div class="landing-nav-inner">
+            <div class="landing-logo"><img src="logo.svg" alt="Mendly" class="logo-img"><span>Mendly</span></div>
+            <div class="landing-nav-links">
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+                <a href="#footer">Contact</a>
+            </div>
+            <div class="landing-nav-right">
+                <button class="btn-secondary theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+                <div class="landing-nav-actions">
+                    <button class="btn-secondary" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
+                    <button class="btn-primary" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+                </div>
+                <button class="landing-mobile-menu-btn" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-arrow-right"></i> Get Started</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="landing-hero">
+        <div class="landing-hero-bg">
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+            <div class="hero-orb hero-orb-3"></div>
+        </div>
+        <div class="landing-hero-content">
+            <div class="landing-hero-text">
+                <div class="landing-badge"><i class="fa-solid fa-shield-halved"></i> Verified drug data</div>
+                <h1>Your Complete <span class="gradient-text">Medicine</span> Information Platform</h1>
+                <p class="landing-hero-subtitle">Search any medicine, check drug interactions, chat with AI about diseases, and find nearby hospitals & pharmacies — all in one place.</p>
+                <div class="landing-hero-stats">
+                    <div class="hero-stat"><i class="fa-solid fa-capsules"></i><span>Any medicine</span></div>
+                    <div class="hero-stat"><i class="fa-solid fa-wand-magic-sparkles"></i><span>AI-powered</span></div>
+                    <div class="hero-stat"><i class="fa-solid fa-hospital"></i><span>Nearby care</span></div>
+                </div>
+            </div>
+
+            <div class="landing-hero-form" id="landing-login">
+                <div class="landing-form-card">
+                    <div class="landing-form-header">
+                        <div class="landing-form-logo">
+                            <img src="logo.svg" alt="Mendly" class="logo-img logo-img-lg">
+                            <span>Mendly</span>
+                        </div>
+                        <p class="landing-form-subtitle" id="auth-subtitle">Your intelligent health companion</p>
+                    </div>
+
+                    <!-- STEP 1: Choose method -->
+                    <div class="auth-step active" id="step-email">
+                        <div class="auth-social">
+                            <button type="button" class="social-btn social-google" onclick="handleSocialLogin('google')">
+                                <svg class="social-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                                Continue with Google
+                            </button>
+                            <button type="button" class="social-btn social-phone" onclick="goToStep('phone')">
+                                <i class="fa-solid fa-phone social-icon"></i>
+                                Continue with Phone
+                            </button>
+                        </div>
+
+                        <div class="auth-divider">
+                            <span>or continue with email</span>
+                        </div>
+
+                        <form id="email-form" onsubmit="handleEmailSubmit(event)">
+                            <div class="form-group">
+                                <label>Email address</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="auth-email" placeholder="you@example.com" required autocomplete="email">
+                                </div>
+                            </div>
+                            <div id="email-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="email-submit-btn">
+                                <i class="fa-solid fa-arrow-right"></i> Continue
+                            </button>
+                        </form>
+
+                        <div class="auth-alt-action">
+                            <button type="button" class="link-btn" onclick="goToStep('forgot')">Forgot password?</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2a: Password Login (existing user) -->
+                    <div class="auth-step" id="step-password">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span class="step-email-label" id="password-email-label"></span>
+                                <span class="step-hint">Enter your password to log in</span>
+                            </div>
+                        </div>
+                        <form id="password-form" onsubmit="handlePasswordLogin(event)">
+                            <div class="form-group">
+                                <label>Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="password-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="password-submit-btn">
+                                <i class="fa-solid fa-right-to-bracket"></i> Log In
+                            </button>
+                        </form>
+                        <div class="auth-alt-action">
+                            <button type="button" class="link-btn" onclick="handleSendOtpForLogin()">Login with OTP instead</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2b: OTP Verification (email) -->
+                    <div class="auth-step" id="step-otp">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span class="step-email-label" id="otp-email-label"></span>
+                                <span class="step-hint">Enter the 6-digit code sent to your email</span>
+                            </div>
+                        </div>
+                        <form id="otp-form" onsubmit="handleOtpVerify(event)">
+                            <div class="form-group">
+                                <label>Verification code</label>
+                                <div class="otp-input-group" id="otp-inputs">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric" autocomplete="one-time-code">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="2" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="3" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="4" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="5" inputmode="numeric">
+                                </div>
+                            </div>
+                            <div id="otp-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="otp-submit-btn">
+                                <i class="fa-solid fa-check"></i> Verify
+                            </button>
+                        </form>
+                        <div class="auth-alt-action">
+                            <button type="button" class="link-btn" id="otp-resend-btn" onclick="handleResendOtp()">Resend code</button>
+                            <span class="otp-timer" id="otp-timer"></span>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Complete Profile (new user) -->
+                    <div class="auth-step" id="step-complete">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span class="step-email-label" id="complete-email-label"></span>
+                                <span class="step-hint">Complete your profile to get started</span>
+                            </div>
+                        </div>
+                        <form id="complete-form" onsubmit="handleCompleteSignup(event)">
+                            <div class="form-group">
+                                <label>Display name</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="signup-name" placeholder="Your full name" required autocomplete="name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Date of birth</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-cake-candles input-icon"></i>
+                                    <input type="date" id="signup-dob" required max="2020-01-01" min="1900-01-01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="signup-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('signup-password', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="password-strength">
+                                    <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                                    <span class="strength-text" id="strength-text"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-shield-halved input-icon"></i>
+                                    <input type="password" id="signup-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('signup-confirm', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="complete-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="complete-submit-btn">
+                                <i class="fa-solid fa-user-plus"></i> Create Account
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- STEP: Phone Number -->
+                    <div class="auth-step" id="step-phone">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span>Phone number</span>
+                                <span class="step-hint">We'll send you a verification code</span>
+                            </div>
+                        </div>
+                        <form id="phone-form" onsubmit="handlePhoneSendOtp(event)">
+                            <div class="form-group">
+                                <label>Phone number</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="auth-phone" placeholder="+1 234 567 8900" required autocomplete="tel">
+                                </div>
+                            </div>
+                            <div id="phone-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="phone-submit-btn">
+                                <i class="fa-solid fa-paper-plane"></i> Send Code
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- STEP: Phone OTP -->
+                    <div class="auth-step" id="step-phone-otp">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('phone')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span class="step-email-label" id="phone-otp-label"></span>
+                                <span class="step-hint">Enter the 6-digit code sent to your phone</span>
+                            </div>
+                        </div>
+                        <form id="phone-otp-form" onsubmit="handlePhoneOtpVerify(event)">
+                            <div class="form-group">
+                                <label>Verification code</label>
+                                <div class="otp-input-group" id="phone-otp-inputs">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="2" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="3" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="4" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="5" inputmode="numeric">
+                                </div>
+                            </div>
+                            <div id="phone-otp-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="phone-otp-submit-btn">
+                                <i class="fa-solid fa-check"></i> Verify
+                            </button>
+                        </form>
+                        <div class="auth-alt-action">
+                            <button type="button" class="link-btn" id="phone-otp-resend-btn" onclick="handlePhoneResendOtp()">Resend code</button>
+                            <span class="otp-timer" id="phone-otp-timer"></span>
+                        </div>
+                    </div>
+
+                    <!-- STEP: Phone Complete Profile -->
+                    <div class="auth-step" id="step-phone-complete">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span class="step-email-label" id="phone-complete-label"></span>
+                                <span class="step-hint">Set up your profile</span>
+                            </div>
+                        </div>
+                        <form id="phone-complete-form" onsubmit="handlePhoneCompleteSignup(event)">
+                            <div class="form-group">
+                                <label>Display name</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="phone-signup-name" placeholder="Your full name" required autocomplete="name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email (optional)</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="phone-signup-email" placeholder="you@example.com" autocomplete="email">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Date of birth</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-cake-candles input-icon"></i>
+                                    <input type="date" id="phone-signup-dob" max="2020-01-01" min="1900-01-01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="phone-signup-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('phone-signup-password', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="phone-password-strength">
+                                    <div class="strength-bar"><div class="strength-fill" id="phone-strength-fill"></div></div>
+                                    <span class="strength-text" id="phone-strength-text"></span>
+                                </div>
+                            </div>
+                            <div id="phone-complete-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="phone-complete-submit-btn">
+                                <i class="fa-solid fa-user-plus"></i> Create Account
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- STEP: Forgot Password -->
+                    <div class="auth-step" id="step-forgot">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span>Reset password</span>
+                                <span class="step-hint">Enter your email to receive a reset code</span>
+                            </div>
+                        </div>
+                        <form id="forgot-form" onsubmit="handleForgotSendOtp(event)">
+                            <div class="form-group">
+                                <label>Email address</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="forgot-email" placeholder="you@example.com" required autocomplete="email">
+                                </div>
+                            </div>
+                            <div id="forgot-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="forgot-submit-btn">
+                                <i class="fa-solid fa-paper-plane"></i> Send Reset Code
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- STEP: Forgot Password OTP -->
+                    <div class="auth-step" id="step-forgot-otp">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('forgot')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span class="step-email-label" id="forgot-otp-label"></span>
+                                <span class="step-hint">Enter the 6-digit code</span>
+                            </div>
+                        </div>
+                        <form id="forgot-otp-form" onsubmit="handleForgotOtpVerify(event)">
+                            <div class="form-group">
+                                <label>Verification code</label>
+                                <div class="otp-input-group" id="forgot-otp-inputs">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="2" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="3" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="4" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-box" data-idx="5" inputmode="numeric">
+                                </div>
+                            </div>
+                            <div id="forgot-otp-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="forgot-otp-submit-btn">
+                                <i class="fa-solid fa-check"></i> Verify
+                            </button>
+                        </form>
+                        <div class="auth-alt-action">
+                            <button type="button" class="link-btn" id="forgot-otp-resend-btn" onclick="handleForgotResendOtp()">Resend code</button>
+                            <span class="otp-timer" id="forgot-otp-timer"></span>
+                        </div>
+                    </div>
+
+                    <!-- STEP: Reset Password -->
+                    <div class="auth-step" id="step-reset">
+                        <div class="step-header">
+                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="step-header-info">
+                                <span>New password</span>
+                                <span class="step-hint">Choose a strong password</span>
+                            </div>
+                        </div>
+                        <form id="reset-form" onsubmit="handleResetPassword(event)">
+                            <div class="form-group">
+                                <label>New password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="reset-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value, 'reset')">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('reset-password', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="reset-password-strength">
+                                    <div class="strength-bar"><div class="strength-fill" id="reset-strength-fill"></div></div>
+                                    <span class="strength-text" id="reset-strength-text"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-shield-halved input-icon"></i>
+                                    <input type="password" id="reset-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('reset-confirm', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="reset-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="reset-submit-btn">
+                                <i class="fa-solid fa-key"></i> Reset Password
+                            </button>
+                        </form>
+                    </div>
+
+                    <p class="landing-form-disclaimer">Mendly provides health information for awareness purposes. Always consult a qualified healthcare professional for medical decisions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="landing-features" id="features">
+        <div class="landing-section-header">
+            <h2>Everything you need for <span class="gradient-text">smart health decisions</span></h2>
+            <p>Powered by verified drug data and AI, designed for everyone.</p>
+        </div>
+        <div class="landing-features-grid">
+            <div class="landing-feature-card">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#6c63ff,#4834d4);"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                <h3>Search Any Medicine</h3>
+                <p>Look up any approved drug by name, brand, or abbreviation. Get uses, dosage, side effects, and precautions instantly.</p>
+            </div>
+            <div class="landing-feature-card">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#fd79a8,#e84393);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h3>AI Health Assistant</h3>
+                <p>Chat with our AI to learn about diseases, symptoms, treatment options, and get personalized health guidance.</p>
+            </div>
+            <div class="landing-feature-card">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#ff4757,#c0392b);"><i class="fa-solid fa-circle-exclamation"></i></div>
+                <h3>Drug Interactions</h3>
+                <p>Check if your medications are safe to take together. Get warnings about dangerous combinations and precautions.</p>
+            </div>
+            <div class="landing-feature-card">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#00b894,#00a152);"><i class="fa-solid fa-stethoscope"></i></div>
+                <h3>Disease Profiles</h3>
+                <p>Search diseases by name or symptom. Get detailed profiles with symptoms, causes, treatment, and when to see a doctor.</p>
+            </div>
+            <div class="landing-feature-card">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#0984e3,#0652DD);"><i class="fa-solid fa-hospital"></i></div>
+                <h3>Find Nearby Care</h3>
+                <p>Locate hospitals and pharmacies near you using your device's GPS. Get directions and contact information.</p>
+            </div>
+            <div class="landing-feature-card">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#e17055,#d63031);"><i class="fa-solid fa-phone"></i></div>
+                <h3>Emergency Contacts</h3>
+                <p>Instant access to emergency helplines, mental health support, and poison control numbers for your country.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="landing-about" id="about">
+        <div class="landing-about-inner">
+            <div class="landing-about-text">
+                <h2>Built for <span class="gradient-text">health-aware people</span></h2>
+                <p>Mendly combines verified drug data with AI-powered health guidance to give you fast, accurate medicine information. Whether you're a patient, caregiver, or health-conscious individual — Mendly puts reliable health information at your fingertips.</p>
+                <ul class="landing-about-list">
+                    <li><i class="fa-solid fa-check"></i> Real-time verified drug information</li>
+                    <li><i class="fa-solid fa-check"></i> AI understands diseases, medicines, and interactions</li>
+                    <li><i class="fa-solid fa-check"></i> Save searches and bookmark medicines</li>
+                    <li><i class="fa-solid fa-check"></i> Secure account with activity tracking</li>
+                </ul>
+            </div>
+            <div class="landing-about-visual">
+                <div class="about-stat-card">
+                    <i class="fa-solid fa-capsules" style="color:#6c63ff;"></i>
+                    <div><strong>Any Medicine</strong><p>Search by name, brand, or abbreviation</p></div>
+                </div>
+                <div class="about-stat-card">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color:#e84393;"></i>
+                    <div><strong>Elix</strong><p>Ask anything about health</p></div>
+                </div>
+                <div class="about-stat-card">
+                    <i class="fa-solid fa-shield-halved" style="color:#00b894;"></i>
+                    <div><strong>Drug Safety</strong><p>Check interactions before taking meds</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="landing-cta">
+        <h2>Ready to take control of your health information?</h2>
+        <p>Join Mendly and access reliable medicine data powered by AI.</p>
+        <button class="btn-primary landing-cta-btn" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})">
+            <i class="fa-solid fa-rocket"></i> Get Started Free
+        </button>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="landing-footer" id="footer">
+        <div class="landing-footer-inner">
+            <div class="landing-footer-brand">
+                <div class="landing-logo"><img src="logo.svg" alt="Mendly" class="logo-img logo-img-sm"><span>Mendly</span></div>
+                <p>Professional medicine information platform with AI-powered health guidance.</p>
+            </div>
+            <div class="landing-footer-links">
+                <h4>Features</h4>
+                <a href="#features">Medicine Search</a>
+                <a href="#features">Elix</a>
+                <a href="#features">Drug Interactions</a>
+                <a href="#features">Disease Profiles</a>
+            </div>
+            <div class="landing-footer-links">
+                <h4>Resources</h4>
+                <a href="#features">Nearby Hospitals</a>
+                <a href="#features">Emergency Contacts</a>
+                <a href="#about">About Mendly</a>
+            </div>
+            <div class="landing-footer-links">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Medical Disclaimer</a>
+            </div>
+        </div>
+        <div class="landing-footer-bottom">
+            <p>&copy; 2026 Mendly. All rights reserved. Health information for awareness — always consult a healthcare professional.</p>
+        </div>
+    </footer>
+</div>
+
+<!-- ==================== APP (hidden until logged in) ==================== -->
+<div id="app-root" class="app-root" style="display:none;">
+
+<!-- ==================== TOP NAVBAR ==================== -->
+<nav class="topnav" id="topnav">
+    <div class="topnav-inner">
+        <div class="topnav-left">
+            <div class="topnav-logo"><img src="logo.svg" alt="Mendly" class="logo-img logo-img-nav"><span>Mendly</span></div>
+        </div>
+        <div class="topnav-links" id="topnav-links">
+            <div class="topnav-link active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
+            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Elix</span></div>
+            <div class="topnav-link" onclick="switchView('medicines')" id="nav-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i><span>Medicines</span></div>
+            <div class="topnav-link" onclick="switchView('conditions')" id="nav-conditions"><i class="fa-solid fa-stethoscope"></i><span>Conditions</span></div>
+            <div class="topnav-link" onclick="switchView('interactions')" id="nav-interactions"><i class="fa-solid fa-circle-exclamation"></i><span>Interactions</span></div>
+            <div class="topnav-link" onclick="switchView('hospitals')" id="nav-hospitals"><i class="fa-solid fa-hospital"></i><span>Hospitals</span></div>
+            <div class="topnav-link" onclick="switchView('pharmacies')" id="nav-pharmacies"><i class="fa-solid fa-shop"></i><span>Pharmacies</span></div>
+            <div class="topnav-link" onclick="switchView('emergency')" id="nav-emergency"><i class="fa-solid fa-phone"></i><span>Emergency</span></div>
+            <div class="topnav-link" onclick="switchView('saved')" id="nav-saved"><i class="fa-solid fa-bookmark"></i><span>Saved</span></div>
+            <div class="topnav-link" onclick="switchView('activity')" id="nav-activity"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></div>
+            <div class="topnav-link" onclick="switchView('account')" id="nav-account"><i class="fa-solid fa-gear"></i><span>Account</span></div>
+        </div>
+        <div class="topnav-right">
+            <button class="topnav-theme-btn theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+            <div class="topnav-user">
+                <div class="topnav-avatar" id="sidebar-avatar">U</div>
+                <span class="topnav-username" id="sidebar-username">User</span>
+            </div>
+            <button onclick="handleLogout()" class="topnav-logout-btn" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <button class="topnav-hamburger" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </div>
+</nav>
+
+<!-- ==================== MOBILE DROPDOWN MENU ==================== -->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-dropdown" id="mobile-dropdown">
+    <div class="mobile-dropdown-header">
+        <div class="mobile-dropdown-user">
+            <div class="mobile-dropdown-avatar" id="mobile-avatar">U</div>
+            <div><div class="mobile-dropdown-name" id="mobile-username">User</div><div class="mobile-dropdown-email" id="mobile-email">user@email.com</div></div>
+        </div>
+        <button class="mobile-dropdown-close" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="mobile-dropdown-links">
+        <div class="mobile-dropdown-link active" onclick="switchView('dashboard')" id="mob-dashboard"><i class="fa-solid fa-house"></i> Dashboard</div>
+        <div class="mobile-dropdown-link" onclick="switchView('chatbot')" id="mob-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i> Elix</div>
+        <div class="mobile-dropdown-link" onclick="switchView('medicines')" id="mob-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i> Medicines</div>
+        <div class="mobile-dropdown-link" onclick="switchView('conditions')" id="mob-conditions"><i class="fa-solid fa-stethoscope"></i> Conditions</div>
+        <div class="mobile-dropdown-link" onclick="switchView('interactions')" id="mob-interactions"><i class="fa-solid fa-circle-exclamation"></i> Interactions</div>
+        <div class="mobile-dropdown-link" onclick="switchView('hospitals')" id="mob-hospitals"><i class="fa-solid fa-hospital"></i> Hospitals</div>
+        <div class="mobile-dropdown-link" onclick="switchView('pharmacies')" id="mob-pharmacies"><i class="fa-solid fa-shop"></i> Pharmacies</div>
+        <div class="mobile-dropdown-link" onclick="switchView('emergency')" id="mob-emergency"><i class="fa-solid fa-phone"></i> Emergency</div>
+        <div class="mobile-dropdown-link" onclick="switchView('saved')" id="mob-saved"><i class="fa-solid fa-bookmark"></i> Saved</div>
+        <div class="mobile-dropdown-link" onclick="switchView('activity')" id="mob-activity"><i class="fa-solid fa-clock-rotate-left"></i> Activity</div>
+        <div class="mobile-dropdown-link" onclick="switchView('account')" id="mob-account"><i class="fa-solid fa-gear"></i> Account</div>
+    </div>
+    <div class="mobile-dropdown-footer">
+        <button onclick="toggleTheme()" class="mobile-dropdown-theme"><i class="fa-solid fa-moon"></i> Toggle Theme</button>
+        <button onclick="handleLogout()" class="mobile-dropdown-logout"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+    </div>
+</div>
+
+<!-- ==================== MOBILE BOTTOM NAV ==================== -->
+<nav class="mobile-nav">
+    <div class="mobile-nav-item active" onclick="switchView('dashboard')" id="mob-bottom-dashboard"><i class="fa-solid fa-house"></i> Home</div>
+    <div class="mobile-nav-item mobile-nav-orb" onclick="switchView('chatbot')" id="mob-bottom-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+    <div class="mobile-nav-item" onclick="switchView('medicines')" id="mob-bottom-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i> Meds</div>
+    <div class="mobile-nav-item" onclick="switchView('account')" id="mob-bottom-account"><i class="fa-solid fa-user"></i> Profile</div>
+</nav>
+
+<div class="page-shell">
+    <header class="topbar">
+        <div class="topbar-brand">
+            <h2 class="topbar-title" id="topbar-title">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+            <div class="topbar-location" id="location-status"><i class="fa-solid fa-location-dot"></i> Getting location...</div>
+            <button class="btn-primary" onclick="switchView('chatbot')"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix</button>
+        </div>
+    </header>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <section id="view-dashboard" class="view-section active">
+        <div class="hero-banner"><h1 id="dash-greeting">Your Medicine Information Hub</h1><p>Search any medicine or disease, chat with AI, find nearby hospitals & pharmacies.</p></div>
+        <div class="grid-5" style="margin-bottom:1.5rem;">
+            <div class="glass-card stat-card" style="margin-bottom:0;">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon stat-purple"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                    <div><span class="stat-label">Medicines</span><strong id="dash-medicine-count" class="stat-number">0</strong></div>
+                </div>
+            </div>
+            <div class="glass-card stat-card" style="margin-bottom:0;">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon stat-blue"><i class="fa-solid fa-stethoscope"></i></div>
+                    <div><span class="stat-label">Conditions</span><strong id="dash-condition-count" class="stat-number">0</strong></div>
+                </div>
+            </div>
+            <div class="glass-card stat-card" style="margin-bottom:0;">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon stat-green"><i class="fa-solid fa-hospital"></i></div>
+                    <div><span class="stat-label">Hospitals</span><strong id="dash-hospital-count" class="stat-number">0</strong></div>
+                </div>
+            </div>
+            <div class="glass-card stat-card" style="margin-bottom:0;">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon stat-pink"><i class="fa-solid fa-shop"></i></div>
+                    <div><span class="stat-label">Pharmacies</span><strong id="dash-pharmacy-count" class="stat-number">0</strong></div>
+                </div>
+            </div>
+            <div class="glass-card stat-card" style="margin-bottom:0;">
+                <div class="stat-icon-wrapper">
+                    <div class="stat-icon stat-orange"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <div><span class="stat-label">AI Chats</span><strong id="dash-chat-count" class="stat-number">0</strong></div>
+                </div>
+            </div>
+        </div>
+        <h2 class="section-heading"><i class="fa-solid fa-bolt" style="color:var(--warning);"></i> Quick Actions</h2>
+        <div class="grid-3" style="margin-bottom:1.5rem;">
+            <div class="quick-action" onclick="switchView('chatbot')">
+                <div class="quick-action-icon" style="background:linear-gradient(135deg,#6c63ff,#4834d4);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="quick-action-content"><h3>Elix</h3><p>Ask about diseases & medicines</p></div>
+            </div>
+            <div class="quick-action" onclick="switchView('medicines')">
+                <div class="quick-action-icon" style="background:linear-gradient(135deg,#fd79a8,#e84393);"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                <div class="quick-action-content"><h3>Search Any Medicine</h3><p>Comprehensive drug information</p></div>
+            </div>
+            <div class="quick-action" onclick="switchView('interactions')">
+                <div class="quick-action-icon" style="background:linear-gradient(135deg,#ff4757,#c0392b);"><i class="fa-solid fa-circle-exclamation"></i></div>
+                <div class="quick-action-content"><h3>Check Interactions</h3><p>Drug interaction checker</p></div>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="glass-card">
+                <h3 class="glass-card-title"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> About Mendly</h3>
+                <p style="color:var(--text-muted);line-height:1.7;">Your complete medicine information platform with Elix AI that understands diseases and medicines.</p>
+                <ul style="color:var(--text-muted);line-height:2;padding-left:1.5rem;margin-top:0.5rem;">
+                    <li>AI-powered disease & medicine assistant</li>
+                    <li>Medicine details: uses, dosage, side effects</li>
+                    <li>Drug interaction checker</li>
+                    <li>Nearby hospitals & pharmacies</li>
+                    <li>Secure account with activity tracking</li>
+                </ul>
+            </div>
+            <div class="glass-card">
+                <h3 class="glass-card-title"><i class="fa-solid fa-shield-halved" style="color:var(--success);"></i> Disclaimer</h3>
+                <div class="disclaimer-box">
+                    <p><strong>Note:</strong> Mendly shares health information for awareness and reference. It is not a diagnosis or treatment. Always consult a qualified healthcare professional for personal medical advice.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CHATBOT ===== -->
+    <section id="view-chatbot" class="view-section">
+        <div class="hero-banner chat-hero">
+            <div>
+                <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Elix</h1>
+                <p>Ask about diseases, symptoms, medicines, or health advice.</p>
+            </div>
+            <div id="chat-status-badge" class="chat-status-badge">Checking...</div>
+        </div>
+        <div class="chat-container">
+            <div id="chat-messages" class="chat-messages">
+                <div class="chat-bubble-wrap bot">
+                    <div class="chat-bubble bot">
+                        <span class="chat-orb"></span>
+                        <div class="bubble-content">
+                            <div class="bubble-text"><strong>Welcome to Elix!</strong><br>
+                            I can help you with:<br>
+                            - <strong>Disease information</strong> (symptoms, causes, treatment)<br>
+                            - <strong>Medicine information</strong> — uses, dosage, side effects<br>
+                            - <strong>Drug interactions</strong> and precautions<br>
+                            - <strong>Finding nearby hospitals</strong> and pharmacies<br><br>
+                            <strong>Try asking:</strong><br>
+                            "What are the symptoms of diabetes?"<br>
+                            "Tell me about Atorvastatin"<br>
+                            "How to treat a migraine?"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask about diseases, symptoms, medicines..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="btn-primary" style="padding:0.7rem 1.2rem;"><i class="fa-solid fa-paper-plane"></i></button>
+                <button onclick="clearChat()" class="btn-secondary" style="padding:0.7rem 1rem;"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+            <div class="chat-suggestions">
+                <button onclick="suggestQuery('What are the symptoms of diabetes?')">Diabetes symptoms</button>
+                <button onclick="suggestQuery('How to treat a migraine?')">Migraine treatment</button>
+                <button onclick="suggestQuery('Tell me about Atorvastatin')">Atorvastatin info</button>
+                <button onclick="suggestQuery('What causes fever?')">Fever causes</button>
+                <button onclick="suggestQuery('Find nearby hospitals')">Nearby hospitals</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MEDICINES ===== -->
+    <section id="view-medicines" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-prescription-bottle-medical" style="color:var(--primary);"></i> Medicine Information</h1>
+            <p>Search by name, symptom, or condition — any approved medicine.</p>
+        </div>
+        <div class="glass-card">
+            <div class="search-bar">
+                <input type="text" id="medicine-search" placeholder="e.g. Atorvastatin, Aspirin, Metformin, CTZ, Avil..." onkeydown="if(event.key==='Enter') searchMedicines()">
+                <button onclick="searchMedicines()" class="btn-primary"><i class="fa-solid fa-search"></i> Search</button>
+                <button onclick="loadAllMedicines()" class="btn-secondary"><i class="fa-solid fa-rotate"></i> Reset</button>
+            </div>
+            <p class="search-note"><i class="fa-solid fa-satellite-dish"></i> Comprehensive drug information from verified medical sources. Supports abbreviations like CTZ, brand names like Avil, and any medicine name.</p>
+        </div>
+        <div class="filter-row">
+            <button onclick="filterMedicines('all')" class="filter-btn active" data-filter="all">All</button>
+            <button onclick="filterMedicines('analgesic')" class="filter-btn" data-filter="analgesic">Pain Relief</button>
+            <button onclick="filterMedicines('antibiotic')" class="filter-btn" data-filter="antibiotic">Antibiotics</button>
+            <button onclick="filterMedicines('antihistamine')" class="filter-btn" data-filter="antihistamine">Allergies</button>
+            <button onclick="filterMedicines('antidiabetic')" class="filter-btn" data-filter="antidiabetic">Diabetes</button>
+        </div>
+        <div id="medicine-results" class="grid-3"></div>
+        <div id="medicine-detail" class="glass-card" style="display:none;">
+            <div class="detail-header">
+                <div><h2 id="detail-name"></h2><p id="detail-brand" style="color:var(--text-muted);"></p></div>
+                <div class="detail-actions">
+                    <button onclick="saveCurrentMedicine()" class="btn-secondary"><i class="fa-solid fa-bookmark"></i></button>
+                    <button onclick="closeDetail()" class="btn-secondary"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div id="detail-content" style="margin-top:1rem;"></div>
+        </div>
+    </section>
+
+    <!-- ===== CONDITIONS ===== -->
+    <section id="view-conditions" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-stethoscope" style="color:var(--primary);"></i> Disease & Condition Profiles</h1>
+            <p>Search for diseases by name or symptom, and the medicines that treat them.</p>
+        </div>
+        <div class="glass-card">
+            <div class="search-bar">
+                <input type="text" id="condition-search" placeholder="Enter a disease or symptom (e.g. itching, diabetes, Alzheimer's)..." onkeydown="if(event.key==='Enter') searchByCondition()">
+                <button onclick="searchByCondition()" class="btn-primary"><i class="fa-solid fa-search"></i> Find Medicines</button>
+                <button onclick="searchDiseaseProfiles()" class="btn-secondary"><i class="fa-solid fa-book-medical"></i> Disease Profile</button>
+            </div>
+            <div id="condition-results" style="margin-top:1.5rem;"></div>
+        </div>
+    </section>
+
+    <!-- ===== INTERACTIONS ===== -->
+    <section id="view-interactions" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-circle-exclamation" style="color:var(--emergency);"></i> Drug Interaction Checker</h1>
+            <p>Check interactions between medications and your health conditions.</p>
+        </div>
+        <div class="grid-2">
+            <div class="glass-card">
+                <h3 class="glass-card-title"><i class="fa-solid fa-pills"></i> Check Interactions</h3>
+                <div class="form-group"><label>Medicine Name</label><input type="text" id="interaction-medicine" placeholder="e.g., Paracetamol, Ibuprofen"></div>
+                <div class="form-group"><label>Your Health Conditions</label><textarea id="interaction-conditions" placeholder="e.g., liver disease, stomach ulcer" rows="3"></textarea></div>
+                <button onclick="checkInteractions()" class="btn-primary full-width"><i class="fa-solid fa-shield-halved"></i> Check Interactions</button>
+            </div>
+            <div class="glass-card">
+                <h3 class="glass-card-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i> Results</h3>
+                <div id="interaction-results">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <p>Enter a medicine and your conditions to check interactions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SAVED ===== -->
+    <section id="view-saved" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-bookmark" style="color:var(--primary);"></i> Saved Searches</h1>
+            <p>Medicines and conditions you've bookmarked for quick access.</p>
+        </div>
+        <div id="saved-results" class="grid-3"></div>
+    </section>
+
+    <!-- ===== EMERGENCY ===== -->
+    <section id="view-emergency" class="view-section">
+        <div class="hero-banner emergency-hero">
+            <h1><i class="fa-solid fa-triangle-exclamation"></i> Emergency & Crisis Support</h1>
+            <p>Access emergency helplines, mental health support, and poison control.</p>
+        </div>
+        <div class="grid-2">
+            <div class="glass-card">
+                <h3 class="glass-card-title" style="color:var(--emergency);"><i class="fa-solid fa-phone"></i> Emergency Helplines</h3>
+                <div class="filter-row">
+                    <button onclick="loadEmergencyContacts('India')" class="filter-btn active">India</button>
+                    <button onclick="loadEmergencyContacts('USA')" class="filter-btn">USA</button>
+                    <button onclick="loadEmergencyContacts('UK')" class="filter-btn">UK</button>
+                    <button onclick="loadEmergencyContacts('Canada')" class="filter-btn">Canada</button>
+                    <button onclick="loadEmergencyContacts('Australia')" class="filter-btn">Australia</button>
+                </div>
+                <div id="emergency-contacts"></div>
+            </div>
+            <div class="glass-card">
+                <h3 class="glass-card-title"><i class="fa-solid fa-shield-halved"></i> Grounding Technique (5-4-3-2-1)</h3>
+                <div class="grounding-item"><span class="grounding-number">5</span> Things you can SEE</div>
+                <div class="grounding-item"><span class="grounding-number">4</span> Things you can TOUCH</div>
+                <div class="grounding-item"><span class="grounding-number">3</span> Things you can HEAR</div>
+                <div class="grounding-item"><span class="grounding-number">2</span> Things you can SMELL</div>
+                <div class="grounding-item"><span class="grounding-number">1</span> Thing you can TASTE</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== HOSPITALS ===== -->
+    <section id="view-hospitals" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-hospital" style="color:#0284c7;"></i> Find Hospitals</h1>
+            <p>Search hospitals by name anywhere, or find ones near your location.</p>
+        </div>
+        <div class="glass-card">
+            <div class="search-bar">
+                <input type="text" id="hospital-search" placeholder="Search hospitals by name (e.g. Apollo, AIIMS, City Hospital)..." onkeydown="if(event.key==='Enter') searchHospitals()">
+                <button onclick="searchHospitals()" class="btn-primary"><i class="fa-solid fa-search"></i> Search</button>
+                <button onclick="getUserLocation(); loadNearbyHospitals();" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> Nearby</button>
+            </div>
+        </div>
+        <div id="hospital-results" class="grid-2"></div>
+    </section>
+
+    <!-- ===== PHARMACIES ===== -->
+    <section id="view-pharmacies" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-shop" style="color:#059669;"></i> Find Pharmacies</h1>
+            <p>Search pharmacies by name anywhere, or find ones near you.</p>
+        </div>
+        <div class="glass-card">
+            <div class="search-bar">
+                <input type="text" id="pharmacy-search" placeholder="Search pharmacies by name (e.g. MedPlus, CVS, Wellness)..." onkeydown="if(event.key==='Enter') searchPharmacies()">
+                <button onclick="searchPharmacies()" class="btn-primary"><i class="fa-solid fa-search"></i> Search</button>
+                <button onclick="getUserLocation(); loadNearbyPharmacies();" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> Nearby</button>
+            </div>
+        </div>
+        <div id="pharmacy-results" class="grid-2"></div>
+    </section>
+
+    <!-- ===== ACTIVITY LOG ===== -->
+    <section id="view-activity" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);"></i> Activity Log</h1>
+            <p>Track your recent actions on Mendly.</p>
+        </div>
+        <div class="glass-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h3 class="glass-card-title" style="margin:0;"><i class="fa-solid fa-list"></i> Recent Activity</h3>
+                <button onclick="clearActivity()" class="btn-secondary" style="font-size:0.8rem;padding:0.4rem 0.8rem;"><i class="fa-solid fa-trash-can"></i> Clear</button>
+            </div>
+            <div id="activity-list"></div>
+        </div>
+    </section>
+
+    <!-- ===== ACCOUNT / PROFILE ===== -->
+    <section id="view-account" class="view-section">
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-gear" style="color:var(--primary);"></i> <span id="profile-header-name">Account Settings</span></h1>
+            <p>Manage your profile, security, and account preferences.</p>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="grid-3" style="margin-bottom:1.5rem;" id="account-stats-grid">
+            <div class="glass-card stat-card" style="margin-bottom:0;text-align:center;">
+                <div class="stat-icon stat-purple" style="margin:0 auto 0.75rem;"><i class="fa-solid fa-comments"></i></div>
+                <strong id="stat-messages" class="stat-number">0</strong>
+                <span class="stat-label">Chat Messages</span>
+            </div>
+            <div class="glass-card stat-card" style="margin-bottom:0;text-align:center;">
+                <div class="stat-icon stat-blue" style="margin:0 auto 0.75rem;"><i class="fa-solid fa-bookmark"></i></div>
+                <strong id="stat-searches" class="stat-number">0</strong>
+                <span class="stat-label">Saved Searches</span>
+            </div>
+            <div class="glass-card stat-card" style="margin-bottom:0;text-align:center;">
+                <div class="stat-icon stat-green" style="margin:0 auto 0.75rem;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <strong id="stat-activities" class="stat-number">0</strong>
+                <span class="stat-label">Total Actions</span>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Profile Edit -->
+            <div class="glass-card">
+                <h3 class="glass-card-title"><i class="fa-solid fa-user-pen"></i> Profile Information</h3>
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar-large" id="profile-avatar-large">U</div>
+                    <div class="avatar-upload-area">
+                        <button class="avatar-upload-btn" onclick="document.getElementById('photo-upload-input').click()"><i class="fa-solid fa-camera"></i> Upload Photo</button>
+                        <input type="file" id="photo-upload-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(event)">
+                        <button class="avatar-remove-btn" id="remove-photo-btn" style="display:none;" onclick="removeProfilePhoto()"><i class="fa-solid fa-xmark"></i> Remove</button>
+                        <span class="avatar-hint">JPG, PNG. Max 2MB</span>
+                    </div>
+                </div>
+                <div class="form-group"><label>Full Name</label><input type="text" id="profile-name" placeholder="Your name"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="profile-email" placeholder="your@email.com"></div>
+                <div class="form-row-2">
+                    <div class="form-group"><label>Date of Birth</label><input type="date" id="profile-dob"></div>
+                    <div class="form-group"><label>Blood Type</label>
+                        <select id="profile-blood">
+                            <option value="">Select</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="profile-update-msg" class="auth-error" style="display:none;"></div>
+                <button onclick="updateProfile()" class="btn-primary full-width" id="profile-save-btn"><i class="fa-solid fa-check"></i> Save Changes</button>
+            </div>
+
+            <!-- Security -->
+            <div class="glass-card">
+                <h3 class="glass-card-title"><i class="fa-solid fa-lock"></i> Security</h3>
+                <div class="form-group"><label>Current Password</label><input type="password" id="current-password" placeholder="Enter current password"></div>
+                <div class="form-group"><label>New Password</label><input type="password" id="new-password" placeholder="At least 6 characters" minlength="6"></div>
+                <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirm-password" placeholder="Confirm new password"></div>
+                <div id="password-msg" class="auth-error" style="display:none;"></div>
+                <button onclick="changePassword()" class="btn-primary full-width" id="password-save-btn"><i class="fa-solid fa-key"></i> Change Password</button>
+
+                <div class="divider"></div>
+
+                <h3 class="glass-card-title" style="color:var(--emergency);"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
+                <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;">Permanently delete your account and all associated data. This action cannot be undone.</p>
+                <button onclick="confirmDeleteAccount()" class="btn-danger full-width"><i class="fa-solid fa-trash-can"></i> Delete Account</button>
+            </div>
+        </div>
+    </section>
+
+</main>
+</div>
+</div><!-- /app-root -->
+
+<!-- ==================== DELETE ACCOUNT MODAL ==================== -->
+<div class="modal-overlay" id="delete-modal" style="display:none;">
+    <div class="modal-card">
+        <div class="modal-icon danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h3>Delete Account?</h3>
+        <p>This will permanently delete your account, chat history, saved searches, and activity log. This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button onclick="closeDeleteModal()" class="btn-secondary">Cancel</button>
+            <button onclick="deleteAccount()" class="btn-danger" id="delete-confirm-btn"><i class="fa-solid fa-trash-can"></i> Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<script src="config.js?v=17"></script>
+<script src="auth.js?v=17"></script>
+<script src="app.js?v=17"></script>
+</body>
+</html>

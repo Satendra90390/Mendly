@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: mediguide-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "10080"
+      - key: FRONTEND_ORIGINS
+        sync: false
+        value: "*"  # Change to your Vercel URL before deploying
+      - key: FRONTEND_URL
+        sync: false
+        value: "*"  # Change to your Vercel URL before deploying
+      - key: DATABASE_URL
+        sync: false
+        value: sqlite:///./mediguide.db  # Switch to Postgres for production
+      - key: CHATBOT_PROVIDER
+        value: nvidia
+    healthCheckPath: /api/health
