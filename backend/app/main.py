@@ -49,15 +49,9 @@ app.add_middleware(
 
 @app.get("/api/test-email")
 def test_email():
-    import smtplib
-    from .email_service import SMTP_USER, SMTP_PASS, SMTP_HOST
-    try:
-        with smtplib.SMTP_SSL(SMTP_HOST, 465) as server:
-            server.ehlo()
-            server.login(SMTP_USER, SMTP_PASS)
-        return {"status": "connected", "message": "SMTP login successful"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    from .email_service import RESEND_API_KEY
+    result = send_otp_email("altvo871@gmail.com", "123456", "test")
+    return {"sent": result, "api_key_set": bool(RESEND_API_KEY)}
 
 def _log_activity(db: Session, user_id: int, action: str, detail: str = "", request: Request = None):
     ip = ""

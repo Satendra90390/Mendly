@@ -1,18 +1,12 @@
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import httpx
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASS = os.getenv("SMTP_PASS", "")
-FROM_EMAIL = os.getenv("FROM_EMAIL", SMTP_USER)
-FROM_NAME = os.getenv("FROM_NAME", "Mendly")
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+FROM_EMAIL = os.getenv("FROM_EMAIL", "Mendly <onboarding@resend.dev>")
 
 
 def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> bool:
-    if not SMTP_USER or not SMTP_PASS:
+    if not RESEND_API_KEY:
         print(f"\n{'='*50}")
         print(f"  [EMAIL OTP] To: {to_email}")
         print(f"  Code: {code}")
@@ -20,7 +14,6 @@ def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> b
         print(f"{'='*50}\n")
         return False
 
-    subject = f"Your Mendly {purpose.title()} Code"
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
         <div style="text-align: center; margin-bottom: 24px;">
@@ -36,24 +29,24 @@ def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> b
     </div>
     """
 
-    msg = MIMEMultipart("alternative")
-    msg["From"] = f"{FROM_NAME} <{FROM_EMAIL}>"
-    msg["To"] = to_email
-    msg["Subject"] = subject
-    msg.attach(MIMEText(html, "html"))
-
     try:
-        with smtplib.SMTP_SSL(SMTP_HOST, 465) as server:
-            server.ehlo()
-            server.login(SMTP_USER, SMTP_PASS)
-            server.sendmail(FROM_EMAIL, to_email, msg.as_string())
-        print(f"[EMAIL] OTP sent to {to_email}")
-        return True
+        resp = httpx.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}", "Content-Type": "application/json"},
+            json={
+                "from": FROM_EMAIL,
+                "to": [to_email],
+                "subject": f"Your Mendly {purpose.title()} Code",
+                "html": html,
+            },
+            timeout=15,
+        )
+        if resp.status_code == 200:
+            print(f"[EMAIL] OTP sent to {to_email}")
+            return True
+        else:
+            print(f"[EMAIL ERROR] {resp.status_code}: {resp.text}")
+            return False
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
-        print(f"\n{'='*50}")
-        print(f"  [EMAIL OTP - FALLBACK] To: {to_email}")
-        print(f"  Code: {code}")
-        print(f"  Purpose: {purpose}")
-        print(f"{'='*50}\n")
         return False
