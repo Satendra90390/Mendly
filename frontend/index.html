@@ -70,49 +70,27 @@
                         <p class="landing-form-subtitle" id="auth-subtitle">Your intelligent health companion</p>
                     </div>
 
-                    <!-- STEP 1: Choose method -->
-                    <div class="auth-step active" id="step-email">
+                    <!-- STEP 1: Login -->
+                    <div class="auth-step active" id="step-login">
                         <div class="auth-social">
                             <button type="button" class="social-btn social-google" onclick="handleSocialLogin('google')">
                                 <svg class="social-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                                 Continue with Google
                             </button>
-                            <!-- Phone OTP disabled — requires DLT registration -->
                         </div>
 
                         <div class="auth-divider">
                             <span>or continue with email</span>
                         </div>
 
-                        <form id="email-form" onsubmit="handleEmailSubmit(event)">
+                        <form id="login-form" onsubmit="handlePasswordLogin(event)">
                             <div class="form-group">
                                 <label>Email address</label>
                                 <div class="input-wrapper">
                                     <i class="fa-solid fa-envelope input-icon"></i>
-                                    <input type="email" id="auth-email" placeholder="you@example.com" required autocomplete="email">
+                                    <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
                                 </div>
                             </div>
-                            <div id="email-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="email-submit-btn">
-                                <i class="fa-solid fa-arrow-right"></i> Continue
-                            </button>
-                        </form>
-
-                        <div class="auth-alt-action">
-                            <button type="button" class="link-btn" onclick="goToStep('forgot')">Forgot password?</button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 2a: Password Login (existing user) -->
-                    <div class="auth-step" id="step-password">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span class="step-email-label" id="password-email-label"></span>
-                                <span class="step-hint">Enter your password to log in</span>
-                            </div>
-                        </div>
-                        <form id="password-form" onsubmit="handlePasswordLogin(event)">
                             <div class="form-group">
                                 <label>Password</label>
                                 <div class="input-wrapper">
@@ -123,70 +101,45 @@
                                     </button>
                                 </div>
                             </div>
-                            <div id="password-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="password-submit-btn">
+                            <div class="form-group">
+                                <div class="captcha-box math-captcha">
+                                    <label class="captcha-label">What is <span id="login-captcha-a"></span> + <span id="login-captcha-b"></span>?</label>
+                                    <input type="number" id="login-captcha" class="captcha-input" required placeholder="?" autocomplete="off">
+                                </div>
+                            </div>
+                            <div id="login-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="login-submit-btn">
                                 <i class="fa-solid fa-right-to-bracket"></i> Log In
                             </button>
                         </form>
                         <div class="auth-alt-action">
-                            <button type="button" class="link-btn" onclick="handleSendOtpForLogin()">Login with OTP instead</button>
+                            <button type="button" class="link-btn" onclick="goToStep('forgot')">Forgot password?</button>
                         </div>
+                        <p class="auth-switch">Don't have an account? <button type="button" class="link-btn" onclick="goToStep('signup')">Sign Up</button></p>
                     </div>
 
-                    <!-- STEP 2b: OTP Verification (email) -->
-                    <div class="auth-step" id="step-otp">
+                    <!-- STEP 2: Signup -->
+                    <div class="auth-step" id="step-signup">
                         <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
                             <div class="step-header-info">
-                                <span class="step-email-label" id="otp-email-label"></span>
-                                <span class="step-hint">Enter the 6-digit code sent to your email</span>
+                                <span>Create account</span>
+                                <span class="step-hint">Fill in your details to get started</span>
                             </div>
                         </div>
-                        <form id="otp-form" onsubmit="handleOtpVerify(event)">
+                        <form id="signup-form" onsubmit="handleSignup(event)">
                             <div class="form-group">
-                                <label>Verification code</label>
-                                <div class="otp-input-group" id="otp-inputs">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric" autocomplete="one-time-code">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="2" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="3" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="4" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="5" inputmode="numeric">
-                                </div>
-                            </div>
-                            <div id="otp-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="otp-submit-btn">
-                                <i class="fa-solid fa-check"></i> Verify
-                            </button>
-                        </form>
-                        <div class="auth-alt-action">
-                            <button type="button" class="link-btn" id="otp-resend-btn" onclick="handleResendOtp()">Resend code</button>
-                            <span class="otp-timer" id="otp-timer"></span>
-                        </div>
-                    </div>
-
-                    <!-- STEP 3: Complete Profile (new user) -->
-                    <div class="auth-step" id="step-complete">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span class="step-email-label" id="complete-email-label"></span>
-                                <span class="step-hint">Complete your profile to get started</span>
-                            </div>
-                        </div>
-                        <form id="complete-form" onsubmit="handleCompleteSignup(event)">
-                            <div class="form-group">
-                                <label>Display name</label>
+                                <label>Full name</label>
                                 <div class="input-wrapper">
                                     <i class="fa-solid fa-user input-icon"></i>
                                     <input type="text" id="signup-name" placeholder="Your full name" required autocomplete="name">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Date of birth</label>
+                                <label>Email address</label>
                                 <div class="input-wrapper">
-                                    <i class="fa-solid fa-cake-candles input-icon"></i>
-                                    <input type="date" id="signup-dob" required max="2020-01-01" min="1900-01-01">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -213,125 +166,24 @@
                                     </button>
                                 </div>
                             </div>
-                            <div id="complete-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="complete-submit-btn">
+                            <div class="form-group">
+                                <div class="captcha-box math-captcha">
+                                    <label class="captcha-label">What is <span id="signup-captcha-a"></span> + <span id="signup-captcha-b"></span>?</label>
+                                    <input type="number" id="signup-captcha" class="captcha-input" required placeholder="?" autocomplete="off">
+                                </div>
+                            </div>
+                            <div id="signup-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="signup-submit-btn">
                                 <i class="fa-solid fa-user-plus"></i> Create Account
                             </button>
                         </form>
-                    </div>
-
-                    <!-- STEP: Phone Number -->
-                    <div class="auth-step" id="step-phone">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span>Phone number</span>
-                                <span class="step-hint">We'll send you a verification code</span>
-                            </div>
-                        </div>
-                        <form id="phone-form" onsubmit="handlePhoneSendOtp(event)">
-                            <div class="form-group">
-                                <label>Phone number</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-phone input-icon"></i>
-                                    <input type="tel" id="auth-phone" placeholder="+1 234 567 8900" required autocomplete="tel">
-                                </div>
-                            </div>
-                            <div id="phone-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="phone-submit-btn">
-                                <i class="fa-solid fa-paper-plane"></i> Send Code
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- STEP: Phone OTP -->
-                    <div class="auth-step" id="step-phone-otp">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('phone')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span class="step-email-label" id="phone-otp-label"></span>
-                                <span class="step-hint">Enter the 6-digit code sent to your phone</span>
-                            </div>
-                        </div>
-                        <form id="phone-otp-form" onsubmit="handlePhoneOtpVerify(event)">
-                            <div class="form-group">
-                                <label>Verification code</label>
-                                <div class="otp-input-group" id="phone-otp-inputs">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="2" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="3" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="4" inputmode="numeric">
-                                    <input type="text" maxlength="1" class="otp-box" data-idx="5" inputmode="numeric">
-                                </div>
-                            </div>
-                            <div id="phone-otp-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="phone-otp-submit-btn">
-                                <i class="fa-solid fa-check"></i> Verify
-                            </button>
-                        </form>
-                        <div class="auth-alt-action">
-                            <button type="button" class="link-btn" id="phone-otp-resend-btn" onclick="handlePhoneResendOtp()">Resend code</button>
-                            <span class="otp-timer" id="phone-otp-timer"></span>
-                        </div>
-                    </div>
-
-                    <!-- STEP: Phone Complete Profile -->
-                    <div class="auth-step" id="step-phone-complete">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span class="step-email-label" id="phone-complete-label"></span>
-                                <span class="step-hint">Set up your profile</span>
-                            </div>
-                        </div>
-                        <form id="phone-complete-form" onsubmit="handlePhoneCompleteSignup(event)">
-                            <div class="form-group">
-                                <label>Display name</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-user input-icon"></i>
-                                    <input type="text" id="phone-signup-name" placeholder="Your full name" required autocomplete="name">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Email (optional)</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-envelope input-icon"></i>
-                                    <input type="email" id="phone-signup-email" placeholder="you@example.com" autocomplete="email">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Date of birth</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-cake-candles input-icon"></i>
-                                    <input type="date" id="phone-signup-dob" max="2020-01-01" min="1900-01-01">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Password</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="phone-signup-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
-                                    <button type="button" class="password-toggle" onclick="togglePassword('phone-signup-password', this)">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                                <div class="password-strength" id="phone-password-strength">
-                                    <div class="strength-bar"><div class="strength-fill" id="phone-strength-fill"></div></div>
-                                    <span class="strength-text" id="phone-strength-text"></span>
-                                </div>
-                            </div>
-                            <div id="phone-complete-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="phone-complete-submit-btn">
-                                <i class="fa-solid fa-user-plus"></i> Create Account
-                            </button>
-                        </form>
+                        <p class="auth-switch">Already have an account? <button type="button" class="link-btn" onclick="goToStep('login')">Log In</button></p>
                     </div>
 
                     <!-- STEP: Forgot Password -->
                     <div class="auth-step" id="step-forgot">
                         <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
                             <div class="step-header-info">
                                 <span>Reset password</span>
                                 <span class="step-hint">Enter your email to receive a reset code</span>
@@ -387,7 +239,7 @@
                     <!-- STEP: Reset Password -->
                     <div class="auth-step" id="step-reset">
                         <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('email')"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
                             <div class="step-header-info">
                                 <span>New password</span>
                                 <span class="step-hint">Choose a strong password</span>
