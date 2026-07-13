@@ -1129,7 +1129,10 @@ textarea { resize: vertical; min-height: 56px; }
     .topnav-hamburger { display: flex; }
     .mobile-nav { display: flex; }
     .main-content { padding: 62px 0.85rem 80px 0.85rem; }
-    .topbar { display: none; }
+    .topbar { display: flex; padding: 0.65rem 0.85rem; }
+    .topbar .topbar-actions .btn-primary,
+    .topbar .topbar-location { display: none; }
+    .topbar .topbar-hamburger { display: flex; }
     .hero-banner { padding: 1rem 0.85rem; margin-bottom: 1rem; }
     .hero-banner h1 { font-size: 1.15rem; }
     .hero-banner p { font-size: 0.8rem; }
