@@ -220,7 +220,7 @@ async function handleSignup(e) {
         const res = await fetch(`${API_BASE}/auth/signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password }) });
         const data = await res.json();
         if (!res.ok) { showStepError("signup", data.detail || "Signup failed."); return; }
-        setSession(data.access_token, data.user); enterApp(data.user);
+        setSession(data.access_token, data.user); enterApp(data.user, true);
     } catch (err) { showStepError("signup", "Couldn't reach the server."); }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; generateCaptcha("signup"); }
 }
@@ -388,11 +388,26 @@ function handleLogout() {
 // ============================================================
 // ENTER APP / UPDATE UI
 // ============================================================
-function enterApp(user) {
+function enterApp(user, isNew) {
     document.getElementById("landing-page").style.display = "none";
     document.getElementById("app-root").style.display = "flex";
     updateUserUI(user);
+    if (isNew) showWelcomeMessage(user.name);
     if (typeof initApp === "function") initApp();
+}
+
+function showWelcomeMessage(name) {
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10000;";
+    overlay.innerHTML = `
+        <div style="background:white;border-radius:16px;padding:40px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:popIn 0.3s ease;">
+            <div style="font-size:48px;margin-bottom:16px;">👋</div>
+            <h2 style="color:#1e293b;margin:0 0 8px;">Welcome to Mendly!</h2>
+            <p style="color:#64748b;font-size:16px;margin:0 0 24px;">Hi <strong>${name.split(" ")[0]}</strong>, great to have you here.</p>
+            <button onclick="this.closest('div[style]').parentElement.remove()" style="background:#4f46e5;color:white;border:none;padding:12px 32px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">Get Started</button>
+        </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
 }
 
 function updateUserUI(user) {
