@@ -1,12 +1,18 @@
 import os
-import httpx
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
-FROM_EMAIL = os.getenv("FROM_EMAIL", "Mendly <onboarding@resend.dev>")
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASS = os.getenv("SMTP_PASS", "")
+FROM_EMAIL = os.getenv("FROM_EMAIL", SMTP_USER)
+FROM_NAME = os.getenv("FROM_NAME", "Mendly")
 
 
 def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> bool:
-    if not RESEND_API_KEY:
+    if not SMTP_USER or not SMTP_PASS:
         print(f"\n{'='*50}")
         print(f"  [EMAIL OTP] To: {to_email}")
         print(f"  Code: {code}")
@@ -29,24 +35,19 @@ def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> b
     </div>
     """
 
+    msg = MIMEMultipart("alternative")
+    msg["From"] = f"{FROM_NAME} <{FROM_EMAIL}>"
+    msg["To"] = to_email
+    msg["Subject"] = f"Your Mendly {purpose.title()} Code"
+    msg.attach(MIMEText(html, "html"))
+
     try:
-        resp = httpx.post(
-            "https://api.resend.com/emails",
-            headers={"Authorization": f"Bearer {RESEND_API_KEY}", "Content-Type": "application/json"},
-            json={
-                "from": FROM_EMAIL,
-                "to": [to_email],
-                "subject": f"Your Mendly {purpose.title()} Code",
-                "html": html,
-            },
-            timeout=15,
-        )
-        if resp.status_code == 200:
-            print(f"[EMAIL] OTP sent to {to_email}")
-            return True
-        else:
-            print(f"[EMAIL ERROR] {resp.status_code}: {resp.text}")
-            return False
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASS)
+            server.sendmail(FROM_EMAIL, to_email, msg.as_string())
+        print(f"[EMAIL] OTP sent to {to_email}")
+        return True
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
         return False
