@@ -17,6 +17,24 @@ function setSession(token, user) { localStorage.setItem(AUTH_TOKEN_KEY, token); 
 function clearSession() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); }
 function authHeaders() { const t = getToken(); return t ? { Authorization: `Bearer ${t}` } : {}; }
 
+function handleLogoClick() {
+    if (getToken()) {
+        const appRoot = document.getElementById("app-root");
+        const landingNav = document.getElementById("landing-nav");
+        const landingHero = document.querySelector(".landing-hero");
+        const landingLogin = document.getElementById("landing-login");
+        const landingFooter = document.getElementById("footer");
+        if (appRoot) appRoot.style.display = "block";
+        if (landingNav) landingNav.style.display = "none";
+        if (landingHero) landingHero.style.display = "none";
+        if (landingLogin) landingLogin.style.display = "none";
+        if (landingFooter) landingFooter.style.display = "none";
+        if (typeof switchView === "function") switchView("dashboard");
+    } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+}
+
 // ——— Step nav ———
 function goToStep(step) {
     document.querySelectorAll(".auth-step").forEach(el => el.classList.remove("active"));

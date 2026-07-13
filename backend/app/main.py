@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas, auth, chatbot, openfda_client, otp_store
 from .email_service import send_otp_email
+from .sms_service import send_otp_sms
 from .database import engine, get_db, Base
 from .knowledge_base import DISEASE_KNOWLEDGE, LOCAL_MEDICINES, EMERGENCY_CONTACTS, DRUG_ALIASES, SYMPTOM_TO_DISEASE
 
@@ -158,7 +159,7 @@ def complete_signup(payload: schemas.CompleteSignupRequest, request: Request, db
     if existing:
         raise HTTPException(status_code=400, detail="An account with this email already exists.")
 
-    if not otp_store.is_pending(email):
+    if not otp_store.is_verified(email):
         raise HTTPException(status_code=400, detail="OTP session expired. Please start over.")
 
     colors = ["#4f46e5", "#7c3aed", "#ec4899", "#ef4444", "#f59e0b", "#10b981", "#06b6d4", "#8b5cf6"]
@@ -175,6 +176,7 @@ def complete_signup(payload: schemas.CompleteSignupRequest, request: Request, db
     db.commit()
     db.refresh(user)
 
+    otp_store.consume_otp(email)
     token = auth.create_access_token({"sub": str(user.id)})
     _log_activity(db, user.id, "account_created", "New account registered via OTP", request)
     db.commit()
@@ -292,9 +294,11 @@ async def google_callback(request: Request, code: str = None, error: str = None,
 @app.post("/api/auth/phone/send-otp")
 def phone_send_otp(payload: schemas.SendPhoneOtpRequest, db: Session = Depends(get_db)):
     phone = payload.phone.strip()
-    code = otp_store.create_otp(f"phone:{phone}", purpose="phone")
-    print(f"\n{'='*50}\n  [SMS OTP] To: {phone}\n  Code: {code}\n{'='*50}\n")
-    return {"message": f"OTP sent to {phone}", "dev_code": code}
+    user = db.query(models.User).filter(models.User.phone == phone).first()
+    purpose = "login" if user else "signup"
+    code = otp_store.create_otp(f"phone:{phone}", purpose=purpose)
+    send_otp_sms(phone, code)
+    return {"message": f"OTP sent to {phone}"}
 
 
 @app.post("/api/auth/phone/verify")
@@ -324,7 +328,7 @@ def phone_complete_signup(payload: schemas.PhoneSignupRequest, request: Request,
     if existing_user:
         raise HTTPException(status_code=400, detail="An account with this phone already exists.")
 
-    if not otp_store.is_pending(f"phone:{phone}"):
+    if not otp_store.is_verified(f"phone:{phone}"):
         raise HTTPException(status_code=400, detail="OTP session expired. Please start over.")
 
     email = payload.email.lower().strip() if payload.email else f"{phone}@phone.mendly"
@@ -347,6 +351,7 @@ def phone_complete_signup(payload: schemas.PhoneSignupRequest, request: Request,
     db.commit()
     db.refresh(user)
 
+    otp_store.consume_otp(f"phone:{phone}")
     token = auth.create_access_token({"sub": str(user.id)})
     _log_activity(db, user.id, "phone_signup", "Account created via phone", request)
     db.commit()
@@ -383,7 +388,7 @@ def forgot_password_verify(payload: schemas.VerifyOtpRequest, db: Session = Depe
 def forgot_password_reset(payload: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
     email = payload.email.lower().strip()
 
-    if not otp_store.is_pending(f"reset:{email}"):
+    if not otp_store.is_verified(f"reset:{email}"):
         raise HTTPException(status_code=400, detail="Session expired. Please start over.")
 
     user = db.query(models.User).filter(models.User.email == email).first()
@@ -391,6 +396,7 @@ def forgot_password_reset(payload: schemas.ResetPasswordRequest, db: Session = D
         raise HTTPException(status_code=404, detail="User not found.")
 
     user.hashed_password = auth.hash_password(payload.new_password)
+    otp_store.consume_otp(f"reset:{email}")
     db.commit()
 
     return {"message": "Password reset successfully. You can now log in."}
