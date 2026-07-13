@@ -468,7 +468,7 @@
     <div class="mobile-nav-item active" onclick="switchView('dashboard')" id="mob-bottom-dashboard"><i class="fa-solid fa-house"></i> Home</div>
     <div class="mobile-nav-item mobile-nav-orb" onclick="switchView('chatbot')" id="mob-bottom-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
     <div class="mobile-nav-item" onclick="switchView('medicines')" id="mob-bottom-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i> Meds</div>
-    <div class="mobile-nav-item" onclick="switchView('account')" id="mob-bottom-account"><i class="fa-solid fa-user"></i> Profile</div>
+    <div class="mobile-nav-item" onclick="switchView('emergency')" id="mob-bottom-emergency"><i class="fa-solid fa-phone"></i> Emergency</div>
 </nav>
 
 <div class="page-shell">
@@ -687,8 +687,20 @@
     <!-- ===== EMERGENCY ===== -->
     <section id="view-emergency" class="view-section">
         <div class="hero-banner emergency-hero">
-            <h1><i class="fa-solid fa-triangle-exclamation"></i> Emergency & Crisis Support</h1>
-            <p>Access emergency helplines, mental health support, and poison control.</p>
+            <h1><i class="fa-solid fa-triangle-exclamation"></i> Emergency & Nearby Care</h1>
+            <p>Find nearby hospitals & pharmacies, or access emergency helplines.</p>
+        </div>
+        <div class="grid-2">
+            <div class="glass-card" onclick="switchView('hospitals')" style="cursor:pointer;">
+                <h3 class="glass-card-title" style="color:#0284c7;"><i class="fa-solid fa-hospital"></i> Nearby Hospitals</h3>
+                <p>Find hospitals near your location or search by name.</p>
+                <button class="btn-primary" style="margin-top:12px;"><i class="fa-solid fa-arrow-right"></i> Find Hospitals</button>
+            </div>
+            <div class="glass-card" onclick="switchView('pharmacies')" style="cursor:pointer;">
+                <h3 class="glass-card-title" style="color:#10b981;"><i class="fa-solid fa-shop"></i> Nearby Pharmacies</h3>
+                <p>Find pharmacies near you with home delivery options.</p>
+                <button class="btn-primary" style="margin-top:12px; background:#10b981;"><i class="fa-solid fa-arrow-right"></i> Find Pharmacies</button>
+            </div>
         </div>
         <div class="grid-2">
             <div class="glass-card">

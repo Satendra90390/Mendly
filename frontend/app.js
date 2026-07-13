@@ -764,7 +764,7 @@ function updateChatStatusUI() {
     const badge = document.getElementById("chat-status-badge");
     if (!badge) return;
     if (chatStatus.provider === "nvidia") {
-        badge.innerHTML = '<span class="status-dot online"></span> Elix (NVIDIA)';
+        badge.innerHTML = '<span class="status-dot online"></span> Elix (Online)';
         badge.className = "chat-status-badge online";
     } else if (chatStatus.gemini_active) {
         badge.innerHTML = '<span class="status-dot online"></span> Elix (Online)';
