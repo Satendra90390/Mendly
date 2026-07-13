@@ -1,18 +1,13 @@
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import httpx
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASS = os.getenv("SMTP_PASS", "")
-FROM_EMAIL = os.getenv("FROM_EMAIL", SMTP_USER)
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
+FROM_EMAIL = os.getenv("FROM_EMAIL", "")
 FROM_NAME = os.getenv("FROM_NAME", "Mendly")
 
 
 def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> bool:
-    if not SMTP_USER or not SMTP_PASS:
+    if not SENDGRID_API_KEY:
         print(f"\n{'='*50}")
         print(f"  [EMAIL OTP] To: {to_email}")
         print(f"  Code: {code}")
@@ -35,19 +30,27 @@ def send_otp_email(to_email: str, code: str, purpose: str = "verification") -> b
     </div>
     """
 
-    msg = MIMEMultipart("alternative")
-    msg["From"] = f"{FROM_NAME} <{FROM_EMAIL}>"
-    msg["To"] = to_email
-    msg["Subject"] = f"Your Mendly {purpose.title()} Code"
-    msg.attach(MIMEText(html, "html"))
-
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASS)
-            server.sendmail(FROM_EMAIL, to_email, msg.as_string())
-        print(f"[EMAIL] OTP sent to {to_email}")
-        return True
+        resp = httpx.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers={
+                "Authorization": f"Bearer {SENDGRID_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "personalizations": [{"to": [{"email": to_email}]}],
+                "from": {"email": FROM_EMAIL, "name": FROM_NAME},
+                "subject": f"Your Mendly {purpose.title()} Code",
+                "content": [{"type": "text/html", "value": html}],
+            },
+            timeout=15,
+        )
+        if resp.status_code in (200, 202):
+            print(f"[EMAIL] OTP sent to {to_email}")
+            return True
+        else:
+            print(f"[EMAIL ERROR] {resp.status_code}: {resp.text}")
+            return False
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
         return False
