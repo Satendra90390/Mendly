@@ -53,8 +53,8 @@
         <div class="landing-hero-content">
             <div class="landing-hero-text">
                 <div class="landing-badge"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="landing_badge">Verified drug data</span></div>
-                <h1>Your Complete <span class="gradient-text">Medicine</span> Information Platform</h1>
-                <p class="landing-hero-subtitle">Search any medicine, check drug interactions, chat with AI about diseases, and find nearby hospitals & pharmacies — all in one place.</p>
+                <h1 data-i18n="landing_hero_h1">Your Complete <span class="gradient-text">Medicine</span> Information Platform</h1>
+                <p class="landing-hero-subtitle" data-i18n="landing_hero_sub">Search any medicine, check drug interactions, chat with AI about diseases, and find nearby hospitals & pharmacies — all in one place.</p>
                 <div class="landing-hero-stats">
                     <div class="hero-stat"><i class="fa-solid fa-capsules"></i><span data-i18n="stat_any_medicine">Any medicine</span></div>
                     <div class="hero-stat"><i class="fa-solid fa-wand-magic-sparkles"></i><span data-i18n="stat_ai_powered">AI-powered</span></div>
@@ -468,8 +468,8 @@
             <button class="lang-switcher-btn" style="width:100%;justify-content:center;" onclick="toggleLangDropdown(this)"><i class="fa-solid fa-globe"></i> <span id="mobileLangLabel">English</span> <i class="fa-solid fa-chevron-down"></i></button>
             <div class="lang-dropdown" id="mobile-lang-dropdown"></div>
         </div>
-        <button onclick="toggleTheme()" class="mobile-dropdown-theme"><i class="fa-solid fa-moon"></i> Toggle Theme</button>
-        <button onclick="handleLogout()" class="mobile-dropdown-logout"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+        <button onclick="toggleTheme()" class="mobile-dropdown-theme"><i class="fa-solid fa-moon"></i> <span data-i18n="mob_toggle_theme">Toggle Theme</span></button>
+        <button onclick="handleLogout()" class="mobile-dropdown-logout"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="mob_log_out">Log Out</span></button>
     </div>
 </div>
 
@@ -906,7 +906,7 @@ document.addEventListener('click', function(e) {
 });
 document.addEventListener('DOMContentLoaded', function() {
     I18N.applyTranslations();
-    I18N.updateLangLabel();
+    I18N.updateLangLabels();
     const lang = I18N.getLang();
     const lbl = I18N.t('lang_name');
     document.querySelectorAll('#landingLangLabel, #topnavLangLabel, #mobileLangLabel').forEach(el => { if(el) el.textContent = lbl; });
