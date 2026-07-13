@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
 
@@ -26,14 +26,18 @@
         <div class="landing-nav-inner">
             <div class="landing-logo" onclick="handleLogoClick()" style="cursor:pointer"><img src="logo.svg" alt="Mendly" class="logo-img"><span>Mendly</span></div>
             <div class="landing-nav-links">
-                <a href="#features">Features</a>
-                <a href="#about">About</a>
-                <a href="#footer">Contact</a>
+                <a href="#features" data-i18n="nav_features">Features</a>
+                <a href="#about" data-i18n="nav_about">About</a>
+                <a href="#footer" data-i18n="nav_contact">Contact</a>
             </div>
             <div class="landing-nav-right">
+                <div class="lang-switcher" id="landing-lang-switcher">
+                    <button class="landing-lang-btn" onclick="toggleLangDropdown(this)"><i class="fa-solid fa-globe"></i> <span id="landingLangLabel">English</span> <i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="lang-dropdown" id="landing-lang-dropdown"></div>
+                </div>
                 <button class="btn-secondary theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
                 <div class="landing-nav-actions">
-                    <button class="btn-primary landing-login-btn" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
+                    <button class="btn-primary landing-login-btn" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="auth_login_btn">Log In</span></button>
                 </div>
             </div>
         </div>
@@ -48,13 +52,13 @@
         </div>
         <div class="landing-hero-content">
             <div class="landing-hero-text">
-                <div class="landing-badge"><i class="fa-solid fa-shield-halved"></i> Verified drug data</div>
+                <div class="landing-badge"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="landing_badge">Verified drug data</span></div>
                 <h1>Your Complete <span class="gradient-text">Medicine</span> Information Platform</h1>
                 <p class="landing-hero-subtitle">Search any medicine, check drug interactions, chat with AI about diseases, and find nearby hospitals & pharmacies — all in one place.</p>
                 <div class="landing-hero-stats">
-                    <div class="hero-stat"><i class="fa-solid fa-capsules"></i><span>Any medicine</span></div>
-                    <div class="hero-stat"><i class="fa-solid fa-wand-magic-sparkles"></i><span>AI-powered</span></div>
-                    <div class="hero-stat"><i class="fa-solid fa-hospital"></i><span>Nearby care</span></div>
+                    <div class="hero-stat"><i class="fa-solid fa-capsules"></i><span data-i18n="stat_any_medicine">Any medicine</span></div>
+                    <div class="hero-stat"><i class="fa-solid fa-wand-magic-sparkles"></i><span data-i18n="stat_ai_powered">AI-powered</span></div>
+                    <div class="hero-stat"><i class="fa-solid fa-hospital"></i><span data-i18n="stat_nearby_care">Nearby care</span></div>
                 </div>
             </div>
 
@@ -65,7 +69,7 @@
                             <img src="logo.svg" alt="Mendly" class="logo-img logo-img-lg">
                             <span>Mendly</span>
                         </div>
-                        <p class="landing-form-subtitle" id="auth-subtitle">Your intelligent health companion</p>
+                        <p class="landing-form-subtitle" id="auth-subtitle" data-i18n="auth_subtitle">Your intelligent health companion</p>
                     </div>
 
                     <!-- STEP 1: Login -->
@@ -73,24 +77,24 @@
                         <div class="auth-social">
                             <button type="button" class="social-btn social-google" onclick="handleSocialLogin('google')">
                                 <svg class="social-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                                Continue with Google
+                                <span data-i18n="auth_continue_google">Continue with Google</span>
                             </button>
                         </div>
 
                         <div class="auth-divider">
-                            <span>or continue with email</span>
+                            <span data-i18n="auth_or_email">or continue with email</span>
                         </div>
 
                         <form id="login-form" onsubmit="handlePasswordLogin(event)">
                             <div class="form-group">
-                                <label>Email address</label>
+                                <label data-i18n="auth_email_label">Email address</label>
                                 <div class="input-wrapper">
                                     <i class="fa-solid fa-envelope input-icon"></i>
                                     <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Password</label>
+                                <label data-i18n="auth_password_label">Password</label>
                                 <div class="input-wrapper">
                                     <i class="fa-solid fa-lock input-icon"></i>
                                     <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
@@ -107,44 +111,44 @@
                             </div>
                             <div id="login-error" class="auth-error" style="display:none;"></div>
                             <button type="submit" class="btn-primary auth-submit" id="login-submit-btn">
-                                <i class="fa-solid fa-right-to-bracket"></i> Log In
+                                <i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="auth_login_btn">Log In</span>
                             </button>
                         </form>
                         <div class="auth-alt-action">
-                            <button type="button" class="link-btn" onclick="goToStep('forgot')">Forgot password?</button>
+                            <button type="button" class="link-btn" onclick="goToStep('forgot')" data-i18n="auth_forgot">Forgot password?</button>
                         </div>
-                        <p class="auth-switch">Don't have an account? <button type="button" class="link-btn" onclick="goToStep('signup')">Sign Up</button></p>
+                        <p class="auth-switch"><span data-i18n="auth_no_account">Don't have an account?</span> <button type="button" class="link-btn" onclick="goToStep('signup')" data-i18n="auth_signup_btn">Sign Up</button></p>
                     </div>
 
                     <!-- STEP 2: Signup -->
                     <div class="auth-step" id="step-signup">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span>Create account</span>
-                                <span class="step-hint">Fill in your details to get started</span>
+                    <div class="step-header">
+                        <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="step-header-info">
+                            <span data-i18n="auth_create_account">Create account</span>
+                            <span class="step-hint" data-i18n="auth_fill_details">Fill in your details to get started</span>
+                        </div>
+                    </div>
+                    <form id="signup-form" onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label data-i18n="auth_name_label">Full name</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" id="signup-name" placeholder="Your full name" required autocomplete="name">
                             </div>
                         </div>
-                        <form id="signup-form" onsubmit="handleSignup(event)">
-                            <div class="form-group">
-                                <label>Full name</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-user input-icon"></i>
-                                    <input type="text" id="signup-name" placeholder="Your full name" required autocomplete="name">
-                                </div>
+                        <div class="form-group">
+                            <label data-i18n="auth_email_label">Email address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email">
                             </div>
-                            <div class="form-group">
-                                <label>Email address</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-envelope input-icon"></i>
-                                    <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Password</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="signup-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="auth_password_label">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="signup-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
                                     <button type="button" class="password-toggle" onclick="togglePassword('signup-password', this)">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
@@ -155,7 +159,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Confirm password</label>
+                                <label data-i18n="auth_confirm_password_label">Confirm password</label>
                                 <div class="input-wrapper">
                                     <i class="fa-solid fa-shield-halved input-icon"></i>
                                     <input type="password" id="signup-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
@@ -172,34 +176,34 @@
                             </div>
                             <div id="signup-error" class="auth-error" style="display:none;"></div>
                             <button type="submit" class="btn-primary auth-submit" id="signup-submit-btn">
-                                <i class="fa-solid fa-user-plus"></i> Create Account
+                                <i class="fa-solid fa-user-plus"></i> <span data-i18n="auth_create_btn">Create Account</span>
                             </button>
                         </form>
-                        <p class="auth-switch">Already have an account? <button type="button" class="link-btn" onclick="goToStep('login')">Log In</button></p>
+                        <p class="auth-switch"><span data-i18n="auth_has_account">Already have an account?</span> <button type="button" class="link-btn" onclick="goToStep('login')" data-i18n="auth_login_link">Log In</button></p>
                     </div>
 
                     <!-- STEP: Forgot Password -->
                     <div class="auth-step" id="step-forgot">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span>Reset password</span>
-                                <span class="step-hint">Enter your email to receive a reset code</span>
+                    <div class="step-header">
+                        <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="step-header-info">
+                            <span data-i18n="auth_reset_password">Reset password</span>
+                            <span class="step-hint" data-i18n="auth_reset_hint">Enter your email to receive a reset code</span>
+                        </div>
+                    </div>
+                    <form id="forgot-form" onsubmit="handleForgotSendOtp(event)">
+                        <div class="form-group">
+                            <label data-i18n="auth_email_label">Email address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="forgot-email" placeholder="you@example.com" required autocomplete="email">
                             </div>
                         </div>
-                        <form id="forgot-form" onsubmit="handleForgotSendOtp(event)">
-                            <div class="form-group">
-                                <label>Email address</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-envelope input-icon"></i>
-                                    <input type="email" id="forgot-email" placeholder="you@example.com" required autocomplete="email">
-                                </div>
-                            </div>
-                            <div id="forgot-error" class="auth-error" style="display:none;"></div>
-                            <button type="submit" class="btn-primary auth-submit" id="forgot-submit-btn">
-                                <i class="fa-solid fa-paper-plane"></i> Send Reset Code
-                            </button>
-                        </form>
+                        <div id="forgot-error" class="auth-error" style="display:none;"></div>
+                        <button type="submit" class="btn-primary auth-submit" id="forgot-submit-btn">
+                            <i class="fa-solid fa-paper-plane"></i> <span data-i18n="auth_send_code">Send Reset Code</span>
+                        </button>
+                    </form>
                     </div>
 
                     <!-- STEP: Forgot Password OTP -->
@@ -208,12 +212,12 @@
                             <button type="button" class="step-back" onclick="goToStep('forgot')"><i class="fa-solid fa-arrow-left"></i></button>
                             <div class="step-header-info">
                                 <span class="step-email-label" id="forgot-otp-label"></span>
-                                <span class="step-hint">Enter the 6-digit code</span>
+                                <span class="step-hint" data-i18n="auth_enter_code">Enter the 6-digit code</span>
                             </div>
                         </div>
                         <form id="forgot-otp-form" onsubmit="handleForgotOtpVerify(event)">
                             <div class="form-group">
-                                <label>Verification code</label>
+                                <label data-i18n="auth_verify_code">Verification code</label>
                                 <div class="otp-input-group" id="forgot-otp-inputs">
                                     <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric">
                                     <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
@@ -225,30 +229,30 @@
                             </div>
                             <div id="forgot-otp-error" class="auth-error" style="display:none;"></div>
                             <button type="submit" class="btn-primary auth-submit" id="forgot-otp-submit-btn">
-                                <i class="fa-solid fa-check"></i> Verify
+                                <i class="fa-solid fa-check"></i> <span data-i18n="auth_verify_btn">Verify</span>
                             </button>
                         </form>
                         <div class="auth-alt-action">
-                            <button type="button" class="link-btn" id="forgot-otp-resend-btn" onclick="handleForgotResendOtp()">Resend code</button>
+                            <button type="button" class="link-btn" id="forgot-otp-resend-btn" onclick="handleForgotResendOtp()" data-i18n="auth_resend_code">Resend code</button>
                             <span class="otp-timer" id="forgot-otp-timer"></span>
                         </div>
                     </div>
 
                     <!-- STEP: Reset Password -->
                     <div class="auth-step" id="step-reset">
-                        <div class="step-header">
-                            <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="step-header-info">
-                                <span>New password</span>
-                                <span class="step-hint">Choose a strong password</span>
-                            </div>
+                    <div class="step-header">
+                        <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="step-header-info">
+                            <span data-i18n="auth_new_password">New password</span>
+                            <span class="step-hint" data-i18n="auth_choose_password">Choose a strong password</span>
                         </div>
-                        <form id="reset-form" onsubmit="handleResetPassword(event)">
-                            <div class="form-group">
-                                <label>New password</label>
-                                <div class="input-wrapper">
-                                    <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="reset-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value, 'reset')">
+                    </div>
+                    <form id="reset-form" onsubmit="handleResetPassword(event)">
+                        <div class="form-group">
+                            <label data-i18n="auth_new_password">New password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="reset-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value, 'reset')">
                                     <button type="button" class="password-toggle" onclick="togglePassword('reset-password', this)">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
@@ -259,7 +263,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Confirm password</label>
+                                <label data-i18n="auth_confirm_password_label">Confirm password</label>
                                 <div class="input-wrapper">
                                     <i class="fa-solid fa-shield-halved input-icon"></i>
                                     <input type="password" id="reset-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
@@ -270,12 +274,12 @@
                             </div>
                             <div id="reset-error" class="auth-error" style="display:none;"></div>
                             <button type="submit" class="btn-primary auth-submit" id="reset-submit-btn">
-                                <i class="fa-solid fa-key"></i> Reset Password
+                                <i class="fa-solid fa-key"></i> <span data-i18n="auth_reset_btn">Reset Password</span>
                             </button>
                         </form>
                     </div>
 
-                    <p class="landing-form-disclaimer">Mendly provides health information for awareness purposes. Always consult a qualified healthcare professional for medical decisions.</p>
+                    <p class="landing-form-disclaimer" data-i18n="landing_disclaimer">Mendly provides health information for awareness purposes. Always consult a qualified healthcare professional for medical decisions.</p>
                 </div>
             </div>
         </div>
@@ -284,39 +288,39 @@
     <!-- FEATURES SECTION -->
     <section class="landing-features" id="features">
         <div class="landing-section-header">
-            <h2>Everything you need for <span class="gradient-text">smart health decisions</span></h2>
-            <p>Powered by verified drug data and AI, designed for everyone.</p>
+            <h2 data-i18n="features_title">Everything you need for <span class="gradient-text">smart health decisions</span></h2>
+            <p data-i18n="features_sub">Powered by verified drug data and AI, designed for everyone.</p>
         </div>
         <div class="landing-features-grid">
             <div class="landing-feature-card">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#6c63ff,#4834d4);"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-                <h3>Search Any Medicine</h3>
-                <p>Look up any approved drug by name, brand, or abbreviation. Get uses, dosage, side effects, and precautions instantly.</p>
+                <h3 data-i18n="feat_medicine_title">Search Any Medicine</h3>
+                <p data-i18n="feat_medicine_desc">Look up any approved drug by name, brand, or abbreviation. Get uses, dosage, side effects, and precautions instantly.</p>
             </div>
             <div class="landing-feature-card">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#fd79a8,#e84393);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                <h3>AI Health Assistant</h3>
-                <p>Chat with our AI to learn about diseases, symptoms, treatment options, and get personalized health guidance.</p>
+                <h3 data-i18n="feat_ai_title">AI Health Assistant</h3>
+                <p data-i18n="feat_ai_desc">Chat with our AI to learn about diseases, symptoms, treatment options, and get personalized health guidance.</p>
             </div>
             <div class="landing-feature-card">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#ff4757,#c0392b);"><i class="fa-solid fa-circle-exclamation"></i></div>
-                <h3>Drug Interactions</h3>
-                <p>Check if your medications are safe to take together. Get warnings about dangerous combinations and precautions.</p>
+                <h3 data-i18n="feat_interactions_title">Drug Interactions</h3>
+                <p data-i18n="feat_interactions_desc">Check if your medications are safe to take together. Get warnings about dangerous combinations and precautions.</p>
             </div>
             <div class="landing-feature-card">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#00b894,#00a152);"><i class="fa-solid fa-stethoscope"></i></div>
-                <h3>Disease Profiles</h3>
-                <p>Search diseases by name or symptom. Get detailed profiles with symptoms, causes, treatment, and when to see a doctor.</p>
+                <h3 data-i18n="feat_disease_title">Disease Profiles</h3>
+                <p data-i18n="feat_disease_desc">Search diseases by name or symptom. Get detailed profiles with symptoms, causes, treatment, and when to see a doctor.</p>
             </div>
             <div class="landing-feature-card">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#0984e3,#0652DD);"><i class="fa-solid fa-hospital"></i></div>
-                <h3>Find Nearby Care</h3>
-                <p>Locate hospitals and pharmacies near you using your device's GPS. Get directions and contact information.</p>
+                <h3 data-i18n="feat_hospital_title">Find Nearby Care</h3>
+                <p data-i18n="feat_hospital_desc">Locate hospitals and pharmacies near you using your device's GPS. Get directions and contact information.</p>
             </div>
             <div class="landing-feature-card">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#e17055,#d63031);"><i class="fa-solid fa-phone"></i></div>
-                <h3>Emergency Contacts</h3>
-                <p>Instant access to emergency helplines, mental health support, and poison control numbers for your country.</p>
+                <h3 data-i18n="feat_emergency_title">Emergency Contacts</h3>
+                <p data-i18n="feat_emergency_desc">Instant access to emergency helplines, mental health support, and poison control numbers for your country.</p>
             </div>
         </div>
     </section>
@@ -325,27 +329,27 @@
     <section class="landing-about" id="about">
         <div class="landing-about-inner">
             <div class="landing-about-text">
-                <h2>Built for <span class="gradient-text">health-aware people</span></h2>
-                <p>Mendly combines verified drug data with AI-powered health guidance to give you fast, accurate medicine information. Whether you're a patient, caregiver, or health-conscious individual — Mendly puts reliable health information at your fingertips.</p>
+                <h2 data-i18n="about_title">Built for <span class="gradient-text">health-aware people</span></h2>
+                <p data-i18n="about_desc">Mendly combines verified drug data with AI-powered health guidance to give you fast, accurate medicine information. Whether you're a patient, caregiver, or health-conscious individual — Mendly puts reliable health information at your fingertips.</p>
                 <ul class="landing-about-list">
-                    <li><i class="fa-solid fa-check"></i> Real-time verified drug information</li>
-                    <li><i class="fa-solid fa-check"></i> AI understands diseases, medicines, and interactions</li>
-                    <li><i class="fa-solid fa-check"></i> Save searches and bookmark medicines</li>
-                    <li><i class="fa-solid fa-check"></i> Secure account with activity tracking</li>
+                    <li><i class="fa-solid fa-check"></i> <span data-i18n="about_check_1">Real-time verified drug information</span></li>
+                    <li><i class="fa-solid fa-check"></i> <span data-i18n="about_check_2">AI understands diseases, medicines, and interactions</span></li>
+                    <li><i class="fa-solid fa-check"></i> <span data-i18n="about_check_3">Save searches and bookmark medicines</span></li>
+                    <li><i class="fa-solid fa-check"></i> <span data-i18n="about_check_4">Secure account with activity tracking</span></li>
                 </ul>
             </div>
             <div class="landing-about-visual">
                 <div class="about-stat-card">
                     <i class="fa-solid fa-capsules" style="color:#6c63ff;"></i>
-                    <div><strong>Any Medicine</strong><p>Search by name, brand, or abbreviation</p></div>
+                    <div><strong data-i18n="about_any_medicine">Any Medicine</strong><p data-i18n="about_any_medicine_desc">Search by name, brand, or abbreviation</p></div>
                 </div>
                 <div class="about-stat-card">
                     <i class="fa-solid fa-wand-magic-sparkles" style="color:#e84393;"></i>
-                    <div><strong>Elix</strong><p>Ask anything about health</p></div>
+                    <div><strong data-i18n="about_elix">Elix</strong><p data-i18n="about_elix_desc">Ask anything about health</p></div>
                 </div>
                 <div class="about-stat-card">
                     <i class="fa-solid fa-shield-halved" style="color:#00b894;"></i>
-                    <div><strong>Drug Safety</strong><p>Check interactions before taking meds</p></div>
+                    <div><strong data-i18n="about_drug_safety">Drug Safety</strong><p data-i18n="about_drug_safety_desc">Check interactions before taking meds</p></div>
                 </div>
             </div>
         </div>
@@ -353,10 +357,10 @@
 
     <!-- CTA SECTION -->
     <section class="landing-cta">
-        <h2>Ready to take control of your health information?</h2>
-        <p>Join Mendly and access reliable medicine data powered by AI.</p>
+        <h2 data-i18n="cta_title">Ready to take control of your health information?</h2>
+        <p data-i18n="cta_desc">Join Mendly and access reliable medicine data powered by AI.</p>
         <button class="btn-primary landing-cta-btn" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})">
-            <i class="fa-solid fa-rocket"></i> Get Started Free
+            <i class="fa-solid fa-rocket"></i> <span data-i18n="cta_btn">Get Started Free</span>
         </button>
     </section>
 
@@ -365,35 +369,35 @@
         <div class="landing-footer-inner">
             <div class="landing-footer-brand">
                 <div class="landing-logo" onclick="handleLogoClick()" style="cursor:pointer"><img src="logo.svg" alt="Mendly" class="logo-img logo-img-sm"><span>Mendly</span></div>
-                <p>Professional medicine information platform with AI-powered health guidance.</p>
+                <p data-i18n="footer_desc">Professional medicine information platform with AI-powered health guidance.</p>
             </div>
             <div class="landing-footer-links">
-                <h4>Features</h4>
-                <a href="#features">Medicine Search</a>
-                <a href="#features">Elix</a>
-                <a href="#features">Drug Interactions</a>
-                <a href="#features">Disease Profiles</a>
+                <h4 data-i18n="footer_features">Features</h4>
+                <a href="#features" data-i18n="footer_medicine_search">Medicine Search</a>
+                <a href="#features" data-i18n="footer_elix">Elix</a>
+                <a href="#features" data-i18n="footer_drug_interactions">Drug Interactions</a>
+                <a href="#features" data-i18n="footer_disease_profiles">Disease Profiles</a>
             </div>
             <div class="landing-footer-links">
-                <h4>Resources</h4>
-                <a href="#features">Nearby Hospitals</a>
-                <a href="#features">Emergency Contacts</a>
-                <a href="#about">About Mendly</a>
+                <h4 data-i18n="footer_resources">Resources</h4>
+                <a href="#features" data-i18n="footer_nearby_hospitals">Nearby Hospitals</a>
+                <a href="#features" data-i18n="footer_emergency_contacts">Emergency Contacts</a>
+                <a href="#about" data-i18n="footer_about">About Mendly</a>
             </div>
             <div class="landing-footer-links">
-                <h4>Contact</h4>
+                <h4 data-i18n="footer_contact">Contact</h4>
                 <a href="mailto:altvo871@gmail.com"><i class="fa-solid fa-envelope"></i> altvo871@gmail.com</a>
                 <a href="tel:+919753150295"><i class="fa-solid fa-phone"></i> +91 9753 150 295</a>
             </div>
             <div class="landing-footer-links">
-                <h4>Legal</h4>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Medical Disclaimer</a>
+                <h4 data-i18n="footer_legal">Legal</h4>
+                <a href="#" data-i18n="footer_privacy">Privacy Policy</a>
+                <a href="#" data-i18n="footer_terms">Terms of Service</a>
+                <a href="#" data-i18n="footer_disclaimer_link">Medical Disclaimer</a>
             </div>
         </div>
         <div class="landing-footer-bottom">
-            <p>&copy; 2026 Mendly. All rights reserved. Health information for awareness — always consult a healthcare professional.</p>
+            <p data-i18n="footer_bottom">&copy; 2026 Mendly. All rights reserved. Health information for awareness — always consult a healthcare professional.</p>
         </div>
     </footer>
 </div>
@@ -408,19 +412,23 @@
             <div class="topnav-logo" onclick="handleLogoClick()" style="cursor:pointer"><img src="logo.svg" alt="Mendly" class="logo-img logo-img-nav"><span>Mendly</span></div>
         </div>
         <div class="topnav-links" id="topnav-links">
-            <div class="topnav-link active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
-            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Elix</span></div>
-            <div class="topnav-link" onclick="switchView('medicines')" id="nav-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i><span>Medicines</span></div>
-            <div class="topnav-link" onclick="switchView('conditions')" id="nav-conditions"><i class="fa-solid fa-stethoscope"></i><span>Conditions</span></div>
-            <div class="topnav-link" onclick="switchView('interactions')" id="nav-interactions"><i class="fa-solid fa-circle-exclamation"></i><span>Interactions</span></div>
-            <div class="topnav-link" onclick="switchView('hospitals')" id="nav-hospitals"><i class="fa-solid fa-hospital"></i><span>Hospitals</span></div>
-            <div class="topnav-link" onclick="switchView('pharmacies')" id="nav-pharmacies"><i class="fa-solid fa-shop"></i><span>Pharmacies</span></div>
-            <div class="topnav-link" onclick="switchView('emergency')" id="nav-emergency"><i class="fa-solid fa-phone"></i><span>Emergency</span></div>
-            <div class="topnav-link" onclick="switchView('saved')" id="nav-saved"><i class="fa-solid fa-bookmark"></i><span>Saved</span></div>
-            <div class="topnav-link" onclick="switchView('activity')" id="nav-activity"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></div>
-            <div class="topnav-link" onclick="switchView('account')" id="nav-account"><i class="fa-solid fa-gear"></i><span>Account</span></div>
+            <div class="topnav-link active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-house"></i><span data-i18n="topnav_dashboard">Dashboard</span></div>
+            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span data-i18n="topnav_chatbot">Elix</span></div>
+            <div class="topnav-link" onclick="switchView('medicines')" id="nav-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i><span data-i18n="topnav_medicines">Medicines</span></div>
+            <div class="topnav-link" onclick="switchView('conditions')" id="nav-conditions"><i class="fa-solid fa-stethoscope"></i><span data-i18n="topnav_conditions">Conditions</span></div>
+            <div class="topnav-link" onclick="switchView('interactions')" id="nav-interactions"><i class="fa-solid fa-circle-exclamation"></i><span data-i18n="topnav_interactions">Interactions</span></div>
+            <div class="topnav-link" onclick="switchView('hospitals')" id="nav-hospitals"><i class="fa-solid fa-hospital"></i><span data-i18n="topnav_hospitals">Hospitals</span></div>
+            <div class="topnav-link" onclick="switchView('pharmacies')" id="nav-pharmacies"><i class="fa-solid fa-shop"></i><span data-i18n="topnav_pharmacies">Pharmacies</span></div>
+            <div class="topnav-link" onclick="switchView('emergency')" id="nav-emergency"><i class="fa-solid fa-phone"></i><span data-i18n="topnav_emergency">Emergency</span></div>
+            <div class="topnav-link" onclick="switchView('saved')" id="nav-saved"><i class="fa-solid fa-bookmark"></i><span data-i18n="topnav_saved">Saved</span></div>
+            <div class="topnav-link" onclick="switchView('activity')" id="nav-activity"><i class="fa-solid fa-clock-rotate-left"></i><span data-i18n="topnav_activity">Activity</span></div>
+            <div class="topnav-link" onclick="switchView('account')" id="nav-account"><i class="fa-solid fa-gear"></i><span data-i18n="topnav_account">Account</span></div>
         </div>
         <div class="topnav-right">
+            <div class="lang-switcher" id="topnav-lang-switcher">
+                <button class="lang-switcher-btn" onclick="toggleLangDropdown(this)"><i class="fa-solid fa-globe"></i> <span id="topnavLangLabel">English</span> <i class="fa-solid fa-chevron-down"></i></button>
+                <div class="lang-dropdown" id="topnav-lang-dropdown"></div>
+            </div>
             <button class="topnav-theme-btn theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
             <div class="topnav-user">
                 <div class="topnav-avatar" id="sidebar-avatar">U</div>
@@ -443,19 +451,23 @@
         <button class="mobile-dropdown-close" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="mobile-dropdown-links">
-        <div class="mobile-dropdown-link active" onclick="switchView('dashboard')" id="mob-dashboard"><i class="fa-solid fa-house"></i> Dashboard</div>
-        <div class="mobile-dropdown-link" onclick="switchView('chatbot')" id="mob-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i> Elix</div>
-        <div class="mobile-dropdown-link" onclick="switchView('medicines')" id="mob-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i> Medicines</div>
-        <div class="mobile-dropdown-link" onclick="switchView('conditions')" id="mob-conditions"><i class="fa-solid fa-stethoscope"></i> Conditions</div>
-        <div class="mobile-dropdown-link" onclick="switchView('interactions')" id="mob-interactions"><i class="fa-solid fa-circle-exclamation"></i> Interactions</div>
-        <div class="mobile-dropdown-link" onclick="switchView('hospitals')" id="mob-hospitals"><i class="fa-solid fa-hospital"></i> Hospitals</div>
-        <div class="mobile-dropdown-link" onclick="switchView('pharmacies')" id="mob-pharmacies"><i class="fa-solid fa-shop"></i> Pharmacies</div>
-        <div class="mobile-dropdown-link" onclick="switchView('emergency')" id="mob-emergency"><i class="fa-solid fa-phone"></i> Emergency</div>
-        <div class="mobile-dropdown-link" onclick="switchView('saved')" id="mob-saved"><i class="fa-solid fa-bookmark"></i> Saved</div>
-        <div class="mobile-dropdown-link" onclick="switchView('activity')" id="mob-activity"><i class="fa-solid fa-clock-rotate-left"></i> Activity</div>
-        <div class="mobile-dropdown-link" onclick="switchView('account')" id="mob-account"><i class="fa-solid fa-gear"></i> Account</div>
+        <div class="mobile-dropdown-link active" onclick="switchView('dashboard')" id="mob-dashboard"><i class="fa-solid fa-house"></i> <span data-i18n="mob_dashboard">Dashboard</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('chatbot')" id="mob-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="mob_chatbot">Elix</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('medicines')" id="mob-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i> <span data-i18n="mob_medicines">Medicines</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('conditions')" id="mob-conditions"><i class="fa-solid fa-stethoscope"></i> <span data-i18n="mob_conditions">Conditions</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('interactions')" id="mob-interactions"><i class="fa-solid fa-circle-exclamation"></i> <span data-i18n="mob_interactions">Interactions</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('hospitals')" id="mob-hospitals"><i class="fa-solid fa-hospital"></i> <span data-i18n="mob_hospitals">Hospitals</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('pharmacies')" id="mob-pharmacies"><i class="fa-solid fa-shop"></i> <span data-i18n="mob_pharmacies">Pharmacies</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('emergency')" id="mob-emergency"><i class="fa-solid fa-phone"></i> <span data-i18n="mob_emergency">Emergency</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('saved')" id="mob-saved"><i class="fa-solid fa-bookmark"></i> <span data-i18n="mob_saved">Saved</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('activity')" id="mob-activity"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="mob_activity">Activity</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('account')" id="mob-account"><i class="fa-solid fa-gear"></i> <span data-i18n="mob_account">Account</span></div>
     </div>
     <div class="mobile-dropdown-footer">
+        <div class="lang-switcher" id="mobile-lang-switcher" style="margin-bottom:0.5rem;">
+            <button class="lang-switcher-btn" style="width:100%;justify-content:center;" onclick="toggleLangDropdown(this)"><i class="fa-solid fa-globe"></i> <span id="mobileLangLabel">English</span> <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="lang-dropdown" id="mobile-lang-dropdown"></div>
+        </div>
         <button onclick="toggleTheme()" class="mobile-dropdown-theme"><i class="fa-solid fa-moon"></i> Toggle Theme</button>
         <button onclick="handleLogout()" class="mobile-dropdown-logout"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
     </div>
@@ -463,22 +475,22 @@
 
 <!-- ==================== MOBILE BOTTOM NAV ==================== -->
 <nav class="mobile-nav">
-    <div class="mobile-nav-item active" onclick="switchView('dashboard')" id="mob-bottom-dashboard"><i class="fa-solid fa-house"></i> Home</div>
-    <div class="mobile-nav-item" onclick="switchView('chatbot')" id="mob-bottom-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i> AI</div>
+    <div class="mobile-nav-item active" onclick="switchView('dashboard')" id="mob-bottom-dashboard"><i class="fa-solid fa-house"></i> <span data-i18n="bottom_home">Home</span></div>
+    <div class="mobile-nav-item" onclick="switchView('chatbot')" id="mob-bottom-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="bottom_ai">AI</span></div>
     <div class="mobile-nav-item mobile-nav-orb" onclick="switchView('medicines')" id="mob-bottom-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-    <div class="mobile-nav-item" onclick="switchView('emergency')" id="mob-bottom-emergency"><i class="fa-solid fa-phone"></i> SOS</div>
-    <div class="mobile-nav-item" onclick="switchView('account')" id="mob-bottom-account"><i class="fa-solid fa-user"></i> Profile</div>
+    <div class="mobile-nav-item" onclick="switchView('emergency')" id="mob-bottom-emergency"><i class="fa-solid fa-phone"></i> <span data-i18n="bottom_sos">SOS</span></div>
+    <div class="mobile-nav-item" onclick="switchView('account')" id="mob-bottom-account"><i class="fa-solid fa-user"></i> <span data-i18n="bottom_profile">Profile</span></div>
 </nav>
 
 <div class="page-shell">
     <header class="topbar">
         <div class="topbar-brand">
             <button class="topbar-hamburger" onclick="toggleMobileMenu()" style="display:none;"><i class="fa-solid fa-bars"></i></button>
-            <h2 class="topbar-title" id="topbar-title">Dashboard</h2>
+            <h2 class="topbar-title" id="topbar-title" data-i18n="topnav_dashboard">Dashboard</h2>
         </div>
         <div class="topbar-actions">
-            <div class="topbar-location" id="location-status"><i class="fa-solid fa-location-dot"></i> Getting location...</div>
-            <button class="btn-primary" onclick="switchView('chatbot')"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix</button>
+            <div class="topbar-location" id="location-status"><i class="fa-solid fa-location-dot"></i> <span data-i18n="getting_location">Getting location...</span></div>
+            <button class="btn-primary" onclick="switchView('chatbot')"><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="ask_elix">Ask Elix</span></button>
         </div>
     </header>
 
@@ -487,70 +499,70 @@
 
     <!-- ===== DASHBOARD ===== -->
     <section id="view-dashboard" class="view-section active">
-        <div class="hero-banner"><h1 id="dash-greeting">Your Medicine Information Hub</h1><p>Search any medicine or disease, chat with AI, find nearby hospitals & pharmacies.</p></div>
+        <div class="hero-banner"><h1 id="dash-greeting" data-i18n="dash_greeting">Your Medicine Information Hub</h1><p data-i18n="dash_search_sub">Search any medicine or disease, chat with AI, find nearby hospitals & pharmacies.</p></div>
         <div class="grid-5" style="margin-bottom:1.5rem;">
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
                     <div class="stat-icon stat-purple"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-                    <div><span class="stat-label">Medicines</span><strong id="dash-medicine-count" class="stat-number">0</strong></div>
+                    <div><span class="stat-label" data-i18n="dash_stat_medicines">Medicines</span><strong id="dash-medicine-count" class="stat-number">0</strong></div>
                 </div>
             </div>
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
                     <div class="stat-icon stat-blue"><i class="fa-solid fa-stethoscope"></i></div>
-                    <div><span class="stat-label">Conditions</span><strong id="dash-condition-count" class="stat-number">0</strong></div>
+                    <div><span class="stat-label" data-i18n="dash_stat_conditions">Conditions</span><strong id="dash-condition-count" class="stat-number">0</strong></div>
                 </div>
             </div>
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
                     <div class="stat-icon stat-green"><i class="fa-solid fa-hospital"></i></div>
-                    <div><span class="stat-label">Hospitals</span><strong id="dash-hospital-count" class="stat-number">0</strong></div>
+                    <div><span class="stat-label" data-i18n="dash_stat_hospitals">Hospitals</span><strong id="dash-hospital-count" class="stat-number">0</strong></div>
                 </div>
             </div>
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
                     <div class="stat-icon stat-pink"><i class="fa-solid fa-shop"></i></div>
-                    <div><span class="stat-label">Pharmacies</span><strong id="dash-pharmacy-count" class="stat-number">0</strong></div>
+                    <div><span class="stat-label" data-i18n="dash_stat_pharmacies">Pharmacies</span><strong id="dash-pharmacy-count" class="stat-number">0</strong></div>
                 </div>
             </div>
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
                     <div class="stat-icon stat-orange"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                    <div><span class="stat-label">AI Chats</span><strong id="dash-chat-count" class="stat-number">0</strong></div>
+                    <div><span class="stat-label" data-i18n="dash_stat_ai">AI Chats</span><strong id="dash-chat-count" class="stat-number">0</strong></div>
                 </div>
             </div>
         </div>
-        <h2 class="section-heading"><i class="fa-solid fa-bolt" style="color:var(--warning);"></i> Quick Actions</h2>
+        <h2 class="section-heading"><i class="fa-solid fa-bolt" style="color:var(--warning);"></i> <span data-i18n="dash_quick_actions">Quick Actions</span></h2>
         <div class="grid-3" style="margin-bottom:1.5rem;">
             <div class="quick-action" onclick="switchView('chatbot')">
                 <div class="quick-action-icon" style="background:linear-gradient(135deg,#6c63ff,#4834d4);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                <div class="quick-action-content"><h3>Elix</h3><p>Ask about diseases & medicines</p></div>
+                <div class="quick-action-content"><h3 data-i18n="dash_elix_title">Elix</h3><p data-i18n="dash_elix_desc">Ask about diseases & medicines</p></div>
             </div>
             <div class="quick-action" onclick="switchView('medicines')">
                 <div class="quick-action-icon" style="background:linear-gradient(135deg,#fd79a8,#e84393);"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-                <div class="quick-action-content"><h3>Search Any Medicine</h3><p>Comprehensive drug information</p></div>
+                <div class="quick-action-content"><h3 data-i18n="dash_search_title">Search Any Medicine</h3><p data-i18n="dash_search_desc">Comprehensive drug information</p></div>
             </div>
             <div class="quick-action" onclick="switchView('interactions')">
                 <div class="quick-action-icon" style="background:linear-gradient(135deg,#ff4757,#c0392b);"><i class="fa-solid fa-circle-exclamation"></i></div>
-                <div class="quick-action-content"><h3>Check Interactions</h3><p>Drug interaction checker</p></div>
+                <div class="quick-action-content"><h3 data-i18n="dash_interactions_title">Check Interactions</h3><p data-i18n="dash_interactions_desc">Drug interaction checker</p></div>
             </div>
         </div>
         <div class="grid-2">
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> About Mendly</h3>
-                <p style="color:var(--text-muted);line-height:1.7;">Your complete medicine information platform with Elix AI that understands diseases and medicines.</p>
+                <h3 class="glass-card-title"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> <span data-i18n="dash_about_title">About Mendly</span></h3>
+                <p style="color:var(--text-muted);line-height:1.7;" data-i18n="dash_about_desc">Your complete medicine information platform with Elix AI that understands diseases and medicines.</p>
                 <ul style="color:var(--text-muted);line-height:2;padding-left:1.5rem;margin-top:0.5rem;">
-                    <li>AI-powered disease & medicine assistant</li>
-                    <li>Medicine details: uses, dosage, side effects</li>
-                    <li>Drug interaction checker</li>
-                    <li>Nearby hospitals & pharmacies</li>
-                    <li>Secure account with activity tracking</li>
+                    <li data-i18n="dash_about_ai">AI-powered disease & medicine assistant</li>
+                    <li data-i18n="dash_about_details">Medicine details: uses, dosage, side effects</li>
+                    <li data-i18n="dash_about_checker">Drug interaction checker</li>
+                    <li data-i18n="dash_about_nearby">Nearby hospitals & pharmacies</li>
+                    <li data-i18n="dash_about_secure">Secure account with activity tracking</li>
                 </ul>
             </div>
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-shield-halved" style="color:var(--success);"></i> Disclaimer</h3>
+                <h3 class="glass-card-title"><i class="fa-solid fa-shield-halved" style="color:var(--success);"></i> <span data-i18n="dash_disclaimer_title">Disclaimer</span></h3>
                 <div class="disclaimer-box">
-                    <p><strong>Note:</strong> Mendly shares health information for awareness and reference. It is not a diagnosis or treatment. Always consult a qualified healthcare professional for personal medical advice.</p>
+                    <p data-i18n="dash_disclaimer_text"><strong>Note:</strong> Mendly shares health information for awareness and reference. It is not a diagnosis or treatment. Always consult a qualified healthcare professional for personal medical advice.</p>
                 </div>
             </div>
         </div>
@@ -560,10 +572,10 @@
     <section id="view-chatbot" class="view-section">
         <div class="hero-banner chat-hero">
             <div>
-                <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Elix</h1>
-                <p>Ask about diseases, symptoms, medicines, or health advice.</p>
+                <h1><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="topnav_chatbot">Elix</span></h1>
+                <p data-i18n="chat_sub">Ask about diseases, symptoms, medicines, or health advice.</p>
             </div>
-            <div id="chat-status-badge" class="chat-status-badge">Checking...</div>
+            <div id="chat-status-badge" class="chat-status-badge" data-i18n="chat_status">Checking...</div>
         </div>
         <div class="chat-container">
             <div id="chat-messages" class="chat-messages">
@@ -571,13 +583,13 @@
                     <div class="chat-bubble bot">
                         <span class="chat-orb"></span>
                         <div class="bubble-content">
-                            <div class="bubble-text"><strong>Welcome to Elix!</strong><br>
-                            I can help you with:<br>
-                            - <strong>Disease information</strong> (symptoms, causes, treatment)<br>
-                            - <strong>Medicine information</strong> — uses, dosage, side effects<br>
-                            - <strong>Drug interactions</strong> and precautions<br>
-                            - <strong>Finding nearby hospitals</strong> and pharmacies<br><br>
-                            <strong>Try asking:</strong><br>
+                            <div class="bubble-text"><strong data-i18n="chat_welcome_title">Welcome to Elix!</strong><br>
+                            <span data-i18n="chat_welcome_text">I can help you with:</span><br>
+                            - <strong data-i18n="chat_welcome_disease">Disease information (symptoms, causes, treatment)</strong><br>
+                            - <strong data-i18n="chat_welcome_medicine">Medicine information — uses, dosage, side effects</strong><br>
+                            - <strong data-i18n="chat_welcome_interactions">Drug interactions and precautions</strong><br>
+                            - <strong data-i18n="chat_welcome_nearby">Finding nearby hospitals and pharmacies</strong><br><br>
+                            <strong data-i18n="chat_welcome_try">Try asking:</strong><br>
                             "What are the symptoms of diabetes?"<br>
                             "Tell me about Atorvastatin"<br>
                             "How to treat a migraine?"</div>
@@ -586,16 +598,16 @@
                 </div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ask about diseases, symptoms, medicines..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <input type="text" id="chat-input" data-i18n-placeholder="chat_placeholder" placeholder="Ask about diseases, symptoms, medicines..." onkeydown="if(event.key==='Enter') sendChatMessage()">
                 <button onclick="sendChatMessage()" class="btn-primary" style="padding:0.7rem 1.2rem;"><i class="fa-solid fa-paper-plane"></i></button>
                 <button onclick="clearChat()" class="btn-secondary" style="padding:0.7rem 1rem;"><i class="fa-solid fa-trash-can"></i></button>
             </div>
             <div class="chat-suggestions">
-                <button onclick="suggestQuery('What are the symptoms of diabetes?')">Diabetes symptoms</button>
-                <button onclick="suggestQuery('How to treat a migraine?')">Migraine treatment</button>
-                <button onclick="suggestQuery('Tell me about Atorvastatin')">Atorvastatin info</button>
-                <button onclick="suggestQuery('What causes fever?')">Fever causes</button>
-                <button onclick="suggestQuery('Find nearby hospitals')">Nearby hospitals</button>
+                <button onclick="suggestQuery('What are the symptoms of diabetes?')" data-i18n="chat_suggest_1">Diabetes symptoms</button>
+                <button onclick="suggestQuery('How to treat a migraine?')" data-i18n="chat_suggest_2">Migraine treatment</button>
+                <button onclick="suggestQuery('Tell me about Atorvastatin')" data-i18n="chat_suggest_3">Atorvastatin info</button>
+                <button onclick="suggestQuery('What causes fever?')" data-i18n="chat_suggest_4">Fever causes</button>
+                <button onclick="suggestQuery('Find nearby hospitals')" data-i18n="chat_suggest_5">Nearby hospitals</button>
             </div>
         </div>
     </section>
@@ -603,23 +615,23 @@
     <!-- ===== MEDICINES ===== -->
     <section id="view-medicines" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-prescription-bottle-medical" style="color:var(--primary);"></i> Medicine Information</h1>
-            <p>Search by name, symptom, or condition — any approved medicine.</p>
+            <h1><i class="fa-solid fa-prescription-bottle-medical" style="color:var(--primary);"></i> <span data-i18n="med_title">Medicine Information</span></h1>
+            <p data-i18n="med_sub">Search by name, symptom, or condition — any approved medicine.</p>
         </div>
         <div class="glass-card">
             <div class="search-bar">
-                <input type="text" id="medicine-search" placeholder="e.g. Atorvastatin, Aspirin, Metformin, CTZ, Avil..." onkeydown="if(event.key==='Enter') searchMedicines()">
-                <button onclick="searchMedicines()" class="btn-primary"><i class="fa-solid fa-search"></i> Search</button>
-                <button onclick="loadAllMedicines()" class="btn-secondary"><i class="fa-solid fa-rotate"></i> Reset</button>
+                <input type="text" id="medicine-search" data-i18n-placeholder="med_search_placeholder" placeholder="e.g. Atorvastatin, Aspirin, Metformin, CTZ, Avil..." onkeydown="if(event.key==='Enter') searchMedicines()">
+                <button onclick="searchMedicines()" class="btn-primary"><i class="fa-solid fa-search"></i> <span data-i18n="med_search_btn">Search</span></button>
+                <button onclick="loadAllMedicines()" class="btn-secondary"><i class="fa-solid fa-rotate"></i> <span data-i18n="med_reset_btn">Reset</span></button>
             </div>
-            <p class="search-note"><i class="fa-solid fa-satellite-dish"></i> Comprehensive drug information from verified medical sources. Supports abbreviations like CTZ, brand names like Avil, and any medicine name.</p>
+            <p class="search-note" data-i18n="med_search_note"><i class="fa-solid fa-satellite-dish"></i> Comprehensive drug information from verified medical sources. Supports abbreviations like CTZ, brand names like Avil, and any medicine name.</p>
         </div>
         <div class="filter-row">
-            <button onclick="filterMedicines('all')" class="filter-btn active" data-filter="all">All</button>
-            <button onclick="filterMedicines('analgesic')" class="filter-btn" data-filter="analgesic">Pain Relief</button>
-            <button onclick="filterMedicines('antibiotic')" class="filter-btn" data-filter="antibiotic">Antibiotics</button>
-            <button onclick="filterMedicines('antihistamine')" class="filter-btn" data-filter="antihistamine">Allergies</button>
-            <button onclick="filterMedicines('antidiabetic')" class="filter-btn" data-filter="antidiabetic">Diabetes</button>
+            <button onclick="filterMedicines('all')" class="filter-btn active" data-filter="all" data-i18n="med_filter_all">All</button>
+            <button onclick="filterMedicines('analgesic')" class="filter-btn" data-filter="analgesic" data-i18n="med_filter_pain">Pain Relief</button>
+            <button onclick="filterMedicines('antibiotic')" class="filter-btn" data-filter="antibiotic" data-i18n="med_filter_antibiotic">Antibiotics</button>
+            <button onclick="filterMedicines('antihistamine')" class="filter-btn" data-filter="antihistamine" data-i18n="med_filter_allergy">Allergies</button>
+            <button onclick="filterMedicines('antidiabetic')" class="filter-btn" data-filter="antidiabetic" data-i18n="med_filter_diabetes">Diabetes</button>
         </div>
         <div id="medicine-results" class="grid-3"></div>
         <div id="medicine-detail" class="glass-card" style="display:none;">
@@ -637,14 +649,14 @@
     <!-- ===== CONDITIONS ===== -->
     <section id="view-conditions" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-stethoscope" style="color:var(--primary);"></i> Disease & Condition Profiles</h1>
-            <p>Search for diseases by name or symptom, and the medicines that treat them.</p>
+            <h1><i class="fa-solid fa-stethoscope" style="color:var(--primary);"></i> <span data-i18n="cond_title">Disease & Condition Profiles</span></h1>
+            <p data-i18n="cond_sub">Search for diseases by name or symptom, and the medicines that treat them.</p>
         </div>
         <div class="glass-card">
             <div class="search-bar">
-                <input type="text" id="condition-search" placeholder="Enter a disease or symptom (e.g. itching, diabetes, Alzheimer's)..." onkeydown="if(event.key==='Enter') searchByCondition()">
-                <button onclick="searchByCondition()" class="btn-primary"><i class="fa-solid fa-search"></i> Find Medicines</button>
-                <button onclick="searchDiseaseProfiles()" class="btn-secondary"><i class="fa-solid fa-book-medical"></i> Disease Profile</button>
+                <input type="text" id="condition-search" data-i18n-placeholder="cond_search_placeholder" placeholder="Enter a disease or symptom (e.g. itching, diabetes, Alzheimer's)..." onkeydown="if(event.key==='Enter') searchByCondition()">
+                <button onclick="searchByCondition()" class="btn-primary"><i class="fa-solid fa-search"></i> <span data-i18n="cond_search_btn">Find Medicines</span></button>
+                <button onclick="searchDiseaseProfiles()" class="btn-secondary"><i class="fa-solid fa-book-medical"></i> <span data-i18n="cond_profile_btn">Disease Profile</span></button>
             </div>
             <div id="condition-results" style="margin-top:1.5rem;"></div>
         </div>
@@ -653,22 +665,22 @@
     <!-- ===== INTERACTIONS ===== -->
     <section id="view-interactions" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-circle-exclamation" style="color:var(--emergency);"></i> Drug Interaction Checker</h1>
-            <p>Check interactions between medications and your health conditions.</p>
+            <h1><i class="fa-solid fa-circle-exclamation" style="color:var(--emergency);"></i> <span data-i18n="inter_title">Drug Interaction Checker</span></h1>
+            <p data-i18n="inter_sub">Check interactions between medications and your health conditions.</p>
         </div>
         <div class="grid-2">
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-pills"></i> Check Interactions</h3>
-                <div class="form-group"><label>Medicine Name</label><input type="text" id="interaction-medicine" placeholder="e.g., Paracetamol, Ibuprofen"></div>
-                <div class="form-group"><label>Your Health Conditions</label><textarea id="interaction-conditions" placeholder="e.g., liver disease, stomach ulcer" rows="3"></textarea></div>
-                <button onclick="checkInteractions()" class="btn-primary full-width"><i class="fa-solid fa-shield-halved"></i> Check Interactions</button>
+                <h3 class="glass-card-title"><i class="fa-solid fa-pills"></i> <span data-i18n="inter_check_title">Check Interactions</span></h3>
+                <div class="form-group"><label data-i18n="inter_med_label">Medicine Name</label><input type="text" id="interaction-medicine" data-i18n-placeholder="inter_med_placeholder" placeholder="e.g., Paracetamol, Ibuprofen"></div>
+                <div class="form-group"><label data-i18n="inter_cond_label">Your Health Conditions</label><textarea id="interaction-conditions" data-i18n-placeholder="inter_cond_placeholder" placeholder="e.g., liver disease, stomach ulcer" rows="3"></textarea></div>
+                <button onclick="checkInteractions()" class="btn-primary full-width"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="inter_check_btn">Check Interactions</span></button>
             </div>
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i> Results</h3>
+                <h3 class="glass-card-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i> <span data-i18n="inter_results_title">Results</span></h3>
                 <div id="interaction-results">
                     <div class="empty-state">
                         <i class="fa-solid fa-circle-info"></i>
-                        <p>Enter a medicine and your conditions to check interactions.</p>
+                        <p data-i18n="inter_empty">Enter a medicine and your conditions to check interactions.</p>
                     </div>
                 </div>
             </div>
@@ -678,8 +690,8 @@
     <!-- ===== SAVED ===== -->
     <section id="view-saved" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-bookmark" style="color:var(--primary);"></i> Saved Searches</h1>
-            <p>Medicines and conditions you've bookmarked for quick access.</p>
+            <h1><i class="fa-solid fa-bookmark" style="color:var(--primary);"></i> <span data-i18n="saved_title">Saved Searches</span></h1>
+            <p data-i18n="saved_sub">Medicines and conditions you've bookmarked for quick access.</p>
         </div>
         <div id="saved-results" class="grid-3"></div>
     </section>
@@ -687,24 +699,24 @@
     <!-- ===== EMERGENCY ===== -->
     <section id="view-emergency" class="view-section">
         <div class="hero-banner emergency-hero">
-            <h1><i class="fa-solid fa-triangle-exclamation"></i> Emergency & Nearby Care</h1>
-            <p>Find nearby hospitals & pharmacies, or access emergency helplines.</p>
+            <h1><i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="emergency_title">Emergency & Nearby Care</span></h1>
+            <p data-i18n="emergency_sub">Find nearby hospitals & pharmacies, or access emergency helplines.</p>
         </div>
         <div class="grid-2">
             <div class="glass-card" onclick="switchView('hospitals')" style="cursor:pointer;">
-                <h3 class="glass-card-title" style="color:#0284c7;"><i class="fa-solid fa-hospital"></i> Nearby Hospitals</h3>
-                <p>Find hospitals near your location or search by name.</p>
-                <button class="btn-primary" style="margin-top:12px;"><i class="fa-solid fa-arrow-right"></i> Find Hospitals</button>
+                <h3 class="glass-card-title" style="color:#0284c7;"><i class="fa-solid fa-hospital"></i> <span data-i18n="emergency_hospitals_title">Nearby Hospitals</span></h3>
+                <p data-i18n="emergency_hospitals_desc">Find hospitals near your location or search by name.</p>
+                <button class="btn-primary" style="margin-top:12px;"><i class="fa-solid fa-arrow-right"></i> <span data-i18n="emergency_hospitals_btn">Find Hospitals</span></button>
             </div>
             <div class="glass-card" onclick="switchView('pharmacies')" style="cursor:pointer;">
-                <h3 class="glass-card-title" style="color:#10b981;"><i class="fa-solid fa-shop"></i> Nearby Pharmacies</h3>
-                <p>Find pharmacies near you with home delivery options.</p>
-                <button class="btn-primary" style="margin-top:12px; background:#10b981;"><i class="fa-solid fa-arrow-right"></i> Find Pharmacies</button>
+                <h3 class="glass-card-title" style="color:#10b981;"><i class="fa-solid fa-shop"></i> <span data-i18n="emergency_pharmacies_title">Nearby Pharmacies</span></h3>
+                <p data-i18n="emergency_pharmacies_desc">Find pharmacies near you with home delivery options.</p>
+                <button class="btn-primary" style="margin-top:12px; background:#10b981;"><i class="fa-solid fa-arrow-right"></i> <span data-i18n="emergency_pharmacies_btn">Find Pharmacies</span></button>
             </div>
         </div>
         <div class="grid-2">
             <div class="glass-card">
-                <h3 class="glass-card-title" style="color:var(--emergency);"><i class="fa-solid fa-phone"></i> Emergency Helplines</h3>
+                <h3 class="glass-card-title" style="color:var(--emergency);"><i class="fa-solid fa-phone"></i> <span data-i18n="emergency_helplines_title">Emergency Helplines</span></h3>
                 <div class="filter-row">
                     <button onclick="loadEmergencyContacts('India')" class="filter-btn active">India</button>
                     <button onclick="loadEmergencyContacts('USA')" class="filter-btn">USA</button>
@@ -715,12 +727,12 @@
                 <div id="emergency-contacts"></div>
             </div>
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-shield-halved"></i> Grounding Technique (5-4-3-2-1)</h3>
-                <div class="grounding-item"><span class="grounding-number">5</span> Things you can SEE</div>
-                <div class="grounding-item"><span class="grounding-number">4</span> Things you can TOUCH</div>
-                <div class="grounding-item"><span class="grounding-number">3</span> Things you can HEAR</div>
-                <div class="grounding-item"><span class="grounding-number">2</span> Things you can SMELL</div>
-                <div class="grounding-item"><span class="grounding-number">1</span> Thing you can TASTE</div>
+                <h3 class="glass-card-title"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="emergency_grounding_title">Grounding Technique (5-4-3-2-1)</span></h3>
+                <div class="grounding-item"><span class="grounding-number">5</span> <span data-i18n="emergency_grounding_5">Things you can SEE</span></div>
+                <div class="grounding-item"><span class="grounding-number">4</span> <span data-i18n="emergency_grounding_4">Things you can TOUCH</span></div>
+                <div class="grounding-item"><span class="grounding-number">3</span> <span data-i18n="emergency_grounding_3">Things you can HEAR</span></div>
+                <div class="grounding-item"><span class="grounding-number">2</span> <span data-i18n="emergency_grounding_2">Things you can SMELL</span></div>
+                <div class="grounding-item"><span class="grounding-number">1</span> <span data-i18n="emergency_grounding_1">Thing you can TASTE</span></div>
             </div>
         </div>
     </section>
@@ -728,14 +740,14 @@
     <!-- ===== HOSPITALS ===== -->
     <section id="view-hospitals" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-hospital" style="color:#0284c7;"></i> Find Hospitals</h1>
-            <p>Search hospitals by name anywhere, or find ones near your location.</p>
+            <h1><i class="fa-solid fa-hospital" style="color:#0284c7;"></i> <span data-i18n="hosp_title">Find Hospitals</span></h1>
+            <p data-i18n="hosp_sub">Search hospitals by name anywhere, or find ones near your location.</p>
         </div>
         <div class="glass-card">
             <div class="search-bar">
-                <input type="text" id="hospital-search" placeholder="Search hospitals by name (e.g. Apollo, AIIMS, City Hospital)..." onkeydown="if(event.key==='Enter') searchHospitals()">
-                <button onclick="searchHospitals()" class="btn-primary"><i class="fa-solid fa-search"></i> Search</button>
-                <button onclick="getUserLocation(); loadNearbyHospitals();" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> Nearby</button>
+                <input type="text" id="hospital-search" data-i18n-placeholder="hosp_search_placeholder" placeholder="Search hospitals by name (e.g. Apollo, AIIMS, City Hospital)..." onkeydown="if(event.key==='Enter') searchHospitals()">
+                <button onclick="searchHospitals()" class="btn-primary"><i class="fa-solid fa-search"></i> <span data-i18n="hosp_search_btn">Search</span></button>
+                <button onclick="getUserLocation(); loadNearbyHospitals();" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> <span data-i18n="hosp_nearby_btn">Nearby</span></button>
             </div>
         </div>
         <div id="hospital-results" class="grid-2"></div>
@@ -744,14 +756,14 @@
     <!-- ===== PHARMACIES ===== -->
     <section id="view-pharmacies" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-shop" style="color:#059669;"></i> Find Pharmacies</h1>
-            <p>Search pharmacies by name anywhere, or find ones near you.</p>
+            <h1><i class="fa-solid fa-shop" style="color:#059669;"></i> <span data-i18n="pharm_title">Find Pharmacies</span></h1>
+            <p data-i18n="pharm_sub">Search pharmacies by name anywhere, or find ones near you.</p>
         </div>
         <div class="glass-card">
             <div class="search-bar">
-                <input type="text" id="pharmacy-search" placeholder="Search pharmacies by name (e.g. MedPlus, CVS, Wellness)..." onkeydown="if(event.key==='Enter') searchPharmacies()">
-                <button onclick="searchPharmacies()" class="btn-primary"><i class="fa-solid fa-search"></i> Search</button>
-                <button onclick="getUserLocation(); loadNearbyPharmacies();" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> Nearby</button>
+                <input type="text" id="pharmacy-search" data-i18n-placeholder="pharm_search_placeholder" placeholder="Search pharmacies by name (e.g. MedPlus, CVS, Wellness)..." onkeydown="if(event.key==='Enter') searchPharmacies()">
+                <button onclick="searchPharmacies()" class="btn-primary"><i class="fa-solid fa-search"></i> <span data-i18n="pharm_search_btn">Search</span></button>
+                <button onclick="getUserLocation(); loadNearbyPharmacies();" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> <span data-i18n="pharm_nearby_btn">Nearby</span></button>
             </div>
         </div>
         <div id="pharmacy-results" class="grid-2"></div>
@@ -760,13 +772,13 @@
     <!-- ===== ACTIVITY LOG ===== -->
     <section id="view-activity" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);"></i> Activity Log</h1>
-            <p>Track your recent actions on Mendly.</p>
+            <h1><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);"></i> <span data-i18n="activity_title">Activity Log</span></h1>
+            <p data-i18n="activity_sub">Track your recent actions on Mendly.</p>
         </div>
         <div class="glass-card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-                <h3 class="glass-card-title" style="margin:0;"><i class="fa-solid fa-list"></i> Recent Activity</h3>
-                <button onclick="clearActivity()" class="btn-secondary" style="font-size:0.8rem;padding:0.4rem 0.8rem;"><i class="fa-solid fa-trash-can"></i> Clear</button>
+                <h3 class="glass-card-title" style="margin:0;"><i class="fa-solid fa-list"></i> <span data-i18n="activity_recent">Recent Activity</span></h3>
+                <button onclick="clearActivity()" class="btn-secondary" style="font-size:0.8rem;padding:0.4rem 0.8rem;"><i class="fa-solid fa-trash-can"></i> <span data-i18n="activity_clear">Clear</span></button>
             </div>
             <div id="activity-list"></div>
         </div>
@@ -775,8 +787,8 @@
     <!-- ===== ACCOUNT / PROFILE ===== -->
     <section id="view-account" class="view-section">
         <div class="hero-banner">
-            <h1><i class="fa-solid fa-gear" style="color:var(--primary);"></i> <span id="profile-header-name">Account Settings</span></h1>
-            <p>Manage your profile, security, and account preferences.</p>
+            <h1><i class="fa-solid fa-gear" style="color:var(--primary);"></i> <span id="profile-header-name" data-i18n="profile_title">Account Settings</span></h1>
+            <p data-i18n="profile_sub">Manage your profile, security, and account preferences.</p>
         </div>
 
         <!-- Stats Row -->
@@ -784,38 +796,38 @@
             <div class="glass-card stat-card" style="margin-bottom:0;text-align:center;">
                 <div class="stat-icon stat-purple" style="margin:0 auto 0.75rem;"><i class="fa-solid fa-comments"></i></div>
                 <strong id="stat-messages" class="stat-number">0</strong>
-                <span class="stat-label">Chat Messages</span>
+                <span class="stat-label" data-i18n="stat_chat_messages">Chat Messages</span>
             </div>
             <div class="glass-card stat-card" style="margin-bottom:0;text-align:center;">
                 <div class="stat-icon stat-blue" style="margin:0 auto 0.75rem;"><i class="fa-solid fa-bookmark"></i></div>
                 <strong id="stat-searches" class="stat-number">0</strong>
-                <span class="stat-label">Saved Searches</span>
+                <span class="stat-label" data-i18n="stat_saved_searches">Saved Searches</span>
             </div>
             <div class="glass-card stat-card" style="margin-bottom:0;text-align:center;">
                 <div class="stat-icon stat-green" style="margin:0 auto 0.75rem;"><i class="fa-solid fa-clock-rotate-left"></i></div>
                 <strong id="stat-activities" class="stat-number">0</strong>
-                <span class="stat-label">Total Actions</span>
+                <span class="stat-label" data-i18n="stat_total_actions">Total Actions</span>
             </div>
         </div>
 
         <div class="grid-2">
             <!-- Profile Edit -->
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-user-pen"></i> Profile Information</h3>
+                <h3 class="glass-card-title"><i class="fa-solid fa-user-pen"></i> <span data-i18n="profile_info">Profile Information</span></h3>
                 <div class="profile-avatar-section">
                     <div class="profile-avatar-large" id="profile-avatar-large">U</div>
                     <div class="avatar-upload-area">
-                        <button class="avatar-upload-btn" onclick="document.getElementById('photo-upload-input').click()"><i class="fa-solid fa-camera"></i> Upload Photo</button>
+                        <button class="avatar-upload-btn" onclick="document.getElementById('photo-upload-input').click()"><i class="fa-solid fa-camera"></i> <span data-i18n="profile_upload_photo">Upload Photo</span></button>
                         <input type="file" id="photo-upload-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(event)">
-                        <button class="avatar-remove-btn" id="remove-photo-btn" style="display:none;" onclick="removeProfilePhoto()"><i class="fa-solid fa-xmark"></i> Remove</button>
-                        <span class="avatar-hint">JPG, PNG. Max 2MB</span>
+                        <button class="avatar-remove-btn" id="remove-photo-btn" style="display:none;" onclick="removeProfilePhoto()"><i class="fa-solid fa-xmark"></i> <span data-i18n="profile_remove_photo">Remove</span></button>
+                        <span class="avatar-hint" data-i18n="profile_photo_hint">JPG, PNG. Max 2MB</span>
                     </div>
                 </div>
-                <div class="form-group"><label>Full Name</label><input type="text" id="profile-name" placeholder="Your name"></div>
-                <div class="form-group"><label>Email</label><input type="email" id="profile-email" placeholder="your@email.com"></div>
+                <div class="form-group"><label data-i18n="profile_name">Full Name</label><input type="text" id="profile-name" placeholder="Your name"></div>
+                <div class="form-group"><label data-i18n="profile_email">Email</label><input type="email" id="profile-email" placeholder="your@email.com"></div>
                 <div class="form-row-2">
-                    <div class="form-group"><label>Date of Birth</label><input type="date" id="profile-dob"></div>
-                    <div class="form-group"><label>Blood Type</label>
+                    <div class="form-group"><label data-i18n="profile_dob">Date of Birth</label><input type="date" id="profile-dob"></div>
+                    <div class="form-group"><label data-i18n="profile_blood">Blood Type</label>
                         <select id="profile-blood">
                             <option value="">Select</option>
                             <option value="A+">A+</option>
@@ -830,23 +842,23 @@
                     </div>
                 </div>
                 <div id="profile-update-msg" class="auth-error" style="display:none;"></div>
-                <button onclick="updateProfile()" class="btn-primary full-width" id="profile-save-btn"><i class="fa-solid fa-check"></i> Save Changes</button>
+                <button onclick="updateProfile()" class="btn-primary full-width" id="profile-save-btn"><i class="fa-solid fa-check"></i> <span data-i18n="profile_save">Save Changes</span></button>
             </div>
 
             <!-- Security -->
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-lock"></i> Security</h3>
-                <div class="form-group"><label>Current Password</label><input type="password" id="current-password" placeholder="Enter current password"></div>
-                <div class="form-group"><label>New Password</label><input type="password" id="new-password" placeholder="At least 6 characters" minlength="6"></div>
-                <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirm-password" placeholder="Confirm new password"></div>
+                <h3 class="glass-card-title"><i class="fa-solid fa-lock"></i> <span data-i18n="security">Security</span></h3>
+                <div class="form-group"><label data-i18n="current_password">Current Password</label><input type="password" id="current-password" data-i18n-placeholder="current_password_placeholder" placeholder="Enter current password"></div>
+                <div class="form-group"><label data-i18n="new_password">New Password</label><input type="password" id="new-password" data-i18n-placeholder="new_password_placeholder" placeholder="At least 6 characters" minlength="6"></div>
+                <div class="form-group"><label data-i18n="confirm_password">Confirm New Password</label><input type="password" id="confirm-password" data-i18n-placeholder="confirm_password_placeholder" placeholder="Confirm new password"></div>
                 <div id="password-msg" class="auth-error" style="display:none;"></div>
-                <button onclick="changePassword()" class="btn-primary full-width" id="password-save-btn"><i class="fa-solid fa-key"></i> Change Password</button>
+                <button onclick="changePassword()" class="btn-primary full-width" id="password-save-btn"><i class="fa-solid fa-key"></i> <span data-i18n="change_password">Change Password</span></button>
 
                 <div class="divider"></div>
 
-                <h3 class="glass-card-title" style="color:var(--emergency);"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
-                <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;">Permanently delete your account and all associated data. This action cannot be undone.</p>
-                <button onclick="confirmDeleteAccount()" class="btn-danger full-width"><i class="fa-solid fa-trash-can"></i> Delete Account</button>
+                <h3 class="glass-card-title" style="color:var(--emergency);"><i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="danger_zone">Danger Zone</span></h3>
+                <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;" data-i18n="danger_desc">Permanently delete your account and all associated data. This action cannot be undone.</p>
+                <button onclick="confirmDeleteAccount()" class="btn-danger full-width"><i class="fa-solid fa-trash-can"></i> <span data-i18n="delete_account">Delete Account</span></button>
             </div>
         </div>
     </section>
@@ -859,22 +871,46 @@
 <div class="modal-overlay" id="delete-modal" style="display:none;">
     <div class="modal-card">
         <div class="modal-icon danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <h3>Delete Account?</h3>
-        <p>This will permanently delete your account, chat history, saved searches, and activity log. This action cannot be undone.</p>
+        <h3 data-i18n="delete_modal_title">Delete Account?</h3>
+        <p data-i18n="delete_modal_desc">This will permanently delete your account, chat history, saved searches, and activity log. This action cannot be undone.</p>
         <div class="modal-actions">
-            <button onclick="closeDeleteModal()" class="btn-secondary">Cancel</button>
-            <button onclick="deleteAccount()" class="btn-danger" id="delete-confirm-btn"><i class="fa-solid fa-trash-can"></i> Yes, Delete</button>
+            <button onclick="closeDeleteModal()" class="btn-secondary" data-i18n="delete_modal_cancel">Cancel</button>
+            <button onclick="deleteAccount()" class="btn-danger" id="delete-confirm-btn"><i class="fa-solid fa-trash-can"></i> <span data-i18n="delete_modal_confirm">Yes, Delete</span></button>
         </div>
     </div>
 </div>
 
-<script src="config.js?v=17"></script>
-<script src="auth.js?v=17"></script>
-<script src="app.js?v=17"></script>
+<script src="translations.js?v=18"></script>
+<script src="i18n.js?v=18"></script>
+<script src="config.js?v=18"></script>
+<script src="auth.js?v=18"></script>
+<script src="app.js?v=18"></script>
 <script>
 if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js"); }
 let deferredPrompt;
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; });
+
+function toggleLangDropdown(btn) {
+    const switcher = btn.closest('.lang-switcher');
+    const wasOpen = switcher.classList.contains('open');
+    document.querySelectorAll('.lang-switcher.open').forEach(s => s.classList.remove('open'));
+    if (!wasOpen) {
+        switcher.classList.add('open');
+        I18N.renderLangDropdown(switcher.querySelector('.lang-dropdown'));
+    }
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.lang-switcher')) {
+        document.querySelectorAll('.lang-switcher.open').forEach(s => s.classList.remove('open'));
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    I18N.applyTranslations();
+    I18N.updateLangLabel();
+    const lang = I18N.getLang();
+    const lbl = I18N.t('lang_name');
+    document.querySelectorAll('#landingLangLabel, #topnavLangLabel, #mobileLangLabel').forEach(el => { if(el) el.textContent = lbl; });
+});
 </script>
 </body>
 </html>

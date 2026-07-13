@@ -1744,3 +1744,95 @@ textarea { resize: vertical; min-height: 56px; }
     .landing-nav-right .theme-toggle-btn { width: 32px; height: 32px; }
     .landing-hero-text h1 { font-size: 1.5rem; }
 }
+
+/* ============================================================ */
+/* LANGUAGE SWITCHER                                             */
+/* ============================================================ */
+.lang-switcher {
+    position: relative;
+    display: inline-block;
+}
+.lang-switcher-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+.lang-switcher-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+.lang-switcher-btn i { font-size: 0.7rem; transition: transform 0.2s; }
+.lang-switcher.open .lang-switcher-btn i.fa-chevron-down { transform: rotate(180deg); }
+.lang-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.4rem;
+    min-width: 160px;
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(20px);
+}
+.lang-switcher.open .lang-dropdown { display: block; }
+.lang-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 0.82rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-weight: 400;
+}
+.lang-option:hover { background: var(--primary-light); }
+.lang-option.active {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+}
+.landing-lang-btn {
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.08);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+.landing-lang-btn:hover { background: rgba(0,0,0,0.08); color: var(--text-main); }
+.landing-lang-btn i { font-size: 0.7rem; transition: transform 0.2s; }
+.lang-switcher.open .landing-lang-btn i.fa-chevron-down { transform: rotate(180deg); }
+[data-theme="dark"] .lang-switcher-btn,
+[data-theme="dark"] .landing-lang-btn {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.7);
+}
+[data-theme="dark"] .lang-switcher-btn:hover,
+[data-theme="dark"] .landing-lang-btn:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
