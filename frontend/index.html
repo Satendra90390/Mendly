@@ -39,8 +39,29 @@
                 <div class="landing-nav-actions">
                     <button class="btn-primary landing-login-btn" onclick="document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="auth_login_btn">Log In</span></button>
                 </div>
+                <button class="landing-hamburger" onclick="toggleLandingSidebar()"><i class="fa-solid fa-bars"></i></button>
             </div>
         </div>
+    </nav>
+
+    <!-- LANDING MOBILE SIDEBAR -->
+    <div class="landing-sidebar-overlay" id="landing-sidebar-overlay" onclick="toggleLandingSidebar()"></div>
+    <div class="landing-sidebar" id="landing-sidebar">
+        <div class="landing-sidebar-header">
+            <div class="landing-logo" onclick="handleLogoClick()" style="cursor:pointer"><img src="logo.svg" alt="Mendly" class="logo-img"><span>Mendly</span></div>
+            <button class="landing-sidebar-close" onclick="toggleLandingSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="landing-sidebar-links">
+            <a href="#features" onclick="toggleLandingSidebar()" data-i18n="nav_features">Features</a>
+            <a href="#about" onclick="toggleLandingSidebar()" data-i18n="nav_about">About</a>
+            <a href="#footer" onclick="toggleLandingSidebar()" data-i18n="nav_contact">Contact</a>
+            <div class="landing-sidebar-divider"></div>
+            <button class="landing-sidebar-login" onclick="toggleLandingSidebar(); document.getElementById('landing-login').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="auth_login_btn">Log In</span></button>
+        </div>
+        <div class="landing-sidebar-footer">
+            <button class="landing-sidebar-theme" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i> <span data-i18n="mob_toggle_theme">Toggle Theme</span></button>
+        </div>
+    </div>
     </nav>
 
     <!-- HERO SECTION -->
@@ -898,6 +919,13 @@ function toggleLangDropdown(btn) {
         switcher.classList.add('open');
         I18N.renderLangDropdown(switcher.querySelector('.lang-dropdown'));
     }
+}
+function toggleLandingSidebar() {
+    const sidebar = document.getElementById('landing-sidebar');
+    const overlay = document.getElementById('landing-sidebar-overlay');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
 }
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.lang-switcher')) {

@@ -1834,3 +1834,122 @@ textarea { resize: vertical; min-height: 56px; }
     background: rgba(255,255,255,0.15);
     color: #fff;
 }
+
+/* ============================================================ */
+/* LANDING MOBILE SIDEBAR                                        */
+/* ============================================================ */
+.landing-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.landing-hamburger:hover { color: var(--text-main); background: var(--primary-light); }
+.landing-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+}
+.landing-sidebar-overlay.active { display: block; }
+.landing-sidebar {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background: var(--card-bg);
+    border-left: 1px solid var(--border);
+    z-index: 2001;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-lg);
+}
+.landing-sidebar.active { right: 0; }
+.landing-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+.landing-sidebar-header .landing-logo { font-size: 1.1rem; }
+.landing-sidebar-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.landing-sidebar-close:hover { color: var(--text-main); background: var(--primary-light); }
+.landing-sidebar-links {
+    flex: 1;
+    padding: 0.75rem 0;
+    overflow-y: auto;
+}
+.landing-sidebar-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+.landing-sidebar-links a:hover { background: var(--primary-light); color: var(--primary); }
+.landing-sidebar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0.5rem 1.25rem;
+}
+.landing-sidebar-login {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+.landing-sidebar-login:hover { background: var(--primary-light); }
+.landing-sidebar-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+}
+.landing-sidebar-theme {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+.landing-sidebar-theme:hover { color: var(--text-main); }
+@media (max-width: 768px) {
+    .landing-hamburger { display: flex; align-items: center; justify-content: center; }
+}
+[data-theme="dark"] .landing-sidebar { background: var(--bg-light); }
