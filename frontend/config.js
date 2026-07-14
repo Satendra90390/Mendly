@@ -6,5 +6,6 @@ const API_BASE = (() => {
     if (hostname === "localhost" || hostname === "127.0.0.1") {
         return "http://localhost:8002/api";
     }
-    return "https://mendly-backend-0vyg.onrender.com/api";
+    // Production — Koyeb backend
+    return window.__MENDLY_API_BASE__ || "https://mediguide-backend.koyeb.app/api";
 })();

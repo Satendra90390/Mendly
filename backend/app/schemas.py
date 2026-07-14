@@ -1,5 +1,6 @@
 from typing import Optional, List
 from datetime import datetime
+from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -71,9 +72,9 @@ class TokenResponse(BaseModel):
 
 
 class UserOut(BaseModel):
-    id: int
+    id: UUID
     name: str
-    email: str
+    email: Optional[str] = None
     created_at: datetime
     last_login: Optional[datetime] = None
     avatar_color: Optional[str] = "#4f46e5"
@@ -127,13 +128,14 @@ class ActivityLogOut(BaseModel):
 
 # ---------------- Chat ----------------
 class ConversationMessage(BaseModel):
-    role: str   # "user" or "bot"
+    role: str
     content: str
+
 
 class ChatRequest(BaseModel):
     message: str
     location: Optional[dict] = None
-    history: Optional[List[ConversationMessage]] = None   # recent turns for context
+    history: Optional[List[ConversationMessage]] = None
 
 
 class ChatMessageOut(BaseModel):
@@ -164,7 +166,7 @@ class InteractionCheck(BaseModel):
 
 
 class SavedSearchCreate(BaseModel):
-    query_type: str  # "medicine" | "disease"
+    query_type: str
     query_value: str
 
 

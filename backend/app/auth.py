@@ -1,73 +1,98 @@
 import os
-import datetime
-import bcrypt
-from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from . import models
-from .database import get_db
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "")
 
-# ------------------------------------------------------------------
-# Config — in production, set JWT_SECRET via environment variable.
-# ------------------------------------------------------------------
-JWT_SECRET = os.getenv("JWT_SECRET", "dev-only-insecure-secret-change-me")
-JWT_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 7)))  # 7 days
+if SUPABASE_URL:
+    SUPABASE_ISSUER = f"{SUPABASE_URL}/auth/v1"
+else:
+    SUPABASE_ISSUER = ""
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+security = HTTPBearer(auto_error=False)
 
 
-# ------------------------------------------------------------------
-# Password hashing (bcrypt directly — avoids passlib/bcrypt 4.x+ conflicts)
-# ------------------------------------------------------------------
-def hash_password(plain_password: str) -> str:
-    # bcrypt has a 72-byte input limit; truncate defensively.
-    pw_bytes = plain_password.encode("utf-8")[:72]
-    return bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
+def _verify_supabase_token(token: str) -> dict:
+    from jose import jwt, JWTError
 
+    if not SUPABASE_JWT_SECRET:
+        raise HTTPException(status_code=500, detail="Supabase JWT not configured")
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    pw_bytes = plain_password.encode("utf-8")[:72]
     try:
-        return bcrypt.checkpw(pw_bytes, hashed_password.encode("utf-8"))
-    except ValueError:
-        return False
-
-
-# ------------------------------------------------------------------
-# JWT
-# ------------------------------------------------------------------
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
-
-
-def decode_access_token(token: str) -> dict:
-    try:
-        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    except JWTError:
+        payload = jwt.decode(
+            token,
+            SUPABASE_JWT_SECRET,
+            algorithms=["HS256"],
+            audience="authenticated",
+            issuer=SUPABASE_ISSUER if SUPABASE_ISSUER else None,
+        )
+        return payload
+    except JWTError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail=f"Invalid token: {e}",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-) -> models.User:
-    payload = decode_access_token(token)
-    user_id = payload.get("sub")
-    if user_id is None:
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> dict:
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Bearer token required",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return _verify_supabase_token(credentials.credentials)
+
+
+async def get_current_user_id(user: dict = Depends(get_current_user)) -> str:
+    user_id = user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token: no user ID")
+    return user_id
+
+
+async def get_admin_user(user: dict = Depends(get_current_user)) -> dict:
+    from .database import get_profile
+
+    user_id = user.get("sub")
+    if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    user = db.query(models.User).filter(models.User.id == int(user_id)).first()
-    if user is None or not user.is_active:
-        raise HTTPException(status_code=401, detail="User not found or inactive")
-    if user.is_blocked:
-        raise HTTPException(status_code=403, detail="Your account has been blocked. Please contact support.")
+    profile = get_profile(user_id)
+    if not profile or not profile.get("is_admin"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required.")
     return user
+
+
+def get_current_user_profile(user: dict = Depends(get_current_user)):
+    from .database import get_profile
+
+    user_id = user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    profile = get_profile(user_id)
+    if not profile:
+        raise HTTPException(status_code=401, detail="User not found.")
+    if profile.get("is_blocked"):
+        raise HTTPException(status_code=403, detail="Your account has been blocked.")
+    return profile
+
+
+def _generate_session_token(user_id: str) -> str:
+    import time
+    from jose import jwt
+
+    payload = {
+        "sub": user_id,
+        "aud": "authenticated",
+        "iss": SUPABASE_ISSUER if SUPABASE_ISSUER else "mendly",
+        "iat": int(time.time()),
+        "exp": int(time.time()) + 86400,
+        "role": "authenticated",
+    }
+    return jwt.encode(payload, SUPABASE_JWT_SECRET, algorithm="HS256")

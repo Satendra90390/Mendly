@@ -10,6 +10,19 @@ let _currentPhone = "";
 let _otpPurpose = "";
 let _otpTimerInterval = null;
 
+// ——— XSS Protection ———
+function escapeHtml(str) {
+    if (!str) return "";
+    const div = document.createElement("div");
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+function escapeAttr(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/'/g, "&#39;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 // ——— Session ———
 function getToken() { return localStorage.getItem(AUTH_TOKEN_KEY); }
 function getStoredUser() { try { return JSON.parse(localStorage.getItem(AUTH_USER_KEY) || "null"); } catch { return null; } }
@@ -261,10 +274,10 @@ async function handlePhoneSendOtp(e) {
         if (!res.ok) { showStepError("phone", data.detail || "Could not send OTP."); return; }
         _currentPhone = phone; document.getElementById("phone-otp-label").textContent = phone;
         setupOtpInputs("phone-otp-inputs"); goToStep("phone-otp"); startOtpTimer(60, "phone-otp-timer", "phone-otp-resend-btn");
-        if (data.dev_code) {
+        if (data.dev_code && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
             const hint = document.createElement("div");
             hint.className = "dev-otp-hint";
-            hint.innerHTML = `<i class="fa-solid fa-code"></i> Dev mode — code: <strong>${data.dev_code}</strong>`;
+            hint.innerHTML = `<i class="fa-solid fa-code"></i> Dev mode — code: <strong>${escapeHtml(data.dev_code)}</strong>`;
             const form = document.getElementById("phone-otp-form");
             if (form && !form.querySelector(".dev-otp-hint")) form.parentNode.insertBefore(hint, form);
         }
@@ -360,10 +373,10 @@ async function handleResetPassword(e) {
         const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, otp: "verified", new_password: password }) });
         const data = await res.json();
         if (!res.ok) { showStepError("reset", data.detail || "Reset failed."); return; }
-        goToStep("email"); showStepError("email", "Password reset! You can now log in.");
-        document.getElementById("email-error").style.color = "#10b981";
-        document.getElementById("email-error").style.background = "rgba(16,185,129,0.08)";
-        document.getElementById("email-error").style.borderColor = "rgba(16,185,129,0.2)";
+        goToStep("login"); showStepError("login", "Password reset! You can now log in.");
+        document.getElementById("login-error").style.color = "#10b981";
+        document.getElementById("login-error").style.background = "rgba(16,185,129,0.08)";
+        document.getElementById("login-error").style.borderColor = "rgba(16,185,129,0.2)";
     } catch (err) { showStepError("reset", "Couldn't reach the server."); }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-key"></i> Reset Password'; }
 }
@@ -380,8 +393,8 @@ function handleLogout() {
     clearSession();
     document.getElementById("app-root").style.display = "none";
     document.getElementById("landing-page").style.display = "block";
-    goToStep("email");
-    ["signup-name", "signup-dob", "signup-password", "signup-confirm", "login-password", "auth-email", "auth-phone", "phone-signup-name", "phone-signup-email", "phone-signup-dob", "phone-signup-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+    goToStep("login");
+    ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "auth-email", "auth-phone", "phone-signup-name", "phone-signup-email", "phone-signup-dob", "phone-signup-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
     window.scrollTo(0, 0);
 }
 
@@ -397,13 +410,14 @@ function enterApp(user, isNew) {
 }
 
 function showWelcomeMessage(name) {
+    const safeName = escapeHtml(name.split(" ")[0]);
     const overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10000;";
     overlay.innerHTML = `
         <div style="background:white;border-radius:16px;padding:40px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:popIn 0.3s ease;">
-            <div style="font-size:48px;margin-bottom:16px;">👋</div>
+            <div style="font-size:48px;margin-bottom:16px;">&#x1F44B;</div>
             <h2 style="color:#1e293b;margin:0 0 8px;">Welcome to Mendly!</h2>
-            <p style="color:#64748b;font-size:16px;margin:0 0 24px;">Hi <strong>${name.split(" ")[0]}</strong>, great to have you here.</p>
+            <p style="color:#64748b;font-size:16px;margin:0 0 24px;">Hi <strong>${safeName}</strong>, great to have you here.</p>
             <button onclick="this.closest('div[style]').parentElement.remove()" style="background:#4f46e5;color:white;border:none;padding:12px 32px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">Get Started</button>
         </div>`;
     document.body.appendChild(overlay);
@@ -427,7 +441,8 @@ function updateUserUI(user) {
         document.getElementById("profile-blood").value = user.blood_type || "";
         const profileAvatar = document.getElementById("profile-avatar-large");
         if (user.profile_photo) {
-            profileAvatar.innerHTML = `<img src="${user.profile_photo}" alt="Profile" style="width:100%;height:100%;border-radius:14px;object-fit:cover;">`;
+            const safePhotoUrl = escapeAttr(user.profile_photo);
+            profileAvatar.innerHTML = `<img src="${safePhotoUrl}" alt="Profile" style="width:100%;height:100%;border-radius:14px;object-fit:cover;">`;
             profileAvatar.style.background = "transparent";
             document.getElementById("remove-photo-btn").style.display = "flex";
         } else {
@@ -456,5 +471,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     const storedToken = getToken(); const user = getStoredUser();
     if (!storedToken || !user) return;
     try { const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() }); if (res.ok) { const u = await res.json(); setSession(storedToken, u); enterApp(u); } else clearSession(); } catch { enterApp(user); }
-    generateCaptcha("login");
+    goToStep("login");
 });

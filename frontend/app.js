@@ -2,6 +2,12 @@
 // Mendly — App Controller (runs only after login)
 // ============================================================
 
+// XSS-safe JS string escaping for inline onclick handlers
+function escapeJS(str) {
+    if (!str) return "";
+    return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r");
+}
+
 let state = {
     medicines: [],
     renderedMedicines: [],
@@ -77,7 +83,8 @@ const VIEW_TITLES = {
 function switchView(view) {
     document.querySelectorAll(".view-section").forEach((s) => s.classList.remove("active"));
     document.querySelectorAll(".topnav-link, .mobile-dropdown-link, .mobile-nav-item").forEach((e) => e.classList.remove("active"));
-    document.getElementById(`view-${view}`).classList.add("active");
+    const viewEl = document.getElementById(`view-${view}`);
+    if (viewEl) viewEl.classList.add("active");
     const nav = document.getElementById(`nav-${view}`);
     if (nav) nav.classList.add("active");
     const mob = document.getElementById(`mob-${view}`);
@@ -136,7 +143,9 @@ async function getLocationFromIP() {
         const res = await fetch("https://ipapi.co/json/");
         const data = await res.json();
         state.userLocation = { lat: data.latitude, lng: data.longitude };
-        document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${data.city}, ${data.country_name}`;
+        const safeCity = escapeHtml(data.city || "");
+        const safeCountry = escapeHtml(data.country_name || "");
+        document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${safeCity}, ${safeCountry}`;
         loadNearbyHospitals();
         loadNearbyPharmacies();
     } catch (e) {
@@ -151,7 +160,7 @@ async function getAddress(lat, lng) {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
         const data = await res.json();
         if (data.display_name) {
-            const parts = data.display_name.split(",").slice(0, 3);
+            const parts = data.display_name.split(",").slice(0, 3).map(p => escapeHtml(p.trim()));
             document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${parts.join(", ")}`;
         }
     } catch (e) {
@@ -455,7 +464,7 @@ function showMedicineDetailObj(med) {
         <div class="detail-section"><h4>Pregnancy</h4><p>${escapeHtml(med.pregnancy || "Consult doctor")}</p></div>
         ${med.source ? `<p style="color:var(--text-muted);font-size:0.75rem;margin-top:0.5rem;"><i class="fa-solid fa-circle-info"></i> Source: ${escapeHtml(med.source)}</p>` : ""}
         <div style="margin-top:1rem;">
-            <button onclick="askChatbot('${med.name.replace(/'/g, "\\'")}')" class="btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(med.name)}</button>
+            <button onclick="askChatbot('${escapeJS(med.name)}')" class="btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(med.name)}</button>
         </div>
     `;
     document.getElementById("medicine-detail").style.display = "block";
@@ -491,7 +500,7 @@ async function searchByCondition() {
         }
         container.innerHTML = `<h4 style="margin-bottom:0.75rem;">Medicines for "${escapeHtml(q)}":</h4>
             <div class="grid-3">${data.possible_medicines.map(m => `
-                <div class="medicine-card" onclick="suggestQuery('Tell me about ${m.name.replace(/'/g, "\\'")}'); switchView('chatbot');">
+                <div class="medicine-card" onclick="suggestQuery('Tell me about ${escapeJS(m.name)}'); switchView('chatbot');">
                     <h4>${escapeHtml(m.name)}</h4>
                     <p class="brand">${escapeHtml(m.brand)}</p>
                     <span class="category">${escapeHtml(m.category)}</span>
@@ -656,7 +665,7 @@ function renderHospitals(hospitals, emptyMessage = "No hospitals found.") {
             <p class="phone">${escapeHtml(h.phone || "N/A")}</p>
             ${h.distance ? `<p style="color:var(--text-muted);font-size:0.82rem;">${h.distance.toFixed(1)} km</p>` : ""}
             <div style="margin-top:0.4rem;"><span class="badge available">${h.available !== false ? "Available" : "Unavailable"}</span></div>
-            <button onclick="openDirections('${escapeHtml(h.address || h.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
+            <button onclick="openDirections('${escapeJS(h.address || h.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
                 <i class="fa-solid fa-map"></i> Directions
             </button>
         </div>
@@ -706,7 +715,7 @@ function renderPharmacies(pharmacies, emptyMessage = "No pharmacies found.") {
             <p class="phone">${escapeHtml(p.phone || "N/A")}</p>
             ${p.distance ? `<p style="color:var(--text-muted);font-size:0.82rem;">${p.distance.toFixed(1)} km</p>` : ""}
             <div style="margin-top:0.4rem;">${(p.services || []).map(s => `<span class="badge" style="background:var(--primary);color:white;">${escapeHtml(s)}</span> `).join("")}</div>
-            <button onclick="openDirections('${escapeHtml(p.address || p.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
+            <button onclick="openDirections('${escapeJS(p.address || p.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
                 <i class="fa-solid fa-map"></i> Directions
             </button>
         </div>
@@ -912,7 +921,7 @@ async function deleteAccount() {
         clearSession();
         document.getElementById("app-root").style.display = "none";
         document.getElementById("landing-page").style.display = "block";
-        goToStep("email");
+        goToStep("login");
         alert("Your account has been permanently deleted.");
     } catch (e) {
         alert("Failed to delete account. Please try again.");
