@@ -221,7 +221,7 @@ JWT_SECRET=<generate new one>
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 FRONTEND_ORIGINS=https://your-project.pages.dev,http://localhost:5500
 FRONTEND_URL=https://your-project.pages.dev
-BACKEND_URL=https://your-app-name.koyeb.app
+BACKEND_URL=https://your-app-name.onrender.com
 
 # Keep existing
 CHATBOT_PROVIDER=nvidia
@@ -714,8 +714,8 @@ const API_BASE = (() => {
     if (hostname === "localhost" || hostname === "127.0.0.1") {
         return "http://localhost:8002/api";
     }
-    // Production — Koyeb backend
-    return window.__MENDLY_API_BASE__ || "https://your-app-name.koyeb.app/api";
+    // Production — Render backend
+    return window.__MENDLY_API_BASE__ || "https://your-app-name.onrender.com/api";
 })();
 ```
 
@@ -726,38 +726,35 @@ No major changes needed in auth.js — the API contract remains the same.
 
 ---
 
-## Phase 4: Deploy Backend to Koyeb
+## Phase 4: Deploy Backend to Render
 
-### 4.1 Create Koyeb Account
-1. Go to https://app.koyeb.com
+### 4.1 Create Render Account
+1. Go to https://render.com
 2. Sign up with GitHub
 3. No credit card required
 
 ### 4.2 Connect GitHub Repository
-1. In Koyeb dashboard, click "Create App"
-2. Select "GitHub" as deployment method
-3. Select your repository
-4. Configure:
+1. In Render dashboard, click "New +" → "Web Service"
+2. Select your repository
+3. Configure:
    - **Name**: `mediguide-backend`
-   - **Builder**: Python
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-   - **Port**: 8000
+   - **Runtime**: Python 3
+   - **Build Command**: `cd backend && pip install -r requirements.txt`
+   - **Start Command**: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
 ### 4.3 Set Environment Variables
-In Koyeb dashboard → Settings → Environment Variables:
+In Render dashboard → Environment:
 
 ```
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 SUPABASE_JWT_SECRET=your-jwt-secret
-DATABASE_URL=postgresql://postgres.xxx:password@aws-0-region.pooler.supabase.com:6543/postgres
 JWT_SECRET=your-generated-secret
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 FRONTEND_ORIGINS=https://your-project.pages.dev
 FRONTEND_URL=https://your-project.pages.dev
-BACKEND_URL=https://mediguide-backend.koyeb.app
+BACKEND_URL=https://mediguide-backend.onrender.com
 CHATBOT_PROVIDER=nvidia
 NVIDIA_API_KEY=your-nvidia-key
 NVIDIA_API_URL=https://integrate.api.nvidia.com/v1/chat/completions
@@ -768,8 +765,8 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 ### 4.4 Deploy
 1. Push changes to GitHub
-2. Koyeb auto-deploys
-3. Verify at: `https://mediguide-backend.koyeb.app/api/health`
+2. Render auto-deploys
+3. Verify at: `https://mediguide-backend.onrender.com/api/health`
 
 ---
 
