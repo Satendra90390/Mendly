@@ -458,9 +458,21 @@ function updateUserUI(user) {
 // ON LOAD
 // ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
+    let token = null;
+    let authError = null;
+
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token"); const authError = params.get("auth_error");
+    token = params.get("token");
+    authError = params.get("auth_error");
+
+    if (!token && window.location.hash) {
+        const hash = new URLSearchParams(window.location.hash.substring(1));
+        token = hash.get("access_token");
+        authError = hash.get("error_description") || (hash.get("error") ? hash.get("error") : null);
+    }
+
     if (token || authError) window.history.replaceState({}, document.title, window.location.pathname);
+
     if (authError) { alert(`Social login failed: ${authError}`); return; }
     if (token) {
         setSession(token, null);

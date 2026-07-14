@@ -21,9 +21,9 @@ services:
         sync: false
       - key: FRONTEND_ORIGINS
         sync: false
-        value: "https://mediguide.pages.dev,http://localhost:5500"
+        value: "https://mendly.pages.dev,https://d333b595.mendly.pages.dev,https://mendly.mdl1.workers.dev,http://localhost:5500"
       - key: FRONTEND_URL
-        value: "https://mediguide.pages.dev"
+        value: "https://mendly.pages.dev"
       - key: CHATBOT_PROVIDER
         value: nvidia
       - key: BACKEND_URL
