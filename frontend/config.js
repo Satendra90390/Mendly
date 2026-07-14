@@ -7,5 +7,5 @@ const API_BASE = (() => {
         return "http://localhost:8002/api";
     }
     // Production — Render backend
-    return window.__MENDLY_API_BASE__ || "https://mediguide-backend.onrender.com/api";
+    return window.__MENDLY_API_BASE__ || "https://mendly-backend-0vyg.onrender.com/api";
 })();
