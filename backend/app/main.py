@@ -353,7 +353,7 @@ async def google_login(request: Request):
     try:
         result = supabase.auth.sign_in_with_oauth({
             "provider": "google",
-            "options": {"redirect_to": frontend_url, "scopes": "openid email profile"},
+            "options": {"redirect_to": frontend_url},
         })
         return RedirectResponse(url=result.url)
     except Exception as e:
