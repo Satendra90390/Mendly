@@ -72,7 +72,7 @@ function goToStep(step) {
     if (_otpTimerInterval) { clearInterval(_otpTimerInterval); _otpTimerInterval = null; }
     ["otp-timer", "phone-otp-timer", "forgot-otp-timer"].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = ""; });
     hideAllErrors();
-    if (step === "login") { generateCaptcha("login"); document.getElementById("auth-subtitle").textContent = "Your intelligent health companion"; }
+    if (step === "password") { generateCaptcha("login"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
     if (step === "signup") { generateCaptcha("signup"); document.getElementById("auth-subtitle").textContent = "Create your account"; }
     if (step === "email") { document.getElementById("auth-subtitle").textContent = "Your intelligent health companion"; document.getElementById("auth-email").value = ""; }
 }
@@ -173,17 +173,17 @@ async function handleEmailSubmit(e) {
 
 async function handlePasswordLogin(e) {
     e.preventDefault(); hideAllErrors();
-    if (!verifyCaptcha("login")) { showStepError("login", "Incorrect captcha answer."); generateCaptcha("login"); return; }
-    const email = document.getElementById("login-email").value.trim();
+    if (!verifyCaptcha("login")) { showStepError("password", "Incorrect captcha answer."); generateCaptcha("login"); return; }
+    const email = _currentEmail;
     const password = document.getElementById("login-password").value;
     const btn = document.getElementById("login-submit-btn");
     btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
     try {
         const res = await fetch(`${API_BASE}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
         const data = await res.json();
-        if (!res.ok) { showStepError("login", data.detail || "Incorrect email or password."); return; }
+        if (!res.ok) { showStepError("password", data.detail || "Incorrect email or password."); return; }
         setSession(data.access_token, data.user); enterApp(data.user);
-    } catch (err) { showStepError("login", "Couldn't reach the server."); }
+    } catch (err) { showStepError("password", "Couldn't reach the server."); }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In'; generateCaptcha("login"); }
 }
 
@@ -373,10 +373,9 @@ async function handleResetPassword(e) {
         const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, otp: "verified", new_password: password }) });
         const data = await res.json();
         if (!res.ok) { showStepError("reset", data.detail || "Reset failed."); return; }
-        goToStep("login"); showStepError("login", "Password reset! You can now log in.");
-        document.getElementById("login-error").style.color = "#10b981";
-        document.getElementById("login-error").style.background = "rgba(16,185,129,0.08)";
-        document.getElementById("login-error").style.borderColor = "rgba(16,185,129,0.2)";
+        goToStep("email");
+        const emailErr = document.getElementById("email-error");
+        if (emailErr) { emailErr.textContent = "Password reset! You can now log in."; emailErr.style.display = "block"; emailErr.style.color = "#10b981"; emailErr.style.background = "rgba(16,185,129,0.08)"; emailErr.style.borderColor = "rgba(16,185,129,0.2)"; }
     } catch (err) { showStepError("reset", "Couldn't reach the server."); }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-key"></i> Reset Password'; }
 }
@@ -393,7 +392,7 @@ function handleLogout() {
     clearSession();
     document.getElementById("app-root").style.display = "none";
     document.getElementById("landing-page").style.display = "block";
-    goToStep("login");
+    goToStep("email");
     ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "auth-email", "auth-phone", "phone-signup-name", "phone-signup-email", "phone-signup-dob", "phone-signup-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
     window.scrollTo(0, 0);
 }
@@ -471,5 +470,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     const storedToken = getToken(); const user = getStoredUser();
     if (!storedToken || !user) return;
     try { const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() }); if (res.ok) { const u = await res.json(); setSession(storedToken, u); enterApp(u); } else clearSession(); } catch { enterApp(user); }
-    goToStep("login");
+    goToStep("email");
 });
