@@ -130,7 +130,7 @@ async def signup(request: Request, payload: schemas.SignupRequest):
     update_profile(result.user.id, {"last_login": _now()})
     _log_activity(result.user.id, "account_created", "New account registered", request)
 
-    token = auth._generate_session_token(result.user.id)
+    token = result.session.access_token
     return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
 
 
@@ -157,7 +157,7 @@ async def login(request: Request, payload: schemas.LoginRequest):
     update_profile(result.user.id, {"last_login": _now()})
     _log_activity(result.user.id, "logged_in", "Successful login", request)
 
-    token = auth._generate_session_token(result.user.id)
+    token = result.session.access_token
     return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
 
 
@@ -218,7 +218,7 @@ async def verify_otp(request: Request, payload: schemas.VerifyOtpRequest):
     if profile:
         update_profile(result.user.id, {"last_login": _now()})
         _log_activity(result.user.id, "otp_login", "Login via OTP", request)
-        token = auth._generate_session_token(result.user.id)
+        token = result.session.access_token
         return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
 
     return {"verified": True, "email": email, "message": "OTP verified. Complete your profile."}
@@ -257,7 +257,7 @@ async def complete_signup(request: Request, payload: schemas.CompleteSignupReque
 
     _log_activity(result.user.id, "account_created", "New account registered via OTP", request)
 
-    token = auth._generate_session_token(result.user.id)
+    token = result.session.access_token
     return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
 
 
@@ -307,7 +307,7 @@ async def phone_verify(request: Request, payload: schemas.VerifyPhoneOtpRequest)
     if profile:
         update_profile(result.user.id, {"last_login": _now()})
         _log_activity(result.user.id, "phone_login", "Login via phone OTP", request)
-        token = auth._generate_session_token(result.user.id)
+        token = result.session.access_token
         return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
 
     return {"verified": True, "phone": phone, "message": "OTP verified. Complete your profile."}
@@ -351,7 +351,7 @@ async def phone_complete_signup(request: Request, payload: schemas.PhoneSignupRe
 
     _log_activity(result.user.id, "phone_signup", "Account created via phone", request)
 
-    token = auth._generate_session_token(result.user.id)
+    token = result.session.access_token
     return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
 
 

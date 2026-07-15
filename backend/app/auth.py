@@ -2,33 +2,33 @@ import os
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "")
-
-if SUPABASE_URL:
-    SUPABASE_ISSUER = f"{SUPABASE_URL}/auth/v1"
-else:
-    SUPABASE_ISSUER = ""
-
 security = HTTPBearer(auto_error=False)
 
 
+def _get_supabase():
+    from .database import supabase
+    return supabase
+
+
 def _verify_supabase_token(token: str) -> dict:
-    from jose import jwt, JWTError
-
-    if not SUPABASE_JWT_SECRET:
-        raise HTTPException(status_code=500, detail="Supabase JWT not configured")
-
+    supabase = _get_supabase()
     try:
-        payload = jwt.decode(
-            token,
-            SUPABASE_JWT_SECRET,
-            algorithms=["HS256"],
-            audience="authenticated",
-            issuer=SUPABASE_ISSUER if SUPABASE_ISSUER else None,
-        )
-        return payload
-    except JWTError as e:
+        result = supabase.auth.get_user(token)
+        if result.user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return {
+            "sub": result.user.id,
+            "email": result.user.email,
+            "user_metadata": result.user.user_metadata or {},
+            "app_metadata": result.user.app_metadata or {},
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid token: {e}",
@@ -81,18 +81,3 @@ def get_current_user_profile(user: dict = Depends(get_current_user)):
     if profile.get("is_blocked"):
         raise HTTPException(status_code=403, detail="Your account has been blocked.")
     return profile
-
-
-def _generate_session_token(user_id: str) -> str:
-    import time
-    from jose import jwt
-
-    payload = {
-        "sub": user_id,
-        "aud": "authenticated",
-        "iss": SUPABASE_ISSUER if SUPABASE_ISSUER else "mendly",
-        "iat": int(time.time()),
-        "exp": int(time.time()) + 86400,
-        "role": "authenticated",
-    }
-    return jwt.encode(payload, SUPABASE_JWT_SECRET, algorithm="HS256")
