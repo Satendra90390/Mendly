@@ -4,11 +4,16 @@
   "description": "AI-powered medicine and health information platform.",
   "private": true,
   "scripts": {
-    "build": "echo 'Static site — no build needed'"
+    "build": "echo 'Static site — no build needed'",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1"
+  },
+  "devDependencies": {
+    "wrangler": "^4.111.0"
   }
 }
