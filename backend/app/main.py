@@ -162,8 +162,20 @@ async def login(request: Request, payload: schemas.LoginRequest):
 
 
 @app.get("/api/auth/me", response_model=schemas.UserOut)
-async def get_me(current_user: dict = Depends(auth.get_current_user_profile)):
-    return current_user
+async def get_me(request: Request, current_user: dict = Depends(auth.get_current_user)):
+    user_id = current_user.get("sub")
+    profile = get_profile(user_id)
+    if not profile:
+        email = current_user.get("email", "")
+        user_metadata = current_user.get("user_metadata", {})
+        name = user_metadata.get("full_name") or user_metadata.get("name") or (email.split("@")[0] if email else "User")
+        provider = current_user.get("app_metadata", {}).get("provider", "email")
+        profile = insert_profile(_make_profile_dict(user_id, {"name": name, "email": email}, provider=provider))
+        _log_activity(user_id, "oauth_profile_created", f"Profile auto-created for {provider} user", request)
+    if profile.get("is_blocked"):
+        raise HTTPException(status_code=403, detail="Your account has been blocked.")
+    update_profile(user_id, {"last_login": _now()})
+    return profile
 
 
 # ============================================================
@@ -358,14 +370,6 @@ async def google_login(request: Request):
         return RedirectResponse(url=result.url)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/api/auth/google/callback")
-async def google_callback(request: Request, code: str = None, error: str = None):
-    frontend_url = os.getenv("FRONTEND_URL", "https://mendly.pages.dev")
-    if error or not code:
-        return RedirectResponse(url=f"{frontend_url}?auth_error={error or 'denied'}")
-    return RedirectResponse(url=frontend_url)
 
 
 # ============================================================
