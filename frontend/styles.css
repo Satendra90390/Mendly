@@ -1953,3 +1953,38 @@ textarea { resize: vertical; min-height: 56px; }
     .landing-hamburger { display: flex; align-items: center; justify-content: center; }
 }
 [data-theme="dark"] .landing-sidebar { background: var(--bg-light); }
+
+/* Guest Banner */
+.guest-banner {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-bottom: 1px solid #f59e0b;
+    padding: 0.6rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+[data-theme="dark"] .guest-banner {
+    background: linear-gradient(135deg, #451a03, #78350f);
+    border-bottom-color: #b45309;
+}
+.guest-banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    color: #92400e;
+}
+[data-theme="dark"] .guest-banner-inner { color: #fbbf24; }
+.guest-banner-inner i.fa-user-secret { font-size: 1.1rem; }
+.guest-banner-close {
+    background: none;
+    border: none;
+    color: #92400e;
+    cursor: pointer;
+    padding: 0.2rem;
+    font-size: 0.8rem;
+}
+[data-theme="dark"] .guest-banner-close { color: #fbbf24; }
+.btn-sm { padding: 0.35rem 0.85rem; font-size: 0.8rem; border-radius: 6px; }

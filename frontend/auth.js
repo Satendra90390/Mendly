@@ -72,10 +72,11 @@ function goToStep(step) {
     hideAllErrors();
     if (step === "login") { generateCaptcha("login"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
     if (step === "signup") { generateCaptcha("signup"); document.getElementById("auth-subtitle").textContent = "Create your account"; }
+    if (step === "upgrade") { document.getElementById("landing-page").style.display = "block"; document.getElementById("app-root").style.display = "none"; }
 }
 
 function hideAllErrors() {
-    ["login-error", "signup-error", "otp-error", "phone-error", "phone-otp-error", "phone-complete-error", "forgot-error", "forgot-otp-error", "reset-error"].forEach(id => {
+    ["login-error", "signup-error", "otp-error", "phone-error", "phone-otp-error", "phone-complete-error", "forgot-error", "forgot-otp-error", "reset-error", "upgrade-error"].forEach(id => {
         const el = document.getElementById(id); if (el) el.style.display = "none";
     });
 }
@@ -190,6 +191,59 @@ async function handleSignup(e) {
 }
 
 // ============================================================
+// GUEST LOGIN
+// ============================================================
+
+async function handleGuestLogin() {
+    hideAllErrors();
+    const btn = document.querySelector(".social-btn.social-google");
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Starting guest session...'; }
+    try {
+        const res = await fetch(`${API_BASE}/auth/guest`, { method: "POST", headers: { "Content-Type": "application/json" } });
+        const data = await res.json();
+        if (!res.ok) { alert(data.detail || "Guest login failed."); return; }
+        setSession(data.access_token, data.user);
+        enterApp(data.user, false);
+        setTimeout(() => { const banner = document.getElementById("guest-banner"); if (banner) banner.style.display = "block"; }, 500);
+    } catch (err) { alert("Couldn't reach the server."); }
+    finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-secret" style="font-size:18px;color:#6c63ff;"></i> <span>Continue as Guest</span>'; } }
+}
+
+async function handleGuestUpgrade(e) {
+    e.preventDefault(); hideAllErrors();
+    const name = document.getElementById("upgrade-name").value.trim();
+    const email = document.getElementById("upgrade-email").value.trim();
+    const password = document.getElementById("upgrade-password").value;
+    const btn = document.getElementById("upgrade-submit-btn");
+    if (password.length < 6) { showStepError("upgrade", "Password must be at least 6 characters."); return; }
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    try {
+        const res = await fetch(`${API_BASE}/auth/guest/upgrade`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${getToken()}` },
+            body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { showStepError("upgrade", data.detail || "Upgrade failed."); return; }
+        setSession(data.access_token, data.user);
+        updateUserUI(data.user);
+        const banner = document.getElementById("guest-banner");
+        if (banner) banner.style.display = "none";
+        document.getElementById("landing-page").style.display = "none";
+        document.getElementById("app-root").style.display = "flex";
+        showWelcomeMessage(data.user.name);
+    } catch (err) { showStepError("upgrade", "Couldn't reach the server."); }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-rocket"></i> Save & Continue'; }
+}
+
+function skipUpgrade() {
+    document.getElementById("guest-banner").style.display = "none";
+    document.getElementById("landing-page").style.display = "none";
+    document.getElementById("app-root").style.display = "flex";
+    if (typeof initApp === "function") initApp();
+}
+
+// ============================================================
 // FORGOT PASSWORD
 // ============================================================
 
@@ -271,6 +325,13 @@ function enterApp(user, isNew) {
     document.getElementById("app-root").style.display = "flex";
     updateUserUI(user);
     if (isNew) showWelcomeMessage(user.name);
+    if (user.auth_provider === "guest") {
+        const banner = document.getElementById("guest-banner");
+        if (banner) banner.style.display = "block";
+    } else {
+        const banner = document.getElementById("guest-banner");
+        if (banner) banner.style.display = "none";
+    }
     if (typeof initApp === "function") initApp();
 }
 

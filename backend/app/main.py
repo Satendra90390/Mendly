@@ -1,6 +1,6 @@
 import httpx
-import math
 import os
+import uuid
 import random
 import logging
 import datetime
@@ -161,6 +161,79 @@ async def login(request: Request, payload: schemas.LoginRequest):
     return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
 
 
+@app.post("/api/auth/guest", response_model=schemas.TokenResponse)
+@limiter.limit("10/minute")
+async def guest_login(request: Request):
+    guest_id = f"guest_{uuid.uuid4().hex[:12]}"
+    guest_email = f"{guest_id}@mendly.guest"
+    guest_password = uuid.uuid4().hex
+
+    try:
+        result = supabase.auth.sign_up({
+            "email": guest_email,
+            "password": guest_password,
+            "options": {"data": {"name": "Guest User", "provider": "guest"}},
+        })
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    if result.user is None:
+        raise HTTPException(status_code=400, detail="Guest login failed.")
+
+    profile = get_profile(result.user.id)
+    if not profile:
+        profile = insert_profile({
+            "id": result.user.id,
+            "name": "Guest User",
+            "email": guest_email,
+            "auth_provider": "guest",
+            "avatar_color": random.choice(["#4f46e5", "#7c3aed", "#ec4899", "#ef4444", "#f59e0b", "#10b981"]),
+            "last_login": _now(),
+        })
+
+    _log_activity(result.user.id, "guest_login", "Guest session started", request)
+    token = result.session.access_token
+    return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
+
+
+@app.post("/api/auth/guest/upgrade", response_model=schemas.TokenResponse)
+@limiter.limit("5/minute")
+async def guest_upgrade(request: Request, payload: schemas.GuestUpgradeRequest):
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "") if auth_header else ""
+    if not token:
+        raise HTTPException(status_code=401, detail="Bearer token required")
+
+    current_user = auth._verify_supabase_token(token)
+    user_id = current_user.get("sub")
+    profile = get_profile(user_id)
+
+    if not profile or profile.get("auth_provider") != "guest":
+        raise HTTPException(status_code=400, detail="This account is not a guest account.")
+
+    existing = get_profile_by_email(payload.email.lower())
+    if existing and existing.get("id") != user_id:
+        raise HTTPException(status_code=400, detail="This email is already in use by another account.")
+
+    try:
+        supabase.auth.admin.update_user_by_id(
+            user_id,
+            {"email": payload.email.lower(), "password": payload.password}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    update_profile(user_id, {
+        "name": payload.name.strip(),
+        "email": payload.email.lower(),
+        "auth_provider": "email",
+    })
+
+    _log_activity(user_id, "guest_upgraded", "Guest account upgraded to full account", request)
+    updated = get_profile(user_id)
+    return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**updated))
+
+
 @app.get("/api/auth/me", response_model=schemas.UserOut)
 async def get_me(request: Request, current_user: dict = Depends(auth.get_current_user)):
     user_id = current_user.get("sub")
@@ -257,24 +330,7 @@ async def phone_complete_signup(request: Request, payload: schemas.PhoneSignupRe
 
 
 # ============================================================
-# FACEBOOK OAUTH2
-# ============================================================
-
-@app.get("/api/auth/facebook")
-async def facebook_login(request: Request):
-    frontend_url = os.getenv("FRONTEND_URL", "https://mendly.pages.dev")
-    try:
-        result = supabase.auth.sign_in_with_oauth({
-            "provider": "facebook",
-            "options": {"redirect_to": frontend_url},
-        })
-        return RedirectResponse(url=result.url)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# ============================================================
-# FORGOT PASSWORD
+# GUEST LOGIN
 # ============================================================
 
 @app.post("/api/auth/forgot-password")
