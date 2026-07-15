@@ -347,25 +347,70 @@ async def phone_complete_signup(request: Request, payload: schemas.PhoneSignupRe
 # GOOGLE OAUTH2
 # ============================================================
 
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_REDIRECT_URI = os.getenv("BACKEND_URL", "").rstrip("/") + "/api/auth/google/callback"
+if not GOOGLE_REDIRECT_URI.startswith("http"):
+    GOOGLE_REDIRECT_URI = "https://mendly-backend-0vyg.onrender.com/api/auth/google/callback"
+
+
 @app.get("/api/auth/google")
 async def google_login(request: Request):
-    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5500")
-    try:
-        result = supabase.auth.sign_in_with_oauth({
-            "provider": "google",
-            "options": {"redirect_to": frontend_url},
-        })
-        return RedirectResponse(url=result.url)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    from urllib.parse import urlencode
+    frontend_url = os.getenv("FRONTEND_URL", "https://mendly.pages.dev")
+    params = urlencode({
+        "client_id": GOOGLE_CLIENT_ID,
+        "redirect_uri": GOOGLE_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "openid email profile",
+        "access_type": "offline",
+        "prompt": "consent",
+        "state": frontend_url,
+    })
+    return RedirectResponse(url=f"https://accounts.google.com/o/oauth2/v2/auth?{params}")
 
 
 @app.get("/api/auth/google/callback")
-async def google_callback(request: Request, code: str = None, error: str = None):
-    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5500")
+async def google_callback(request: Request, code: str = None, error: str = None, state: str = None):
+    frontend_url = state or os.getenv("FRONTEND_URL", "https://mendly.pages.dev")
     if error or not code:
         return RedirectResponse(url=f"{frontend_url}?auth_error={error or 'denied'}")
-    return RedirectResponse(url=frontend_url)
+
+    async with httpx.AsyncClient() as client:
+        token_resp = await client.post("https://oauth2.googleapis.com/token", data={
+            "code": code,
+            "client_id": GOOGLE_CLIENT_ID,
+            "client_secret": GOOGLE_CLIENT_SECRET,
+            "redirect_uri": GOOGLE_REDIRECT_URI,
+            "grant_type": "authorization_code",
+        })
+        token_data = token_resp.json()
+
+    if "access_token" not in token_data:
+        return RedirectResponse(url=f"{frontend_url}?auth_error=token_exchange_failed")
+
+    async with httpx.AsyncClient() as client:
+        user_resp = await client.get("https://www.googleapis.com/oauth2/v2/userinfo", headers={
+            "Authorization": f"Bearer {token_data['access_token']}",
+        })
+        google_user = user_resp.json()
+
+    email = google_user.get("email", "")
+    name = google_user.get("name", "")
+    avatar_url = google_user.get("picture", "")
+
+    if not email:
+        return RedirectResponse(url=f"{frontend_url}?auth_error=no_email")
+
+    profile = get_profile_by_email(email)
+    if not profile:
+        import uuid
+        user_id = str(uuid.uuid4())
+        insert_profile(user_id, name, email, "", date_of_birth="", blood_type="", avatar_color="#4f46e5")
+        profile = get_profile(user_id)
+
+    session_token = auth._generate_session_token(profile["id"])
+    return RedirectResponse(url=f"{frontend_url}#access_token={session_token}")
 
 
 # ============================================================

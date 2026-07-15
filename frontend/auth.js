@@ -383,11 +383,7 @@ async function handleResetPassword(e) {
 // ============================================================
 // SOCIAL LOGIN
 // ============================================================
-function handleSocialLogin(provider) {
-    const supabaseUrl = "https://nqvzmtjlzfpqvabkitel.supabase.co";
-    const redirectUrl = window.location.origin;
-    window.location.href = `${supabaseUrl}/auth/v1/authorize?provider=${provider}&redirect_to=${encodeURIComponent(redirectUrl)}`;
-}
+function handleSocialLogin(provider) { window.location.href = `${API_BASE}/auth/${provider}`; }
 
 // ============================================================
 // LOGOUT
