@@ -293,7 +293,7 @@ async def forgot_password(request: Request, payload: schemas.ForgotPasswordReque
 
 @app.post("/api/auth/forgot-password/verify")
 @limiter.limit("10/minute")
-async def forgot_password_verify(request: Request, payload: schemas.VerifyOtpRequest):
+async def forgot_password_verify(request: Request, payload: schemas.VerifyForgotOtpRequest):
     return {"verified": True, "message": "Code verified. Set your new password."}
 
 
