@@ -1,13 +1,11 @@
 // ============================================================
-// Mendly — Auth Controller (Email / Phone / Google / Forgot Password)
+// Mendly — Auth Controller (Login / Signup / Google / Forgot Password)
 // ============================================================
 
 const AUTH_TOKEN_KEY = "mendly_token";
 const AUTH_USER_KEY = "mendly_user";
 
 let _currentEmail = "";
-let _currentPhone = "";
-let _otpPurpose = "";
 let _otpTimerInterval = null;
 
 // ——— XSS Protection ———
@@ -72,13 +70,12 @@ function goToStep(step) {
     if (_otpTimerInterval) { clearInterval(_otpTimerInterval); _otpTimerInterval = null; }
     ["otp-timer", "phone-otp-timer", "forgot-otp-timer"].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = ""; });
     hideAllErrors();
-    if (step === "password") { generateCaptcha("login"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
+    if (step === "login") { generateCaptcha("login"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
     if (step === "signup") { generateCaptcha("signup"); document.getElementById("auth-subtitle").textContent = "Create your account"; }
-    if (step === "email") { document.getElementById("auth-subtitle").textContent = "Your intelligent health companion"; document.getElementById("auth-email").value = ""; }
 }
 
 function hideAllErrors() {
-    ["login-error", "signup-error", "email-error", "password-error", "otp-error", "complete-error", "phone-error", "phone-otp-error", "phone-complete-error", "forgot-error", "forgot-otp-error", "reset-error"].forEach(id => {
+    ["login-error", "signup-error", "otp-error", "phone-error", "phone-otp-error", "phone-complete-error", "forgot-error", "forgot-otp-error", "reset-error"].forEach(id => {
         const el = document.getElementById(id); if (el) el.style.display = "none";
     });
 }
@@ -112,7 +109,7 @@ function checkPasswordStrength(password, prefix) {
     else { container.classList.add("strength-strong"); text.textContent = "Strong"; }
 }
 
-// ——— OTP input boxes ———
+// ——— OTP input boxes (kept for phone/forgot password) ———
 function setupOtpInputs(containerId) {
     const boxes = document.querySelectorAll(`#${containerId} .otp-box`);
     boxes.forEach((box, i) => {
@@ -148,75 +145,29 @@ function startOtpTimer(seconds, timerId, btnId) {
 }
 
 // ============================================================
-// EMAIL FLOW
+// LOGIN
 // ============================================================
 
-async function handleEmailSubmit(e) {
+async function handleLogin(e) {
     e.preventDefault(); hideAllErrors();
-    const email = document.getElementById("auth-email").value.trim();
-    const btn = document.getElementById("email-submit-btn");
-    if (!email) return;
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/check-email`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("email", data.detail || "Something went wrong."); return; }
-        _currentEmail = email; _otpPurpose = data.exists ? "login" : "signup";
-        if (data.exists && data.auth_provider && data.auth_provider !== "email") {
-            showStepError("email", `This email uses ${data.auth_provider} login. Please use that method.`); return;
-        }
-        if (data.exists) { document.getElementById("password-email-label").textContent = email; goToStep("password"); }
-        else { document.getElementById("otp-email-label").textContent = email; setupOtpInputs("otp-inputs"); goToStep("otp"); startOtpTimer(60, "otp-timer", "otp-resend-btn"); }
-    } catch (err) { showStepError("email", "Couldn't reach the server."); }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Continue'; }
-}
-
-async function handlePasswordLogin(e) {
-    e.preventDefault(); hideAllErrors();
-    if (!verifyCaptcha("login")) { showStepError("password", "Incorrect captcha answer."); generateCaptcha("login"); return; }
-    const email = _currentEmail;
+    if (!verifyCaptcha("login")) { showStepError("login", "Incorrect captcha answer."); generateCaptcha("login"); return; }
+    const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
     const btn = document.getElementById("login-submit-btn");
+    if (!email || !password) return;
     btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
     try {
         const res = await fetch(`${API_BASE}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
         const data = await res.json();
-        if (!res.ok) { showStepError("password", data.detail || "Incorrect email or password."); return; }
+        if (!res.ok) { showStepError("login", data.detail || "Incorrect email or password."); return; }
         setSession(data.access_token, data.user); enterApp(data.user);
-    } catch (err) { showStepError("password", "Couldn't reach the server."); }
+    } catch (err) { showStepError("login", "Couldn't reach the server."); }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In'; generateCaptcha("login"); }
 }
 
-async function handleSendOtpForLogin() {
-    hideAllErrors();
-    try {
-        const res = await fetch(`${API_BASE}/auth/login-otp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("password", data.detail || "Could not send OTP."); return; }
-        _otpPurpose = "login"; document.getElementById("otp-email-label").textContent = _currentEmail;
-        setupOtpInputs("otp-inputs"); goToStep("otp"); startOtpTimer(60, "otp-timer", "otp-resend-btn");
-    } catch (err) { showStepError("password", "Couldn't reach the server."); }
-}
-
-async function handleOtpVerify(e) {
-    e.preventDefault(); hideAllErrors();
-    const code = getOtpValue("otp-inputs"); const btn = document.getElementById("otp-submit-btn");
-    if (code.length !== 6) { showStepError("otp", "Enter all 6 digits."); return; }
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/verify-otp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, otp: code }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("otp", data.detail || "Invalid code."); return; }
-        if (data.access_token && data.user) { setSession(data.access_token, data.user); enterApp(data.user); }
-        else { document.getElementById("complete-email-label").textContent = _currentEmail; goToStep("complete"); }
-    } catch (err) { showStepError("otp", "Couldn't reach the server."); }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-check"></i> Verify'; }
-}
-
-async function handleResendOtp() {
-    hideAllErrors();
-    try { await fetch(`${API_BASE}/auth/check-email`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail }) }); startOtpTimer(60, "otp-timer", "otp-resend-btn"); } catch {}
-}
+// ============================================================
+// SIGNUP
+// ============================================================
 
 async function handleSignup(e) {
     e.preventDefault(); hideAllErrors();
@@ -238,93 +189,8 @@ async function handleSignup(e) {
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; generateCaptcha("signup"); }
 }
 
-async function handleCompleteSignup(e) {
-    e.preventDefault(); hideAllErrors();
-    const name = document.getElementById("signup-name").value.trim();
-    const dob = document.getElementById("signup-dob").value;
-    const password = document.getElementById("signup-password").value;
-    const confirm = document.getElementById("signup-confirm").value;
-    const btn = document.getElementById("complete-submit-btn");
-    if (password.length < 6) { showStepError("complete", "Password must be at least 6 characters."); return; }
-    if (password !== confirm) { showStepError("complete", "Passwords do not match."); return; }
-    if (!dob) { showStepError("complete", "Please enter your date of birth."); return; }
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/complete-signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, name, date_of_birth: dob, password }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("complete", data.detail || "Signup failed."); return; }
-        setSession(data.access_token, data.user); enterApp(data.user);
-    } catch (err) { showStepError("complete", "Couldn't reach the server."); }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; }
-}
-
 // ============================================================
-// PHONE FLOW
-// ============================================================
-
-async function handlePhoneSendOtp(e) {
-    e.preventDefault(); hideAllErrors();
-    const phone = document.getElementById("auth-phone").value.trim();
-    const btn = document.getElementById("phone-submit-btn");
-    if (!phone) return;
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/phone/send-otp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("phone", data.detail || "Could not send OTP."); return; }
-        _currentPhone = phone; document.getElementById("phone-otp-label").textContent = phone;
-        setupOtpInputs("phone-otp-inputs"); goToStep("phone-otp"); startOtpTimer(60, "phone-otp-timer", "phone-otp-resend-btn");
-        if (data.dev_code && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
-            const hint = document.createElement("div");
-            hint.className = "dev-otp-hint";
-            hint.innerHTML = `<i class="fa-solid fa-code"></i> Dev mode — code: <strong>${escapeHtml(data.dev_code)}</strong>`;
-            const form = document.getElementById("phone-otp-form");
-            if (form && !form.querySelector(".dev-otp-hint")) form.parentNode.insertBefore(hint, form);
-        }
-    } catch (err) { showStepError("phone", "Couldn't reach the server."); }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Code'; }
-}
-
-async function handlePhoneOtpVerify(e) {
-    e.preventDefault(); hideAllErrors();
-    const code = getOtpValue("phone-otp-inputs"); const btn = document.getElementById("phone-otp-submit-btn");
-    if (code.length !== 6) { showStepError("phone-otp", "Enter all 6 digits."); return; }
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/phone/verify`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: _currentPhone, otp: code }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("phone-otp", data.detail || "Invalid code."); return; }
-        if (data.access_token && data.user) { setSession(data.access_token, data.user); enterApp(data.user); }
-        else { document.getElementById("phone-complete-label").textContent = _currentPhone; goToStep("phone-complete"); }
-    } catch (err) { showStepError("phone-otp", "Couldn't reach the server."); }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-check"></i> Verify'; }
-}
-
-async function handlePhoneResendOtp() {
-    hideAllErrors();
-    try { await fetch(`${API_BASE}/auth/phone/send-otp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: _currentPhone }) }); startOtpTimer(60, "phone-otp-timer", "phone-otp-resend-btn"); } catch {}
-}
-
-async function handlePhoneCompleteSignup(e) {
-    e.preventDefault(); hideAllErrors();
-    const name = document.getElementById("phone-signup-name").value.trim();
-    const email = document.getElementById("phone-signup-email").value.trim();
-    const dob = document.getElementById("phone-signup-dob").value;
-    const password = document.getElementById("phone-signup-password").value;
-    const btn = document.getElementById("phone-complete-submit-btn");
-    if (password.length < 6) { showStepError("phone-complete", "Password must be at least 6 characters."); return; }
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/phone/complete-signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: _currentPhone, name, email: email || undefined, date_of_birth: dob || undefined, password }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("phone-complete", data.detail || "Signup failed."); return; }
-        setSession(data.access_token, data.user); enterApp(data.user);
-    } catch (err) { showStepError("phone-complete", "Couldn't reach the server."); }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; }
-}
-
-// ============================================================
-// FORGOT PASSWORD FLOW
+// FORGOT PASSWORD
 // ============================================================
 
 async function handleForgotSendOtp(e) {
@@ -373,9 +239,9 @@ async function handleResetPassword(e) {
         const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, otp: "verified", new_password: password }) });
         const data = await res.json();
         if (!res.ok) { showStepError("reset", data.detail || "Reset failed."); return; }
-        goToStep("email");
-        const emailErr = document.getElementById("email-error");
-        if (emailErr) { emailErr.textContent = "Password reset! You can now log in."; emailErr.style.display = "block"; emailErr.style.color = "#10b981"; emailErr.style.background = "rgba(16,185,129,0.08)"; emailErr.style.borderColor = "rgba(16,185,129,0.2)"; }
+        goToStep("login");
+        const loginErr = document.getElementById("login-error");
+        if (loginErr) { loginErr.textContent = "Password reset! You can now log in."; loginErr.style.display = "block"; loginErr.style.color = "#10b981"; loginErr.style.background = "rgba(16,185,129,0.08)"; loginErr.style.borderColor = "rgba(16,185,129,0.2)"; }
     } catch (err) { showStepError("reset", "Couldn't reach the server."); }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-key"></i> Reset Password'; }
 }
@@ -392,8 +258,8 @@ function handleLogout() {
     clearSession();
     document.getElementById("app-root").style.display = "none";
     document.getElementById("landing-page").style.display = "block";
-    goToStep("email");
-    ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "auth-email", "auth-phone", "phone-signup-name", "phone-signup-email", "phone-signup-dob", "phone-signup-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+    goToStep("login");
+    ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
     window.scrollTo(0, 0);
 }
 
@@ -482,5 +348,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     const storedToken = getToken(); const user = getStoredUser();
     if (!storedToken || !user) return;
     try { const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() }); if (res.ok) { const u = await res.json(); setSession(storedToken, u); enterApp(u); } else clearSession(); } catch { enterApp(user); }
-    goToStep("email");
+    goToStep("login");
 });

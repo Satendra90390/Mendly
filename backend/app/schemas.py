@@ -16,26 +16,6 @@ class LoginRequest(BaseModel):
     password: str
 
 
-class CheckEmailRequest(BaseModel):
-    email: EmailStr
-
-
-class VerifyOtpRequest(BaseModel):
-    email: EmailStr
-    otp: str = Field(min_length=6, max_length=6)
-
-
-class CompleteSignupRequest(BaseModel):
-    email: EmailStr
-    name: str = Field(min_length=1, max_length=100)
-    date_of_birth: str = Field(min_length=1, max_length=10)
-    password: str = Field(min_length=6, max_length=72)
-
-
-class LoginOtpRequest(BaseModel):
-    email: EmailStr
-
-
 # ——— Phone Auth ———
 class SendPhoneOtpRequest(BaseModel):
     phone: str = Field(min_length=6, max_length=20)
