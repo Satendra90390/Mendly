@@ -257,15 +257,15 @@ async def phone_complete_signup(request: Request, payload: schemas.PhoneSignupRe
 
 
 # ============================================================
-# GOOGLE OAUTH2
+# FACEBOOK OAUTH2
 # ============================================================
 
-@app.get("/api/auth/google")
-async def google_login(request: Request):
+@app.get("/api/auth/facebook")
+async def facebook_login(request: Request):
     frontend_url = os.getenv("FRONTEND_URL", "https://mendly.pages.dev")
     try:
         result = supabase.auth.sign_in_with_oauth({
-            "provider": "google",
+            "provider": "facebook",
             "options": {"redirect_to": frontend_url},
         })
         return RedirectResponse(url=result.url)
