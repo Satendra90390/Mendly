@@ -86,6 +86,11 @@ async def startup_event():
     logger.info("Database indexes initialized")
 
 
+@app.get("/", include_in_schema=False)
+async def root():
+    return RedirectResponse(url="/docs")
+
+
 # ============================================================
 # AUTH ROUTES
 # ============================================================

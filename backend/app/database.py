@@ -21,7 +21,6 @@ client = AsyncIOMotorClient(
     tls=True,
     tlsAllowInvalidCertificates=False,
     tlsAllowInvalidHostnames=False,
-    ssl_cert_reqs=ssl.CERT_REQUIRED,
     connectTimeoutMS=30000,
     serverSelectionTimeoutMS=30000,
 )
