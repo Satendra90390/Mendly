@@ -8,8 +8,8 @@ node_modules/
 
 # Environment
 .env
-.env.local
-.env.production
+.env.*
+!.env.example
 
 # Database
 *.db
@@ -32,11 +32,16 @@ build/
 
 # Logs
 *.log
-backend/stderr.log
-backend/stdout.log
-backend/tmp_*
 
-# Android build
+# Android
 android/app/build/
 android/.gradle/
 android/build/
+android/local.properties
+android/app/src/main/assets/public/
+
+# Backend
+backend/stderr.log
+backend/stdout.log
+backend/tmp_*
+backend/supabase/

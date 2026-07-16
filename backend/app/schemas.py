@@ -21,41 +21,7 @@ class GuestUpgradeRequest(BaseModel):
     password: str = Field(min_length=6, max_length=72)
 
 
-# ——— Phone Auth ———
-class SendPhoneOtpRequest(BaseModel):
-    phone: str = Field(min_length=6, max_length=20)
-
-
-class VerifyPhoneOtpRequest(BaseModel):
-    phone: str = Field(min_length=6, max_length=20)
-    otp: str = Field(min_length=6, max_length=6)
-
-
-class PhoneSignupRequest(BaseModel):
-    phone: str = Field(min_length=6, max_length=20)
-    name: str = Field(min_length=1, max_length=100)
-    email: Optional[EmailStr] = None
-    date_of_birth: Optional[str] = None
-    password: str = Field(min_length=6, max_length=72)
-
-
-# ——— Forgot Password ———
-class ForgotPasswordRequest(BaseModel):
-    email: EmailStr
-
-
-class VerifyForgotOtpRequest(BaseModel):
-    email: EmailStr
-    otp: str = Field(min_length=6, max_length=6)
-
-
-class ResetPasswordRequest(BaseModel):
-    email: EmailStr
-    otp: str = Field(min_length=1, max_length=10)
-    new_password: str = Field(min_length=6, max_length=72)
-
-
-class TokenResponse(BaseModel):
+# ——— Token ———
     access_token: str
     token_type: str = "bearer"
     user: "UserOut"
