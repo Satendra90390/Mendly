@@ -1,6 +1,5 @@
 from typing import Optional, List
 from datetime import datetime
-from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -63,7 +62,7 @@ class TokenResponse(BaseModel):
 
 
 class UserOut(BaseModel):
-    id: UUID
+    id: str
     name: str
     email: Optional[str] = None
     created_at: datetime
@@ -108,7 +107,7 @@ class AccountStats(BaseModel):
 
 # ---------------- Activity ----------------
 class ActivityLogOut(BaseModel):
-    id: int
+    id: str
     action: str
     detail: str
     created_at: datetime
@@ -130,7 +129,7 @@ class ChatRequest(BaseModel):
 
 
 class ChatMessageOut(BaseModel):
-    id: int
+    id: str
     role: str
     content: str
     created_at: datetime
@@ -162,7 +161,7 @@ class SavedSearchCreate(BaseModel):
 
 
 class SavedSearchOut(BaseModel):
-    id: int
+    id: str
     query_type: str
     query_value: str
     created_at: datetime

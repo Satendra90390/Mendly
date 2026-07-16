@@ -8,25 +8,25 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
-        value: "1440"
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: SUPABASE_JWT_SECRET
-        sync: false
-      - key: DATABASE_URL
-        sync: false
+        value: "10080"
+      - key: MONGODB_URI
+        value: mongodb+srv://altvo871_db_user:tztzHtoasCmTPpTU@mendly.ekpjzls.mongodb.net/mendly?retryWrites=true&w=majority&appName=mendly
       - key: FRONTEND_ORIGINS
-        sync: false
-        value: "https://mendly.pages.dev,https://d333b595.mendly.pages.dev,https://mendly.mdl1.workers.dev,http://localhost:5500"
+        value: https://mendly-xi.vercel.app
       - key: FRONTEND_URL
-        value: "https://mendly.pages.dev"
+        value: https://mendly-xi.vercel.app
       - key: CHATBOT_PROVIDER
         value: nvidia
-      - key: BACKEND_URL
-        sync: false
-        value: ""
+      - key: NVIDIA_API_KEY
+        value: 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
+      - key: NVIDIA_API_URL
+        value: https://integrate.api.nvidia.com/v1/chat/completions
+      - key: NVIDIA_MODEL
+        value: deepseek-ai/deepseek-v4-flash
+      - key: NVIDIA_MAX_RETRIES
+        value: "2"
+      - key: NVIDIA_TIMEOUT
+        value: "45"
+      - key: PORT
+        value: "8002"
     healthCheckPath: /api/health

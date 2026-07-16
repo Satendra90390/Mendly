@@ -1,4 +1,5 @@
 import httpx
+import math
 import os
 import uuid
 import random
@@ -13,15 +14,23 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from . import schemas, auth, chatbot, openfda_client
+from . import schemas, chatbot, openfda_client
 from .database import (
-    supabase, get_profile, get_profile_by_email, get_profile_by_phone,
+    get_profile, get_profile_by_email, get_profile_by_phone,
     insert_profile, update_profile, delete_profile,
     insert_activity_log, get_activity_logs, delete_activity_logs, count_rows,
     insert_chat_message, get_chat_history, get_recent_chat_messages, delete_chat_messages,
     insert_saved_search, get_saved_searches, delete_saved_search,
+    init_indexes,
 )
 from .knowledge_base import DISEASE_KNOWLEDGE, LOCAL_MEDICINES, EMERGENCY_CONTACTS, DRUG_ALIASES, SYMPTOM_TO_DISEASE
+from .auth import (
+    signup_route, login_route, guest_login_route, guest_upgrade_route,
+    get_me as get_me_route, change_password, get_account_stats,
+    delete_account, get_activity_log, clear_activity_log,
+    block_user, unblock_user,
+    get_current_user_profile,
+)
 
 logger = logging.getLogger("mendly")
 
@@ -67,370 +76,70 @@ def _now():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
 
-def _log_activity(user_id, action: str, detail: str = "", request: Request = None):
-    ip = ""
-    if request:
-        forwarded = request.headers.get("x-forwarded-for")
-        if forwarded:
-            ip = forwarded.split(",")[0].strip()
-        elif request.client:
-            ip = request.client.host
-    try:
-        insert_activity_log({
-            "user_id": user_id,
-            "action": action,
-            "detail": detail[:500],
-            "ip_address": ip,
-        })
-    except Exception as e:
-        logger.warning(f"Activity log failed: {e}")
+# ============================================================
+# STARTUP
+# ============================================================
 
-
-def _make_profile_dict(user_id: str, payload: dict, provider: str = "email") -> dict:
-    colors = ["#4f46e5", "#7c3aed", "#ec4899", "#ef4444", "#f59e0b", "#10b981", "#06b6d4", "#8b5cf6"]
-    return {
-        "id": user_id,
-        "name": payload.get("name", "").strip(),
-        "email": payload.get("email", "").lower(),
-        "auth_provider": provider,
-        "avatar_color": random.choice(colors),
-        "last_login": _now(),
-    }
+@app.on_event("startup")
+async def startup_event():
+    await init_indexes()
+    logger.info("Database indexes initialized")
 
 
 # ============================================================
-# AUTH ROUTES — Supabase Auth
+# AUTH ROUTES
 # ============================================================
 
 @app.post("/api/auth/signup", response_model=schemas.TokenResponse)
 @limiter.limit("5/minute")
 async def signup(request: Request, payload: schemas.SignupRequest):
-    existing = get_profile_by_email(payload.email.lower())
-    if existing:
-        raise HTTPException(status_code=400, detail="An account with this email already exists.")
-
-    try:
-        result = supabase.auth.sign_up({
-            "email": payload.email.lower(),
-            "password": payload.password,
-            "options": {"data": {"name": payload.name.strip(), "provider": "email"}},
-        })
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    if result.user is None:
-        raise HTTPException(status_code=400, detail="Signup failed.")
-
-    profile = get_profile(result.user.id)
-    if not profile:
-        profile = insert_profile(_make_profile_dict(result.user.id, {
-            "name": payload.name, "email": payload.email,
-        }))
-
-    update_profile(result.user.id, {"last_login": _now()})
-    _log_activity(result.user.id, "account_created", "New account registered", request)
-
-    token = result.session.access_token
-    return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
+    return await signup_route(payload, request)
 
 
 @app.post("/api/auth/login", response_model=schemas.TokenResponse)
 @limiter.limit("10/minute")
 async def login(request: Request, payload: schemas.LoginRequest):
-    try:
-        result = supabase.auth.sign_in_with_password({
-            "email": payload.email.lower(),
-            "password": payload.password,
-        })
-    except Exception:
-        raise HTTPException(status_code=401, detail="Incorrect email or password.")
-
-    if result.user is None:
-        raise HTTPException(status_code=401, detail="Incorrect email or password.")
-
-    profile = get_profile(result.user.id)
-    if not profile:
-        raise HTTPException(status_code=401, detail="User not found.")
-    if profile.get("is_blocked"):
-        raise HTTPException(status_code=403, detail="Your account has been blocked.")
-
-    update_profile(result.user.id, {"last_login": _now()})
-    _log_activity(result.user.id, "logged_in", "Successful login", request)
-
-    token = result.session.access_token
-    return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
+    return await login_route(payload, request)
 
 
 @app.post("/api/auth/guest", response_model=schemas.TokenResponse)
 @limiter.limit("10/minute")
 async def guest_login(request: Request):
-    guest_id = f"guest_{uuid.uuid4().hex[:12]}"
-    guest_email = f"{guest_id}@mendly.guest"
-    guest_password = uuid.uuid4().hex
-
-    try:
-        result = supabase.auth.sign_up({
-            "email": guest_email,
-            "password": guest_password,
-            "options": {"data": {"name": "Guest User", "provider": "guest"}},
-        })
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    if result.user is None:
-        raise HTTPException(status_code=400, detail="Guest login failed.")
-
-    profile = get_profile(result.user.id)
-    if not profile:
-        profile = insert_profile({
-            "id": result.user.id,
-            "name": "Guest User",
-            "email": guest_email,
-            "auth_provider": "guest",
-            "avatar_color": random.choice(["#4f46e5", "#7c3aed", "#ec4899", "#ef4444", "#f59e0b", "#10b981"]),
-            "last_login": _now(),
-        })
-
-    _log_activity(result.user.id, "guest_login", "Guest session started", request)
-    token = result.session.access_token
-    return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
+    return await guest_login_route(request)
 
 
 @app.post("/api/auth/guest/upgrade", response_model=schemas.TokenResponse)
 @limiter.limit("5/minute")
-async def guest_upgrade(request: Request, payload: schemas.GuestUpgradeRequest):
-    auth_header = request.headers.get("Authorization", "")
-    token = auth_header.replace("Bearer ", "") if auth_header else ""
-    if not token:
-        raise HTTPException(status_code=401, detail="Bearer token required")
-
-    current_user = auth._verify_supabase_token(token)
-    user_id = current_user.get("sub")
-    profile = get_profile(user_id)
-
-    if not profile or profile.get("auth_provider") != "guest":
-        raise HTTPException(status_code=400, detail="This account is not a guest account.")
-
-    existing = get_profile_by_email(payload.email.lower())
-    if existing and existing.get("id") != user_id:
-        raise HTTPException(status_code=400, detail="This email is already in use by another account.")
-
-    try:
-        supabase.auth.admin.update_user_by_id(
-            user_id,
-            {"email": payload.email.lower(), "password": payload.password}
-        )
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    update_profile(user_id, {
-        "name": payload.name.strip(),
-        "email": payload.email.lower(),
-        "auth_provider": "email",
-    })
-
-    _log_activity(user_id, "guest_upgraded", "Guest account upgraded to full account", request)
-    updated = get_profile(user_id)
-    return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**updated))
+async def guest_upgrade(request: Request, payload: schemas.GuestUpgradeRequest, current_user: dict = Depends(get_current_user_profile)):
+    return await guest_upgrade_route(payload, request, current_user)
 
 
 @app.get("/api/auth/me", response_model=schemas.UserOut)
-async def get_me(request: Request, current_user: dict = Depends(auth.get_current_user)):
-    user_id = current_user.get("sub")
-    profile = get_profile(user_id)
-    if not profile:
-        email = current_user.get("email", "")
-        user_metadata = current_user.get("user_metadata", {})
-        name = user_metadata.get("full_name") or user_metadata.get("name") or (email.split("@")[0] if email else "User")
-        provider = current_user.get("app_metadata", {}).get("provider", "email")
-        profile = insert_profile(_make_profile_dict(user_id, {"name": name, "email": email}, provider=provider))
-        _log_activity(user_id, "oauth_profile_created", f"Profile auto-created for {provider} user", request)
-    if profile.get("is_blocked"):
-        raise HTTPException(status_code=403, detail="Your account has been blocked.")
-    update_profile(user_id, {"last_login": _now()})
-    return profile
+async def get_me_endpoint(current_user: dict = Depends(get_current_user_profile)):
+    return current_user
 
-
-# ============================================================
-# PHONE AUTH
-# ============================================================
-
-@app.post("/api/auth/phone/send-otp")
-@limiter.limit("3/minute")
-async def phone_send_otp(request: Request, payload: schemas.SendPhoneOtpRequest):
-    try:
-        supabase.auth.sign_in_with_otp({"phone": payload.phone.strip()})
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    return {"message": "OTP sent."}
-
-
-@app.post("/api/auth/phone/verify")
-@limiter.limit("10/minute")
-async def phone_verify(request: Request, payload: schemas.VerifyPhoneOtpRequest):
-    phone = payload.phone.strip()
-    try:
-        result = supabase.auth.verify_otp({"phone": phone, "token": payload.otp, "type": "sms"})
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid or expired OTP.")
-
-    if result.user is None:
-        raise HTTPException(status_code=400, detail="Verification failed.")
-
-    profile = get_profile(result.user.id)
-    if profile:
-        update_profile(result.user.id, {"last_login": _now()})
-        _log_activity(result.user.id, "phone_login", "Login via phone OTP", request)
-        token = result.session.access_token
-        return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
-
-    return {"verified": True, "phone": phone, "message": "OTP verified. Complete your profile."}
-
-
-@app.post("/api/auth/phone/complete-signup")
-@limiter.limit("5/minute")
-async def phone_complete_signup(request: Request, payload: schemas.PhoneSignupRequest):
-    phone = payload.phone.strip()
-    if get_profile_by_phone(phone):
-        raise HTTPException(status_code=400, detail="An account with this phone already exists.")
-
-    email = payload.email.lower().strip() if payload.email else f"{phone}@phone.mendly"
-    if get_profile_by_email(email):
-        email = f"{phone}@phone.mendly"
-
-    try:
-        result = supabase.auth.sign_up({
-            "email": email,
-            "password": payload.password,
-            "options": {"data": {"name": payload.name.strip(), "phone": phone, "date_of_birth": payload.date_of_birth, "provider": "phone"}},
-        })
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    if result.user is None:
-        raise HTTPException(status_code=400, detail="Signup failed.")
-
-    profile = get_profile(result.user.id)
-    if not profile:
-        profile = insert_profile({
-            "id": result.user.id,
-            "name": payload.name.strip(),
-            "email": email,
-            "phone": phone,
-            "date_of_birth": payload.date_of_birth,
-            "auth_provider": "phone",
-            "avatar_color": random.choice(["#4f46e5", "#7c3aed", "#ec4899", "#ef4444", "#f59e0b", "#10b981"]),
-            "last_login": _now(),
-        })
-
-    _log_activity(result.user.id, "phone_signup", "Account created via phone", request)
-
-    token = result.session.access_token
-    return schemas.TokenResponse(access_token=token, user=schemas.UserOut(**profile))
-
-
-# ============================================================
-# GUEST LOGIN
-# ============================================================
-
-@app.post("/api/auth/forgot-password")
-@limiter.limit("3/minute")
-async def forgot_password(request: Request, payload: schemas.ForgotPasswordRequest):
-    email = payload.email.lower().strip()
-    try:
-        supabase.auth.reset_password_for_email(
-            email,
-            options={"redirect_to": os.getenv("FRONTEND_URL", "http://localhost:5500") + "/reset-password"},
-        )
-    except Exception as e:
-        logger.warning(f"Supabase reset error: {e}")
-    return {"message": "If an account exists, a reset link has been sent."}
-
-
-@app.post("/api/auth/forgot-password/verify")
-@limiter.limit("10/minute")
-async def forgot_password_verify(request: Request, payload: schemas.VerifyForgotOtpRequest):
-    return {"verified": True, "message": "Code verified. Set your new password."}
-
-
-@app.post("/api/auth/forgot-password/reset")
-@limiter.limit("5/minute")
-async def forgot_password_reset(request: Request, payload: schemas.ResetPasswordRequest):
-    return {"message": "Password reset successfully. You can now log in."}
-
-
-# ============================================================
-# PROFILE & ACCOUNT
-# ============================================================
 
 @app.put("/api/profile", response_model=schemas.UserOut)
-async def update_profile_route(
-    payload: schemas.ProfileUpdateRequest,
-    request: Request,
-    current_user: dict = Depends(auth.get_current_user_profile),
-):
-    updates = {}
-    if payload.name is not None:
-        updates["name"] = payload.name.strip()
-    if payload.email is not None:
-        existing = get_profile_by_email(payload.email.lower())
-        if existing and existing.get("id") != current_user.get("id"):
-            raise HTTPException(status_code=400, detail="This email is already in use.")
-        updates["email"] = payload.email.lower()
-    if payload.avatar_color is not None:
-        updates["avatar_color"] = payload.avatar_color
-    if payload.date_of_birth is not None:
-        updates["date_of_birth"] = payload.date_of_birth
-    if payload.blood_type is not None:
-        updates["blood_type"] = payload.blood_type
-    if payload.profile_photo is not None:
-        updates["profile_photo"] = payload.profile_photo
-
-    if updates:
-        update_profile(current_user["id"], updates)
-
-    _log_activity(current_user["id"], "profile_updated", "Profile information updated", request)
-    updated = get_profile(current_user["id"])
-    return updated
+async def update_profile_endpoint(payload: schemas.ProfileUpdateRequest, request: Request, current_user: dict = Depends(get_current_user_profile)):
+    from .auth import update_profile_route
+    return await update_profile_route(payload, request, current_user)
 
 
 @app.post("/api/profile/change-password")
-async def change_password(
-    payload: schemas.PasswordChangeRequest,
-    request: Request,
-    current_user: dict = Depends(auth.get_current_user_profile),
-):
-    _log_activity(current_user["id"], "password_changed", "Password was changed", request)
-    return {"status": "ok", "message": "Password changed successfully."}
+async def change_password_endpoint(payload: schemas.PasswordChangeRequest, request: Request, current_user: dict = Depends(get_current_user_profile)):
+    from .auth import change_password as change_pw
+    return await change_pw(payload, request, current_user)
 
 
 @app.get("/api/profile/stats", response_model=schemas.AccountStats)
-async def get_account_stats(current_user: dict = Depends(auth.get_current_user_profile)):
-    uid = current_user["id"]
-    msg_count = count_rows("chat_messages", uid)
-    search_count = count_rows("saved_searches", uid)
-    activity_count = count_rows("activity_logs", uid)
-    return schemas.AccountStats(
-        total_messages=msg_count,
-        total_searches=search_count,
-        total_activities=activity_count,
-        member_since=current_user.get("created_at", ""),
-        last_active=current_user.get("last_login", ""),
-    )
+async def get_account_stats_endpoint(current_user: dict = Depends(get_current_user_profile)):
+    from .auth import get_account_stats as get_stats
+    return await get_stats(current_user)
 
 
 @app.delete("/api/profile")
-async def delete_account(request: Request, current_user: dict = Depends(auth.get_current_user_profile)):
-    user_id = current_user["id"]
-    user_name = current_user.get("name", "")
-    try:
-        supabase.auth.admin.delete_user(user_id)
-    except Exception as e:
-        logger.warning(f"Supabase user deletion error: {e}")
-
-    _log_activity(user_id, "account_deleted", f"Account '{user_name}' deleted", request)
-    delete_profile(user_id)
-    return {"status": "deleted", "message": "Your account has been permanently deleted."}
+async def delete_account_endpoint(request: Request, current_user: dict = Depends(get_current_user_profile)):
+    return await delete_account(request, current_user)
 
 
 # ============================================================
@@ -438,15 +147,13 @@ async def delete_account(request: Request, current_user: dict = Depends(auth.get
 # ============================================================
 
 @app.get("/api/activity", response_model=List[schemas.ActivityLogOut])
-async def get_activity_log(limit: int = 50, current_user: dict = Depends(auth.get_current_user_profile)):
-    logs = get_activity_logs(current_user["id"], limit)
-    return logs
+async def list_activity_log(limit: int = 50, current_user: dict = Depends(get_current_user_profile)):
+    return await get_activity_log(limit, current_user)
 
 
 @app.delete("/api/activity")
-async def clear_activity_log(current_user: dict = Depends(auth.get_current_user_profile)):
-    delete_activity_logs(current_user["id"])
-    return {"status": "cleared"}
+async def clear_activity_log_endpoint(current_user: dict = Depends(get_current_user_profile)):
+    return await clear_activity_log(current_user)
 
 
 # ============================================================
@@ -454,25 +161,13 @@ async def clear_activity_log(current_user: dict = Depends(auth.get_current_user_
 # ============================================================
 
 @app.post("/api/admin/users/{user_id}/block")
-async def block_user(user_id: str, request: Request, admin_user: dict = Depends(auth.get_admin_user)):
-    target = get_profile(user_id)
-    if not target:
-        raise HTTPException(status_code=404, detail="User not found.")
-    if admin_user.get("sub") == user_id:
-        raise HTTPException(status_code=400, detail="You cannot block your own account.")
-    update_profile(user_id, {"is_blocked": True})
-    _log_activity(admin_user["sub"], "admin_block_user", f"Blocked user '{target.get('name')}' (ID:{user_id})", request)
-    return {"status": "blocked", "message": f"User '{target.get('name')}' has been blocked."}
+async def block_user_endpoint(user_id: str, request: Request, admin_user: dict = Depends(get_current_user_profile)):
+    return await block_user(user_id, request, admin_user)
 
 
 @app.post("/api/admin/users/{user_id}/unblock")
-async def unblock_user(user_id: str, request: Request, admin_user: dict = Depends(auth.get_admin_user)):
-    target = get_profile(user_id)
-    if not target:
-        raise HTTPException(status_code=404, detail="User not found.")
-    update_profile(user_id, {"is_blocked": False})
-    _log_activity(admin_user["sub"], "admin_unblock_user", f"Unblocked user '{target.get('name')}' (ID:{user_id})", request)
-    return {"status": "unblocked", "message": f"User '{target.get('name')}' has been unblocked."}
+async def unblock_user_endpoint(user_id: str, request: Request, admin_user: dict = Depends(get_current_user_profile)):
+    return await unblock_user(user_id, request, admin_user)
 
 
 # ============================================================
@@ -481,45 +176,43 @@ async def unblock_user(user_id: str, request: Request, admin_user: dict = Depend
 
 @app.post("/api/chat")
 @limiter.limit("30/minute")
-async def chat(
-    request: schemas.ChatRequest,
-    req: Request,
-    current_user: dict = Depends(auth.get_current_user_profile),
+async def chat_endpoint(
+    request: Request,
+    payload: schemas.ChatRequest,
+    current_user: dict = Depends(get_current_user_profile),
 ):
-    if not request.message or not request.message.strip():
+    if not payload.message or not payload.message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty.")
-    if len(request.message) > 2000:
+    if len(payload.message) > 2000:
         raise HTTPException(status_code=400, detail="Message too long (max 2000 characters).")
 
-    recent = get_recent_chat_messages(current_user["id"], 10)
+    recent = await get_recent_chat_messages(current_user["id"], 10)
     history = [schemas.ConversationMessage(role=m["role"], content=m["content"]) for m in recent]
-    if not history and request.history:
-        history = request.history[-10:]
+    if not history and payload.history:
+        history = payload.history[-10:]
 
-    reply = await chatbot.chatbot_response(request.message, request.location, history)
+    reply = await chatbot.chatbot_response(payload.message, payload.location, history)
 
     now = _now()
-    insert_chat_message({"user_id": current_user["id"], "role": "user", "content": request.message[:2000], "created_at": now})
-    insert_chat_message({"user_id": current_user["id"], "role": "bot", "content": reply[:5000], "created_at": now})
-    _log_activity(current_user["id"], "chat_message", f"Asked: {request.message[:80]}", req)
+    await insert_chat_message({"user_id": current_user["id"], "role": "user", "content": payload.message[:2000], "created_at": now})
+    await insert_chat_message({"user_id": current_user["id"], "role": "bot", "content": reply[:5000], "created_at": now})
 
     return {"reply": reply, "response": reply}
 
 
 @app.get("/api/chat/status")
-async def get_chat_status(current_user: dict = Depends(auth.get_current_user_profile)):
+async def get_chat_status(current_user: dict = Depends(get_current_user_profile)):
     return {"provider": chatbot.get_ai_provider(), "gemini_active": chatbot.is_gemini_active()}
 
 
 @app.get("/api/chat/history", response_model=List[schemas.ChatMessageOut])
-async def get_chat_history(current_user: dict = Depends(auth.get_current_user_profile), limit: int = 100):
-    messages = get_chat_history(current_user["id"], limit)
-    return messages
+async def list_chat_history(current_user: dict = Depends(get_current_user_profile), limit: int = 100):
+    return await get_chat_history(current_user["id"], limit)
 
 
 @app.delete("/api/chat/history")
-async def clear_chat_history(current_user: dict = Depends(auth.get_current_user_profile)):
-    delete_chat_messages(current_user["id"])
+async def clear_chat_history(current_user: dict = Depends(get_current_user_profile)):
+    await delete_chat_messages(current_user["id"])
     return {"status": "cleared"}
 
 
@@ -751,25 +444,25 @@ async def search_diseases(payload: schemas.MedicineSearch):
 async def create_saved_search(
     payload: schemas.SavedSearchCreate,
     req: Request,
-    current_user: dict = Depends(auth.get_current_user_profile),
+    current_user: dict = Depends(get_current_user_profile),
 ):
-    item = insert_saved_search({
+    item = await insert_saved_search({
         "user_id": current_user["id"],
         "query_type": payload.query_type,
         "query_value": payload.query_value,
     })
-    _log_activity(current_user["id"], "bookmark_added", f"Bookmarked {payload.query_type}: {payload.query_value}", req)
+    await _log_activity(current_user["id"], "bookmark_added", f"Bookmarked {payload.query_type}: {payload.query_value}", req)
     return item
 
 
 @app.get("/api/saved-searches", response_model=List[schemas.SavedSearchOut])
-async def list_saved_searches(current_user: dict = Depends(auth.get_current_user_profile)):
-    return get_saved_searches(current_user["id"])
+async def list_saved_searches(current_user: dict = Depends(get_current_user_profile)):
+    return await get_saved_searches(current_user["id"])
 
 
 @app.delete("/api/saved-searches/{item_id}")
-async def delete_saved_search_route(item_id: int, current_user: dict = Depends(auth.get_current_user_profile)):
-    delete_saved_search(item_id, current_user["id"])
+async def delete_saved_search_route(item_id: str, current_user: dict = Depends(get_current_user_profile)):
+    await delete_saved_search(item_id, current_user["id"])
     return {"status": "deleted"}
 
 
@@ -807,22 +500,22 @@ def _build_osm_viewbox(lat: float, lng: float, radius_km: float) -> str:
     return f"{lng - lng_delta},{lat - lat_delta},{lng + lng_delta},{lat + lat_delta}"
 
 
-def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: int = 10):
+async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: int = 10):
     viewbox = _build_osm_viewbox(lat, lng, radius_km)
     params = {"format": "json", "q": place_type, "addressdetails": 1, "limit": 50, "bounded": 1, "viewbox": viewbox}
     headers = {"User-Agent": "MendlyHealthPlatform/1.0 (contact@mendlyhealth.com)", "Accept-Language": "en"}
-    with httpx.Client(timeout=10.0) as client:
-        response = client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        response = await client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)
         response.raise_for_status()
         return response.json()
 
 
-def _search_osm_by_name(query: str, place_type: str):
+async def _search_osm_by_name(query: str, place_type: str):
     params = {"format": "json", "q": f"{query} {place_type}", "addressdetails": 1, "limit": 20}
     headers = {"User-Agent": "MendlyHealthPlatform/1.0 (contact@mendlyhealth.com)", "Accept-Language": "en"}
     try:
-        with httpx.Client(timeout=10.0) as client:
-            response = client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)
             response.raise_for_status()
             results = response.json()
             if isinstance(results, list) and results:
@@ -842,10 +535,10 @@ def _search_osm_by_name(query: str, place_type: str):
     return []
 
 
-def get_nearby_places(lat: float, lng: float, place_type: str, radius: int = 10):
+async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int = 10):
     type_query = "hospital" if place_type == "hospital" else "pharmacy"
     try:
-        osm_results = _query_osm_places(lat, lng, type_query, radius)
+        osm_results = await _query_osm_places(lat, lng, type_query, radius)
         if isinstance(osm_results, list) and osm_results:
             places = []
             for item in osm_results:
@@ -876,7 +569,7 @@ async def get_emergency_contacts(country: Optional[str] = None):
 @app.post("/api/emergency/hospitals/nearby")
 async def get_nearby_hospitals(location: schemas.LocationRequest):
     if location.lat != 0 and location.lng != 0:
-        hospitals = get_nearby_places(location.lat, location.lng, "hospital")
+        hospitals = await get_nearby_places(location.lat, location.lng, "hospital")
         if hospitals:
             return {"hospitals": hospitals, "count": len(hospitals)}
     return {"hospitals": demo_hospitals, "count": len(demo_hospitals)}
@@ -892,9 +585,9 @@ async def search_hospitals(request: schemas.LocationRequest):
     q = request.query.lower() if request.query else ""
     hospitals = []
     if request.lat != 0 and request.lng != 0:
-        hospitals = get_nearby_places(request.lat, request.lng, "hospital")
+        hospitals = await get_nearby_places(request.lat, request.lng, "hospital")
     if q:
-        name_results = _search_osm_by_name(request.query, "hospital")
+        name_results = await _search_osm_by_name(request.query, "hospital")
         existing_names = {h["name"].lower() for h in hospitals}
         for nr in name_results:
             if nr["name"].lower() not in existing_names:
@@ -908,7 +601,7 @@ async def search_hospitals(request: schemas.LocationRequest):
 @app.post("/api/emergency/pharmacies/nearby")
 async def get_nearby_pharmacies(location: schemas.LocationRequest):
     if location.lat != 0 and location.lng != 0:
-        pharmacies = get_nearby_places(location.lat, location.lng, "pharmacy")
+        pharmacies = await get_nearby_places(location.lat, location.lng, "pharmacy")
         if pharmacies:
             return {"pharmacies": pharmacies, "count": len(pharmacies)}
     return {"pharmacies": demo_pharmacies, "count": len(demo_pharmacies)}
@@ -924,9 +617,9 @@ async def search_pharmacies(request: schemas.LocationRequest):
     q = request.query.lower() if request.query else ""
     pharmacies = []
     if request.lat != 0 and request.lng != 0:
-        pharmacies = get_nearby_places(request.lat, request.lng, "pharmacy")
+        pharmacies = await get_nearby_places(request.lat, request.lng, "pharmacy")
     if q:
-        name_results = _search_osm_by_name(request.query, "pharmacy")
+        name_results = await _search_osm_by_name(request.query, "pharmacy")
         existing_names = {p["name"].lower() for p in pharmacies}
         for nr in name_results:
             if nr["name"].lower() not in existing_names:
@@ -940,3 +633,26 @@ async def search_pharmacies(request: schemas.LocationRequest):
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok", "service": "Mendly API", "version": "4.0.0"}
+
+
+# ============================================================
+# HELPERS
+# ============================================================
+
+async def _log_activity(user_id: str, action: str, detail: str = "", request: Request = None):
+    ip = ""
+    if request:
+        forwarded = request.headers.get("x-forwarded-for")
+        if forwarded:
+            ip = forwarded.split(",")[0].strip()
+        elif request.client:
+            ip = request.client.host
+    try:
+        await insert_activity_log({
+            "user_id": user_id,
+            "action": action,
+            "detail": detail[:500],
+            "ip_address": ip,
+        })
+    except Exception as e:
+        logger.warning(f"Activity log failed: {e}")

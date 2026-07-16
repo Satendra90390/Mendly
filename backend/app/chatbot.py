@@ -24,7 +24,7 @@ CHATBOT_PROVIDER = os.getenv("CHATBOT_PROVIDER", "nvidia").strip().lower()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 NVIDIA_API_URL = os.getenv("NVIDIA_API_URL", "https://integrate.api.nvidia.com/v1/chat/completions")
-NVIDIA_MODEL = os.getenv("NVIDIA_MODEL", "meta/llama-3.1-70b-instruct")
+NVIDIA_MODEL = os.getenv("NVIDIA_MODEL", "deepseek-ai/deepseek-v4-flash")
 NVIDIA_MAX_RETRIES = int(os.getenv("NVIDIA_MAX_RETRIES", "2"))
 NVIDIA_TIMEOUT = float(os.getenv("NVIDIA_TIMEOUT", "45"))
 
@@ -99,6 +99,7 @@ RESPONSE STYLE:
 - Always mention when something is an emergency requiring immediate care.
 - You have access to the user's conversation history — use it for natural follow-ups.
 - When data is provided, weave it naturally into your response rather than listing it raw.
+- For follow-up questions, acknowledge the previous context and build on it naturally.
 """
 
 # ── Crisis keywords ─────────────────────────────────────────────────────────
@@ -154,33 +155,57 @@ async def _scan_fda(msg: str) -> Optional[dict]:
 
 
 def _build_kb_context(msg: str) -> str:
-    """Return a compact knowledge-base snippet to include in the Gemini prompt."""
+    """Return a compact knowledge-base snippet to include in the prompt."""
     lines: list[str] = []
 
-    # Disease match
+    # Disease match (exact or partial)
     for disease, info in DISEASE_KNOWLEDGE.items():
         if disease in msg:
             lines.append(f"[KB Disease: {disease.title()}]")
-            lines.append(f"Symptoms: {', '.join(info.get('symptoms', [])[:5])}")
-            lines.append(f"Causes: {', '.join(info.get('causes', [])[:4])}")
-            lines.append(f"Treatment: {', '.join(info.get('treatment', [])[:4])}")
+            lines.append(f"Symptoms: {', '.join(info.get('symptoms', [])[:6])}")
+            lines.append(f"Causes: {', '.join(info.get('causes', [])[:5])}")
+            lines.append(f"Treatment: {', '.join(info.get('treatment', [])[:5])}")
+            if info.get("prevention"):
+                lines.append(f"Prevention: {', '.join(info['prevention'][:4])}")
             if info.get("emergency_signs"):
-                lines.append(f"Emergency signs: {', '.join(info['emergency_signs'][:3])}")
-            break  # use first match
+                lines.append(f"⚠️ Emergency signs: {', '.join(info['emergency_signs'][:4])}")
+            if info.get("when_to_see_doctor"):
+                lines.append(f"👨‍⚕️ See doctor: {info['when_to_see_doctor']}")
+            break
 
     # Symptom match
     for symptom, diseases in SYMPTOM_TO_DISEASE.items():
         if symptom in msg and not lines:
             lines.append(f"[KB Symptom: {symptom}]")
-            lines.append(f"Possible conditions: {', '.join(diseases[:5])}")
+            lines.append(f"Possible conditions: {', '.join(diseases[:6])}")
+            # Add brief info for top 2 conditions
+            for d in diseases[:2]:
+                info = DISEASE_KNOWLEDGE.get(d, {})
+                if info.get("symptoms"):
+                    lines.append(f"  • {d.title()}: {', '.join(info['symptoms'][:3])}")
             break
 
     # Local medicine match
     med = _find_local_medicine(msg)
     if med:
-        lines.append(f"[KB Medicine: {med['name']}] Brand: {med.get('brand','')} | "
-                     f"Uses: {', '.join(med.get('uses', [])[:4])} | "
-                     f"Adult dose: {med.get('dosage', {}).get('adult', 'see label')}")
+        lines.append(f"[KB Medicine: {med['name']}]")
+        lines.append(f"  Brand: {med.get('brand', 'Generic')}")
+        lines.append(f"  Category: {med.get('category', 'General')}")
+        lines.append(f"  Uses: {', '.join(med.get('uses', [])[:5])}")
+        dosage = med.get('dosage', {})
+        lines.append(f"  Adult dose: {dosage.get('adult', 'Consult label')}")
+        lines.append(f"  Child dose: {dosage.get('child', 'Consult pediatrician')}")
+        se = med.get("side_effects", {})
+        if se.get("common"):
+            lines.append(f"  Common side effects: {', '.join(se['common'][:4])}")
+        if se.get("serious"):
+            lines.append(f"  ⚠️ Serious: {', '.join(se['serious'][:3])}")
+        if med.get("precautions"):
+            lines.append(f"  Precautions: {'; '.join(med['precautions'][:4])}")
+        if med.get("interactions"):
+            lines.append(f"  Interactions: {'; '.join(med['interactions'][:4])}")
+        if med.get("pregnancy"):
+            lines.append(f"  Pregnancy: {med['pregnancy']}")
 
     return "\n".join(lines)
 
@@ -191,10 +216,13 @@ async def _build_fda_context(msg: str) -> str:
     if candidate:
         live = await openfda_client.get_medicine_detail_live(candidate)
         if live:
-            return (f"[Drug Info: {live['name']}] Brand: {live.get('brand','')} | "
+            return (f"[FDA Drug Info: {live['name']}] "
+                    f"Brand: {live.get('brand', '')} | "
                     f"Uses: {', '.join(live.get('uses', [])[:4])} | "
-                    f"Dose (adult): {live.get('dosage', {}).get('adult', 'see label')} | "
-                    f"Side effects: {', '.join(live.get('side_effects', {}).get('common', [])[:4])}")
+                    f"Adult dose: {live.get('dosage', {}).get('adult', 'see label')} | "
+                    f"Common side effects: {', '.join(live.get('side_effects', {}).get('common', [])[:4])} | "
+                    f"Precautions: {'; '.join(live.get('precautions', [])[:3])} | "
+                    f"Pregnancy: {live.get('pregnancy', 'Consult doctor')}")
     return ""
 
 
@@ -339,10 +367,14 @@ async def _nvidia_answer(
         "messages": messages,
         "temperature": 0.3,
         "top_p": 0.9,
-        "max_tokens": 1024,
+        "max_tokens": 2048,
     }
     if NVIDIA_MODEL:
         payload["model"] = NVIDIA_MODEL
+    if "deepseek" in NVIDIA_MODEL.lower():
+        payload["temperature"] = 0.3
+        payload["top_p"] = 0.95
+        payload["max_tokens"] = 4096
 
     headers = {
         "Authorization": f"Bearer {NVIDIA_API_KEY}",

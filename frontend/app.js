@@ -216,24 +216,32 @@ async function sendChatMessage() {
     }
 }
 
-function addChatMessage(sender, text) {
+function addChatMessage(sender, text, options = {}) {
     const container = document.getElementById("chat-messages");
     const wrap = document.createElement("div");
-    wrap.className = `chat-bubble-wrap ${sender}`;
+    wrap.className = `chat-bubble-wrap ${sender} ${options.animate !== false ? 'animate-in' : ''}`;
+    if (options.prepend) {
+        container.insertBefore(wrap, container.firstChild);
+    } else {
+        container.appendChild(wrap);
+    }
 
     const bubble = document.createElement("div");
     bubble.className = `chat-bubble ${sender}`;
 
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const messageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     if (sender === "bot") {
+        const html = renderMarkdown(text);
         bubble.innerHTML = `
             <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
             <div class="bubble-content">
-                <div class="bubble-text">${renderMarkdown(text)}</div>
+                <div class="bubble-text" id="${messageId}">${html}</div>
                 <div class="bubble-meta">
                     <span class="bubble-time">${now}</span>
-                    <button class="copy-btn" title="Copy" onclick="copyBubble(this)"><i class="fa-regular fa-copy"></i></button>
+                    <button class="copy-btn" title="Copy" onclick="copyBubble('${messageId}')"><i class="fa-regular fa-copy"></i></button>
+                    <button class="regenerate-btn" title="Regenerate" onclick="regenerateResponse(this)"><i class="fa-solid fa-rotate"></i></button>
                 </div>
             </div>`;
     } else {
@@ -245,32 +253,67 @@ function addChatMessage(sender, text) {
     }
 
     wrap.appendChild(bubble);
-    container.appendChild(wrap);
     container.scrollTop = container.scrollHeight;
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        wrap.classList.add('visible');
+    });
+    
+    return wrap;
 }
 
-function copyBubble(btn) {
-    const text = btn.closest(".bubble-content").querySelector(".bubble-text").innerText;
+function copyBubble(messageId) {
+    const textEl = document.getElementById(messageId);
+    if (!textEl) return;
+    const text = textEl.innerText;
     navigator.clipboard.writeText(text).then(() => {
-        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-        setTimeout(() => (btn.innerHTML = '<i class="fa-regular fa-copy"></i>'), 1500);
+        const btn = textEl.closest('.bubble-content').querySelector('.copy-btn');
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            setTimeout(() => (btn.innerHTML = '<i class="fa-regular fa-copy"></i>'), 1500);
+        }
     });
+}
+
+function regenerateResponse(btn) {
+    const wrap = btn.closest('.chat-bubble-wrap');
+    const userMsg = wrap.previousElementSibling;
+    if (!userMsg || !userMsg.classList.contains('user')) return;
+    
+    const userText = userMsg.querySelector('.bubble-text').textContent;
+    
+    // Remove the bot response
+    wrap.remove();
+    
+    // Resend
+    _chatMemory.pop(); // Remove last bot message
+    sendChatMessage();
 }
 
 function renderMarkdown(text) {
     if (!text) return "";
     let html = escapeHtml(text);
 
+    // Headers
     html = html.replace(/^### (.+)$/gm, "<h4>$1</h4>");
     html = html.replace(/^## (.+)$/gm, "<h3>$1</h3>");
     html = html.replace(/^# (.+)$/gm, "<h2>$1</h2>");
 
+    // Bold/italic
     html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
     html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
 
+    // Inline code
     html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
 
+    // Code blocks
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+        return `<pre class="md-code-block"><code class="language-${lang || ''}">${escapeHtml(code.trim())}</code></pre>`;
+    });
+
+    // Tables
     html = html.replace(/((?:\|.+\|\n?)+)/g, (tableBlock) => {
         const rows = tableBlock.trim().split("\n").filter(r => r.trim());
         if (rows.length < 2) return tableBlock;
@@ -286,17 +329,23 @@ function renderMarkdown(text) {
         return tableHtml;
     });
 
+    // Horizontal rule
     html = html.replace(/^---+$/gm, "<hr>");
+
+    // Disclaimers
     html = html.replace(/\*(⚠️[^*]+)\*/g, "<span class='disclaimer'>$1</span>");
 
+    // Bullet points
     html = html.replace(/^[•●][ \t](.+)$/gm, "<li>$1</li>");
     html = html.replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
     html = html.replace(/^\d+\.[ \t](.+)$/gm, "<li>$1</li>");
 
+    // Paragraphs
     html = html.replace(/\n\n/g, "</p><p>");
     html = html.replace(/\n/g, "<br>");
     html = "<p>" + html + "</p>";
 
+    // Cleanup
     html = html.replace(/<p>\s*<\/p>/g, "");
     html = html.replace(/<p>(<[hut])/g, "$1");
     html = html.replace(/(<\/[hut][^>]*>)<\/p>/g, "$1");
@@ -340,11 +389,11 @@ async function loadChatHistoryFromServer() {
         container.innerHTML = "";
         if (messages.length === 0) {
             container.innerHTML = `
-                <div class="chat-bubble-wrap bot">
+                <div class="chat-bubble-wrap bot welcome-message">
                     <div class="chat-bubble bot">
                         <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                         <div class="bubble-content">
-                            <div class="bubble-text"><strong>Welcome to Elix!</strong><br>
+                            <div class="bubble-text"><strong>Welcome to Elix! 👋</strong><br>
                             I can help you with disease information, medicine details, drug interactions, and finding nearby hospitals.<br><br>
                             <strong>Try asking:</strong><br>
                             "What are the symptoms of diabetes?"<br>
@@ -355,7 +404,7 @@ async function loadChatHistoryFromServer() {
                 </div>`;
             return;
         }
-        messages.forEach((m) => addChatMessage(m.role === "user" ? "user" : "bot", m.content));
+        messages.forEach((m) => addChatMessage(m.role === "user" ? "user" : "bot", m.content, { animate: false }));
         messages.slice(-MAX_HISTORY).forEach(m => _chatMemory.push({ role: m.role === "user" ? "user" : "bot", content: m.content }));
     } catch (e) {
         console.error("Could not load chat history:", e);
@@ -371,7 +420,7 @@ async function clearChat() {
     }
     _chatMemory.length = 0;
     document.getElementById("chat-messages").innerHTML = `
-        <div class="chat-bubble-wrap bot">
+        <div class="chat-bubble-wrap bot welcome-message">
             <div class="chat-bubble bot">
                 <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                 <div class="bubble-content">
@@ -385,6 +434,23 @@ function suggestQuery(q) {
     document.getElementById("chat-input").value = q;
     sendChatMessage();
 }
+
+// Auto-resize textarea
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("chat-input");
+    if (input) {
+        input.addEventListener("input", function() {
+            this.style.height = "auto";
+            this.style.height = Math.min(this.scrollHeight, 120) + "px";
+        });
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+    }
+});
 
 // ============================================================
 // MEDICINES
