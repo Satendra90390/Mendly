@@ -635,6 +635,19 @@ async def health_check():
     return {"status": "ok", "service": "Mendly API", "version": "4.0.0"}
 
 
+@app.get("/api/app/version")
+async def get_app_version():
+    return {
+        "android": {
+            "version_code": 2,
+            "version_name": "1.1",
+            "download_url": "https://github.com/Satendra90390/Mendly/releases/latest/download/mendly.apk",
+            "release_notes": "Bug fixes and performance improvements.",
+            "force_update": False,
+        }
+    }
+
+
 # ============================================================
 # HELPERS
 # ============================================================

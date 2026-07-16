@@ -1,4 +1,5 @@
 import os
+import ssl
 from pathlib import Path
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -13,7 +14,17 @@ MONGODB_URI = os.getenv("MONGODB_URI")
 if not MONGODB_URI:
     raise ValueError("MONGODB_URI environment variable is required")
 
-client = AsyncIOMotorClient(MONGODB_URI)
+tls_context = ssl.create_default_context()
+
+client = AsyncIOMotorClient(
+    MONGODB_URI,
+    tls=True,
+    tlsAllowInvalidCertificates=False,
+    tlsAllowInvalidHostnames=False,
+    ssl_cert_reqs=ssl.CERT_REQUIRED,
+    connectTimeoutMS=30000,
+    serverSelectionTimeoutMS=30000,
+)
 db = client["mendly"]
 
 users = db["users"]

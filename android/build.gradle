@@ -18,6 +18,7 @@ buildscript {
 apply from: "variables.gradle"
 
 allprojects {
+    buildDir = "C:/Users/Lenovo/AppData/Local/Temp/mendly-build/${project.name}"
     repositories {
         google()
         mavenCentral()
@@ -26,4 +27,5 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+    delete "C:/Users/Lenovo/AppData/Local/Temp/mendly-build"
 }
