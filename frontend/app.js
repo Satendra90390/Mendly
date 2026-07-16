@@ -48,19 +48,28 @@ function toggleMobileMenu() {
 // Authenticated fetch wrapper
 // ------------------------------------------------------------
 async function authFetch(path, options = {}) {
-    const res = await fetch(`${API_BASE}${path}`, {
-        ...options,
-        headers: {
-            ...(options.body ? { "Content-Type": "application/json" } : {}),
-            ...authHeaders(),
-            ...(options.headers || {}),
-        },
-    });
-    if (res.status === 401) {
-        handleLogout();
-        throw new Error("Session expired. Please log in again.");
+    try {
+        const res = await fetch(`${API_BASE}${path}`, {
+            ...options,
+            headers: {
+                ...(options.body ? { "Content-Type": "application/json" } : {}),
+                ...authHeaders(),
+                ...(options.headers || {}),
+            },
+        });
+        if (res.status === 401) {
+            handleLogout();
+            throw new Error("Session expired. Please log in again.");
+        }
+        return res;
+    } catch (e) {
+        if (e.message === "Session expired. Please log in again.") throw e;
+        if (!navigator.onLine) throw new Error("You are offline. Please check your internet connection.");
+        if (e.name === "TypeError" || e.message.includes("fetch")) {
+            throw new Error("Cannot reach server. Please try again later.");
+        }
+        throw e;
     }
-    return res;
 }
 
 // ============================================================
@@ -211,7 +220,14 @@ async function sendChatMessage() {
     } catch (e) {
         removeTypingIndicator();
         if (!String(e.message).includes("Session expired")) {
-            addChatMessage("bot", "Connection error. Please try again later.");
+            const msg = String(e.message || "");
+            if (msg.includes("offline")) {
+                addChatMessage("bot", "You appear to be offline. Please check your internet connection and try again.");
+            } else if (msg.includes("Cannot reach server")) {
+                addChatMessage("bot", "Unable to reach the server. The service may be starting up — please try again in a moment.");
+            } else {
+                addChatMessage("bot", "Connection error. Please try again later.");
+            }
         }
     }
 }

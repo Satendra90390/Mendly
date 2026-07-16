@@ -162,7 +162,10 @@ async function handleLogin(e) {
         const data = await res.json();
         if (!res.ok) { showStepError("login", data.detail || "Incorrect email or password."); return; }
         setSession(data.access_token, data.user); enterApp(data.user);
-    } catch (err) { showStepError("login", "Couldn't reach the server."); }
+    } catch (err) {
+        if (!navigator.onLine) showStepError("login", "You are offline. Please check your internet connection.");
+        else showStepError("login", "Couldn't reach the server. Please try again.");
+    }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In'; generateCaptcha("login"); }
 }
 
@@ -186,7 +189,10 @@ async function handleSignup(e) {
         const data = await res.json();
         if (!res.ok) { showStepError("signup", data.detail || "Signup failed."); return; }
         setSession(data.access_token, data.user); enterApp(data.user, true);
-    } catch (err) { showStepError("signup", "Couldn't reach the server."); }
+    } catch (err) {
+        if (!navigator.onLine) showStepError("signup", "You are offline. Please check your internet connection.");
+        else showStepError("signup", "Couldn't reach the server. Please try again.");
+    }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; generateCaptcha("signup"); }
 }
 
@@ -205,7 +211,10 @@ async function handleGuestLogin() {
         setSession(data.access_token, data.user);
         enterApp(data.user, false);
         setTimeout(() => { const banner = document.getElementById("guest-banner"); if (banner) banner.style.display = "block"; }, 500);
-    } catch (err) { alert("Couldn't reach the server."); }
+    } catch (err) {
+        if (!navigator.onLine) alert("You are offline. Please check your internet connection.");
+        else alert("Couldn't reach the server. Please try again.");
+    }
     finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-secret" style="font-size:18px;color:#6c63ff;"></i> <span>Continue as Guest</span>'; } }
 }
 
@@ -232,7 +241,10 @@ async function handleGuestUpgrade(e) {
         document.getElementById("landing-page").style.display = "none";
         document.getElementById("app-root").style.display = "flex";
         showWelcomeMessage(data.user.name);
-    } catch (err) { showStepError("upgrade", "Couldn't reach the server."); }
+    } catch (err) {
+        if (!navigator.onLine) showStepError("upgrade", "You are offline. Please check your internet connection.");
+        else showStepError("upgrade", "Couldn't reach the server. Please try again.");
+    }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-rocket"></i> Save & Continue'; }
 }
 
@@ -258,7 +270,10 @@ async function handleForgotSendOtp(e) {
         const data = await res.json();
         _currentEmail = email; document.getElementById("forgot-otp-label").textContent = email;
         setupOtpInputs("forgot-otp-inputs"); goToStep("forgot-otp"); startOtpTimer(60, "forgot-otp-timer", "forgot-otp-resend-btn");
-    } catch (err) { showStepError("forgot", "Couldn't reach the server."); }
+    } catch (err) {
+        if (!navigator.onLine) showStepError("forgot", "You are offline. Please check your internet connection.");
+        else showStepError("forgot", "Couldn't reach the server. Please try again.");
+    }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Reset Code'; }
 }
 
@@ -272,7 +287,10 @@ async function handleForgotOtpVerify(e) {
         const data = await res.json();
         if (!res.ok) { showStepError("forgot-otp", data.detail || "Invalid code."); return; }
         goToStep("reset");
-    } catch (err) { showStepError("forgot-otp", "Couldn't reach the server."); }
+    } catch (err) {
+        if (!navigator.onLine) showStepError("forgot-otp", "You are offline. Please check your internet connection.");
+        else showStepError("forgot-otp", "Couldn't reach the server. Please try again.");
+    }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-check"></i> Verify'; }
 }
 
@@ -296,7 +314,10 @@ async function handleResetPassword(e) {
         goToStep("login");
         const loginErr = document.getElementById("login-error");
         if (loginErr) { loginErr.textContent = "Password reset! You can now log in."; loginErr.style.display = "block"; loginErr.style.color = "#10b981"; loginErr.style.background = "rgba(16,185,129,0.08)"; loginErr.style.borderColor = "rgba(16,185,129,0.2)"; }
-    } catch (err) { showStepError("reset", "Couldn't reach the server."); }
+    } catch (err) {
+        if (!navigator.onLine) showStepError("reset", "You are offline. Please check your internet connection.");
+        else showStepError("reset", "Couldn't reach the server. Please try again.");
+    }
     finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-key"></i> Reset Password'; }
 }
 

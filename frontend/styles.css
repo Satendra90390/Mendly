@@ -2054,3 +2054,26 @@ textarea { resize: vertical; min-height: 56px; }
     border: none !important; border-radius: 10px !important; cursor: pointer;
 }
 .update-btn i { margin-right: 4px; }
+
+/* ============================================================ */
+/* OFFLINE BANNER                                                 */
+/* ============================================================ */
+.offline-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; background: #ef4444; color: #fff;
+    font-size: 13px; font-weight: 600; text-align: center;
+    box-shadow: 0 2px 12px rgba(239,68,68,0.3);
+    animation: slideDown 0.3s ease;
+}
+.offline-banner i { font-size: 16px; }
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.dark .offline-banner { background: #dc2626; }
+
+/* Safe area for notched devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .offline-banner { padding-top: calc(10px + env(safe-area-inset-top)); }
+}

@@ -936,12 +936,18 @@
     </div>
 </div>
 
-<script src="config.js?v=18"></script>
-<script src="auth.js?v=18"></script>
-<script src="app.js?v=18"></script>
+<!-- OFFLINE BANNER -->
+<div id="offline-banner" class="offline-banner" style="display:none;">
+    <i class="fa-solid fa-wifi-slash"></i>
+    <span>You are offline. Some features may not work.</span>
+</div>
+
+<script src="config.js?v=19"></script>
+<script src="auth.js?v=19"></script>
+<script src="app.js?v=19"></script>
 <script src="update.js?v=1"></script>
 <script>
-if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js"); }
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); }
 let deferredPrompt;
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; });
 function toggleLandingSidebar() {
@@ -951,6 +957,20 @@ function toggleLandingSidebar() {
     overlay.classList.toggle('active');
     document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
 }
+function toggleTheme() {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('mendly_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+}
+(function() {
+    const banner = document.getElementById('offline-banner');
+    function updateStatus() {
+        if (!navigator.onLine) { banner.style.display = 'flex'; }
+        else { banner.style.display = 'none'; }
+    }
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+    updateStatus();
+})();
 </script>
 </body>
 </html>
