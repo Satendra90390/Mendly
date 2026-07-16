@@ -48,6 +48,12 @@ if _origins_env.strip() == "*":
     _allow_credentials = False
 else:
     allow_origins = [o.strip() for o in _origins_env.split(",") if o.strip()]
+    allow_origins += [
+        "capacitor://localhost",
+        "https://localhost",
+        "http://localhost",
+    ]
+    allow_origins = list(dict.fromkeys(allow_origins))
     _allow_credentials = True
 
 app.add_middleware(
