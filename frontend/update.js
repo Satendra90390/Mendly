@@ -1,7 +1,7 @@
 // ============================================================
 // Mendly — In-App Update System
 // ============================================================
-const APP_VERSION = { code: 1, name: "1.0" };
+const APP_VERSION = { code: 3, name: "1.2" };
 
 function isRunningInApp() {
     return window.location.protocol === "capacitor:" || window.Capacitor?.isNativePlatform?.();
