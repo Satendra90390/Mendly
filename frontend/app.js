@@ -635,11 +635,23 @@ async function checkInteractions() {
         const data = await res.json();
         if (data.error) { container.innerHTML = `<div class="interaction-result warning">${escapeHtml(data.error)}</div>`; return; }
         let html = `<div class="interaction-result info"><strong>${escapeHtml(data.medication)}</strong></div>`;
-        if (data.warnings?.length) html += data.warnings.map(w => `<div class="interaction-result warning">${escapeHtml(w)}</div>`).join("");
-        else html += `<div class="interaction-result success">No significant interactions detected.</div>`;
+        const medCount = (data.medication || "").split(",").filter(Boolean).length;
+        if (data.warnings?.length) {
+            html += data.warnings.map(w => `<div class="interaction-result warning">${escapeHtml(w)}</div>`).join("");
+        } else if (medCount < 2 && !conditions.length) {
+            html += `<div class="interaction-result info">Enter multiple medicines separated by commas, or add your health conditions, to check for interactions.</div>`;
+        } else {
+            html += `<div class="interaction-result success">No significant interactions detected.</div>`;
+        }
         if (data.recommendations?.length) html += data.recommendations.map(r => `<div class="interaction-result info">${escapeHtml(r)}</div>`).join("");
         container.innerHTML = html;
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+        const msg = String(e.message || "");
+        if (msg.includes("offline")) container.innerHTML = `<div class="interaction-result warning">You appear to be offline. Please check your internet connection.</div>`;
+        else if (msg.includes("Cannot reach server") || msg.includes("Session expired")) container.innerHTML = `<div class="interaction-result warning">${escapeHtml(e.message)}</div>`;
+        else container.innerHTML = `<div class="interaction-result warning">Could not check interactions. Please try again.</div>`;
+    }
 }
 
 // ============================================================

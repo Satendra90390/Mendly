@@ -343,6 +343,19 @@ async def check_interactions(payload: schemas.InteractionCheck):
     warnings: List[str] = []
     recommendations: List[str] = []
 
+    for i, m_name in enumerate(med_names):
+        lower = m_name.lower()
+        resolved_name = DRUG_ALIASES.get(lower, lower)
+        for alias, real in DRUG_ALIASES.items():
+            if alias in lower or lower in alias:
+                resolved_name = real
+                break
+        if "+" in resolved_name:
+            parts = [p.strip() for p in resolved_name.split("+") if p.strip()]
+            med_names[i:i+1] = parts
+        else:
+            med_names[i] = resolved_name
+
     for m_name in med_names:
         med = next((m for m in LOCAL_MEDICINES if m["name"].lower() == m_name.lower()), None)
         if not med:
