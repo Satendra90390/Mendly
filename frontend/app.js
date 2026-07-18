@@ -607,7 +607,7 @@ async function searchDiseaseProfiles() {
             <div class="glass-card" style="margin-top:0.75rem;">
                 <div style="display:flex;justify-content:space-between;align-items:start;">
                     <h3 style="text-transform:capitalize;font-size:1.1rem;">${escapeHtml(d.name)}</h3>
-                    <button onclick="saveSearch('disease', '${d.name.replace(/'/g, "\\'")}')" class="btn-secondary" style="padding:0.25rem 0.6rem;"><i class="fa-solid fa-bookmark"></i></button>
+                    <button onclick="saveSearch('disease', '${escapeJS(d.name)}')" class="btn-secondary" style="padding:0.25rem 0.6rem;"><i class="fa-solid fa-bookmark"></i></button>
                 </div>
                 <div class="detail-section"><h4>Symptoms</h4><ul>${(d.symptoms || []).map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>
                 <div class="detail-section"><h4>Treatment</h4><ul>${(d.treatment || []).map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul></div>
@@ -682,9 +682,9 @@ function renderSavedSearches() {
                     <h4>${escapeHtml(s.query_value)}</h4>
                     <span class="category">${s.query_type === "medicine" ? "Medicine" : "Disease"}</span>
                 </div>
-                <button onclick="deleteSavedSearch(${s.id})" class="btn-secondary" style="padding:0.2rem 0.5rem;"><i class="fa-solid fa-trash-can"></i></button>
+                <button onclick="deleteSavedSearch('${escapeJS(s.id)}')" class="btn-secondary" style="padding:0.2rem 0.5rem;"><i class="fa-solid fa-trash-can"></i></button>
             </div>
-            <button onclick="suggestQuery('${s.query_type === "medicine" ? "Tell me about " : "What are the symptoms of "}${s.query_value.replace(/'/g, "\\'")}'); switchView('chatbot');" class="btn-secondary" style="width:100%;margin-top:0.5rem;font-size:0.78rem;">
+            <button onclick="suggestQuery('${s.query_type === "medicine" ? "Tell me about " : "What are the symptoms of "}${escapeJS(s.query_value)}'); switchView('chatbot');" class="btn-secondary" style="width:100%;margin-top:0.5rem;font-size:0.78rem;">
                 <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix
             </button>
         </div>

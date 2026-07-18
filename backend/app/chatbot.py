@@ -308,7 +308,7 @@ async def _gemini_answer(
     chat = model.start_chat(history=chat_history)
     full_prompt = f"{original}{context_block}{location_hint}"
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     response = await loop.run_in_executor(None, lambda: chat.send_message(full_prompt))
 
     text = response.text.strip()

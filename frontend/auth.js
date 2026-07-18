@@ -268,6 +268,7 @@ async function handleForgotSendOtp(e) {
     try {
         const res = await fetch(`${API_BASE}/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
         const data = await res.json();
+        if (!res.ok) { showStepError("forgot", data.detail || "Could not send reset code."); return; }
         _currentEmail = email; document.getElementById("forgot-otp-label").textContent = email;
         setupOtpInputs("forgot-otp-inputs"); goToStep("forgot-otp"); startOtpTimer(60, "forgot-otp-timer", "forgot-otp-resend-btn");
     } catch (err) {
@@ -296,7 +297,7 @@ async function handleForgotOtpVerify(e) {
 
 async function handleForgotResendOtp() {
     hideAllErrors();
-    try { await fetch(`${API_BASE}/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail }) }); startOtpTimer(60, "forgot-otp-timer", "forgot-otp-resend-btn"); } catch {}
+    try { await fetch(`${API_BASE}/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail }) }); startOtpTimer(60, "forgot-otp-timer", "forgot-otp-resend-btn"); } catch { showStepError("forgot-otp", "Could not resend code. Please try again."); }
 }
 
 async function handleResetPassword(e) {
@@ -429,6 +430,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const storedToken = getToken(); const user = getStoredUser();
     if (!storedToken || !user) return;
-    try { const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() }); if (res.ok) { const u = await res.json(); setSession(storedToken, u); enterApp(u); } else clearSession(); } catch { enterApp(user); }
-    goToStep("login");
+    try { const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() }); if (res.ok) { const u = await res.json(); setSession(storedToken, u); enterApp(u); } else { clearSession(); } } catch { enterApp(user); }
 });

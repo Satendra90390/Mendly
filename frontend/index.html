@@ -58,7 +58,6 @@
             <button class="landing-sidebar-theme" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i> <span>Toggle Theme</span></button>
         </div>
     </div>
-    </nav>
 
     <!-- HERO SECTION -->
     <section class="landing-hero">
@@ -956,10 +955,6 @@ function toggleLandingSidebar() {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
     document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-}
-function toggleTheme() {
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('mendly_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 }
 (function() {
     const banner = document.getElementById('offline-banner');

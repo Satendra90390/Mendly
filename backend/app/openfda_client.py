@@ -143,18 +143,25 @@ async def _fda_search(search_expr: str, limit: int) -> list[dict]:
     return deduped
 
 
+def _sanitize_fda_query(query: str) -> str:
+    """Remove characters that could inject into openFDA search expressions."""
+    return re.sub(r'[^\w\s\-\+\.\,\(\)]', '', query).strip()
+
+
 def _build_exact_expr(query: str) -> str:
+    safe = _sanitize_fda_query(query)
     return (
-        f'(openfda.brand_name:"{query}"^2 OR openfda.generic_name:"{query}"^2 '
-        f'OR openfda.substance_name:"{query}")'
+        f'(openfda.brand_name:"{safe}"^2 OR openfda.generic_name:"{safe}"^2 '
+        f'OR openfda.substance_name:"{safe}")'
     )
 
 
 def _build_wildcard_expr(query: str) -> str:
+    safe = _sanitize_fda_query(query)
     return (
-        f'(openfda.brand_name:"{query}" OR openfda.generic_name:"{query}" '
-        f'OR openfda.substance_name:"{query}" '
-        f'OR openfda.brand_name:{query}* OR openfda.generic_name:{query}*)'
+        f'(openfda.brand_name:"{safe}" OR openfda.generic_name:"{safe}" '
+        f'OR openfda.substance_name:"{safe}" '
+        f'OR openfda.brand_name:{safe}* OR openfda.generic_name:{safe}*)'
     )
 
 

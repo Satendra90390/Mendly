@@ -1,8 +1,6 @@
 import httpx
 import math
 import os
-import uuid
-import random
 import logging
 import datetime
 from typing import Optional, List
@@ -364,19 +362,19 @@ async def check_interactions(payload: schemas.InteractionCheck):
         warnings.append(f"Combination of {', '.join(detected_nsaids).title()} significantly increases risk of stomach ulcers and GI bleeding.")
 
     thinners = ["warfarin", "clopidogrel", "apixaban", "rivaroxaban", "heparin"]
-    has_thinner = any(t in name for name in resolved_names)
-    has_nsaid = any(n in name for name in resolved_names if n != "aspirin")
+    has_thinner = any(t in name for t in thinners for name in resolved_names)
+    has_nsaid = any(n in name for n in nsaids if n != "aspirin" for name in resolved_names)
     if has_thinner and has_nsaid:
         warnings.append("Combining blood thinners with NSAIDs greatly increases risk of severe internal bleeding.")
 
     depressants = ["alcohol", "ethanol", "xanax", "diazepam", "lorazepam", "gabapentin", "tramadol", "codeine"]
-    has_depressant = any(d in name for name in resolved_names)
-    has_antihistamine = any(a in name for name in resolved_names for a in ["cetirizine", "loratadine", "diphenhydramine", "fexofenadine"])
+    has_depressant = any(d in name for d in depressants for name in resolved_names)
+    has_antihistamine = any(a in name for a in ["cetirizine", "loratadine", "diphenhydramine", "fexofenadine"] for name in resolved_names)
     if has_depressant and has_antihistamine:
         warnings.append("Combining alcohol/sedatives with antihistamines can cause severe drowsiness and impaired coordination.")
 
-    has_nitrate = any(n in name for name in resolved_names for n in ["nitroglycerin", "isosorbide", "nitrate"])
-    has_sildenafil = any(s in name for name in resolved_names for s in ["sildenafil", "viagra", "tadalafil", "cialis"])
+    has_nitrate = any(n in name for n in ["nitroglycerin", "isosorbide", "nitrate"] for name in resolved_names)
+    has_sildenafil = any(s in name for s in ["sildenafil", "viagra", "tadalafil", "cialis"] for name in resolved_names)
     if has_nitrate and has_sildenafil:
         warnings.append("DANGEROUS: Combining nitrates and PDE5 inhibitors can cause a life-threatening drop in blood pressure.")
 

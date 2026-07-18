@@ -74,7 +74,6 @@ DRUG_ALIASES = {
     "duolin": "ipratropium + salbutamol",
     "deriphyllin": "theophylline",
     "theo": "theophylline",
-    "sinarest": "paracetamol + pseudoephedrine",
     "levocet": "levocetirizine",
     "lcet": "levocetirizine",
     "aloquin": "hydroxychloroquine",

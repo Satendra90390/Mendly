@@ -4,8 +4,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
-from typing import Optional, List, Dict, Any
-from datetime import datetime
+from typing import Optional, List
+from datetime import datetime, timezone
 
 # Load .env file from backend directory
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
@@ -70,15 +70,15 @@ async def get_profile_by_phone(phone: str) -> Optional[dict]:
 
 async def insert_profile(data: dict) -> dict:
     data = {k: v for k, v in data.items() if v is not None}
-    data["created_at"] = datetime.utcnow()
-    data["last_login"] = datetime.utcnow()
+    data["created_at"] = datetime.now(timezone.utc)
+    data["last_login"] = datetime.now(timezone.utc)
     result = await users.insert_one(data)
     data["_id"] = result.inserted_id
     return _to_str_id(data)
 
 
 async def update_profile(user_id: str, data: dict) -> dict:
-    data["last_login"] = datetime.utcnow()
+    data["last_login"] = datetime.now(timezone.utc)
     await users.update_one({"_id": _obj_id(user_id)}, {"$set": data})
     return await get_profile(user_id)
 
@@ -88,7 +88,7 @@ async def delete_profile(user_id: str):
 
 
 async def insert_activity_log(data: dict):
-    data["created_at"] = datetime.utcnow()
+    data["created_at"] = datetime.now(timezone.utc)
     await activity_logs.insert_one(data)
 
 
@@ -108,7 +108,7 @@ async def count_rows(collection: str, user_id: str) -> int:
 
 async def insert_chat_message(data: dict):
     data["user_id"] = _obj_id(data["user_id"])
-    data["created_at"] = datetime.utcnow()
+    data["created_at"] = datetime.now(timezone.utc)
     await chat_messages.insert_one(data)
 
 
@@ -130,7 +130,7 @@ async def delete_chat_messages(user_id: str):
 
 async def insert_saved_search(data: dict) -> dict:
     data["user_id"] = _obj_id(data["user_id"])
-    data["created_at"] = datetime.utcnow()
+    data["created_at"] = datetime.now(timezone.utc)
     result = await saved_searches.insert_one(data)
     data["_id"] = result.inserted_id
     return _to_str_id(data)

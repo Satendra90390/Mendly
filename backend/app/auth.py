@@ -24,8 +24,8 @@ from .database import (
 security = HTTPBearer(auto_error=False)
 
 JWT_SECRET = os.getenv("JWT_SECRET")
-if not JWT_SECRET:
-    raise ValueError("JWT_SECRET environment variable is required")
+if not JWT_SECRET or len(JWT_SECRET) < 32:
+    raise ValueError("JWT_SECRET environment variable is required and must be at least 32 characters")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
 
