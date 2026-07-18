@@ -48,15 +48,13 @@ function verifyCaptcha(prefix) {
 function handleLogoClick() {
     if (getToken()) {
         const appRoot = document.getElementById("app-root");
-        const landingNav = document.getElementById("landing-nav");
-        const landingHero = document.querySelector(".landing-hero");
-        const landingLogin = document.getElementById("landing-login");
-        const landingFooter = document.getElementById("footer");
-        if (appRoot) appRoot.style.display = "block";
-        if (landingNav) landingNav.style.display = "none";
-        if (landingHero) landingHero.style.display = "none";
-        if (landingLogin) landingLogin.style.display = "none";
-        if (landingFooter) landingFooter.style.display = "none";
+        const landingPage = document.getElementById("landing-page");
+        const landingSidebar = document.getElementById("landing-sidebar");
+        const sidebarOverlay = document.getElementById("landing-sidebar-overlay");
+        if (landingPage) landingPage.style.display = "none";
+        if (landingSidebar) landingSidebar.classList.remove("active");
+        if (sidebarOverlay) sidebarOverlay.classList.remove("active");
+        if (appRoot) appRoot.style.display = "flex";
         if (typeof switchView === "function") switchView("dashboard");
     } else {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -73,7 +71,14 @@ function goToStep(step) {
     hideAllErrors();
     if (step === "login") { generateCaptcha("login"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
     if (step === "signup") { generateCaptcha("signup"); document.getElementById("auth-subtitle").textContent = "Create your account"; }
-    if (step === "upgrade") { document.getElementById("landing-page").style.display = "block"; document.getElementById("app-root").style.display = "none"; }
+    if (step === "upgrade") {
+        document.getElementById("landing-page").style.display = "block";
+        document.getElementById("app-root").style.display = "none";
+        const landingNav = document.getElementById("landing-nav");
+        const landingHero = document.querySelector(".landing-hero");
+        if (landingNav) landingNav.style.display = "";
+        if (landingHero) landingHero.style.display = "";
+    }
 }
 
 function hideAllErrors() {
@@ -336,7 +341,16 @@ function handleLogout() {
     clearSession();
     if (typeof resetApp === "function") resetApp();
     document.getElementById("app-root").style.display = "none";
-    document.getElementById("landing-page").style.display = "block";
+    const landingPage = document.getElementById("landing-page");
+    const landingNav = document.getElementById("landing-nav");
+    const landingHero = document.querySelector(".landing-hero");
+    const landingLogin = document.getElementById("landing-login");
+    const landingFooter = document.getElementById("footer");
+    if (landingPage) landingPage.style.display = "block";
+    if (landingNav) landingNav.style.display = "";
+    if (landingHero) landingHero.style.display = "";
+    if (landingLogin) landingLogin.style.display = "";
+    if (landingFooter) landingFooter.style.display = "";
     goToStep("login");
     ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
     window.scrollTo(0, 0);

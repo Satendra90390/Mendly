@@ -281,13 +281,13 @@ body {
 .topnav-logo {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
-    font-size: 1.1rem;
+    gap: 0.5rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: white;
     white-space: nowrap;
 }
-.topnav-logo .logo-img { height: 32px; filter: brightness(0) invert(1); }
+.topnav-logo .logo-img { height: 36px; filter: brightness(0) invert(1); }
 
 .topnav-links {
     display: flex;
@@ -1285,7 +1285,7 @@ textarea { resize: vertical; min-height: 56px; }
 .logo-img { height: 36px; width: auto; flex-shrink: 0; }
 .logo-img-lg { height: 44px; }
 .logo-img-sm { height: 30px; }
-.logo-img-nav { height: 32px; filter: brightness(0) invert(1); }
+.logo-img-nav { height: 36px; filter: brightness(0) invert(1); }
 .landing-nav-links {
     display: flex;
     gap: 2rem;
