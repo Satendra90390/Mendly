@@ -31,6 +31,7 @@
             <div class="landing-logo" onclick="handleLogoClick()" style="cursor:pointer"><img src="logo.svg" alt="Mendly" class="logo-img"><span>Mendly</span></div>
             <div class="landing-nav-links">
                 <a href="#features">Features</a>
+                <a href="#works">Works</a>
                 <a href="#about">About</a>
                 <a href="#footer">Contact</a>
             </div>
@@ -53,6 +54,7 @@
         </div>
         <div class="landing-sidebar-links">
             <a href="#features" onclick="toggleLandingSidebar()">Features</a>
+            <a href="#works" onclick="toggleLandingSidebar()">Works</a>
             <a href="#about" onclick="toggleLandingSidebar()">About</a>
             <a href="#footer" onclick="toggleLandingSidebar()">Contact</a>
             <div class="landing-sidebar-divider"></div>
@@ -382,6 +384,125 @@
         </div>
     </section>
 
+    <!-- WORKS / PORTFOLIO SECTION -->
+    <section class="landing-works" id="works">
+        <div class="landing-works-inner">
+            <div class="works-header">
+                <span class="works-badge"><i class="fa-solid fa-code"></i> Project Showcase</span>
+                <h2>Built by <span class="gradient-text">Satendra Rathaur</span></h2>
+                <p class="works-subtitle">Full-Stack Developer — Designed, developed, and deployed Mendly from scratch.</p>
+            </div>
+
+            <div class="works-card">
+                <div class="works-card-header">
+                    <div class="works-card-logo">
+                        <img src="logo.svg" alt="Mendly" class="works-logo-img">
+                        <div>
+                            <h3>Mendly — Medicine & Health Platform</h3>
+                            <span class="works-status"><span class="works-dot"></span> Live &amp; Production</span>
+                        </div>
+                    </div>
+                    <a href="https://mendly-xi.vercel.app" target="_blank" rel="noopener" class="works-live-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Demo</a>
+                </div>
+
+                <p class="works-description">AI-powered medicine information platform with real-time drug search, disease knowledge base, drug interaction checker, and nearby hospital/pharmacy finder. Serves users across 10+ countries.</p>
+
+                <div class="works-tech-grid">
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#f7df1e,#f0c000);"><i class="fa-brands fa-js"></i></div>
+                        <span>JavaScript</span>
+                    </div>
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#00b4d8,#0077b6);"><i class="fa-brands fa-python"></i></div>
+                        <span>Python</span>
+                    </div>
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#00d2ff,#3a7bd5);"><i class="fa-solid fa-bolt"></i></div>
+                        <span>FastAPI</span>
+                    </div>
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#00ed64,#13aa52);"><i class="fa-solid fa-database"></i></div>
+                        <span>MongoDB</span>
+                    </div>
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24);"><i class="fa-solid fa-brain"></i></div>
+                        <span>NVIDIA AI</span>
+                    </div>
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#00c853,#1b5e20);"><i class="fa-solid fa-robot"></i></div>
+                        <span>Gemini AI</span>
+                    </div>
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#635bff,#7c3aed);"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <span>Capacitor</span>
+                    </div>
+                    <div class="works-tech-item">
+                        <div class="works-tech-icon" style="background:linear-gradient(135deg,#f5f5f5,#333);"><i class="fa-solid fa-cloud"></i></div>
+                        <span>Render + Vercel</span>
+                    </div>
+                </div>
+
+                <div class="works-stats-row">
+                    <div class="works-stat">
+                        <strong>12+</strong>
+                        <span>Features</span>
+                    </div>
+                    <div class="works-stat">
+                        <strong>50+</strong>
+                        <span>Medicines</span>
+                    </div>
+                    <div class="works-stat">
+                        <strong>20+</strong>
+                        <span>Diseases</span>
+                    </div>
+                    <div class="works-stat">
+                        <strong>3</strong>
+                        <span>APIs Integrated</span>
+                    </div>
+                    <div class="works-stat">
+                        <strong>100%</strong>
+                        <span>Free &amp; Open</span>
+                    </div>
+                </div>
+
+                <div class="works-highlights">
+                    <div class="works-highlight">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <div><strong>Elix AI Chatbot</strong><p>NVIDIA DeepSeek + Gemini dual-provider with local KB fallback. Handles 15+ health categories, crisis detection, drug interactions.</p></div>
+                    </div>
+                    <div class="works-highlight">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <div><strong>Full Auth System</strong><p>JWT auth, OTP verification, guest mode, Google OAuth-ready, admin panel with user blocking, activity audit trail.</p></div>
+                    </div>
+                    <div class="works-highlight">
+                        <i class="fa-solid fa-hospital"></i>
+                        <div><strong>Location Services</strong><p>Real-time hospital & pharmacy finder using OpenStreetMap/Nominatim API with GPS, Haversine distance, and name search.</p></div>
+                    </div>
+                    <div class="works-highlight">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        <div><strong>Cross-Platform</strong><p>PWA + Android app via Capacitor. Offline support with service worker caching, auto-update system, and native feel.</p></div>
+                    </div>
+                    <div class="works-highlight">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <div><strong>Production Ready</strong><p>Rate limiting, security headers, CSP, CORS, input validation, error handling, health checks, and automated deployments.</p></div>
+                    </div>
+                    <div class="works-highlight">
+                        <i class="fa-solid fa-code-branch"></i>
+                        <div><strong>Clean Codebase</strong><p>14 source files, modular architecture, typed schemas, no framework dependencies — pure vanilla JS frontend.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="works-cta">
+                <p>Interested in working together or have questions about this project?</p>
+                <div class="works-cta-btns">
+                    <a href="https://www.linkedin.com/in/satendra-rathaur-25581532b" target="_blank" rel="noopener" class="btn-primary"><i class="fa-brands fa-linkedin"></i> Connect on LinkedIn</a>
+                    <a href="https://github.com/Satendra90390/Mendly" target="_blank" rel="noopener" class="btn-secondary"><i class="fa-brands fa-github"></i> View Source Code</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ABOUT SECTION -->
     <section class="landing-about" id="about">
         <div class="landing-about-inner">
@@ -439,6 +560,7 @@
                 <h4>Resources</h4>
                 <a href="#features">Nearby Hospitals</a>
                 <a href="#features">Emergency Contacts</a>
+                <a href="#works">Project Showcase</a>
                 <a href="#about">About Mendly</a>
             </div>
             <div class="landing-footer-links">
