@@ -143,7 +143,7 @@ def _extract_drug_candidate(msg: str) -> Optional[str]:
     return words[0] if words else None
 
 
-def _scan_fda(msg: str) -> Optional[dict]:
+async def _scan_fda(msg: str) -> Optional[dict]:
     """Try OpenFDA for every plausible drug-name word in the message."""
     tokens = [w.strip("?.,!;:") for w in msg.split()
               if len(w) > 3 and w.lower().strip("?.,!;:") not in _STOP]
