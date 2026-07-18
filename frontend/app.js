@@ -489,7 +489,16 @@ function renderMedicines(medicines) {
     const container = document.getElementById("medicine-results");
     state.renderedMedicines = medicines || [];
     if (!medicines || medicines.length === 0) {
-        container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p style="color:var(--text-muted);">No medicines found. Try a different name or spelling.</p></div>`;
+        const searchVal = document.getElementById("medicine-search") ? document.getElementById("medicine-search").value.trim() : "";
+        const askText = searchVal ? `Tell me about ${searchVal}` : "Tell me about common medicines";
+        container.innerHTML = `
+            <div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;">
+                <p style="color:var(--text-muted);margin-bottom:0.75rem;">No medicines found${searchVal ? ` for "${escapeHtml(searchVal)}"` : ""}.</p>
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Elix has knowledge of medicines worldwide.</p>
+                <button onclick="askChatbot('${escapeJS(askText)}')" class="btn-primary" style="padding:0.5rem 1rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix
+                </button>
+            </div>`;
         return;
     }
     container.innerHTML = medicines.map((m, i) => `
@@ -580,7 +589,14 @@ async function searchByCondition() {
         const data = await res.json();
         const container = document.getElementById("condition-results");
         if (!data.possible_medicines || data.possible_medicines.length === 0) {
-            container.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:1rem 0;">No medicines found for "${escapeHtml(q)}".</p>`;
+            container.innerHTML = `
+                <div style="text-align:center;padding:1.5rem 0;">
+                    <p style="color:var(--text-muted);margin-bottom:1rem;">No medicines found for "${escapeHtml(q)}".</p>
+                    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Try a different name or ask Elix for help.</p>
+                    <button onclick="askChatbot('${escapeJS(q)}')" class="btn-primary" style="padding:0.6rem 1.2rem;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(q)}
+                    </button>
+                </div>`;
             return;
         }
         container.innerHTML = `<h4 style="margin-bottom:0.75rem;">Medicines for "${escapeHtml(q)}":</h4>
@@ -603,7 +619,14 @@ async function searchDiseaseProfiles() {
         const data = await res.json();
         const container = document.getElementById("condition-results");
         if (!data.results || data.results.length === 0) {
-            container.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:1rem 0;">No disease profile found for "${escapeHtml(q)}".</p>`;
+            container.innerHTML = `
+                <div style="text-align:center;padding:1.5rem 0;">
+                    <p style="color:var(--text-muted);margin-bottom:1rem;">No disease profile found for "${escapeHtml(q)}".</p>
+                    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Elix has global health knowledge and can help with any disease or condition.</p>
+                    <button onclick="askChatbot('What are the symptoms and treatment of ${escapeJS(q)}?')" class="btn-primary" style="padding:0.6rem 1.2rem;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(q)}
+                    </button>
+                </div>`;
             return;
         }
         container.innerHTML = data.results.map(d => `
