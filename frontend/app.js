@@ -1158,22 +1158,27 @@ function setTheme(theme) {
 }
 
 function updateThemeButtons(theme) {
-    document.querySelectorAll(".theme-toggle-btn").forEach(btn => {
+    let iconClass, label, title;
+    if (theme === "dark") {
+        iconClass = "fa-solid fa-sun";
+        label = "Light Mode";
+        title = "Switch to light mode";
+    } else if (theme === "system") {
+        iconClass = "fa-solid fa-desktop";
+        label = "System";
+        title = "Switch to light mode";
+    } else {
+        iconClass = "fa-solid fa-moon";
+        label = "Dark Mode";
+        title = "Switch to dark mode";
+    }
+
+    document.querySelectorAll(".theme-toggle-btn, .landing-sidebar-theme, .mobile-dropdown-theme").forEach(btn => {
         const icon = btn.querySelector("i");
-        const label = btn.querySelector("span");
-        if (theme === "dark") {
-            if (icon) icon.className = "fa-solid fa-sun";
-            if (label) label.textContent = "Light Mode";
-            btn.title = "Switch to light mode";
-        } else if (theme === "system") {
-            if (icon) icon.className = "fa-solid fa-desktop";
-            if (label) label.textContent = "System";
-            btn.title = "Switch to light mode";
-        } else {
-            if (icon) icon.className = "fa-solid fa-moon";
-            if (label) label.textContent = "Dark Mode";
-            btn.title = "Switch to dark mode";
-        }
+        const lbl = btn.querySelector("span");
+        if (icon) icon.className = iconClass;
+        if (lbl) lbl.textContent = label;
+        btn.title = title;
     });
 }
 
