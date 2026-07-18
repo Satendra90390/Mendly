@@ -88,6 +88,8 @@ async def delete_profile(user_id: str):
 
 
 async def insert_activity_log(data: dict):
+    if "user_id" in data and isinstance(data["user_id"], str):
+        data["user_id"] = _obj_id(data["user_id"])
     data["created_at"] = datetime.now(timezone.utc)
     await activity_logs.insert_one(data)
 

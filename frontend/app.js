@@ -18,6 +18,7 @@ let state = {
 };
 
 let appInitialized = false;
+function resetApp() { appInitialized = false; }
 
 function initApp() {
     if (appInitialized) return;
@@ -304,6 +305,8 @@ function regenerateResponse(btn) {
     
     // Resend
     _chatMemory.pop(); // Remove last bot message
+    const input = document.getElementById("chat-input");
+    input.value = userText;
     sendChatMessage();
 }
 
@@ -710,6 +713,9 @@ async function loadEmergencyContacts(country) {
         ];
         container.innerHTML = `<h4 style="margin-bottom:0.5rem;">${escapeHtml(contacts.country || "Emergency")} Contacts</h4>
             ${items.filter(i => i[1]).map(i => `<div class="emergency-contact"><span>${i[0]}</span><span class="number">${escapeHtml(String(i[1]))}</span></div>`).join("")}`;
+        container.closest(".glass-card").querySelectorAll(".filter-btn").forEach(btn => {
+            btn.classList.toggle("active", btn.textContent.trim() === country);
+        });
     } catch (e) { console.error(e); }
 }
 
@@ -1001,6 +1007,7 @@ async function deleteAccount() {
         await authFetch("/profile", { method: "DELETE" });
         closeDeleteModal();
         clearSession();
+        resetApp();
         document.getElementById("app-root").style.display = "none";
         document.getElementById("landing-page").style.display = "block";
         goToStep("login");

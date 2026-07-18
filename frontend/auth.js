@@ -332,6 +332,7 @@ function handleSocialLogin(provider) { window.location.href = `${API_BASE}/auth/
 // ============================================================
 function handleLogout() {
     clearSession();
+    if (typeof resetApp === "function") resetApp();
     document.getElementById("app-root").style.display = "none";
     document.getElementById("landing-page").style.display = "block";
     goToStep("login");
