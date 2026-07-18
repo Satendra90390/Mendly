@@ -356,6 +356,7 @@ function enterApp(user, isNew) {
         if (banner) banner.style.display = "none";
     }
     if (typeof initApp === "function") initApp();
+    if (typeof updatePasswordForm === "function") updatePasswordForm();
 }
 
 function showWelcomeMessage(name) {

@@ -106,7 +106,7 @@ function switchView(view) {
     if (title) title.textContent = VIEW_TITLES[view] || "Mendly";
 
     if (view === "saved") renderSavedSearches();
-    if (view === "account") loadAccountStats();
+    if (view === "account") { loadAccountStats(); updatePasswordForm(); }
     if (view === "activity") loadActivityLog();
     if (view === "hospitals") {
         if (state.userLocation) loadNearbyHospitals();
@@ -991,38 +991,72 @@ async function updateProfile() {
     }
 }
 
+function updatePasswordForm() {
+    const user = getStoredUser();
+    const isGuest = user && user.auth_provider === "guest";
+    const currentPwGroup = document.getElementById("current-password")?.closest(".form-group");
+    const btn = document.getElementById("password-save-btn");
+    const guestNote = document.getElementById("guest-password-note");
+    const securityCards = document.querySelectorAll("#view-account .glass-card");
+    const title = securityCards.length > 1 ? securityCards[1].querySelector(".glass-card-title span") : null;
+
+    if (isGuest) {
+        if (currentPwGroup) currentPwGroup.style.display = "none";
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-key"></i> <span>Set Password</span>';
+        if (guestNote) guestNote.style.display = "block";
+        if (title) title.textContent = "Set Password";
+    } else {
+        if (currentPwGroup) currentPwGroup.style.display = "block";
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-key"></i> <span>Change Password</span>';
+        if (guestNote) guestNote.style.display = "none";
+        if (title) title.textContent = "Security";
+    }
+}
+
 async function changePassword() {
+    const user = getStoredUser();
+    const isGuest = user && user.auth_provider === "guest";
     const current = document.getElementById("current-password").value;
     const newPw = document.getElementById("new-password").value;
     const confirm = document.getElementById("confirm-password").value;
     const msgEl = document.getElementById("password-msg");
     const btn = document.getElementById("password-save-btn");
 
-    if (!current || !newPw) { msgEl.textContent = "Please fill in all fields."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+    if (!isGuest && !current) { msgEl.textContent = "Please enter your current password."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
+    if (!newPw) { msgEl.textContent = "Please enter a new password."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
     if (newPw !== confirm) { msgEl.textContent = "New passwords do not match."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
     if (newPw.length < 6) { msgEl.textContent = "Password must be at least 6 characters."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Changing...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (isGuest ? 'Setting...' : 'Changing...');
 
     try {
-        const res = await authFetch("/profile/change-password", { method: "POST", body: JSON.stringify({ current_password: current, new_password: newPw }) });
+        const res = await authFetch("/profile/change-password", { method: "POST", body: JSON.stringify({ current_password: current || "", new_password: newPw }) });
         const data = await res.json();
         if (!res.ok) { msgEl.textContent = data.detail || "Failed."; msgEl.style.display = "block"; msgEl.className = "auth-error"; return; }
 
-        msgEl.textContent = "Password changed successfully.";
+        msgEl.textContent = isGuest ? "Password set successfully! You can now log in with your email and password." : "Password changed successfully.";
         msgEl.style.display = "block";
         msgEl.className = "auth-success";
         document.getElementById("current-password").value = "";
         document.getElementById("new-password").value = "";
         document.getElementById("confirm-password").value = "";
-        setTimeout(() => { msgEl.style.display = "none"; }, 3000);
+
+        // If guest just set password, update stored user so UI reflects the change
+        if (isGuest) {
+            const updatedUser = { ...user, auth_provider: "email" };
+            localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+            updatePasswordForm();
+        }
+
+        setTimeout(() => { msgEl.style.display = "none"; }, 4000);
     } catch (e) {
         msgEl.textContent = "Connection error."; msgEl.style.display = "block"; msgEl.className = "auth-error";
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-key"></i> Change Password';
+        btn.innerHTML = `<i class="fa-solid fa-key"></i> <span>${isGuest ? 'Set Password' : 'Change Password'}</span>`;
     }
+}
 }
 
 function confirmDeleteAccount() {

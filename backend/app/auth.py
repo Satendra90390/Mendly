@@ -242,11 +242,25 @@ async def update_profile_route(payload: schemas.ProfileUpdateRequest, request: R
 
 async def change_password(payload: schemas.PasswordChangeRequest, request: Request, current_user: dict = Depends(get_current_user)) -> dict:
     profile = await get_profile(current_user["id"])
-    if not profile or not _verify_password(payload.current_password, profile.get("password_hash", "")):
-        raise HTTPException(status_code=400, detail="Current password is incorrect.")
-    await update_profile(current_user["id"], {"password_hash": _hash_password(payload.new_password)})
-    await _log_activity(str(current_user["id"]), "password_changed", "Password was changed", request)
-    return {"status": "ok", "message": "Password changed successfully."}
+    is_guest = profile and profile.get("auth_provider") == "guest"
+
+    if is_guest:
+        # Guest users have no real password — skip current password verification
+        # Also upgrade the account from guest to email provider
+        updates = {
+            "password_hash": _hash_password(payload.new_password),
+            "auth_provider": "email",
+        }
+        await update_profile(current_user["id"], updates)
+        await _log_activity(str(current_user["id"]), "password_set", "Password set, guest account upgraded", request)
+        return {"status": "ok", "message": "Password set successfully. You can now log in with your email and password."}
+    else:
+        # Regular users must provide correct current password
+        if not profile or not _verify_password(payload.current_password, profile.get("password_hash", "")):
+            raise HTTPException(status_code=400, detail="Current password is incorrect.")
+        await update_profile(current_user["id"], {"password_hash": _hash_password(payload.new_password)})
+        await _log_activity(str(current_user["id"]), "password_changed", "Password was changed", request)
+        return {"status": "ok", "message": "Password changed successfully."}
 
 
 async def get_account_stats(current_user: dict = Depends(get_current_user)) -> schemas.AccountStats:
