@@ -12,7 +12,7 @@ class SignupRequest(BaseModel):
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=6, max_length=72)
 
 
 class GuestUpgradeRequest(BaseModel):
@@ -77,6 +77,7 @@ class ActivityLogOut(BaseModel):
     id: str
     action: str
     detail: str
+    ip_address: Optional[str] = None
     created_at: datetime
 
     class Config:

@@ -17,9 +17,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=22">
+    <link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
+<noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
 
 <!-- ==================== LANDING PAGE (shown to visitors) ==================== -->
 <div id="landing-page" class="landing-page">
@@ -656,7 +657,7 @@
                 </div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ask Elix about health..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <input type="text" id="chat-input" placeholder="Ask Elix about health...">
                 <button onclick="sendChatMessage()" class="btn-primary" style="padding:0.7rem 1.2rem;"><i class="fa-solid fa-paper-plane"></i></button>
                 <button onclick="clearChat()" class="btn-secondary" style="padding:0.7rem 1rem;"><i class="fa-solid fa-trash-can"></i></button>
             </div>

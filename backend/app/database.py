@@ -1,5 +1,4 @@
 import os
-import ssl
 from pathlib import Path
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -13,8 +12,6 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 MONGODB_URI = os.getenv("MONGODB_URI")
 if not MONGODB_URI:
     raise ValueError("MONGODB_URI environment variable is required")
-
-tls_context = ssl.create_default_context()
 
 client = AsyncIOMotorClient(
     MONGODB_URI,
@@ -44,7 +41,7 @@ async def init_indexes():
 
 def _to_str_id(doc: dict) -> dict:
     if doc and "_id" in doc:
-        doc["id"] = str(doc["_id"])
+        doc = {**doc, "id": str(doc["_id"])}
         del doc["_id"]
     return doc
 
@@ -78,13 +75,22 @@ async def insert_profile(data: dict) -> dict:
 
 
 async def update_profile(user_id: str, data: dict) -> dict:
-    data["last_login"] = datetime.now(timezone.utc)
-    await users.update_one({"_id": _obj_id(user_id)}, {"$set": data})
+    allowed_fields = {
+        "name", "email", "avatar_color", "date_of_birth", "blood_type",
+        "profile_photo", "phone", "password_hash", "is_blocked", "is_admin",
+        "auth_provider", "last_login",
+    }
+    safe_data = {k: v for k, v in data.items() if k in allowed_fields}
+    await users.update_one({"_id": _obj_id(user_id)}, {"$set": safe_data})
     return await get_profile(user_id)
 
 
 async def delete_profile(user_id: str):
-    await users.delete_one({"_id": _obj_id(user_id)})
+    uid = _obj_id(user_id)
+    await chat_messages.delete_many({"user_id": uid})
+    await saved_searches.delete_many({"user_id": uid})
+    await activity_logs.delete_many({"user_id": uid})
+    await users.delete_one({"_id": uid})
 
 
 async def insert_activity_log(data: dict):
@@ -143,6 +149,6 @@ async def get_saved_searches(user_id: str) -> List[dict]:
     return [_to_str_id(doc) async for doc in cursor]
 
 
-async def delete_saved_search(item_id: int, user_id: str) -> bool:
+async def delete_saved_search(item_id: str, user_id: str) -> bool:
     result = await saved_searches.delete_one({"_id": ObjectId(item_id), "user_id": _obj_id(user_id)})
     return result.deleted_count > 0

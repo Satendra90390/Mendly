@@ -16,7 +16,7 @@ from typing import Optional, List
 
 import httpx
 
-from .knowledge_base import DISEASE_KNOWLEDGE, SYMPTOM_TO_DISEASE, LOCAL_MEDICINES, EMERGENCY_CONTACTS
+from .knowledge_base import DISEASE_KNOWLEDGE, SYMPTOM_TO_DISEASE, LOCAL_MEDICINES
 from . import openfda_client
 
 # ── AI provider setup ───────────────────────────────────────────────────────
@@ -143,7 +143,7 @@ def _extract_drug_candidate(msg: str) -> Optional[str]:
     return words[0] if words else None
 
 
-async def _scan_fda(msg: str) -> Optional[dict]:
+def _scan_fda(msg: str) -> Optional[dict]:
     """Try OpenFDA for every plausible drug-name word in the message."""
     tokens = [w.strip("?.,!;:") for w in msg.split()
               if len(w) > 3 and w.lower().strip("?.,!;:") not in _STOP]
@@ -384,8 +384,8 @@ async def _nvidia_answer(
     last_error = None
     for attempt in range(1 + NVIDIA_MAX_RETRIES):
         try:
-            with httpx.Client(timeout=NVIDIA_TIMEOUT) as client:
-                response = client.post(NVIDIA_API_URL, headers=headers, json=payload)
+            async with httpx.AsyncClient(timeout=NVIDIA_TIMEOUT) as client:
+                response = await client.post(NVIDIA_API_URL, headers=headers, json=payload)
                 response.raise_for_status()
                 data = response.json()
             break
@@ -549,7 +549,7 @@ def _crisis_response() -> str:
 
 
 def _location_response(location: Optional[dict]) -> str:
-    if location:
+    if location and location.get("lat") and location.get("lng"):
         return (
             "📍 **Finding Nearby Medical Facilities**\n\n"
             f"Your location is detected (lat {location.get('lat'):.3f}, lng {location.get('lng'):.3f}).\n\n"

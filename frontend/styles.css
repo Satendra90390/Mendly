@@ -1,7 +1,6 @@
 /* ============================================================ */
 /* BASE / RESET / VARIABLES                                       */
 /* ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
 
@@ -2072,9 +2071,15 @@ textarea { resize: vertical; min-height: 56px; }
     from { transform: translateY(-100%); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-.dark .offline-banner { background: #dc2626; }
+[data-theme="dark"] .offline-banner { background: #dc2626; }
 
 /* Safe area for notched devices */
 @supports (padding-top: env(safe-area-inset-top)) {
     .offline-banner { padding-top: calc(10px + env(safe-area-inset-top)); }
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }

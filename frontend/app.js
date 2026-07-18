@@ -5,7 +5,7 @@
 // XSS-safe JS string escaping for inline onclick handlers
 function escapeJS(str) {
     if (!str) return "";
-    return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r");
+    return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/</g, "\\x3c").replace(/>/g, "\\x3e").replace(/\n/g, "\\n").replace(/\r/g, "\\r");
 }
 
 let state = {
@@ -16,6 +16,11 @@ let state = {
     savedSearches: [],
     lastViewedMedicine: null,
 };
+
+function debounce(fn, ms) {
+    let t;
+    return function (...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
+}
 
 let appInitialized = false;
 function resetApp() { appInitialized = false; }
@@ -813,7 +818,7 @@ async function searchHospitals() {
     try {
         const res = await fetch(`${API_BASE}/emergency/hospitals/search`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, lat: state.userLocation?.lat || 0, lng: state.userLocation?.lng || 0 }) });
         const data = await res.json();
-        renderHospitals(data.hospitals || data, `No hospitals found for "${q}". Try a different name.`);
+        renderHospitals(data.hospitals || data, `No hospitals found for "${escapeHtml(q)}". Try a different name.`);
     } catch (e) { console.error(e); renderHospitals([]); }
 }
 
@@ -863,7 +868,7 @@ async function searchPharmacies() {
     try {
         const res = await fetch(`${API_BASE}/emergency/pharmacies/search`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, lat: state.userLocation?.lat || 0, lng: state.userLocation?.lng || 0 }) });
         const data = await res.json();
-        renderPharmacies(data.pharmacies || data, `No pharmacies found for "${q}". Try a different name.`);
+        renderPharmacies(data.pharmacies || data, `No pharmacies found for "${escapeHtml(q)}". Try a different name.`);
     } catch (e) { console.error(e); renderPharmacies([]); }
 }
 
@@ -1064,7 +1069,6 @@ async function changePassword() {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-key"></i> <span>${isGuest ? 'Set Password' : 'Change Password'}</span>`;
     }
-}
 }
 
 function confirmDeleteAccount() {

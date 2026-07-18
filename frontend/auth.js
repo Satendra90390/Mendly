@@ -6,6 +6,7 @@ const AUTH_TOKEN_KEY = "mendly_token";
 const AUTH_USER_KEY = "mendly_user";
 
 let _currentEmail = "";
+let _verifiedOtp = "";
 let _otpTimerInterval = null;
 
 // ——— XSS Protection ———
@@ -287,6 +288,7 @@ async function handleForgotOtpVerify(e) {
         const res = await fetch(`${API_BASE}/auth/forgot-password/verify`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, otp: code }) });
         const data = await res.json();
         if (!res.ok) { showStepError("forgot-otp", data.detail || "Invalid code."); return; }
+        _verifiedOtp = code;
         goToStep("reset");
     } catch (err) {
         if (!navigator.onLine) showStepError("forgot-otp", "You are offline. Please check your internet connection.");
@@ -309,7 +311,7 @@ async function handleResetPassword(e) {
     if (password !== confirm) { showStepError("reset", "Passwords do not match."); return; }
     btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Resetting...';
     try {
-        const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, otp: "verified", new_password: password }) });
+        const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail, otp: _verifiedOtp, new_password: password }) });
         const data = await res.json();
         if (!res.ok) { showStepError("reset", data.detail || "Reset failed."); return; }
         goToStep("login");

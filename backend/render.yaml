@@ -10,7 +10,7 @@ services:
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: "10080"
       - key: MONGODB_URI
-        value: mongodb+srv://altvo871_db_user:tztzHtoasCmTPpTU@mendly.ekpjzls.mongodb.net/mendly?retryWrites=true&w=majority&appName=mendly
+        sync: false
       - key: FRONTEND_ORIGINS
         value: https://mendly-xi.vercel.app
       - key: FRONTEND_URL
@@ -18,7 +18,7 @@ services:
       - key: CHATBOT_PROVIDER
         value: nvidia
       - key: NVIDIA_API_KEY
-        value: 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
+        sync: false
       - key: NVIDIA_API_URL
         value: https://integrate.api.nvidia.com/v1/chat/completions
       - key: NVIDIA_MODEL

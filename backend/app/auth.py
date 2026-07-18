@@ -43,12 +43,13 @@ def _verify_password(password: str, hashed: str) -> bool:
 
 def _make_profile_dict(user_id: str, payload: dict, provider: str = "email") -> dict:
     colors = ["#4f46e5", "#7c3aed", "#ec4899", "#ef4444", "#f59e0b", "#10b981", "#06b6d4", "#8b5cf6"]
+    import random
     return {
         "_id": ObjectId(user_id),
         "name": payload.get("name", "").strip(),
         "email": payload.get("email", "").lower(),
         "auth_provider": provider,
-        "avatar_color": payload.get("avatar_color") or colors[hash(user_id) % len(colors)],
+        "avatar_color": payload.get("avatar_color") or random.choice(colors),
         "last_login": datetime.now(timezone.utc),
         "is_blocked": False,
         "is_admin": False,
@@ -288,11 +289,11 @@ async def delete_account(request: Request, current_user: dict = Depends(get_curr
     user_id = str(current_user["id"])
     profile = await get_profile(user_id)
     user_name = profile.get("name", "") if profile else ""
+    await _log_activity(user_id, "account_deleted", f"Account '{user_name}' deleted", request)
     try:
         await delete_profile(user_id)
     except Exception as e:
         print(f"User deletion error: {e}")
-    await _log_activity(user_id, "account_deleted", f"Account '{user_name}' deleted", request)
     return {"status": "deleted", "message": "Your account has been permanently deleted."}
 
 

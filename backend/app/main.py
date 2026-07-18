@@ -16,10 +16,10 @@ from . import schemas, chatbot, openfda_client
 from .database import (
     get_profile, get_profile_by_email, get_profile_by_phone,
     insert_profile, update_profile, delete_profile,
-    insert_activity_log, get_activity_logs, delete_activity_logs, count_rows,
+    get_activity_logs, delete_activity_logs, count_rows,
     insert_chat_message, get_chat_history, get_recent_chat_messages, delete_chat_messages,
     insert_saved_search, get_saved_searches, delete_saved_search,
-    init_indexes,
+    init_indexes, users,
 )
 from .knowledge_base import DISEASE_KNOWLEDGE, LOCAL_MEDICINES, EMERGENCY_CONTACTS, DRUG_ALIASES, SYMPTOM_TO_DISEASE
 from .auth import (
@@ -27,7 +27,7 @@ from .auth import (
     get_me as get_me_route, change_password, get_account_stats,
     delete_account, get_activity_log, clear_activity_log,
     block_user, unblock_user,
-    get_current_user_profile,
+    get_current_user_profile, get_admin_user, _log_activity,
 )
 
 logger = logging.getLogger("mendly")
@@ -49,7 +49,6 @@ else:
     allow_origins += [
         "capacitor://localhost",
         "https://localhost",
-        "http://localhost",
     ]
     allow_origins = list(dict.fromkeys(allow_origins))
     _allow_credentials = True
@@ -58,7 +57,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
     allow_credentials=_allow_credentials,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
 
@@ -170,12 +169,12 @@ async def clear_activity_log_endpoint(current_user: dict = Depends(get_current_u
 # ============================================================
 
 @app.post("/api/admin/users/{user_id}/block")
-async def block_user_endpoint(user_id: str, request: Request, admin_user: dict = Depends(get_current_user_profile)):
+async def block_user_endpoint(user_id: str, request: Request, admin_user: dict = Depends(get_admin_user)):
     return await block_user(user_id, request, admin_user)
 
 
 @app.post("/api/admin/users/{user_id}/unblock")
-async def unblock_user_endpoint(user_id: str, request: Request, admin_user: dict = Depends(get_current_user_profile)):
+async def unblock_user_endpoint(user_id: str, request: Request, admin_user: dict = Depends(get_admin_user)):
     return await unblock_user(user_id, request, admin_user)
 
 
@@ -654,7 +653,12 @@ async def search_pharmacies(request: schemas.LocationRequest):
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "service": "Mendly API", "version": "4.0.0"}
+    try:
+        await users.find_one({}, {"_id": 1})
+        db_ok = True
+    except Exception:
+        db_ok = False
+    return {"status": "ok" if db_ok else "degraded", "service": "Mendly API", "version": "4.0.0", "database": "connected" if db_ok else "disconnected"}
 
 
 @app.get("/api/app/version")
@@ -673,21 +677,3 @@ async def get_app_version():
 # ============================================================
 # HELPERS
 # ============================================================
-
-async def _log_activity(user_id: str, action: str, detail: str = "", request: Request = None):
-    ip = ""
-    if request:
-        forwarded = request.headers.get("x-forwarded-for")
-        if forwarded:
-            ip = forwarded.split(",")[0].strip()
-        elif request.client:
-            ip = request.client.host
-    try:
-        await insert_activity_log({
-            "user_id": user_id,
-            "action": action,
-            "detail": detail[:500],
-            "ip_address": ip,
-        })
-    except Exception as e:
-        logger.warning(f"Activity log failed: {e}")

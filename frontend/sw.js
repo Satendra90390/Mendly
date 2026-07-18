@@ -1,4 +1,4 @@
-const CACHE_NAME = "mendly-v3";
+const CACHE_NAME = "mendly-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,7 +8,9 @@ const ASSETS = [
   "./app.js",
   "./update.js",
   "./manifest.json",
-  "./logo.svg"
+  "./logo.svg",
+  "./logo-192.png",
+  "./logo-512.png"
 ];
 
 self.addEventListener("install", (e) => {

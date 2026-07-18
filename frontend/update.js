@@ -56,7 +56,7 @@ function showUpdateDialog(info) {
             <p class="update-version">v${info.version_name}</p>
             <p class="update-notes">${escapeHtml(info.release_notes || "Bug fixes and improvements.")}</p>
             <div class="update-actions">
-                <button class="btn-primary update-btn" onclick="downloadUpdate('${info.download_url}')">
+                <button class="btn-primary update-btn" data-download-url="${escapeHtml(info.download_url)}">
                     <i class="fa-solid fa-download"></i> Update Now
                 </button>
                 ${info.force_update
@@ -69,6 +69,12 @@ function showUpdateDialog(info) {
     `;
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add("show"));
+    overlay.addEventListener("click", (e) => {
+        const dlBtn = e.target.closest("[data-download-url]");
+        if (dlBtn) { downloadUpdate(dlBtn.dataset.downloadUrl); return; }
+        const laterBtn = e.target.closest(".btn-secondary");
+        if (laterBtn) dismissUpdate();
+    });
 }
 
 function downloadUpdate(url) {
