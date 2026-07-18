@@ -11,10 +11,13 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="logo-192.png">
     <title>Mendly — Medicine & Health Information Platform</title>
+    <script>
+    (function(){var t=localStorage.getItem("theme")||"light";if(t==="system"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);})();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=21">
+    <link rel="stylesheet" href="styles.css?v=22">
 </head>
 <body>
 
@@ -944,9 +947,9 @@
     <span>You are offline. Some features may not work.</span>
 </div>
 
-<script src="config.js?v=21"></script>
-<script src="auth.js?v=21"></script>
-<script src="app.js?v=21"></script>
+<script src="config.js?v=22"></script>
+<script src="auth.js?v=22"></script>
+<script src="app.js?v=22"></script>
 <script src="update.js?v=2"></script>
 <script>
 if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); }

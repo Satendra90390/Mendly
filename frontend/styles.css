@@ -1921,7 +1921,8 @@ textarea { resize: vertical; min-height: 56px; }
 /* ============================================================ */
 
 /* --- Auth Screen --- */
-[data-theme="dark"] .auth-card { background: var(--card-bg); border-color: var(--border); }
+[data-theme="dark"] .auth-screen { background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #4a1942 100%); }
+[data-theme="dark"] .auth-card { background: var(--card-bg); border-color: var(--border); box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
 [data-theme="dark"] .auth-preview,
 [data-theme="dark"] .auth-form-panel { background: var(--bg-light); }
 [data-theme="dark"] .dev-otp-hint { background: linear-gradient(135deg, #451a03, #78350f); color: #fbbf24; border-color: #b45309; }

@@ -1,4 +1,4 @@
-const CACHE_NAME = "mendly-v2";
+const CACHE_NAME = "mendly-v3";
 const ASSETS = [
   "./",
   "./index.html",

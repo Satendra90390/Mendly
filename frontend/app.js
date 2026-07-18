@@ -128,41 +128,49 @@ function switchView(view) {
 function getUserLocation() {
     const status = document.getElementById("location-status");
     if (!navigator.geolocation) {
-        status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location not supported';
+        getLocationFromIP();
         return;
     }
     status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Getting location...';
     navigator.geolocation.getCurrentPosition(
         async (pos) => {
             state.userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location detected';
             await getAddress(pos.coords.latitude, pos.coords.longitude);
             loadNearbyHospitals();
             loadNearbyPharmacies();
         },
-        () => {
-            status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location unavailable';
+        (err) => {
+            console.log("Geolocation failed:", err.message);
             getLocationFromIP();
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
     );
 }
 
 async function getLocationFromIP() {
-    try {
-        const res = await fetch("https://ipapi.co/json/");
-        const data = await res.json();
-        state.userLocation = { lat: data.latitude, lng: data.longitude };
-        const safeCity = escapeHtml(data.city || "");
-        const safeCountry = escapeHtml(data.country_name || "");
-        document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${safeCity}, ${safeCountry}`;
-        loadNearbyHospitals();
-        loadNearbyPharmacies();
-    } catch (e) {
-        console.log("IP location failed", e);
-        state.userLocation = null;
-        document.getElementById("location-status").innerHTML = '<i class="fa-solid fa-location-dot"></i> Location unavailable';
+    const status = document.getElementById("location-status");
+    const apis = [
+        { url: "https://ip-api.com/json/", parse: d => ({ lat: d.lat, lng: d.lon, city: d.city, country: d.country }) },
+        { url: "https://ipapi.co/json/", parse: d => ({ lat: d.latitude, lng: d.longitude, city: d.city, country: d.country_name }) },
+    ];
+    for (const api of apis) {
+        try {
+            const res = await fetch(api.url, { signal: AbortSignal.timeout(5000) });
+            const data = await res.json();
+            const loc = api.parse(data);
+            if (loc.lat && loc.lng) {
+                state.userLocation = { lat: loc.lat, lng: loc.lng };
+                const safeCity = escapeHtml(loc.city || "");
+                const safeCountry = escapeHtml(loc.country || "");
+                status.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${safeCity}${safeCity && safeCountry ? ", " : ""}${safeCountry}`;
+                loadNearbyHospitals();
+                loadNearbyPharmacies();
+                return;
+            }
+        } catch (e) { /* try next API */ }
     }
+    state.userLocation = null;
+    status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location unavailable';
 }
 
 async function getAddress(lat, lng) {
