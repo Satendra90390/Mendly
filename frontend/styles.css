@@ -2168,3 +2168,58 @@ textarea { resize: vertical; min-height: 56px; }
 [data-theme="dark"] .terms-modal-body h3 { color: #f9fafb; }
 [data-theme="dark"] .terms-modal-footer { border-top-color: #374151; }
 [data-theme="dark"] .terms-checkbox-label { color: #9ca3af; }
+
+/* ============================================================ */
+/* CLOUDFLARE TURNSTILE WIDGET                                   */
+/* ============================================================ */
+.turnstile-group {
+    display: flex; justify-content: center;
+    margin-bottom: 8px;
+}
+.turnstile-widget {
+    min-height: 65px;
+}
+
+/* ============================================================ */
+/* HUMAN VERIFICATION GATE (Landing Page)                        */
+/* ============================================================ */
+.verify-gate {
+    position: fixed; inset: 0; z-index: 99999;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+}
+.verify-gate-card {
+    background: #fff; border-radius: 20px; padding: 48px 40px;
+    max-width: 420px; width: 100%; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+}
+.verify-gate-logo {
+    width: 64px; height: 64px; margin-bottom: 16px;
+}
+.verify-gate-card h2 {
+    margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #111827;
+}
+.verify-gate-card p {
+    margin: 0 0 20px 0; font-size: 14px; color: #6b7280; line-height: 1.5;
+}
+.verify-gate-widget {
+    display: flex; justify-content: center; margin-bottom: 16px;
+    min-height: 65px;
+}
+.verify-gate-hint {
+    font-size: 12px !important; color: #9ca3af !important; margin: 0 !important;
+}
+.verify-gate-spinner {
+    font-size: 28px; color: #6c63ff; margin-bottom: 16px;
+}
+[data-theme="dark"] .verify-gate {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+[data-theme="dark"] .verify-gate-card {
+    background: #1f2937; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .verify-gate-card h2 { color: #f9fafb; }
+[data-theme="dark"] .verify-gate-card p { color: #9ca3af; }
+[data-theme="dark"] .verify-gate-hint { color: #6b7280 !important; }
+[data-theme="dark"] .verify-gate-spinner { color: #818cf8; }

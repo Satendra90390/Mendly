@@ -17,13 +17,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=23">
+    <link rel="stylesheet" href="styles.css?v=24">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
 
 <!-- ==================== LANDING PAGE (shown to visitors) ==================== -->
-<div id="landing-page" class="landing-page">
+<!-- Human Verification Gate -->
+<div class="verify-gate" id="verify-gate">
+    <div class="verify-gate-card">
+        <img src="logo.svg" alt="Mendly" class="verify-gate-logo">
+        <h2>Welcome to Mendly</h2>
+        <p>Verifying you are human...</p>
+        <div class="verify-gate-spinner"><i class="fa-solid fa-spinner fa-spin"></i></div>
+        <div class="verify-gate-widget" id="landing-turnstile"></div>
+        <p class="verify-gate-hint">This helps us keep the platform safe for everyone.</p>
+    </div>
+</div>
+
+<div id="landing-page" class="landing-page" style="display:none;">
 
     <!-- NAVBAR -->
     <nav class="landing-nav" id="landing-nav">
@@ -95,12 +108,6 @@
                     <!-- STEP 1: Login -->
                     <div class="auth-step active" id="step-login">
                         <div class="auth-social">
-                            <div class="terms-consent-row">
-                                <label class="terms-checkbox-label">
-                                    <input type="checkbox" id="terms-agree-check">
-                                    <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
-                                </label>
-                            </div>
                             <button type="button" class="social-btn social-google" onclick="handleSocialLogin('google')">
                                 <svg class="social-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                                 <span>Google</span>
@@ -135,16 +142,19 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="captcha-box math-captcha">
-                                    <label class="captcha-label">What is <span id="login-captcha-a"></span> + <span id="login-captcha-b"></span>?</label>
-                                    <input type="number" id="login-captcha" class="captcha-input" required placeholder="?" autocomplete="off">
-                                </div>
+                            <div class="form-group turnstile-group">
+                                <div class="turnstile-widget" id="login-turnstile"></div>
                             </div>
                             <div id="login-error" class="auth-error" style="display:none;"></div>
                             <button type="submit" class="btn-primary auth-submit" id="login-submit-btn">
                                 <i class="fa-solid fa-right-to-bracket"></i> <span>Log In</span>
                             </button>
+                            <div class="terms-consent-row">
+                                <label class="terms-checkbox-label">
+                                    <input type="checkbox" id="terms-agree-check">
+                                    <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
+                                </label>
+                            </div>
                         </form>
                         <p class="auth-switch"><span>Don't have an account?</span> <button type="button" class="link-btn" onclick="goToStep('signup')">Sign Up</button></p>
                         <p class="auth-switch"><button type="button" class="link-btn" onclick="goToStep('forgot')">Forgot password?</button></p>
@@ -198,22 +208,19 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="captcha-box math-captcha">
-                                    <label class="captcha-label">What is <span id="signup-captcha-a"></span> + <span id="signup-captcha-b"></span>?</label>
-                                    <input type="number" id="signup-captcha" class="captcha-input" required placeholder="?" autocomplete="off">
-                                </div>
+                            <div class="form-group turnstile-group">
+                                <div class="turnstile-widget" id="signup-turnstile"></div>
                             </div>
                             <div id="signup-error" class="auth-error" style="display:none;"></div>
+                            <button type="submit" class="btn-primary auth-submit" id="signup-submit-btn">
+                                <i class="fa-solid fa-user-plus"></i> <span>Create Account</span>
+                            </button>
                             <div class="terms-consent-row">
                                 <label class="terms-checkbox-label">
                                     <input type="checkbox" id="signup-terms-check">
                                     <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
                                 </label>
                             </div>
-                            <button type="submit" class="btn-primary auth-submit" id="signup-submit-btn">
-                                <i class="fa-solid fa-user-plus"></i> <span>Create Account</span>
-                            </button>
                         </form>
                         <p class="auth-switch"><span>Already have an account?</span> <button type="button" class="link-btn" onclick="goToStep('login')">Log In</button></p>
                     </div>

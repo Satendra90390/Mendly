@@ -69,30 +69,93 @@ function requireTerms(action) {
     openTermsModal();
 }
 
-// Attach modal checkbox listener
+// Attach modal checkbox listener + Turnstile init
 document.addEventListener("DOMContentLoaded", () => {
     const modalCheck = document.getElementById("terms-modal-check");
     const acceptBtn = document.getElementById("terms-accept-btn");
     if (modalCheck && acceptBtn) {
         modalCheck.addEventListener("change", () => { acceptBtn.disabled = !modalCheck.checked; });
     }
+    // Initialize Turnstile widgets
+    setTimeout(initTurnstile, 500);
+    // If already verified, skip landing gate
+    if (localStorage.getItem("mendly_human_verified") === "true") {
+        const gate = document.getElementById("verify-gate");
+        const landing = document.getElementById("landing-page");
+        if (gate) gate.style.display = "none";
+        if (landing) landing.style.display = "";
+    }
 });
 
-// ——— Math Captcha ———
-let _captchaAnswer = {};
-function generateCaptcha(prefix) {
-    const a = Math.floor(Math.random() * 20) + 1;
-    const b = Math.floor(Math.random() * 20) + 1;
-    _captchaAnswer[prefix] = a + b;
-    const aEl = document.getElementById(`${prefix}-captcha-a`);
-    const bEl = document.getElementById(`${prefix}-captcha-b`);
-    if (aEl) aEl.textContent = a;
-    if (bEl) bEl.textContent = b;
+// ——— Cloudflare Turnstile ———
+const TURNSTILE_SITE_KEY = "0x4AAAAAAD7Ztmx4IkbpTaQ4";
+const _turnstileWidgets = {};
+
+function initTurnstile() {
+    if (typeof turnstile === "undefined") return;
+    const containers = [
+        { id: "landing-turnstile", callback: "onLandingTurnstileSuccess", auto: true },
+        { id: "login-turnstile", callback: "onLoginTurnstileSuccess", auto: false },
+        { id: "signup-turnstile", callback: "onSignupTurnstileSuccess", auto: false },
+    ];
+    containers.forEach(({ id, callback, auto }) => {
+        const el = document.getElementById(id);
+        if (el && !_turnstileWidgets[id]) {
+            try {
+                _turnstileWidgets[id] = turnstile.render(`#${id}`, {
+                    sitekey: TURNSTILE_SITE_KEY,
+                    appearance: auto ? "interaction-only" : "execute",
+                    execution: auto ? "render" : "execute",
+                    callback: (token) => { el.dataset.token = token; },
+                    "error-callback": () => { el.dataset.token = ""; },
+                    "expired-callback": () => { el.dataset.token = ""; },
+                    theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light",
+                    size: "invisible",
+                });
+            } catch (e) { console.warn("Turnstile init failed:", e); }
+        }
+    });
 }
-function verifyCaptcha(prefix) {
-    const input = document.getElementById(`${prefix}-captcha`);
-    return input && parseInt(input.value) === _captchaAnswer[prefix];
+
+function getTurnstileToken(widgetId) {
+    const el = document.getElementById(widgetId);
+    return el ? (el.dataset.token || "") : "";
 }
+
+function resetTurnstile(widgetId) {
+    if (_turnstileWidgets[widgetId] && typeof turnstile !== "undefined") {
+        try { turnstile.reset(_turnstileWidgets[widgetId]); } catch (e) {}
+        const el = document.getElementById(widgetId);
+        if (el) el.dataset.token = "";
+    }
+}
+
+function executeTurnstile(widgetId) {
+    return new Promise((resolve) => {
+        const el = document.getElementById(widgetId);
+        if (el && el.dataset.token) { resolve(el.dataset.token); return; }
+        if (_turnstileWidgets[widgetId] && typeof turnstile !== "undefined") {
+            try {
+                turnstile.execute(_turnstileWidgets[widgetId]);
+                const check = setInterval(() => {
+                    if (el && el.dataset.token) { clearInterval(check); resolve(el.dataset.token); }
+                }, 200);
+                setTimeout(() => { clearInterval(check); resolve(""); }, 10000);
+            } catch (e) { resolve(""); }
+        } else { resolve(""); }
+    });
+}
+
+window.onLandingTurnstileSuccess = function(token) {
+    const gate = document.getElementById("verify-gate");
+    const landing = document.getElementById("landing-page");
+    if (gate) gate.style.display = "none";
+    if (landing) landing.style.display = "";
+    localStorage.setItem("mendly_human_verified", "true");
+};
+
+window.onLoginTurnstileSuccess = function(token) {};
+window.onSignupTurnstileSuccess = function(token) {};
 
 function handleLogoClick() {
     if (getToken()) {
@@ -118,8 +181,8 @@ function goToStep(step) {
     if (_otpTimerInterval) { clearInterval(_otpTimerInterval); _otpTimerInterval = null; }
     ["otp-timer", "phone-otp-timer", "forgot-otp-timer"].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = ""; });
     hideAllErrors();
-    if (step === "login") { generateCaptcha("login"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
-    if (step === "signup") { generateCaptcha("signup"); document.getElementById("auth-subtitle").textContent = "Create your account"; }
+    if (step === "login") { resetTurnstile("login-turnstile"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
+    if (step === "signup") { resetTurnstile("signup-turnstile"); document.getElementById("auth-subtitle").textContent = "Create your account"; }
     if (step === "upgrade") {
         document.getElementById("landing-page").style.display = "block";
         document.getElementById("app-root").style.display = "none";
@@ -206,7 +269,8 @@ function startOtpTimer(seconds, timerId, btnId) {
 
 async function handleLogin(e) {
     e.preventDefault(); hideAllErrors();
-    if (!verifyCaptcha("login")) { showStepError("login", "Incorrect captcha answer."); generateCaptcha("login"); return; }
+    const token = await executeTurnstile("login-turnstile");
+    if (!token) { showStepError("login", "Verification failed. Please try again."); resetTurnstile("login-turnstile"); return; }
     requireTerms(async () => {
         const email = document.getElementById("login-email").value.trim();
         const password = document.getElementById("login-password").value;
@@ -214,15 +278,15 @@ async function handleLogin(e) {
         if (!email || !password) return;
         btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
         try {
-            const res = await fetch(`${API_BASE}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+            const res = await fetch(`${API_BASE}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, turnstile_token: token }) });
             const data = await res.json();
-            if (!res.ok) { showStepError("login", data.detail || "Incorrect email or password."); return; }
+            if (!res.ok) { showStepError("login", data.detail || "Incorrect email or password."); resetTurnstile("login-turnstile"); return; }
             setSession(data.access_token, data.user); enterApp(data.user);
         } catch (err) {
             if (!navigator.onLine) showStepError("login", "You are offline. Please check your internet connection.");
             else showStepError("login", "Couldn't reach the server. Please try again.");
         }
-        finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In'; generateCaptcha("login"); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In'; resetTurnstile("login-turnstile"); }
     });
 }
 
@@ -232,7 +296,8 @@ async function handleLogin(e) {
 
 async function handleSignup(e) {
     e.preventDefault(); hideAllErrors();
-    if (!verifyCaptcha("signup")) { showStepError("signup", "Incorrect captcha answer."); generateCaptcha("signup"); return; }
+    const token = await executeTurnstile("signup-turnstile");
+    if (!token) { showStepError("signup", "Verification failed. Please try again."); resetTurnstile("signup-turnstile"); return; }
     const name = document.getElementById("signup-name").value.trim();
     const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value;
@@ -243,15 +308,15 @@ async function handleSignup(e) {
     requireTerms(async () => {
         btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
         try {
-            const res = await fetch(`${API_BASE}/auth/signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password }) });
+            const res = await fetch(`${API_BASE}/auth/signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password, turnstile_token: token }) });
             const data = await res.json();
-            if (!res.ok) { showStepError("signup", data.detail || "Signup failed."); return; }
+            if (!res.ok) { showStepError("signup", data.detail || "Signup failed."); resetTurnstile("signup-turnstile"); return; }
             setSession(data.access_token, data.user); enterApp(data.user, true);
         } catch (err) {
             if (!navigator.onLine) showStepError("signup", "You are offline. Please check your internet connection.");
             else showStepError("signup", "Couldn't reach the server. Please try again.");
         }
-        finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; generateCaptcha("signup"); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; resetTurnstile("signup-turnstile"); }
     });
 }
 
