@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ——— Cloudflare Turnstile ———
-const TURNSTILE_SITE_KEY = "0x4AAAAAAD7Ztmx4IkbpTaQ4";
+const TURNSTILE_SITE_KEY = "0x4AAAAAAD7cL9jURtSOUv7m";
 const _turnstileWidgets = {};
 
 function initTurnstile() {
