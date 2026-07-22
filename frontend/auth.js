@@ -69,69 +69,49 @@ function requireTerms(action) {
     openTermsModal();
 }
 
-// Attach modal checkbox listener + Turnstile init
+// Attach modal checkbox listener
 document.addEventListener("DOMContentLoaded", () => {
     const modalCheck = document.getElementById("terms-modal-check");
     const acceptBtn = document.getElementById("terms-accept-btn");
     if (modalCheck && acceptBtn) {
         modalCheck.addEventListener("change", () => { acceptBtn.disabled = !modalCheck.checked; });
     }
-    // If already verified, skip banner entirely
-    if (localStorage.getItem("mendly_human_verified") === "true") {
-        return;
-    }
-    // Show non-blocking banner and init Turnstile in background
-    initTurnstileLanding();
 });
 
 // ——— Cloudflare Turnstile ———
 const TURNSTILE_SITE_KEY = "0x4AAAAAAD7cL9jURtSOUv7m";
 const _turnstileWidgets = {};
-const _turnstileCallbacks = {};
+let _turnstileLoaded = false;
 
-function initTurnstileLanding() {
-    if (typeof turnstile === "undefined") {
-        setTimeout(initTurnstileLanding, 100);
-        return;
-    }
-    const banner = document.getElementById("verify-gate-banner");
-    if (banner) banner.style.display = "flex";
-    const el = document.getElementById("landing-turnstile-banner");
-    if (el && !_turnstileWidgets["landing-turnstile-banner"]) {
-        try {
-            _turnstileWidgets["landing-turnstile-banner"] = turnstile.render("#landing-turnstile-banner", {
-                sitekey: TURNSTILE_SITE_KEY,
-                appearance: "interaction-only",
-                execution: "render",
-                callback: (token) => {
-                    el.dataset.token = token;
-                    localStorage.setItem("mendly_human_verified", "true");
-                    if (banner) {
-                        banner.style.transition = "opacity 0.3s, transform 0.3s";
-                        banner.style.opacity = "0";
-                        banner.style.transform = "translateY(-100%)";
-                        setTimeout(() => { banner.style.display = "none"; }, 300);
-                    }
-                },
-                "error-callback": () => { el.dataset.token = ""; },
-                "expired-callback": () => { el.dataset.token = ""; },
-                theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light",
-                size: "invisible",
-            });
-        } catch (e) { console.warn("Turnstile init failed:", e); }
-    }
-}
-
-function ensureTurnstileWidget(widgetId) {
+function loadTurnstileScript() {
     return new Promise((resolve) => {
-        if (_turnstileWidgets[widgetId]) { resolve(); return; }
-        if (typeof turnstile === "undefined") {
+        if (_turnstileLoaded && typeof turnstile !== "undefined") { resolve(); return; }
+        if (document.querySelector('script[src*="challenges.cloudflare.com"]')) {
             const wait = setInterval(() => {
-                if (typeof turnstile !== "undefined") { clearInterval(wait); createTurnstileWidget(widgetId); resolve(); }
-            }, 100);
+                if (typeof turnstile !== "undefined") { clearInterval(wait); _turnstileLoaded = true; resolve(); }
+            }, 50);
             setTimeout(() => { clearInterval(wait); resolve(); }, 5000);
             return;
         }
+        const script = document.createElement("script");
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            const wait = setInterval(() => {
+                if (typeof turnstile !== "undefined") { clearInterval(wait); _turnstileLoaded = true; resolve(); }
+            }, 50);
+            setTimeout(() => { clearInterval(wait); resolve(); }, 5000);
+        };
+        script.onerror = () => resolve();
+        document.head.appendChild(script);
+    });
+}
+
+function ensureTurnstileWidget(widgetId) {
+    return new Promise(async (resolve) => {
+        if (_turnstileWidgets[widgetId]) { resolve(); return; }
+        await loadTurnstileScript();
         createTurnstileWidget(widgetId);
         resolve();
     });
@@ -175,9 +155,14 @@ function executeTurnstile(widgetId) {
         await ensureTurnstileWidget(widgetId);
         if (!_turnstileWidgets[widgetId] || typeof turnstile === "undefined") { resolve(""); return; }
         try {
-            _turnstileCallbacks[widgetId] = (token) => { delete _turnstileCallbacks[widgetId]; resolve(token); };
+            const handler = (token) => { resolve(token); };
+            const origCb = _turnstileWidgets[widgetId];
             turnstile.execute(_turnstileWidgets[widgetId]);
-            setTimeout(() => { if (_turnstileCallbacks[widgetId]) { delete _turnstileCallbacks[widgetId]; resolve(""); } }, 5000);
+            let resolved = false;
+            const check = setInterval(() => {
+                if (el && el.dataset.token && !resolved) { resolved = true; clearInterval(check); resolve(el.dataset.token); }
+            }, 50);
+            setTimeout(() => { if (!resolved) { resolved = true; clearInterval(check); resolve(""); } }, 5000);
         } catch (e) { resolve(""); }
     });
 }

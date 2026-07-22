@@ -14,27 +14,16 @@
     <script>
     (function(){var t=localStorage.getItem("theme")||"light";if(t==="system"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);})();
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="styles.css?v=24">
-    <link rel="preconnect" href="https://challenges.cloudflare.com">
-    <link rel="dns-prefetch" href="https://challenges.cloudflare.com">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
 
 <!-- ==================== LANDING PAGE (shown to visitors) ==================== -->
-<!-- Human Verification Banner (non-blocking) -->
-<div class="verify-gate-banner" id="verify-gate-banner" style="display:none;">
-    <div class="verify-gate-banner-inner">
-        <div class="verify-gate-spinner"><i class="fa-solid fa-spinner fa-spin"></i></div>
-        <span>Verifying you are human...</span>
-        <div id="landing-turnstile-banner"></div>
-    </div>
-</div>
-
 <div id="landing-page" class="landing-page">
 
     <!-- NAVBAR -->
