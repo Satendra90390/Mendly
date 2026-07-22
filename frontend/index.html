@@ -95,7 +95,21 @@
                     <!-- STEP 1: Login -->
                     <div class="auth-step active" id="step-login">
                         <div class="auth-social">
-                            <button type="button" class="social-btn social-google" onclick="handleGuestLogin()">
+                            <div class="terms-consent-row">
+                                <label class="terms-checkbox-label">
+                                    <input type="checkbox" id="terms-agree-check">
+                                    <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
+                                </label>
+                            </div>
+                            <button type="button" class="social-btn social-google" onclick="handleSocialLogin('google')">
+                                <svg class="social-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                                <span>Google</span>
+                            </button>
+                            <button type="button" class="social-btn social-github" onclick="handleSocialLogin('github')">
+                                <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                                <span>GitHub</span>
+                            </button>
+                            <button type="button" class="social-btn" onclick="handleGuestLogin()">
                                 <i class="fa-solid fa-user-secret" style="font-size:18px;color:#6c63ff;"></i>
                                 <span>Continue as Guest</span>
                             </button>
@@ -191,6 +205,12 @@
                                 </div>
                             </div>
                             <div id="signup-error" class="auth-error" style="display:none;"></div>
+                            <div class="terms-consent-row">
+                                <label class="terms-checkbox-label">
+                                    <input type="checkbox" id="signup-terms-check">
+                                    <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
+                                </label>
+                            </div>
                             <button type="submit" class="btn-primary auth-submit" id="signup-submit-btn">
                                 <i class="fa-solid fa-user-plus"></i> <span>Create Account</span>
                             </button>
@@ -975,5 +995,72 @@ function toggleLandingSidebar() {
     updateStatus();
 })();
 </script>
+
+<!-- TERMS OF SERVICE MODAL -->
+<div class="terms-modal-overlay" id="terms-modal-overlay" onclick="closeTermsModal()">
+    <div class="terms-modal" onclick="event.stopPropagation()">
+        <div class="terms-modal-header">
+            <h2>Terms of Service</h2>
+            <button class="terms-modal-close" onclick="closeTermsModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="terms-modal-body">
+            <p><strong>Effective Date:</strong> July 22, 2026</p>
+            <p>Welcome to Mendly. By accessing or using our service, you agree to these Terms of Service. Please read them carefully.</p>
+
+            <h3>1. Service Description</h3>
+            <p>Mendly is an AI-powered health information platform designed to provide general medical information, medication details, and health-related guidance. It is <strong>not</strong> a substitute for professional medical advice, diagnosis, or treatment.</p>
+
+            <h3>2. Not Medical Advice</h3>
+            <p>All content provided through Mendly is for <strong>informational and educational purposes only</strong>. Always seek the advice of a qualified healthcare provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay seeking it because of information you have received through Mendly.</p>
+
+            <h3>3. User Responsibilities</h3>
+            <ul>
+                <li>You must be at least 18 years old to use Mendly.</li>
+                <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+                <li>You agree not to use Mendly for any unlawful or unauthorized purpose.</li>
+                <li>You understand that AI-generated responses may contain inaccuracies and should be verified.</li>
+            </ul>
+
+            <h3>4. Account Registration</h3>
+            <p>You may register using email, Google, GitHub, or continue as a guest. You are responsible for all activity that occurs under your account. Guest sessions are temporary and data may be lost upon session expiry.</p>
+
+            <h3>5. Data & Privacy</h3>
+            <p>We collect and process personal data (name, email, conversation history) in accordance with our Privacy Policy. Your health data is encrypted and stored securely. We do not sell your personal data to third parties. See our <a href="#" onclick="event.preventDefault()">Privacy Policy</a> for details.</p>
+
+            <h3>6. Prohibited Conduct</h3>
+            <ul>
+                <li>Attempting to reverse-engineer, decompile, or extract model data.</li>
+                <li>Using automated tools to scrape or interact with the service excessively.</li>
+                <li>Impersonating another user or misrepresenting your identity.</li>
+                <li>Uploading malicious content or attempting to exploit vulnerabilities.</li>
+            </ul>
+
+            <h3>7. Intellectual Property</h3>
+            <p>All content, design, code, and branding of Mendly are the intellectual property of Mendly and its developers. You may not reproduce, distribute, or create derivative works without explicit permission.</p>
+
+            <h3>8. Limitation of Liability</h3>
+            <p>Mendly and its developers shall not be held liable for any damages, losses, or consequences arising from the use of or reliance on information provided through this service. Use of Mendly is at your own risk.</p>
+
+            <h3>9. Service Availability</h3>
+            <p>We strive to maintain uptime but do not guarantee uninterrupted access. We reserve the right to modify, suspend, or discontinue any part of the service at any time without prior notice.</p>
+
+            <h3>10. Changes to Terms</h3>
+            <p>We may update these Terms from time to time. Continued use of Mendly after changes are posted constitutes your acceptance of the revised Terms.</p>
+
+            <h3>11. Contact</h3>
+            <p>For questions about these Terms, contact us at <a href="mailto:altvo871@gmail.com">altvo871@gmail.com</a>.</p>
+        </div>
+        <div class="terms-modal-footer">
+            <label class="terms-checkbox-label terms-modal-agree">
+                <input type="checkbox" id="terms-modal-check">
+                <span>I have read and agree to the Terms of Service</span>
+            </label>
+            <button class="btn-primary terms-accept-btn" id="terms-accept-btn" disabled onclick="acceptTermsAndContinue()">
+                <i class="fa-solid fa-check"></i> Accept & Continue
+            </button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

@@ -29,6 +29,55 @@ function setSession(token, user) { localStorage.setItem(AUTH_TOKEN_KEY, token); 
 function clearSession() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); }
 function authHeaders() { const t = getToken(); return t ? { Authorization: `Bearer ${t}` } : {}; }
 
+// ——— Terms of Service Modal ———
+let _pendingTermsAction = null;
+
+function openTermsModal() {
+    const overlay = document.getElementById("terms-modal-overlay");
+    const modalCheck = document.getElementById("terms-modal-check");
+    const acceptBtn = document.getElementById("terms-accept-btn");
+    if (overlay) overlay.classList.add("open");
+    if (modalCheck) modalCheck.checked = false;
+    if (acceptBtn) acceptBtn.disabled = true;
+    document.body.style.overflow = "hidden";
+}
+
+function closeTermsModal() {
+    const overlay = document.getElementById("terms-modal-overlay");
+    if (overlay) overlay.classList.remove("open");
+    _pendingTermsAction = null;
+    document.body.style.overflow = "";
+}
+
+function acceptTermsAndContinue() {
+    localStorage.setItem("mendly_terms_accepted", "true");
+    closeTermsModal();
+    if (_pendingTermsAction) {
+        const action = _pendingTermsAction;
+        _pendingTermsAction = null;
+        action();
+    }
+}
+
+function hasAcceptedTerms() {
+    return localStorage.getItem("mendly_terms_accepted") === "true";
+}
+
+function requireTerms(action) {
+    if (hasAcceptedTerms()) { action(); return; }
+    _pendingTermsAction = action;
+    openTermsModal();
+}
+
+// Attach modal checkbox listener
+document.addEventListener("DOMContentLoaded", () => {
+    const modalCheck = document.getElementById("terms-modal-check");
+    const acceptBtn = document.getElementById("terms-accept-btn");
+    if (modalCheck && acceptBtn) {
+        modalCheck.addEventListener("change", () => { acceptBtn.disabled = !modalCheck.checked; });
+    }
+});
+
 // ——— Math Captcha ———
 let _captchaAnswer = {};
 function generateCaptcha(prefix) {
@@ -158,21 +207,23 @@ function startOtpTimer(seconds, timerId, btnId) {
 async function handleLogin(e) {
     e.preventDefault(); hideAllErrors();
     if (!verifyCaptcha("login")) { showStepError("login", "Incorrect captcha answer."); generateCaptcha("login"); return; }
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value;
-    const btn = document.getElementById("login-submit-btn");
-    if (!email || !password) return;
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("login", data.detail || "Incorrect email or password."); return; }
-        setSession(data.access_token, data.user); enterApp(data.user);
-    } catch (err) {
-        if (!navigator.onLine) showStepError("login", "You are offline. Please check your internet connection.");
-        else showStepError("login", "Couldn't reach the server. Please try again.");
-    }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In'; generateCaptcha("login"); }
+    requireTerms(async () => {
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+        const btn = document.getElementById("login-submit-btn");
+        if (!email || !password) return;
+        btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+            const data = await res.json();
+            if (!res.ok) { showStepError("login", data.detail || "Incorrect email or password."); return; }
+            setSession(data.access_token, data.user); enterApp(data.user);
+        } catch (err) {
+            if (!navigator.onLine) showStepError("login", "You are offline. Please check your internet connection.");
+            else showStepError("login", "Couldn't reach the server. Please try again.");
+        }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In'; generateCaptcha("login"); }
+    });
 }
 
 // ============================================================
@@ -189,17 +240,19 @@ async function handleSignup(e) {
     const btn = document.getElementById("signup-submit-btn");
     if (password.length < 6) { showStepError("signup", "Password must be at least 6 characters."); return; }
     if (password !== confirm) { showStepError("signup", "Passwords do not match."); return; }
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
-    try {
-        const res = await fetch(`${API_BASE}/auth/signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password }) });
-        const data = await res.json();
-        if (!res.ok) { showStepError("signup", data.detail || "Signup failed."); return; }
-        setSession(data.access_token, data.user); enterApp(data.user, true);
-    } catch (err) {
-        if (!navigator.onLine) showStepError("signup", "You are offline. Please check your internet connection.");
-        else showStepError("signup", "Couldn't reach the server. Please try again.");
-    }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; generateCaptcha("signup"); }
+    requireTerms(async () => {
+        btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
+        try {
+            const res = await fetch(`${API_BASE}/auth/signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password }) });
+            const data = await res.json();
+            if (!res.ok) { showStepError("signup", data.detail || "Signup failed."); return; }
+            setSession(data.access_token, data.user); enterApp(data.user, true);
+        } catch (err) {
+            if (!navigator.onLine) showStepError("signup", "You are offline. Please check your internet connection.");
+            else showStepError("signup", "Couldn't reach the server. Please try again.");
+        }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create Account'; generateCaptcha("signup"); }
+    });
 }
 
 // ============================================================
@@ -208,20 +261,22 @@ async function handleSignup(e) {
 
 async function handleGuestLogin() {
     hideAllErrors();
-    const btn = document.querySelector(".social-btn.social-google");
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Starting guest session...'; }
-    try {
-        const res = await fetch(`${API_BASE}/auth/guest`, { method: "POST", headers: { "Content-Type": "application/json" } });
-        const data = await res.json();
-        if (!res.ok) { alert(data.detail || "Guest login failed."); return; }
-        setSession(data.access_token, data.user);
-        enterApp(data.user, false);
-        setTimeout(() => { const banner = document.getElementById("guest-banner"); if (banner) banner.style.display = "block"; }, 500);
-    } catch (err) {
-        if (!navigator.onLine) alert("You are offline. Please check your internet connection.");
-        else alert("Couldn't reach the server. Please try again.");
-    }
-    finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-secret" style="font-size:18px;color:#6c63ff;"></i> <span>Continue as Guest</span>'; } }
+    requireTerms(async () => {
+        const btn = document.querySelector(".social-btn.social-google");
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Starting guest session...'; }
+        try {
+            const res = await fetch(`${API_BASE}/auth/guest`, { method: "POST", headers: { "Content-Type": "application/json" } });
+            const data = await res.json();
+            if (!res.ok) { alert(data.detail || "Guest login failed."); return; }
+            setSession(data.access_token, data.user);
+            enterApp(data.user, false);
+            setTimeout(() => { const banner = document.getElementById("guest-banner"); if (banner) banner.style.display = "block"; }, 500);
+        } catch (err) {
+            if (!navigator.onLine) alert("You are offline. Please check your internet connection.");
+            else alert("Couldn't reach the server. Please try again.");
+        }
+        finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-secret" style="font-size:18px;color:#6c63ff;"></i> <span>Continue as Guest</span>'; } }
+    });
 }
 
 async function handleGuestUpgrade(e) {
@@ -332,7 +387,7 @@ async function handleResetPassword(e) {
 // ============================================================
 // SOCIAL LOGIN
 // ============================================================
-function handleSocialLogin(provider) { window.location.href = `${API_BASE}/auth/${provider}`; }
+function handleSocialLogin(provider) { requireTerms(() => { window.location.href = `${API_BASE}/auth/${provider}`; }); }
 
 // ============================================================
 // LOGOUT
