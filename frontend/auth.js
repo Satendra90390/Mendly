@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalCheck.addEventListener("change", () => { acceptBtn.disabled = !modalCheck.checked; });
     }
     // Initialize Turnstile widgets
-    setTimeout(initTurnstile, 500);
+    initTurnstile();
     // If already verified, skip landing gate
     if (localStorage.getItem("mendly_human_verified") === "true") {
         const gate = document.getElementById("verify-gate");
@@ -92,7 +92,10 @@ const TURNSTILE_SITE_KEY = "0x4AAAAAAD7Ztmx4IkbpTaQ4";
 const _turnstileWidgets = {};
 
 function initTurnstile() {
-    if (typeof turnstile === "undefined") return;
+    if (typeof turnstile === "undefined") {
+        setTimeout(initTurnstile, 200);
+        return;
+    }
     const containers = [
         { id: "landing-turnstile", callback: "onLandingTurnstileSuccess", auto: true },
         { id: "login-turnstile", callback: "onLoginTurnstileSuccess", auto: false },
@@ -137,10 +140,12 @@ function executeTurnstile(widgetId) {
         if (_turnstileWidgets[widgetId] && typeof turnstile !== "undefined") {
             try {
                 turnstile.execute(_turnstileWidgets[widgetId]);
+                let elapsed = 0;
                 const check = setInterval(() => {
+                    elapsed += 200;
                     if (el && el.dataset.token) { clearInterval(check); resolve(el.dataset.token); }
+                    else if (elapsed >= 5000) { clearInterval(check); resolve(""); }
                 }, 200);
-                setTimeout(() => { clearInterval(check); resolve(""); }, 10000);
             } catch (e) { resolve(""); }
         } else { resolve(""); }
     });
