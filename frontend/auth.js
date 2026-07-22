@@ -76,48 +76,83 @@ document.addEventListener("DOMContentLoaded", () => {
     if (modalCheck && acceptBtn) {
         modalCheck.addEventListener("change", () => { acceptBtn.disabled = !modalCheck.checked; });
     }
-    // Initialize Turnstile widgets
-    initTurnstile();
-    // If already verified, skip landing gate
+    // If already verified, skip banner entirely
     if (localStorage.getItem("mendly_human_verified") === "true") {
-        const gate = document.getElementById("verify-gate");
-        const landing = document.getElementById("landing-page");
-        if (gate) gate.style.display = "none";
-        if (landing) landing.style.display = "";
+        return;
     }
+    // Show non-blocking banner and init Turnstile in background
+    initTurnstileLanding();
 });
 
 // ——— Cloudflare Turnstile ———
 const TURNSTILE_SITE_KEY = "0x4AAAAAAD7cL9jURtSOUv7m";
 const _turnstileWidgets = {};
+const _turnstileCallbacks = {};
 
-function initTurnstile() {
+function initTurnstileLanding() {
     if (typeof turnstile === "undefined") {
-        setTimeout(initTurnstile, 200);
+        setTimeout(initTurnstileLanding, 100);
         return;
     }
-    const containers = [
-        { id: "landing-turnstile", callback: "onLandingTurnstileSuccess", auto: true },
-        { id: "login-turnstile", callback: "onLoginTurnstileSuccess", auto: false },
-        { id: "signup-turnstile", callback: "onSignupTurnstileSuccess", auto: false },
-    ];
-    containers.forEach(({ id, callback, auto }) => {
-        const el = document.getElementById(id);
-        if (el && !_turnstileWidgets[id]) {
-            try {
-                _turnstileWidgets[id] = turnstile.render(`#${id}`, {
-                    sitekey: TURNSTILE_SITE_KEY,
-                    appearance: auto ? "interaction-only" : "execute",
-                    execution: auto ? "render" : "execute",
-                    callback: (token) => { el.dataset.token = token; },
-                    "error-callback": () => { el.dataset.token = ""; },
-                    "expired-callback": () => { el.dataset.token = ""; },
-                    theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light",
-                    size: "invisible",
-                });
-            } catch (e) { console.warn("Turnstile init failed:", e); }
+    const banner = document.getElementById("verify-gate-banner");
+    if (banner) banner.style.display = "flex";
+    const el = document.getElementById("landing-turnstile-banner");
+    if (el && !_turnstileWidgets["landing-turnstile-banner"]) {
+        try {
+            _turnstileWidgets["landing-turnstile-banner"] = turnstile.render("#landing-turnstile-banner", {
+                sitekey: TURNSTILE_SITE_KEY,
+                appearance: "interaction-only",
+                execution: "render",
+                callback: (token) => {
+                    el.dataset.token = token;
+                    localStorage.setItem("mendly_human_verified", "true");
+                    if (banner) {
+                        banner.style.transition = "opacity 0.3s, transform 0.3s";
+                        banner.style.opacity = "0";
+                        banner.style.transform = "translateY(-100%)";
+                        setTimeout(() => { banner.style.display = "none"; }, 300);
+                    }
+                },
+                "error-callback": () => { el.dataset.token = ""; },
+                "expired-callback": () => { el.dataset.token = ""; },
+                theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light",
+                size: "invisible",
+            });
+        } catch (e) { console.warn("Turnstile init failed:", e); }
+    }
+}
+
+function ensureTurnstileWidget(widgetId) {
+    return new Promise((resolve) => {
+        if (_turnstileWidgets[widgetId]) { resolve(); return; }
+        if (typeof turnstile === "undefined") {
+            const wait = setInterval(() => {
+                if (typeof turnstile !== "undefined") { clearInterval(wait); createTurnstileWidget(widgetId); resolve(); }
+            }, 100);
+            setTimeout(() => { clearInterval(wait); resolve(); }, 5000);
+            return;
         }
+        createTurnstileWidget(widgetId);
+        resolve();
     });
+}
+
+function createTurnstileWidget(widgetId) {
+    if (_turnstileWidgets[widgetId]) return;
+    const el = document.getElementById(widgetId);
+    if (!el) return;
+    try {
+        _turnstileWidgets[widgetId] = turnstile.render(`#${widgetId}`, {
+            sitekey: TURNSTILE_SITE_KEY,
+            appearance: "execute",
+            execution: "execute",
+            callback: (token) => { el.dataset.token = token; },
+            "error-callback": () => { el.dataset.token = ""; },
+            "expired-callback": () => { el.dataset.token = ""; },
+            theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light",
+            size: "invisible",
+        });
+    } catch (e) { console.warn("Turnstile widget creation failed:", e); }
 }
 
 function getTurnstileToken(widgetId) {
@@ -134,33 +169,18 @@ function resetTurnstile(widgetId) {
 }
 
 function executeTurnstile(widgetId) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
         const el = document.getElementById(widgetId);
         if (el && el.dataset.token) { resolve(el.dataset.token); return; }
-        if (_turnstileWidgets[widgetId] && typeof turnstile !== "undefined") {
-            try {
-                turnstile.execute(_turnstileWidgets[widgetId]);
-                let elapsed = 0;
-                const check = setInterval(() => {
-                    elapsed += 200;
-                    if (el && el.dataset.token) { clearInterval(check); resolve(el.dataset.token); }
-                    else if (elapsed >= 5000) { clearInterval(check); resolve(""); }
-                }, 200);
-            } catch (e) { resolve(""); }
-        } else { resolve(""); }
+        await ensureTurnstileWidget(widgetId);
+        if (!_turnstileWidgets[widgetId] || typeof turnstile === "undefined") { resolve(""); return; }
+        try {
+            _turnstileCallbacks[widgetId] = (token) => { delete _turnstileCallbacks[widgetId]; resolve(token); };
+            turnstile.execute(_turnstileWidgets[widgetId]);
+            setTimeout(() => { if (_turnstileCallbacks[widgetId]) { delete _turnstileCallbacks[widgetId]; resolve(""); } }, 5000);
+        } catch (e) { resolve(""); }
     });
 }
-
-window.onLandingTurnstileSuccess = function(token) {
-    const gate = document.getElementById("verify-gate");
-    const landing = document.getElementById("landing-page");
-    if (gate) gate.style.display = "none";
-    if (landing) landing.style.display = "";
-    localStorage.setItem("mendly_human_verified", "true");
-};
-
-window.onLoginTurnstileSuccess = function(token) {};
-window.onSignupTurnstileSuccess = function(token) {};
 
 function handleLogoClick() {
     if (getToken()) {
@@ -186,8 +206,16 @@ function goToStep(step) {
     if (_otpTimerInterval) { clearInterval(_otpTimerInterval); _otpTimerInterval = null; }
     ["otp-timer", "phone-otp-timer", "forgot-otp-timer"].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = ""; });
     hideAllErrors();
-    if (step === "login") { resetTurnstile("login-turnstile"); document.getElementById("auth-subtitle").textContent = "Log in to your account"; }
-    if (step === "signup") { resetTurnstile("signup-turnstile"); document.getElementById("auth-subtitle").textContent = "Create your account"; }
+    if (step === "login") {
+        resetTurnstile("login-turnstile");
+        ensureTurnstileWidget("login-turnstile");
+        document.getElementById("auth-subtitle").textContent = "Log in to your account";
+    }
+    if (step === "signup") {
+        resetTurnstile("signup-turnstile");
+        ensureTurnstileWidget("signup-turnstile");
+        document.getElementById("auth-subtitle").textContent = "Create your account";
+    }
     if (step === "upgrade") {
         document.getElementById("landing-page").style.display = "block";
         document.getElementById("app-root").style.display = "none";

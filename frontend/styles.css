@@ -2181,8 +2181,27 @@ textarea { resize: vertical; min-height: 56px; }
 }
 
 /* ============================================================ */
-/* HUMAN VERIFICATION GATE (Landing Page)                        */
+/* HUMAN VERIFICATION BANNER (Non-blocking)                      */
 /* ============================================================ */
+.verify-gate-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
+    background: linear-gradient(135deg, #06b6d4, #6c63ff);
+    padding: 10px 16px;
+    display: flex; align-items: center; justify-content: center;
+    animation: slideDown 0.3s ease;
+}
+.verify-gate-banner-inner {
+    display: flex; align-items: center; gap: 10px;
+    color: #fff; font-size: 13px; font-weight: 500;
+}
+.verify-gate-banner .verify-gate-spinner {
+    font-size: 16px; color: #fff; margin: 0;
+}
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+/* Legacy gate styles (kept for reference) */
 .verify-gate {
     position: fixed; inset: 0; z-index: 99999;
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);

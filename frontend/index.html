@@ -20,25 +20,22 @@
     <link rel="stylesheet" href="styles.css?v=24">
     <link rel="preconnect" href="https://challenges.cloudflare.com">
     <link rel="dns-prefetch" href="https://challenges.cloudflare.com">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
 
 <!-- ==================== LANDING PAGE (shown to visitors) ==================== -->
-<!-- Human Verification Gate -->
-<div class="verify-gate" id="verify-gate">
-    <div class="verify-gate-card">
-        <img src="logo.svg" alt="Mendly" class="verify-gate-logo">
-        <h2>Welcome to Mendly</h2>
-        <p>Verifying you are human...</p>
+<!-- Human Verification Banner (non-blocking) -->
+<div class="verify-gate-banner" id="verify-gate-banner" style="display:none;">
+    <div class="verify-gate-banner-inner">
         <div class="verify-gate-spinner"><i class="fa-solid fa-spinner fa-spin"></i></div>
-        <div class="verify-gate-widget" id="landing-turnstile"></div>
-        <p class="verify-gate-hint">This helps us keep the platform safe for everyone.</p>
+        <span>Verifying you are human...</span>
+        <div id="landing-turnstile-banner"></div>
     </div>
 </div>
 
-<div id="landing-page" class="landing-page" style="display:none;">
+<div id="landing-page" class="landing-page">
 
     <!-- NAVBAR -->
     <nav class="landing-nav" id="landing-nav">
