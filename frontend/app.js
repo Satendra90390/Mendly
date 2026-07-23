@@ -93,7 +93,7 @@ async function authFetch(path, options = {}) {
 // ============================================================
 const VIEW_TITLES = {
     dashboard: "Dashboard",
-    chatbot: "Elix",
+    chatbot: "AI Chat",
     medicines: "Medicines",
     conditions: "Conditions",
     interactions: "Interactions",
@@ -232,14 +232,14 @@ async function sendChatMessage() {
     if (!isLoggedIn()) {
         const used = parseInt(localStorage.getItem("mendly_guest_chats") || "0", 10);
         if (used >= GUEST_CHAT_LIMIT) {
-            addChatMessage("bot", `You've used all ${GUEST_CHAT_LIMIT} free messages. **Sign up for free** to continue chatting with Elix — no credit card needed.`);
+            addChatMessage("bot", `You've used all ${GUEST_CHAT_LIMIT} free messages. **Sign up for free** to continue chatting — no credit card needed.`);
             return;
         }
         localStorage.setItem("mendly_guest_chats", String(used + 1));
         const remaining = GUEST_CHAT_LIMIT - used - 1;
         if (remaining > 0 && remaining <= 2) {
             setTimeout(() => {
-                addChatMessage("bot", `💡 You have **${remaining} free message${remaining > 1 ? "s" : ""}** left. Sign up to chat unlimited with Elix.`);
+                addChatMessage("bot", `💡 You have **${remaining} free message${remaining > 1 ? "s" : ""}** left. Sign up for unlimited access.`);
             }, 1500);
         }
     }
@@ -269,7 +269,7 @@ async function sendChatMessage() {
     } catch (e) {
         removeTypingIndicator();
         if (String(e.message).includes("Session expired")) {
-            addChatMessage("bot", "Please **sign up or log in** to continue chatting with Elix.");
+            addChatMessage("bot", "Please **sign up or log in** to continue chatting.");
         } else {
             const msg = String(e.message || "");
             if (msg.includes("offline")) {
@@ -462,7 +462,7 @@ async function loadChatHistoryFromServer() {
                     <div class="chat-bubble bot">
                         <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                         <div class="bubble-content">
-                            <div class="bubble-text"><strong>Welcome to Elix! 👋</strong><br>
+                            <div class="bubble-text"><strong>Welcome! 👋</strong><br>
                             I can help you with disease information, medicine details, drug interactions, and finding nearby hospitals.<br><br>
                             <strong>Try asking:</strong><br>
                             "What are the symptoms of diabetes?"<br>
@@ -510,9 +510,9 @@ function renderWelcomeChat() {
             <div class="chat-bubble bot">
                 <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                 <div class="bubble-content">
-                    <div class="bubble-text"><strong>Welcome to Elix! 👋</strong><br>
+                    <div class="bubble-text"><strong>Welcome! 👋</strong><br>
                     I can help you with disease information, medicine details, drug interactions, and finding nearby hospitals.<br><br>
-                    ${remaining > 0 ? `<em>You have <strong>${remaining} free message${remaining > 1 ? "s" : ""}</strong> — sign up for unlimited access.</em><br><br>` : `<em>Sign up free to chat with Elix.</em><br><br>`}
+                    ${remaining > 0 ? `<em>You have <strong>${remaining} free message${remaining > 1 ? "s" : ""}</strong> — sign up for unlimited access.</em><br><br>` : `<em>Sign up free to continue chatting.</em><br><br>`}
                     <strong>Try asking:</strong><br>
                     "What are the symptoms of diabetes?"<br>
                     "Tell me about Atorvastatin"<br>
@@ -972,13 +972,13 @@ function updateChatStatusUI() {
     const badge = document.getElementById("chat-status-badge");
     if (!badge) return;
     if (chatStatus.provider === "nvidia") {
-        badge.innerHTML = '<span class="status-dot online"></span> Elix (Online)';
+        badge.innerHTML = '<span class="status-dot online"></span> Online';
         badge.className = "chat-status-badge online";
     } else if (chatStatus.gemini_active) {
-        badge.innerHTML = '<span class="status-dot online"></span> Elix (Online)';
+        badge.innerHTML = '<span class="status-dot online"></span> Online';
         badge.className = "chat-status-badge online";
     } else {
-        badge.innerHTML = '<span class="status-dot offline"></span> Elix Offline';
+        badge.innerHTML = '<span class="status-dot offline"></span> Offline';
         badge.className = "chat-status-badge offline";
     }
 }
