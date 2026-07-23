@@ -546,7 +546,7 @@ function enterAppDirect() {
     document.getElementById("landing-page").style.display = "none";
     document.getElementById("app-root").style.display = "flex";
     const banner = document.getElementById("guest-banner");
-    if (banner) banner.style.display = "none";
+    if (banner) banner.style.display = "";
     const uname = document.getElementById("sidebar-username"); if (uname) uname.textContent = "Guest";
     const avatar = document.getElementById("sidebar-avatar"); if (avatar) { avatar.textContent = "G"; avatar.style.background = "#64748B"; }
     const mName = document.getElementById("mobile-username"); if (mName) mName.textContent = "Guest";
