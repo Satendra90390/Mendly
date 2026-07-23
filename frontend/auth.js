@@ -9,6 +9,28 @@ let _currentEmail = "";
 let _verifiedOtp = "";
 let _otpTimerInterval = null;
 
+// ——— Auth Modal ———
+function openAuthModal(step) {
+    const overlay = document.getElementById("auth-modal-overlay");
+    const modal = document.getElementById("auth-modal");
+    if (overlay) overlay.classList.add("open");
+    if (modal) modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+    if (step) goToStep(step);
+}
+
+function closeAuthModal() {
+    const overlay = document.getElementById("auth-modal-overlay");
+    const modal = document.getElementById("auth-modal");
+    if (overlay) overlay.classList.remove("open");
+    if (modal) modal.classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAuthModal();
+});
+
 // ——— XSS Protection ———
 function escapeHtml(str) {
     if (!str) return "";
@@ -482,12 +504,10 @@ function handleLogout() {
     const landingPage = document.getElementById("landing-page");
     const landingNav = document.getElementById("landing-nav");
     const landingHero = document.querySelector(".landing-hero");
-    const landingLogin = document.getElementById("landing-login");
     const landingFooter = document.getElementById("footer");
     if (landingPage) landingPage.style.display = "block";
     if (landingNav) landingNav.style.display = "";
     if (landingHero) landingHero.style.display = "";
-    if (landingLogin) landingLogin.style.display = "";
     if (landingFooter) landingFooter.style.display = "";
     goToStep("login");
     ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });

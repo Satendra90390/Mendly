@@ -1093,12 +1093,10 @@ async function deleteAccount() {
         const landingPage = document.getElementById("landing-page");
         const landingNav = document.getElementById("landing-nav");
         const landingHero = document.querySelector(".landing-hero");
-        const landingLogin = document.getElementById("landing-login");
         const landingFooter = document.getElementById("footer");
         if (landingPage) landingPage.style.display = "block";
         if (landingNav) landingNav.style.display = "";
         if (landingHero) landingHero.style.display = "";
-        if (landingLogin) landingLogin.style.display = "";
         if (landingFooter) landingFooter.style.display = "";
         goToStep("login");
         alert("Your account has been permanently deleted.");
