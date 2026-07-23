@@ -1043,11 +1043,8 @@
 <script src="config.js?v=30"></script>
 <script src="auth.js?v=30"></script>
 <script src="app.js?v=30"></script>
-<script src="update.js?v=3"></script>
 <script>
 if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); }
-let deferredPrompt;
-window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; });
 function toggleLandingSidebar() {
     const sidebar = document.getElementById('landing-sidebar');
     const overlay = document.getElementById('landing-sidebar-overlay');

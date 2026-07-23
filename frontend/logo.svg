@@ -1,31 +1,77 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
   <defs>
-    <linearGradient id="logoGrad" x1="200" y1="200" x2="824" y2="824" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="100%" stop-color="#06b6d4"/>
+    <linearGradient id="shieldGrad" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="50%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+    <linearGradient id="helixGrad" x1="100" y1="30" x2="100" y2="175" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#BFDBFE"/>
+      <stop offset="100%" stop-color="#93C5FD"/>
+    </linearGradient>
+    <linearGradient id="crossGrad" x1="100" y1="60" x2="100" y2="145" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
     </linearGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feGaussianBlur stdDeviation="2" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <clipPath id="shieldClip">
+      <path d="M100 8 L175 35 C175 35 180 110 100 185 C20 110 25 35 25 35 Z"/>
+    </clipPath>
   </defs>
-  <!-- Dark background -->
-  <rect width="1024" height="1024" rx="220" fill="#0F172A"/>
-  <!-- DNA helix + chat bubble — single continuous line -->
-  <g filter="url(#glow)">
-    <!-- Chat bubble shape -->
-    <path d="M340 320 C340 280, 370 250, 410 250 L614 250 C654 250, 684 280, 684 320 L684 520 C684 560, 654 590, 614 590 L480 590 L400 660 L420 590 L410 590 C370 590, 340 560, 340 520 Z" stroke="url(#logoGrad)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <!-- DNA helix inside bubble -->
-    <path d="M430 340 C460 310, 500 310, 530 340 C560 370, 600 370, 630 340" stroke="url(#logoGrad)" stroke-width="20" stroke-linecap="round" fill="none"/>
-    <path d="M430 390 C460 420, 500 420, 530 390 C560 360, 600 360, 630 390" stroke="url(#logoGrad)" stroke-width="20" stroke-linecap="round" fill="none"/>
-    <path d="M430 440 C460 410, 500 410, 530 440 C560 470, 600 470, 630 440" stroke="url(#logoGrad)" stroke-width="20" stroke-linecap="round" fill="none"/>
-    <path d="M430 490 C460 520, 500 520, 530 490 C560 460, 600 460, 630 490" stroke="url(#logoGrad)" stroke-width="20" stroke-linecap="round" fill="none"/>
-    <!-- Connecting rungs -->
-    <line x1="475" y1="320" x2="475" y2="410" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" opacity="0.6"/>
-    <line x1="530" y1="340" x2="530" y2="390" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" opacity="0.6"/>
-    <line x1="585" y1="320" x2="585" y2="410" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Shield shape -->
+  <path d="M100 8 L175 35 C175 35 180 110 100 185 C20 110 25 35 25 35 Z"
+        fill="url(#shieldGrad)" stroke="none"/>
+
+  <!-- Shield inner highlight -->
+  <path d="M100 16 L168 40 C168 40 172 108 100 176 C28 108 32 40 32 40 Z"
+        fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+
+  <!-- DNA Double Helix -->
+  <g clip-path="url(#shieldClip)" filter="url(#glow)">
+    <!-- Left strand -->
+    <path d="M70 40 C70 60 130 60 130 80 C130 100 70 100 70 120 C70 140 130 140 130 160"
+          fill="none" stroke="url(#helixGrad)" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+    <!-- Right strand -->
+    <path d="M130 40 C130 60 70 60 70 80 C70 100 130 100 130 120 C130 140 70 140 70 160"
+          fill="none" stroke="url(#helixGrad)" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+
+    <!-- Cross-links (rungs) -->
+    <line x1="80" y1="50" x2="120" y2="50" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="72" y1="70" x2="128" y2="70" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="80" y1="90" x2="120" y2="90" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="72" y1="110" x2="128" y2="110" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="80" y1="130" x2="120" y2="130" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="72" y1="150" x2="128" y2="150" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Nucleotide dots -->
+    <circle cx="80" cy="50" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="120" cy="50" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="72" cy="70" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="128" cy="70" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="80" cy="90" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="120" cy="90" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="72" cy="110" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="128" cy="110" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="80" cy="130" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="120" cy="130" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="72" cy="150" r="3" fill="#BFDBFE" opacity="0.8"/>
+    <circle cx="128" cy="150" r="3" fill="#BFDBFE" opacity="0.8"/>
   </g>
+
+  <!-- Medical Cross (centered) -->
+  <g clip-path="url(#shieldClip)">
+    <rect x="90" y="72" width="20" height="56" rx="4" fill="url(#crossGrad)" opacity="0.95"/>
+    <rect x="72" y="90" width="56" height="20" rx="4" fill="url(#crossGrad)" opacity="0.95"/>
+  </g>
+
+  <!-- Shield top accent line -->
+  <path d="M100 8 L175 35" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round"/>
+  <path d="M100 8 L25 35" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round"/>
 </svg>

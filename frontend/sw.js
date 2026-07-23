@@ -6,7 +6,6 @@ const ASSETS = [
   "./config.js",
   "./auth.js",
   "./app.js",
-  "./update.js",
   "./manifest.json",
   "./logo.svg",
   "./logo-192.png",

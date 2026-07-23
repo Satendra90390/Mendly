@@ -48,7 +48,6 @@ if _origins_env.strip() == "*":
 else:
     allow_origins = [o.strip() for o in _origins_env.split(",") if o.strip()]
     allow_origins += [
-        "capacitor://localhost",
         "https://localhost",
     ]
     allow_origins = list(dict.fromkeys(allow_origins))
@@ -674,19 +673,6 @@ async def health_check():
     except Exception:
         db_ok = False
     return {"status": "ok" if db_ok else "degraded", "service": "Mendly API", "version": "4.0.0", "database": "connected" if db_ok else "disconnected"}
-
-
-@app.get("/api/app/version")
-async def get_app_version():
-    return {
-        "android": {
-            "version_code": 3,
-            "version_name": "1.2",
-            "download_url": "https://github.com/Satendra90390/Mendly/releases/latest/download/mendly.apk",
-            "release_notes": "APK connectivity improvements: better error messages, offline detection, service worker fix.",
-            "force_update": False,
-        }
-    }
 
 
 # ============================================================
