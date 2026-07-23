@@ -1956,8 +1956,8 @@ textarea { resize: vertical; min-height: 56px; }
     border-bottom: 1px solid rgba(13,148,136,0.15);
     padding: 0.5rem 1rem;
     position: sticky;
-    top: 0;
-    z-index: 999;
+    top: 56px;
+    z-index: 99;
 }
 .guest-banner-inner {
     display: flex;
