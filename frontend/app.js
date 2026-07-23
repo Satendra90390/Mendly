@@ -1162,49 +1162,33 @@ async function clearActivity() {
 // THEME (light / dark / system)
 // ============================================================
 function initTheme() {
-    setTheme(localStorage.getItem("theme") || "light");
+    setTheme(localStorage.getItem("theme") || "dark");
 }
 
 function setTheme(theme) {
-    if (theme === "system") {
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
-    } else {
-        document.documentElement.setAttribute("data-theme", theme);
-    }
+    if (theme !== "dark" && theme !== "light") theme = "dark";
+    document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
     updateThemeButtons(theme);
 }
 
 function updateThemeButtons(theme) {
-    let iconClass, label, title;
-    if (theme === "dark") {
-        iconClass = "fa-solid fa-sun";
-        label = "Light Mode";
-        title = "Switch to light mode";
-    } else if (theme === "system") {
-        iconClass = "fa-solid fa-desktop";
-        label = "System";
-        title = "Switch to light mode";
-    } else {
-        iconClass = "fa-solid fa-moon";
-        label = "Dark Mode";
-        title = "Switch to dark mode";
-    }
+    const isDark = theme === "dark";
+    const iconClass = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
+    const title = isDark ? "Switch to light mode" : "Switch to dark mode";
 
     document.querySelectorAll(".theme-toggle-btn, .landing-sidebar-theme, .mobile-dropdown-theme").forEach(btn => {
         const icon = btn.querySelector("i");
         const lbl = btn.querySelector("span");
         if (icon) icon.className = iconClass;
-        if (lbl) lbl.textContent = label;
+        if (lbl) lbl.textContent = isDark ? "Light" : "Dark";
         btn.title = title;
     });
 }
 
 function toggleTheme() {
-    const current = localStorage.getItem("theme") || "light";
-    const next = current === "light" ? "dark" : current === "dark" ? "system" : "light";
-    setTheme(next);
+    const current = localStorage.getItem("theme") || "dark";
+    setTheme(current === "dark" ? "light" : "dark");
 }
 
 document.addEventListener("DOMContentLoaded", initTheme);
