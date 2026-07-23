@@ -386,6 +386,19 @@ body {
 }
 .topnav-logout-btn:hover { color: #EF4444; background: rgba(239,68,68,0.1); }
 
+.topnav-signup-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    flex-shrink: 0;
+}
+
 .topnav-hamburger {
     display: none;
     background: none;

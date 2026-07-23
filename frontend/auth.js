@@ -190,11 +190,15 @@ function executeTurnstile(widgetId) {
 }
 
 function handleLogoClick() {
-    if (getToken()) {
-        const appRoot = document.getElementById("app-root");
-        const landingPage = document.getElementById("landing-page");
-        const landingSidebar = document.getElementById("landing-sidebar");
-        const sidebarOverlay = document.getElementById("landing-sidebar-overlay");
+    const appRoot = document.getElementById("app-root");
+    const landingPage = document.getElementById("landing-page");
+    const landingSidebar = document.getElementById("landing-sidebar");
+    const sidebarOverlay = document.getElementById("landing-sidebar-overlay");
+    if (appRoot && appRoot.style.display === "flex") {
+        if (landingSidebar) landingSidebar.classList.remove("active");
+        if (sidebarOverlay) sidebarOverlay.classList.remove("active");
+        if (typeof switchView === "function") switchView("dashboard");
+    } else if (getToken()) {
         if (landingPage) landingPage.style.display = "none";
         if (landingSidebar) landingSidebar.classList.remove("active");
         if (sidebarOverlay) sidebarOverlay.classList.remove("active");
@@ -499,6 +503,7 @@ function handleSocialLogin(provider) { requireTerms(() => { window.location.href
 // ============================================================
 function handleLogout() {
     clearSession();
+    localStorage.removeItem("mendly_guest_chats");
     if (typeof resetApp === "function") resetApp();
     document.getElementById("app-root").style.display = "none";
     const landingPage = document.getElementById("landing-page");
@@ -509,6 +514,8 @@ function handleLogout() {
     if (landingNav) landingNav.style.display = "";
     if (landingHero) landingHero.style.display = "";
     if (landingFooter) landingFooter.style.display = "";
+    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
     goToStep("login");
     ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
     window.scrollTo(0, 0);
@@ -520,17 +527,34 @@ function handleLogout() {
 function enterApp(user, isNew) {
     document.getElementById("landing-page").style.display = "none";
     document.getElementById("app-root").style.display = "flex";
-    updateUserUI(user);
-    if (isNew) showWelcomeMessage(user.name);
-    if (user.auth_provider === "guest") {
+    if (user) updateUserUI(user);
+    if (isNew && user) showWelcomeMessage(user.name);
+    if (user && user.auth_provider === "guest") {
         const banner = document.getElementById("guest-banner");
         if (banner) banner.style.display = "block";
     } else {
         const banner = document.getElementById("guest-banner");
         if (banner) banner.style.display = "none";
     }
+    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
     if (typeof initApp === "function") initApp();
     if (typeof updatePasswordForm === "function") updatePasswordForm();
+}
+
+function enterAppDirect() {
+    document.getElementById("landing-page").style.display = "none";
+    document.getElementById("app-root").style.display = "flex";
+    const banner = document.getElementById("guest-banner");
+    if (banner) banner.style.display = "none";
+    const uname = document.getElementById("sidebar-username"); if (uname) uname.textContent = "Guest";
+    const avatar = document.getElementById("sidebar-avatar"); if (avatar) { avatar.textContent = "G"; avatar.style.background = "#64748B"; }
+    const mName = document.getElementById("mobile-username"); if (mName) mName.textContent = "Guest";
+    const mEmail = document.getElementById("mobile-email"); if (mEmail) mEmail.textContent = "Sign up for full access";
+    const mAvatar = document.getElementById("mobile-avatar"); if (mAvatar) { mAvatar.textContent = "G"; mAvatar.style.background = "#64748B"; }
+    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "none";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "";
+    if (typeof initApp === "function") initApp();
 }
 
 function showWelcomeMessage(name) {
@@ -549,6 +573,7 @@ function showWelcomeMessage(name) {
 }
 
 function updateUserUI(user) {
+    if (!user) return;
     const initial = (user.name || "U").charAt(0).toUpperCase();
     const color = user.avatar_color || "#0D9488";
     const uname = document.getElementById("sidebar-username"); if (uname) uname.textContent = user.name;

@@ -85,9 +85,9 @@
                     <div class="hero-stat"><i class="fa-solid fa-hospital"></i><span>Nearby care</span></div>
                 </div>
                 <div class="landing-hero-actions">
-                    <button class="btn-primary btn-lg" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
-                    <button class="btn-secondary btn-lg" onclick="openAuthModal('signup')"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
-                    <button class="btn-outline btn-lg" onclick="handleGuestLogin()"><i class="fa-solid fa-user-secret"></i> Try as Guest</button>
+                    <button class="btn-primary btn-lg" onclick="enterAppDirect()"><i class="fa-solid fa-rocket"></i> Explore Now</button>
+                    <button class="btn-secondary btn-lg" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
+                    <button class="btn-outline btn-lg" onclick="openAuthModal('signup')"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
                 </div>
             </div>
 
@@ -578,11 +578,12 @@
         </div>
         <div class="topnav-right">
             <button class="topnav-theme-btn theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
-            <div class="topnav-user">
+            <div class="topnav-user" id="topnav-user-section">
                 <div class="topnav-avatar" id="sidebar-avatar">U</div>
                 <span class="topnav-username" id="sidebar-username">User</span>
             </div>
-            <button onclick="handleLogout()" class="topnav-logout-btn" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <button onclick="handleLogout()" class="topnav-logout-btn" id="topnav-logout" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <button class="topnav-signup-btn btn-primary btn-sm" id="topnav-signup-btn" onclick="openAuthModal('signup')" style="display:none;"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
             <button class="topnav-hamburger" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
         </div>
     </div>

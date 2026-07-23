@@ -1,6 +1,12 @@
 // ============================================================
-// Mendly — App Controller (runs only after login)
+// Mendly — App Controller
 // ============================================================
+
+const GUEST_CHAT_LIMIT = 5;
+
+function isLoggedIn() {
+    return !!getToken();
+}
 
 // XSS-safe JS string escaping for inline onclick handlers
 function escapeJS(str) {
@@ -29,15 +35,20 @@ function initApp() {
     if (appInitialized) return;
     appInitialized = true;
 
-    loadDashboardStats();
     loadAllMedicines();
     loadDefaultEmergencyContacts();
     getUserLocation();
-    loadChatHistoryFromServer();
-    loadSavedSearches();
     loadChatStatus();
-    loadAccountStats();
-    loadActivityLog();
+    loadDashboardStats();
+
+    if (isLoggedIn()) {
+        loadChatHistoryFromServer();
+        loadSavedSearches();
+        loadAccountStats();
+        loadActivityLog();
+    } else {
+        renderWelcomeChat();
+    }
 }
 
 // ------------------------------------------------------------
@@ -64,7 +75,6 @@ async function authFetch(path, options = {}) {
             },
         });
         if (res.status === 401) {
-            handleLogout();
             throw new Error("Session expired. Please log in again.");
         }
         return res;
@@ -96,6 +106,11 @@ const VIEW_TITLES = {
 };
 
 function switchView(view) {
+    if (["saved", "activity", "account"].includes(view) && !isLoggedIn()) {
+        openAuthModal("login");
+        return;
+    }
+
     document.querySelectorAll(".view-section").forEach((s) => s.classList.remove("active"));
     document.querySelectorAll(".topnav-link, .mobile-dropdown-link, .mobile-nav-item").forEach((e) => e.classList.remove("active"));
     const viewEl = document.getElementById(`view-${view}`);
@@ -120,6 +135,11 @@ function switchView(view) {
     if (view === "pharmacies") {
         if (state.userLocation) loadNearbyPharmacies();
         else renderPharmacies([], "Search by name above, or click <strong>Nearby</strong> to use your location.");
+    }
+    if (view === "chatbot") {
+        if (!isLoggedIn() && document.getElementById("chat-messages").children.length === 0) {
+            renderWelcomeChat();
+        }
     }
 
     // Close mobile menu if open
@@ -209,6 +229,21 @@ async function sendChatMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
+    if (!isLoggedIn()) {
+        const used = parseInt(localStorage.getItem("mendly_guest_chats") || "0", 10);
+        if (used >= GUEST_CHAT_LIMIT) {
+            addChatMessage("bot", `You've used all ${GUEST_CHAT_LIMIT} free messages. **Sign up for free** to continue chatting with Elix — no credit card needed.`);
+            return;
+        }
+        localStorage.setItem("mendly_guest_chats", String(used + 1));
+        const remaining = GUEST_CHAT_LIMIT - used - 1;
+        if (remaining > 0 && remaining <= 2) {
+            setTimeout(() => {
+                addChatMessage("bot", `💡 You have **${remaining} free message${remaining > 1 ? "s" : ""}** left. Sign up to chat unlimited with Elix.`);
+            }, 1500);
+        }
+    }
+
     _chatMemory.push({ role: "user", content: msg });
     if (_chatMemory.length > MAX_HISTORY * 2) _chatMemory.splice(0, 2);
 
@@ -233,7 +268,9 @@ async function sendChatMessage() {
         addChatMessage("bot", reply);
     } catch (e) {
         removeTypingIndicator();
-        if (!String(e.message).includes("Session expired")) {
+        if (String(e.message).includes("Session expired")) {
+            addChatMessage("bot", "Please **sign up or log in** to continue chatting with Elix.");
+        } else {
             const msg = String(e.message || "");
             if (msg.includes("offline")) {
                 addChatMessage("bot", "You appear to be offline. Please check your internet connection and try again.");
@@ -444,6 +481,7 @@ async function loadChatHistoryFromServer() {
 }
 
 async function clearChat() {
+    if (!isLoggedIn()) { openAuthModal("login"); return; }
     if (!confirm("Clear all chat history? This cannot be undone.")) return;
     try {
         await authFetch("/chat/history", { method: "DELETE" });
@@ -457,6 +495,28 @@ async function clearChat() {
                 <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                 <div class="bubble-content">
                     <div class="bubble-text"><strong>Chat cleared!</strong><br>How can I help you today?</div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function renderWelcomeChat() {
+    const container = document.getElementById("chat-messages");
+    if (!container) return;
+    const used = parseInt(localStorage.getItem("mendly_guest_chats") || "0", 10);
+    const remaining = GUEST_CHAT_LIMIT - used;
+    container.innerHTML = `
+        <div class="chat-bubble-wrap bot welcome-message">
+            <div class="chat-bubble bot">
+                <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                <div class="bubble-content">
+                    <div class="bubble-text"><strong>Welcome to Elix! 👋</strong><br>
+                    I can help you with disease information, medicine details, drug interactions, and finding nearby hospitals.<br><br>
+                    ${remaining > 0 ? `<em>You have <strong>${remaining} free message${remaining > 1 ? "s" : ""}</strong> — sign up for unlimited access.</em><br><br>` : `<em>Sign up free to chat with Elix.</em><br><br>`}
+                    <strong>Try asking:</strong><br>
+                    "What are the symptoms of diabetes?"<br>
+                    "Tell me about Atorvastatin"<br>
+                    "How to treat a migraine?"</div>
                 </div>
             </div>
         </div>`;
@@ -701,6 +761,7 @@ async function loadSavedSearches() {
 }
 
 async function saveSearch(queryType, queryValue) {
+    if (!isLoggedIn()) { openAuthModal("login"); return; }
     try {
         const res = await authFetch("/saved-searches", { method: "POST", body: JSON.stringify({ query_type: queryType, query_value: queryValue }) });
         if (res.ok) {
@@ -884,13 +945,15 @@ async function loadDashboardStats() {
         meds.forEach(m => (m.uses || []).forEach(u => conditions.add(u)));
         document.getElementById("dash-condition-count").textContent = conditions.size || 0;
     } catch (e) { console.error(e); }
-    try {
-        const res = await authFetch("/profile/stats");
-        if (res.ok) {
-            const data = await res.json();
-            document.getElementById("dash-chat-count").textContent = data.total_messages || 0;
-        }
-    } catch (e) { console.error(e); }
+    if (isLoggedIn()) {
+        try {
+            const res = await authFetch("/profile/stats");
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById("dash-chat-count").textContent = data.total_messages || 0;
+            }
+        } catch (e) { console.error(e); }
+    }
 }
 
 // ============================================================
