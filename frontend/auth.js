@@ -380,7 +380,7 @@ async function handleGuestLogin() {
             if (!navigator.onLine) alert("You are offline. Please check your internet connection.");
             else alert("Couldn't reach the server. Please try again.");
         }
-        finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-secret" style="font-size:18px;color:#6c63ff;"></i> <span>Continue as Guest</span>'; } }
+        finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-secret" style="font-size:18px;color:var(--primary);"></i> <span>Continue as Guest</span>'; } }
     });
 }
 
@@ -538,11 +538,11 @@ function showWelcomeMessage(name) {
     const overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10000;";
     overlay.innerHTML = `
-        <div style="background:white;border-radius:16px;padding:40px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:popIn 0.3s ease;">
+        <div style="background:var(--bg-light,#1E293B);border:1px solid var(--border,rgba(255,255,255,0.06));border-radius:16px;padding:40px;text-align:center;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:popIn 0.3s ease;">
             <div style="font-size:48px;margin-bottom:16px;">&#x1F44B;</div>
-            <h2 style="color:#1e293b;margin:0 0 8px;">Welcome to Mendly!</h2>
-            <p style="color:#64748b;font-size:16px;margin:0 0 24px;">Hi <strong>${safeName}</strong>, great to have you here.</p>
-            <button onclick="this.closest('div[style]').parentElement.remove()" style="background:#4f46e5;color:white;border:none;padding:12px 32px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">Get Started</button>
+            <h2 style="color:var(--text-main,#F1F5F9);margin:0 0 8px;">Welcome to Mendly!</h2>
+            <p style="color:var(--text-secondary,#94A3B8);font-size:16px;margin:0 0 24px;">Hi <strong>${safeName}</strong>, great to have you here.</p>
+            <button onclick="this.closest('div[style]').parentElement.remove()" style="background:#0D9488;color:white;border:none;padding:12px 32px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">Get Started</button>
         </div>`;
     document.body.appendChild(overlay);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
@@ -550,7 +550,7 @@ function showWelcomeMessage(name) {
 
 function updateUserUI(user) {
     const initial = (user.name || "U").charAt(0).toUpperCase();
-    const color = user.avatar_color || "#4f46e5";
+    const color = user.avatar_color || "#0D9488";
     const uname = document.getElementById("sidebar-username"); if (uname) uname.textContent = user.name;
     const avatar = document.getElementById("sidebar-avatar"); if (avatar) { avatar.textContent = initial; avatar.style.background = color; }
     const mobileName = document.getElementById("mobile-username"); if (mobileName) mobileName.textContent = user.name;

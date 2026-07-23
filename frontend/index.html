@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Mendly is a professional AI-driven medicine information platform with drug search, health guidance, and nearby care resources.">
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#0D9488">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Mendly">
@@ -13,13 +13,13 @@
     <link rel="apple-touch-icon" href="logo-192.png">
     <title>Mendly — Medicine & Health Information Platform</title>
     <script>
-    (function(){var t=localStorage.getItem("theme")||"light";if(t==="system"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);})();
+    (function(){var t=localStorage.getItem("theme")||"dark";if(t==="system"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);})();
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="styles.css?v=28">
+    <link rel="stylesheet" href="styles.css?v=30">
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
@@ -118,7 +118,7 @@
                             <span>GitHub</span>
                         </button>
                         <button type="button" class="social-btn" onclick="handleGuestLogin()">
-                            <i class="fa-solid fa-user-secret" style="font-size:18px;color:#6c63ff;"></i>
+                            <i class="fa-solid fa-user-secret" style="font-size:18px;color:var(--primary);"></i>
                             <span>Continue as Guest</span>
                         </button>
                     </div>
@@ -425,15 +425,15 @@
             </div>
             <div class="landing-about-visual">
                 <div class="about-stat-card">
-                    <i class="fa-solid fa-capsules" style="color:#6c63ff;"></i>
+                    <i class="fa-solid fa-capsules" style="color:var(--primary);"></i>
                     <div><strong>Any Medicine</strong><p>Search by name, brand, or abbreviation</p></div>
                 </div>
                 <div class="about-stat-card">
-                    <i class="fa-solid fa-wand-magic-sparkles" style="color:#e84393;"></i>
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent);"></i>
                     <div><strong>Elix</strong><p>Ask anything about health</p></div>
                 </div>
                 <div class="about-stat-card">
-                    <i class="fa-solid fa-shield-halved" style="color:#00b894;"></i>
+                    <i class="fa-solid fa-shield-halved" style="color:var(--success);"></i>
                     <div><strong>Drug Safety</strong><p>Check interactions before taking meds</p></div>
                 </div>
             </div>
@@ -623,15 +623,15 @@
         <h2 class="section-heading"><i class="fa-solid fa-bolt" style="color:var(--warning);"></i> <span>Quick Actions</span></h2>
         <div class="grid-3" style="margin-bottom:1.5rem;">
             <div class="quick-action" onclick="switchView('chatbot')">
-                <div class="quick-action-icon" style="background:linear-gradient(135deg,#6c63ff,#4834d4);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="quick-action-icon" style="background:var(--primary);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <div class="quick-action-content"><h3>Elix</h3><p>Ask about diseases & medicines</p></div>
             </div>
             <div class="quick-action" onclick="switchView('medicines')">
-                <div class="quick-action-icon" style="background:linear-gradient(135deg,#fd79a8,#e84393);"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                <div class="quick-action-icon" style="background:#EC4899;"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
                 <div class="quick-action-content"><h3>Search Any Medicine</h3><p>Comprehensive drug information</p></div>
             </div>
             <div class="quick-action" onclick="switchView('interactions')">
-                <div class="quick-action-icon" style="background:linear-gradient(135deg,#ff4757,#c0392b);"><i class="fa-solid fa-circle-exclamation"></i></div>
+                <div class="quick-action-icon" style="background:#EF4444;"><i class="fa-solid fa-circle-exclamation"></i></div>
                 <div class="quick-action-content"><h3>Check Interactions</h3><p>Drug interaction checker</p></div>
             </div>
         </div>
@@ -799,7 +799,7 @@
             <div class="glass-card" onclick="switchView('pharmacies')" style="cursor:pointer;">
                 <h3 class="glass-card-title" style="color:#10b981;"><i class="fa-solid fa-shop"></i> <span>Nearby Pharmacies</span></h3>
                 <p>Find pharmacies near you with home delivery options.</p>
-                <button class="btn-primary" style="margin-top:12px; background:#10b981;"><i class="fa-solid fa-arrow-right"></i> <span>Find Pharmacies</span></button>
+                <button class="btn-primary" style="margin-top:12px; background:#10B981;"><i class="fa-solid fa-arrow-right"></i> <span>Find Pharmacies</span></button>
             </div>
         </div>
         <div class="grid-2">
@@ -977,10 +977,10 @@
     <span>You are offline. Some features may not work.</span>
 </div>
 
-<script src="config.js?v=22"></script>
-<script src="auth.js?v=22"></script>
-<script src="app.js?v=22"></script>
-<script src="update.js?v=2"></script>
+<script src="config.js?v=30"></script>
+<script src="auth.js?v=30"></script>
+<script src="app.js?v=30"></script>
+<script src="update.js?v=3"></script>
 <script>
 if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); }
 let deferredPrompt;

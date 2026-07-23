@@ -960,7 +960,7 @@ function removeProfilePhoto() {
     const user = getStoredUser();
     const avatar = document.getElementById("profile-avatar-large");
     avatar.innerHTML = (user?.name || "U").charAt(0).toUpperCase();
-    avatar.style.background = user?.avatar_color || "#4f46e5";
+    avatar.style.background = user?.avatar_color || "#0D9488";
     document.getElementById("remove-photo-btn").style.display = "none";
     document.getElementById("photo-upload-input").value = "";
 }
