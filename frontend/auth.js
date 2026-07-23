@@ -124,13 +124,13 @@ function createTurnstileWidget(widgetId) {
     try {
         _turnstileWidgets[widgetId] = turnstile.render(`#${widgetId}`, {
             sitekey: TURNSTILE_SITE_KEY,
-            appearance: "execute",
-            execution: "execute",
+            appearance: "always",
+            execution: "render",
             callback: (token) => { el.dataset.token = token; },
             "error-callback": () => { el.dataset.token = ""; },
             "expired-callback": () => { el.dataset.token = ""; },
             theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light",
-            size: "invisible",
+            size: "normal",
         });
     } catch (e) { console.warn("Turnstile widget creation failed:", e); }
 }

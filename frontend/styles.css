@@ -2199,10 +2199,12 @@ textarea { resize: vertical; min-height: 56px; }
 /* ============================================================ */
 .turnstile-group {
     display: flex; justify-content: center;
-    margin-bottom: 8px;
+    margin: 12px 0 4px;
 }
 .turnstile-widget {
     min-height: 65px;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 
