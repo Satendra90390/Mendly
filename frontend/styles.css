@@ -1599,6 +1599,11 @@ textarea { resize: vertical; min-height: 56px; }
 .about-stat-card i { font-size: 1.5rem; flex-shrink: 0; }
 .about-stat-card strong { display: block; color: var(--text-main); font-size: 0.95rem; }
 .about-stat-card p { color: var(--text-muted); font-size: 0.82rem; margin: 0.15rem 0 0; }
+.landing-about-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
 
 /* ---- CTA Section ---- */
 .landing-cta {
@@ -1765,7 +1770,6 @@ textarea { resize: vertical; min-height: 56px; }
 
 /* ---- Landing Responsive ---- */
 @media (max-width: 1024px) {
-    .landing-hero-content { grid-template-columns: 1fr; text-align: center; }
     .landing-hero-text h1 { font-size: 2.4rem; }
     .landing-hero-stats { justify-content: center; }
     .landing-hero-actions { justify-content: center; }
