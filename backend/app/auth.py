@@ -37,8 +37,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1008
 # ── OAuth ──────────────────────────────────────────────────────────
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
-GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "")
-GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5500")
 _oauth_states: dict[str, dict] = {}
 
@@ -346,7 +344,7 @@ async def unblock_user(user_id: str, request: Request, admin_user: dict = Depend
 
 
 # ============================================================
-# OAUTH — Google / GitHub
+# OAUTH — Google
 # ============================================================
 
 async def oauth_google_login(request: Request):
@@ -408,82 +406,6 @@ async def oauth_google_callback(code: str, state: str, request: Request):
     else:
         await update_profile(profile["id"], {"last_login": _now()})
         await _log_activity(profile["id"], "oauth_logged_in", f"Logged in via Google ({email})", request)
-    token = create_access_token({"sub": profile["id"]})
-    return RedirectResponse(url=f"{FRONTEND_URL}?token={token}")
-
-
-async def oauth_github_login(request: Request):
-    if not GITHUB_CLIENT_ID:
-        raise HTTPException(status_code=501, detail="GitHub OAuth is not configured on the server.")
-    _oauth_state_cleanup()
-    state = secrets.token_urlsafe(32)
-    _oauth_states[state] = {"provider": "github", "created_at": time.time()}
-    base = str(request.base_url).rstrip("/")
-    redirect_uri = f"{base}/api/auth/github/callback"
-    params = urllib.parse.urlencode({
-        "client_id": GITHUB_CLIENT_ID,
-        "redirect_uri": redirect_uri,
-        "state": state,
-        "scope": "read:user user:email",
-    })
-    return RedirectResponse(url=f"https://github.com/login/oauth/authorize?{params}")
-
-
-async def oauth_github_callback(code: str, state: str, request: Request):
-    _oauth_state_cleanup()
-    oauth_state = _oauth_states.pop(state, None)
-    if not oauth_state or oauth_state.get("provider") != "github":
-        return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Invalid+OAuth+state")
-    async with httpx.AsyncClient(timeout=15) as client:
-        token_resp = await client.post(
-            "https://github.com/login/oauth/access_token",
-            headers={"Accept": "application/json"},
-            data={
-                "client_id": GITHUB_CLIENT_ID,
-                "client_secret": GITHUB_CLIENT_SECRET,
-                "code": code,
-            },
-        )
-        if token_resp.status_code != 200:
-            return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Token+exchange+failed")
-        token_data = token_resp.json()
-        gh_token = token_data.get("access_token")
-        if not gh_token:
-            return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=No+access+token")
-        user_resp = await client.get(
-            "https://api.github.com/user",
-            headers={"Authorization": f"Bearer {gh_token}", "Accept": "application/json"},
-        )
-        if user_resp.status_code != 200:
-            return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Failed+to+fetch+user+info")
-        gh_user = user_resp.json()
-        email = gh_user.get("email", "")
-        if not email:
-            emails_resp = await client.get(
-                "https://api.github.com/user/emails",
-                headers={"Authorization": f"Bearer {gh_token}", "Accept": "application/json"},
-            )
-            emails = emails_resp.json()
-            for e in emails:
-                if e.get("primary") and e.get("verified"):
-                    email = e["email"]
-                    break
-            if not email and emails:
-                email = emails[0]["email"]
-        if not email:
-            return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=No+email+from+GitHub")
-        name = gh_user.get("name") or email.split("@")[0]
-    profile = await get_profile_by_email(email)
-    if not profile:
-        user_id = str(ObjectId())
-        profile_data = _make_profile_dict(user_id, {"name": name, "email": email}, provider="github")
-        profile_data["password_hash"] = _hash_password(secrets.token_hex(32))
-        await insert_profile(profile_data)
-        profile = await get_profile(user_id)
-        await _log_activity(user_id, "oauth_account_created", f"Account created via GitHub ({email})", request)
-    else:
-        await update_profile(profile["id"], {"last_login": _now()})
-        await _log_activity(profile["id"], "oauth_logged_in", f"Logged in via GitHub ({email})", request)
     token = create_access_token({"sub": profile["id"]})
     return RedirectResponse(url=f"{FRONTEND_URL}?token={token}")
 

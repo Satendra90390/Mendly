@@ -29,7 +29,6 @@ from .auth import (
     block_user, unblock_user,
     get_current_user_profile, get_admin_user, _log_activity,
     oauth_google_login, oauth_google_callback,
-    oauth_github_login, oauth_github_callback,
 )
 
 logger = logging.getLogger("mendly")
@@ -125,7 +124,7 @@ async def guest_upgrade(request: Request, payload: schemas.GuestUpgradeRequest, 
 
 
 # ============================================================
-# OAUTH — Google / GitHub
+# OAUTH — Google
 # ============================================================
 
 @app.get("/api/auth/google")
@@ -136,16 +135,6 @@ async def google_login(request: Request):
 @app.get("/api/auth/google/callback", include_in_schema=False)
 async def google_callback(code: str, state: str, request: Request):
     return await oauth_google_callback(code, state, request)
-
-
-@app.get("/api/auth/github")
-async def github_login(request: Request):
-    return await oauth_github_login(request)
-
-
-@app.get("/api/auth/github/callback", include_in_schema=False)
-async def github_callback(code: str, state: str, request: Request):
-    return await oauth_github_callback(code, state, request)
 
 
 @app.get("/api/auth/me", response_model=schemas.UserOut)
