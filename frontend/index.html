@@ -580,9 +580,8 @@
 <!-- GUEST BANNER (shown for guest users) -->
 <div id="guest-banner" class="guest-banner" style="display:none;">
     <div class="guest-banner-inner">
-        <i class="fa-solid fa-user-secret"></i>
-        <span>You're browsing as a <strong>Guest</strong>. Your data won't be saved.</span>
-        <button class="btn-primary btn-sm" onclick="goToStep('upgrade')"><i class="fa-solid fa-rocket"></i> Create Account</button>
+        <span><i class="fa-solid fa-circle-info"></i> You're browsing as <strong>Guest</strong> — data won't be saved.</span>
+        <button class="guest-banner-action" onclick="goToStep('upgrade')"><i class="fa-solid fa-user-plus"></i> Create Account</button>
         <button class="guest-banner-close" onclick="document.getElementById('guest-banner').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
     </div>
 </div>
@@ -633,7 +632,6 @@
         </div>
         <div class="topbar-actions">
             <div class="topbar-location" id="location-status"><i class="fa-solid fa-location-dot"></i> <span>Getting location...</span></div>
-            <button class="btn-primary" onclick="switchView('chatbot')"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>Ask Elix</span></button>
         </div>
     </header>
 
@@ -642,7 +640,7 @@
 
     <!-- ===== DASHBOARD ===== -->
     <section id="view-dashboard" class="view-section active">
-        <div class="hero-banner"><h1 id="dash-greeting">Your Medicine Information Hub</h1><p>Search any medicine or disease, chat with AI, find nearby hospitals & pharmacies.</p></div>
+        <div class="hero-banner"><h1 id="dash-greeting">Your Medicine Information Hub</h1><p>Search any medicine or disease, check drug interactions, and find nearby care.</p></div>
         <div class="grid-5" style="margin-bottom:1.5rem;">
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
@@ -679,7 +677,7 @@
         <div class="grid-3" style="margin-bottom:1.5rem;">
             <div class="quick-action" onclick="switchView('chatbot')">
                 <div class="quick-action-icon" style="background:var(--primary);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                <div class="quick-action-content"><h3>Elix</h3><p>Ask about diseases & medicines</p></div>
+                <div class="quick-action-content"><h3>AI Health Assistant</h3><p>Ask about diseases & medicines</p></div>
             </div>
             <div class="quick-action" onclick="switchView('medicines')">
                 <div class="quick-action-icon" style="background:#EC4899;"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
@@ -693,7 +691,7 @@
         <div class="grid-2">
             <div class="glass-card">
                 <h3 class="glass-card-title"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> <span>About Mendly</span></h3>
-                <p style="color:var(--text-muted);line-height:1.7;">Your complete medicine information platform with Elix AI that understands diseases and medicines.</p>
+                <p style="color:var(--text-muted);line-height:1.7;">Your complete medicine information platform with AI that understands diseases and medicines.</p>
                 <ul style="color:var(--text-muted);line-height:2;padding-left:1.5rem;margin-top:0.5rem;">
                     <li>AI-powered disease & medicine assistant</li>
                     <li>Medicine details: uses, dosage, side effects</li>
