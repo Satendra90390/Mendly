@@ -1,63 +1,9 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="mainGrad" x1="160" y1="200" x2="864" y2="840" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#14B8A6"/>
-      <stop offset="45%" stop-color="#2563EB"/>
-      <stop offset="100%" stop-color="#7C3AED"/>
-    </linearGradient>
-    <clipPath id="heartClip">
-      <path d="
-        M 512 700
-        L 420 600
-        C 360 535, 360 440, 430 405
-        C 475 382, 512 420, 512 465
-        C 512 420, 549 382, 594 405
-        C 664 440, 664 535, 604 600
-        Z
-      "/>
-    </clipPath>
-  </defs>
-
-  <!-- M shape as single path - geometric, rounded, premium -->
-  <path d="
-    M 180 840
-    L 180 320
-    C 180 268, 222 226, 274 226
-    L 326 226
-    C 378 226, 410 268, 440 330
-    L 512 480
-    L 584 330
-    C 614 268, 646 226, 698 226
-    L 750 226
-    C 802 226, 844 268, 844 320
-    L 844 840
-    C 844 882, 810 914, 768 914
-    L 718 914
-    C 676 914, 650 888, 650 850
-    L 650 540
-    L 580 690
-    C 554 744, 530 780, 512 798
-    C 494 780, 470 744, 444 690
-    L 374 540
-    L 374 850
-    C 374 888, 348 914, 306 914
-    L 256 914
-    C 214 914, 180 882, 180 840
-    Z
-  " fill="url(#mainGrad)"/>
-
-  <!-- White heart -->
-  <path d="
-    M 512 720
-    L 415 612
-    C 350 542, 350 435, 425 395
-    C 470 372, 512 415, 512 465
-    C 512 415, 554 372, 599 395
-    C 674 435, 674 542, 609 612
-    Z
-  " fill="white"/>
-
-  <!-- Teal medical cross inside heart -->
-  <rect x="497" y="490" width="30" height="110" rx="12" fill="#14B8A6"/>
-  <rect x="472" y="520" width="80" height="30" rx="12" fill="#14B8A6"/>
+  <!-- Clean, minimal M with integrated health cross -->
+  <rect width="1024" height="1024" rx="220" fill="#4f46e5"/>
+  <!-- M letterform -->
+  <path d="M280 720V340C280 310 300 290 330 290H370C400 290 420 310 425 340L512 560L599 340C604 310 624 290 654 290H694C724 290 744 310 744 340V720" stroke="white" stroke-width="60" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Small health cross -->
+  <rect x="477" y="600" width="70" height="20" rx="10" fill="white" opacity="0.9"/>
+  <rect x="502" y="575" width="20" height="70" rx="10" fill="white" opacity="0.9"/>
 </svg>
