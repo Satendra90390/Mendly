@@ -567,9 +567,9 @@ function renderMedicines(medicines) {
         container.innerHTML = `
             <div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;">
                 <p style="color:var(--text-muted);margin-bottom:0.75rem;">No medicines found${searchVal ? ` for "${escapeHtml(searchVal)}"` : ""}.</p>
-                <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Elix has knowledge of medicines worldwide.</p>
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Try a different name or check the AI assistant.</p>
                 <button onclick="askChatbot('${escapeJS(askText)}')" class="btn-primary" style="padding:0.5rem 1rem;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Ask AI
                 </button>
             </div>`;
         return;
@@ -631,7 +631,7 @@ function showMedicineDetailObj(med) {
         <div class="detail-section"><h4>Pregnancy</h4><p>${escapeHtml(med.pregnancy || "Consult doctor")}</p></div>
         ${med.source ? `<p style="color:var(--text-muted);font-size:0.75rem;margin-top:0.5rem;"><i class="fa-solid fa-circle-info"></i> Source: ${escapeHtml(med.source)}</p>` : ""}
         <div style="margin-top:1rem;">
-            <button onclick="askChatbot('${escapeJS(med.name)}')" class="btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(med.name)}</button>
+            <button onclick="askChatbot('${escapeJS(med.name)}')" class="btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask AI about ${escapeHtml(med.name)}</button>
         </div>
     `;
     document.getElementById("medicine-detail").style.display = "block";
@@ -665,9 +665,9 @@ async function searchByCondition() {
             container.innerHTML = `
                 <div style="text-align:center;padding:1.5rem 0;">
                     <p style="color:var(--text-muted);margin-bottom:1rem;">No medicines found for "${escapeHtml(q)}".</p>
-                    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Try a different name or ask Elix for help.</p>
+                    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Try a different name or ask the AI assistant.</p>
                     <button onclick="askChatbot('${escapeJS(q)}')" class="btn-primary" style="padding:0.6rem 1.2rem;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(q)}
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Ask AI about ${escapeHtml(q)}
                     </button>
                 </div>`;
             return;
@@ -695,9 +695,9 @@ async function searchDiseaseProfiles() {
             container.innerHTML = `
                 <div style="text-align:center;padding:1.5rem 0;">
                     <p style="color:var(--text-muted);margin-bottom:1rem;">No disease profile found for "${escapeHtml(q)}".</p>
-                    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Elix has global health knowledge and can help with any disease or condition.</p>
+                    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">The AI assistant can help with any disease or condition.</p>
                     <button onclick="askChatbot('What are the symptoms and treatment of ${escapeJS(q)}?')" class="btn-primary" style="padding:0.6rem 1.2rem;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix about ${escapeHtml(q)}
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Ask AI about ${escapeHtml(q)}
                     </button>
                 </div>`;
             return;
@@ -797,7 +797,7 @@ function renderSavedSearches() {
                 <button onclick="deleteSavedSearch('${escapeJS(s.id)}')" class="btn-secondary" style="padding:0.2rem 0.5rem;"><i class="fa-solid fa-trash-can"></i></button>
             </div>
             <button onclick="suggestQuery('${s.query_type === "medicine" ? "Tell me about " : "What are the symptoms of "}${escapeJS(s.query_value)}'); switchView('chatbot');" class="btn-secondary" style="width:100%;margin-top:0.5rem;font-size:0.78rem;">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Ask AI
             </button>
         </div>
     `).join("");
