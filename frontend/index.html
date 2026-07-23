@@ -92,278 +92,6 @@
             </div>
 
         </div>
-
-        <!-- AUTH MODAL OVERLAY -->
-        <div class="auth-modal-overlay" id="auth-modal-overlay" onclick="closeAuthModal()"></div>
-        <div class="auth-modal" id="auth-modal">
-            <button class="auth-modal-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
-            <div class="landing-form-card">
-
-                <!-- STEP 1: Login -->
-                <div class="auth-step active" id="step-login">
-                    <div class="landing-form-header">
-                        <div class="landing-form-logo" onclick="handleLogoClick()" style="cursor:pointer">
-                            <img src="logo.svg" alt="Mendly" class="logo-img logo-img-lg">
-                            <span>Mendly</span>
-                        </div>
-                        <p class="landing-form-subtitle" id="auth-subtitle">Your AI health companion</p>
-                    </div>
-                    <div class="auth-social">
-                        <button type="button" class="social-btn social-google" onclick="handleSocialLogin('google')">
-                            <svg class="social-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            <span>Google</span>
-                        </button>
-                        <button type="button" class="social-btn" onclick="handleGuestLogin()">
-                            <i class="fa-solid fa-user-secret" style="font-size:18px;color:var(--primary);"></i>
-                            <span>Continue as Guest</span>
-                        </button>
-                    </div>
-                    <div class="auth-divider">
-                        <span>or continue with email</span>
-                    </div>
-                    <form id="login-form" onsubmit="handleLogin(event)">
-                        <div class="form-group">
-                            <label>Email address</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-envelope input-icon"></i>
-                                <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-lock input-icon"></i>
-                                <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
-                                <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="form-group turnstile-group">
-                            <div class="turnstile-widget" id="login-turnstile"></div>
-                        </div>
-                        <div id="login-error" class="auth-error" style="display:none;"></div>
-                        <button type="submit" class="btn-primary auth-submit" id="login-submit-btn">
-                            <i class="fa-solid fa-right-to-bracket"></i> <span>Log In</span>
-                        </button>
-                        <div class="terms-consent-row">
-                            <label class="terms-checkbox-label">
-                                <input type="checkbox" id="terms-agree-check">
-                                <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
-                            </label>
-                        </div>
-                    </form>
-                    <p class="auth-switch"><span>Don't have an account?</span> <button type="button" class="link-btn" onclick="goToStep('signup')">Sign Up</button></p>
-                    <p class="auth-switch"><button type="button" class="link-btn" onclick="goToStep('forgot')">Forgot password?</button></p>
-                </div>
-
-                <!-- STEP 2: Signup -->
-                <div class="auth-step" id="step-signup">
-                <div class="step-header">
-                    <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
-                    <div class="step-header-info">
-                        <span>Create account</span>
-                        <span class="step-hint">Fill in your details to get started</span>
-                    </div>
-                </div>
-                <form id="signup-form" onsubmit="handleSignup(event)">
-                    <div class="form-group">
-                        <label>Full name</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-user input-icon"></i>
-                            <input type="text" id="signup-name" placeholder="Your full name" required autocomplete="name">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Email address</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-envelope input-icon"></i>
-                            <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
-                            <input type="password" id="signup-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
-                                <button type="button" class="password-toggle" onclick="togglePassword('signup-password', this)">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                            <div class="password-strength" id="password-strength">
-                                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
-                                <span class="strength-text" id="strength-text"></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Confirm password</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-shield-halved input-icon"></i>
-                                <input type="password" id="signup-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
-                                <button type="button" class="password-toggle" onclick="togglePassword('signup-confirm', this)">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="form-group turnstile-group">
-                            <div class="turnstile-widget" id="signup-turnstile"></div>
-                        </div>
-                        <div id="signup-error" class="auth-error" style="display:none;"></div>
-                        <button type="submit" class="btn-primary auth-submit" id="signup-submit-btn">
-                            <i class="fa-solid fa-user-plus"></i> <span>Create Account</span>
-                        </button>
-                        <div class="terms-consent-row">
-                            <label class="terms-checkbox-label">
-                                <input type="checkbox" id="signup-terms-check">
-                                <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
-                            </label>
-                        </div>
-                    </form>
-                    <p class="auth-switch"><span>Already have an account?</span> <button type="button" class="link-btn" onclick="goToStep('login')">Log In</button></p>
-                </div>
-
-                <!-- STEP: Upgrade Guest Account -->
-                <div class="auth-step" id="step-upgrade">
-                <div class="step-header">
-                    <div class="step-header-info">
-                        <i class="fa-solid fa-star" style="color:#f59e0b;"></i> <span>Save Your Progress</span>
-                        <span class="step-hint">Create a permanent account to keep your data</span>
-                    </div>
-                </div>
-                <form id="upgrade-form" onsubmit="handleGuestUpgrade(event)">
-                    <div class="form-group">
-                        <label>Full name</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-user input-icon"></i>
-                            <input type="text" id="upgrade-name" placeholder="Your full name" required autocomplete="name">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Email address</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-envelope input-icon"></i>
-                            <input type="email" id="upgrade-email" placeholder="you@example.com" required autocomplete="email">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
-                            <input type="password" id="upgrade-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
-                            <button type="button" class="password-toggle" onclick="togglePassword('upgrade-password', this)">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="upgrade-error" class="auth-error" style="display:none;"></div>
-                    <button type="submit" class="btn-primary auth-submit" id="upgrade-submit-btn">
-                        <i class="fa-solid fa-rocket"></i> <span>Save & Continue</span>
-                    </button>
-                </form>
-                <p class="auth-switch"><button type="button" class="link-btn" onclick="skipUpgrade()">Skip for now</button></p>
-                </div>
-
-                <!-- STEP: Forgot Password -->
-                <div class="auth-step" id="step-forgot">
-                <div class="step-header">
-                    <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
-                    <div class="step-header-info">
-                        <span>Reset password</span>
-                        <span class="step-hint">Enter your email to receive a reset code</span>
-                    </div>
-                </div>
-                <form id="forgot-form" onsubmit="handleForgotSendOtp(event)">
-                    <div class="form-group">
-                        <label>Email address</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-envelope input-icon"></i>
-                            <input type="email" id="forgot-email" placeholder="you@example.com" required autocomplete="email">
-                        </div>
-                    </div>
-                    <div id="forgot-error" class="auth-error" style="display:none;"></div>
-                    <button type="submit" class="btn-primary auth-submit" id="forgot-submit-btn">
-                        <i class="fa-solid fa-paper-plane"></i> <span>Send Reset Code</span>
-                    </button>
-                </form>
-                </div>
-
-                <!-- STEP: Forgot Password OTP -->
-                <div class="auth-step" id="step-forgot-otp">
-                    <div class="step-header">
-                        <button type="button" class="step-back" onclick="goToStep('forgot')"><i class="fa-solid fa-arrow-left"></i></button>
-                        <div class="step-header-info">
-                            <span class="step-email-label" id="forgot-otp-label"></span>
-                            <span class="step-hint">Enter the 6-digit code</span>
-                        </div>
-                    </div>
-                    <form id="forgot-otp-form" onsubmit="handleForgotOtpVerify(event)">
-                        <div class="form-group">
-                            <label>Verification code</label>
-                            <div class="otp-input-group" id="forgot-otp-inputs">
-                                <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric">
-                                <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
-                                <input type="text" maxlength="1" class="otp-box" data-idx="2" inputmode="numeric">
-                                <input type="text" maxlength="1" class="otp-box" data-idx="3" inputmode="numeric">
-                                <input type="text" maxlength="1" class="otp-box" data-idx="4" inputmode="numeric">
-                                <input type="text" maxlength="1" class="otp-box" data-idx="5" inputmode="numeric">
-                            </div>
-                        </div>
-                        <div id="forgot-otp-error" class="auth-error" style="display:none;"></div>
-                        <button type="submit" class="btn-primary auth-submit" id="forgot-otp-submit-btn">
-                            <i class="fa-solid fa-check"></i> <span>Verify</span>
-                        </button>
-                    </form>
-                    <div class="auth-alt-action">
-                        <button type="button" class="link-btn" id="forgot-otp-resend-btn" onclick="handleForgotResendOtp()">Resend code</button>
-                        <span class="otp-timer" id="forgot-otp-timer"></span>
-                    </div>
-                </div>
-
-                <!-- STEP: Reset Password -->
-                <div class="auth-step" id="step-reset">
-                <div class="step-header">
-                    <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
-                    <div class="step-header-info">
-                        <span>New password</span>
-                        <span class="step-hint">Choose a strong password</span>
-                    </div>
-                </div>
-                <form id="reset-form" onsubmit="handleResetPassword(event)">
-                    <div class="form-group">
-                        <label>New password</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
-                            <input type="password" id="reset-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value, 'reset')">
-                                <button type="button" class="password-toggle" onclick="togglePassword('reset-password', this)">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                            <div class="password-strength" id="reset-password-strength">
-                                <div class="strength-bar"><div class="strength-fill" id="reset-strength-fill"></div></div>
-                                <span class="strength-text" id="reset-strength-text"></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Confirm password</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-shield-halved input-icon"></i>
-                                <input type="password" id="reset-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
-                                <button type="button" class="password-toggle" onclick="togglePassword('reset-confirm', this)">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="reset-error" class="auth-error" style="display:none;"></div>
-                        <button type="submit" class="btn-primary auth-submit" id="reset-submit-btn">
-                            <i class="fa-solid fa-key"></i> <span>Reset Password</span>
-                        </button>
-                    </form>
-                </div>
-
-                    <p class="landing-form-disclaimer">Mendly provides health information for awareness purposes. Always consult a qualified healthcare professional for medical decisions.</p>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- FEATURES SECTION -->
@@ -541,6 +269,277 @@
             <p>&copy; 2026 Mendly. All rights reserved. Health information for awareness — always consult a healthcare professional.</p>
         </div>
     </footer>
+</div>
+
+<!-- ==================== AUTH MODAL (accessible from both landing & app) ==================== -->
+<div class="auth-modal-overlay" id="auth-modal-overlay" onclick="closeAuthModal()"></div>
+<div class="auth-modal" id="auth-modal">
+    <button class="auth-modal-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="landing-form-card">
+
+        <!-- STEP 1: Login -->
+        <div class="auth-step active" id="step-login">
+            <div class="landing-form-header">
+                <div class="landing-form-logo" onclick="handleLogoClick()" style="cursor:pointer">
+                    <img src="logo.svg" alt="Mendly" class="logo-img logo-img-lg">
+                    <span>Mendly</span>
+                </div>
+                <p class="landing-form-subtitle" id="auth-subtitle">Your AI health companion</p>
+            </div>
+            <div class="auth-social">
+                <button type="button" class="social-btn social-google" onclick="handleSocialLogin('google')">
+                    <svg class="social-icon" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    <span>Google</span>
+                </button>
+                <button type="button" class="social-btn" onclick="handleGuestLogin()">
+                    <i class="fa-solid fa-user-secret" style="font-size:18px;color:var(--primary);"></i>
+                    <span>Continue as Guest</span>
+                </button>
+            </div>
+            <div class="auth-divider">
+                <span>or continue with email</span>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email address</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group turnstile-group">
+                    <div class="turnstile-widget" id="login-turnstile"></div>
+                </div>
+                <div id="login-error" class="auth-error" style="display:none;"></div>
+                <button type="submit" class="btn-primary auth-submit" id="login-submit-btn">
+                    <i class="fa-solid fa-right-to-bracket"></i> <span>Log In</span>
+                </button>
+                <div class="terms-consent-row">
+                    <label class="terms-checkbox-label">
+                        <input type="checkbox" id="terms-agree-check">
+                        <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
+                    </label>
+                </div>
+            </form>
+            <p class="auth-switch"><span>Don't have an account?</span> <button type="button" class="link-btn" onclick="goToStep('signup')">Sign Up</button></p>
+            <p class="auth-switch"><button type="button" class="link-btn" onclick="goToStep('forgot')">Forgot password?</button></p>
+        </div>
+
+        <!-- STEP 2: Signup -->
+        <div class="auth-step" id="step-signup">
+            <div class="step-header">
+                <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="step-header-info">
+                    <span>Create account</span>
+                    <span class="step-hint">Fill in your details to get started</span>
+                </div>
+            </div>
+            <form id="signup-form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input type="text" id="signup-name" placeholder="Your full name" required autocomplete="name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email address</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="signup-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+                        <button type="button" class="password-toggle" onclick="togglePassword('signup-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="password-strength">
+                        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                        <span class="strength-text" id="strength-text"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-shield-halved input-icon"></i>
+                        <input type="password" id="signup-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('signup-confirm', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group turnstile-group">
+                    <div class="turnstile-widget" id="signup-turnstile"></div>
+                </div>
+                <div id="signup-error" class="auth-error" style="display:none;"></div>
+                <button type="submit" class="btn-primary auth-submit" id="signup-submit-btn">
+                    <i class="fa-solid fa-user-plus"></i> <span>Create Account</span>
+                </button>
+                <div class="terms-consent-row">
+                    <label class="terms-checkbox-label">
+                        <input type="checkbox" id="signup-terms-check">
+                        <span>I agree to the <a href="#" onclick="event.preventDefault();openTermsModal();">Terms of Service</a> and <a href="#" onclick="event.preventDefault();openTermsModal();">Privacy Policy</a></span>
+                    </label>
+                </div>
+            </form>
+            <p class="auth-switch"><span>Already have an account?</span> <button type="button" class="link-btn" onclick="goToStep('login')">Log In</button></p>
+        </div>
+
+        <!-- STEP: Upgrade Guest Account -->
+        <div class="auth-step" id="step-upgrade">
+            <div class="step-header">
+                <div class="step-header-info">
+                    <i class="fa-solid fa-star" style="color:#f59e0b;"></i> <span>Save Your Progress</span>
+                    <span class="step-hint">Create a permanent account to keep your data</span>
+                </div>
+            </div>
+            <form id="upgrade-form" onsubmit="handleGuestUpgrade(event)">
+                <div class="form-group">
+                    <label>Full name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input type="text" id="upgrade-name" placeholder="Your full name" required autocomplete="name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email address</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" id="upgrade-email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="upgrade-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('upgrade-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="upgrade-error" class="auth-error" style="display:none;"></div>
+                <button type="submit" class="btn-primary auth-submit" id="upgrade-submit-btn">
+                    <i class="fa-solid fa-rocket"></i> <span>Save & Continue</span>
+                </button>
+            </form>
+            <p class="auth-switch"><button type="button" class="link-btn" onclick="skipUpgrade()">Skip for now</button></p>
+        </div>
+
+        <!-- STEP: Forgot Password -->
+        <div class="auth-step" id="step-forgot">
+            <div class="step-header">
+                <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="step-header-info">
+                    <span>Reset password</span>
+                    <span class="step-hint">Enter your email to receive a reset code</span>
+                </div>
+            </div>
+            <form id="forgot-form" onsubmit="handleForgotSendOtp(event)">
+                <div class="form-group">
+                    <label>Email address</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" id="forgot-email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                </div>
+                <div id="forgot-error" class="auth-error" style="display:none;"></div>
+                <button type="submit" class="btn-primary auth-submit" id="forgot-submit-btn">
+                    <i class="fa-solid fa-paper-plane"></i> <span>Send Reset Code</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- STEP: Forgot Password OTP -->
+        <div class="auth-step" id="step-forgot-otp">
+            <div class="step-header">
+                <button type="button" class="step-back" onclick="goToStep('forgot')"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="step-header-info">
+                    <span class="step-email-label" id="forgot-otp-label"></span>
+                    <span class="step-hint">Enter the 6-digit code</span>
+                </div>
+            </div>
+            <form id="forgot-otp-form" onsubmit="handleForgotOtpVerify(event)">
+                <div class="form-group">
+                    <label>Verification code</label>
+                    <div class="otp-input-group" id="forgot-otp-inputs">
+                        <input type="text" maxlength="1" class="otp-box" data-idx="0" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-box" data-idx="1" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-box" data-idx="2" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-box" data-idx="3" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-box" data-idx="4" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-box" data-idx="5" inputmode="numeric">
+                    </div>
+                </div>
+                <div id="forgot-otp-error" class="auth-error" style="display:none;"></div>
+                <button type="submit" class="btn-primary auth-submit" id="forgot-otp-submit-btn">
+                    <i class="fa-solid fa-check"></i> <span>Verify</span>
+                </button>
+            </form>
+            <div class="auth-alt-action">
+                <button type="button" class="link-btn" id="forgot-otp-resend-btn" onclick="handleForgotResendOtp()">Resend code</button>
+                <span class="otp-timer" id="forgot-otp-timer"></span>
+            </div>
+        </div>
+
+        <!-- STEP: Reset Password -->
+        <div class="auth-step" id="step-reset">
+            <div class="step-header">
+                <button type="button" class="step-back" onclick="goToStep('login')"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="step-header-info">
+                    <span>New password</span>
+                    <span class="step-hint">Choose a strong password</span>
+                </div>
+            </div>
+            <form id="reset-form" onsubmit="handleResetPassword(event)">
+                <div class="form-group">
+                    <label>New password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="reset-password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value, 'reset')">
+                        <button type="button" class="password-toggle" onclick="togglePassword('reset-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="reset-password-strength">
+                        <div class="strength-bar"><div class="strength-fill" id="reset-strength-fill"></div></div>
+                        <span class="strength-text" id="reset-strength-text"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-shield-halved input-icon"></i>
+                        <input type="password" id="reset-confirm" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('reset-confirm', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="reset-error" class="auth-error" style="display:none;"></div>
+                <button type="submit" class="btn-primary auth-submit" id="reset-submit-btn">
+                    <i class="fa-solid fa-key"></i> <span>Reset Password</span>
+                </button>
+            </form>
+        </div>
+
+        <p class="landing-form-disclaimer">Mendly provides health information for awareness purposes. Always consult a qualified healthcare professional for medical decisions.</p>
+    </div>
 </div>
 
 <!-- ==================== APP (hidden until logged in) ==================== -->

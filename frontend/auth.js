@@ -553,7 +553,7 @@ function enterAppDirect() {
     const mEmail = document.getElementById("mobile-email"); if (mEmail) mEmail.textContent = "Sign up for full access";
     const mAvatar = document.getElementById("mobile-avatar"); if (mAvatar) { mAvatar.textContent = "G"; mAvatar.style.background = "#64748B"; }
     const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "none";
-    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
     if (typeof initApp === "function") initApp();
 }
 
