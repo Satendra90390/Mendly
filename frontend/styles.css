@@ -1618,6 +1618,89 @@ textarea { resize: vertical; min-height: 56px; }
     transform: translateY(-2px);
 }
 
+/* ---- FAQ Section ---- */
+.landing-faq {
+    background: var(--bg);
+    padding: 4rem 1.5rem;
+    border-top: 1px solid var(--border);
+}
+.landing-faq-inner {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.landing-faq .section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+.landing-faq .section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+.landing-faq .section-header p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.faq-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all var(--transition);
+}
+.faq-item:hover {
+    border-color: rgba(13,148,136,0.3);
+}
+.faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: color var(--transition);
+}
+.faq-question:hover {
+    color: var(--primary);
+}
+.faq-question i {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+.faq-item.open .faq-question i {
+    transform: rotate(180deg);
+    color: var(--primary);
+}
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.faq-item.open .faq-answer {
+    max-height: 300px;
+    padding: 0 1.25rem 1rem;
+}
+.faq-answer p {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.7;
+}
+
 /* ---- Footer ---- */
 .landing-footer {
     background: var(--bg-light);
@@ -2308,6 +2391,20 @@ textarea { resize: vertical; min-height: 56px; }
     background: var(--bg-light);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
+}
+
+/* FAQ Section */
+[data-theme="light"] .landing-faq {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+}
+[data-theme="light"] .faq-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+}
+[data-theme="light"] .faq-item:hover {
+    border-color: rgba(13,148,136,0.3);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Footer */

@@ -35,7 +35,7 @@
                 <a href="#" onclick="handleLogoClick(); return false;">Home</a>
                 <a href="#features">Features</a>
                 <a href="#about">About</a>
-                <a href="#footer">Contact</a>
+                <a href="#faq">FAQ</a>
             </div>
             <div class="landing-nav-right">
                 <button class="btn-secondary theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
@@ -58,7 +58,7 @@
             <a href="#" onclick="toggleLandingSidebar(); handleLogoClick(); return false;">Home</a>
             <a href="#features" onclick="toggleLandingSidebar()">Features</a>
             <a href="#about" onclick="toggleLandingSidebar()">About</a>
-            <a href="#footer" onclick="toggleLandingSidebar()">Contact</a>
+            <a href="#faq" onclick="toggleLandingSidebar()">FAQ</a>
             <div class="landing-sidebar-divider"></div>
             <button class="landing-sidebar-login" onclick="toggleLandingSidebar(); openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> <span>Log In</span></button>
         </div>
@@ -447,6 +447,72 @@
         <button class="btn-primary landing-cta-btn" onclick="openAuthModal('signup')">
             <i class="fa-solid fa-rocket"></i> <span>Get Started Free</span>
         </button>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section class="landing-faq" id="faq">
+        <div class="landing-faq-inner">
+            <div class="section-header">
+                <h2>Frequently Asked Questions</h2>
+                <p>Everything you need to know about Mendly</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>What is Mendly?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Mendly is an AI-powered medicine and health information platform. It helps you search medications, check drug interactions, understand diseases, find nearby hospitals, and get instant health guidance from our AI assistant, Elix.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Is Mendly a substitute for medical advice?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No. Mendly provides health information for awareness and educational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical decisions.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Is my health data safe on Mendly?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. Your conversations and health data are encrypted and stored securely. We do not sell or share personal data with third parties. Your privacy is our top priority.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Can I use Mendly for free?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. Mendly is completely free to use. You can search medicines, chat with Elix, check drug interactions, and access all features without any subscription or hidden fees.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>How does Elix, the AI assistant, work?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Elix uses advanced AI models to answer your health questions in real time. It runs multiple AI engines in parallel for faster, more accurate responses. Just type your question or use voice input to get instant guidance.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Can I find hospitals and pharmacies near me?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. Mendly uses your device's GPS to locate nearby hospitals and pharmacies. You can get directions and contact information directly from the app.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- FOOTER -->
