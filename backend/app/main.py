@@ -236,7 +236,7 @@ async def chat_endpoint(
 
 @app.get("/api/chat/status")
 async def get_chat_status(current_user: dict = Depends(get_current_user_profile)):
-    return {"provider": chatbot.get_ai_provider(), "gemini_active": chatbot.is_gemini_active()}
+    return {"provider": chatbot.get_ai_provider(), "racing": True}
 
 
 @app.get("/api/chat/history", response_model=List[schemas.ChatMessageOut])

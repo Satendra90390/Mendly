@@ -1,10 +1,10 @@
 """
-MediGuide Chatbot Engine — Powered by NVIDIA NIM / Google Gemini
-================================================================
+MediGuide Chatbot Engine — Powered by NVIDIA NIM + Groq (parallel racing)
+==========================================================================
 Priority order:
   0. Crisis language → emergency response (no AI delay)
   1. Enrich context with local KB + OpenFDA live data
-  2. Pass enriched prompt to the active AI provider (NVIDIA or Gemini)
+  2. Race NVIDIA + Groq in parallel, use first response
   3. Smart pattern-matching fallback when AI is unavailable
 """
 from __future__ import annotations
@@ -21,18 +21,20 @@ from . import openfda_client
 
 # ── AI provider setup ───────────────────────────────────────────────────────
 CHATBOT_PROVIDER = os.getenv("CHATBOT_PROVIDER", "nvidia").strip().lower()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 NVIDIA_API_URL = os.getenv("NVIDIA_API_URL", "https://integrate.api.nvidia.com/v1/chat/completions")
 NVIDIA_MODEL = os.getenv("NVIDIA_MODEL", "deepseek-ai/deepseek-v4-flash")
 NVIDIA_MAX_RETRIES = int(os.getenv("NVIDIA_MAX_RETRIES", "2"))
 NVIDIA_TIMEOUT = float(os.getenv("NVIDIA_TIMEOUT", "45"))
 
-_gemini_model = None
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_TIMEOUT = float(os.getenv("GROQ_TIMEOUT", "15"))
 
 def _is_placeholder_key(key: str) -> bool:
     k = key.strip().lower()
-    return not k or "your_" in k or "gemini_api_key" in k or "nvidia_api_key" in k or k == "placeholder"
+    return not k or "your_" in k or k == "placeholder" or k.startswith("xxx")
 
 
 def _nvidia_is_configured() -> bool:
@@ -43,40 +45,28 @@ def _nvidia_is_configured() -> bool:
     )
 
 
+def _groq_is_configured() -> bool:
+    return bool(GROQ_API_KEY and len(GROQ_API_KEY) > 10)
+
+
 def _get_active_provider() -> Optional[str]:
     if CHATBOT_PROVIDER == "nvidia" and _nvidia_is_configured():
         return "nvidia"
-    if CHATBOT_PROVIDER == "gemini" and _get_gemini() is not None:
-        return "gemini"
     return None
 
 
 def is_gemini_active() -> bool:
-    return CHATBOT_PROVIDER == "gemini" and _get_gemini() is not None
+    return False
 
 
 def get_ai_provider() -> str:
-    provider = _get_active_provider()
-    return provider if provider else "local"
+    providers = []
+    if _nvidia_is_configured():
+        providers.append("nvidia")
+    if _groq_is_configured():
+        providers.append("groq")
+    return "+".join(providers) if providers else "local"
 
-
-def _get_gemini():
-    global _gemini_model
-    if _gemini_model is not None:
-        return _gemini_model
-    if not GEMINI_API_KEY or _is_placeholder_key(GEMINI_API_KEY):
-        return None
-    try:
-        import google.generativeai as genai
-        genai.configure(api_key=GEMINI_API_KEY)
-        _gemini_model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=_SYSTEM_PROMPT,
-        )
-        return _gemini_model
-    except Exception as exc:
-        print(f"[Mendly] Gemini init failed: {exc}")
-        return None
 
 _SYSTEM_PROMPT = """You are Elix, an expert medical information assistant built into the Mendly health platform. Your role is to provide accurate, helpful, and empathetic health guidance.
 
@@ -239,51 +229,39 @@ async def chatbot_response(
     if any(phrase in msg for phrase in CRISIS_KEYWORDS):
         return _crisis_response()
 
-    # 1. Try configured AI provider, then fall back through alternatives
-    provider = _get_active_provider()
+    # 1. Race all available providers in parallel, use first response
+    tasks = []
+    task_names = []
+    if _nvidia_is_configured():
+        tasks.append(_nvidia_answer(message, msg, location, history or []))
+        task_names.append("nvidia")
+    if _groq_is_configured():
+        tasks.append(_groq_answer(message, msg, location, history or []))
+        task_names.append("groq")
 
-    if provider == "nvidia":
-        try:
-            return await _nvidia_answer(message, msg, location, history or [])
-        except Exception as exc:
-            print(f"[Mendly] NVIDIA call failed: {exc}")
-            # Try Gemini as secondary fallback
-            model = _get_gemini()
-            if model:
-                try:
-                    return await _gemini_answer(model, message, msg, location, history or [])
-                except Exception as exc2:
-                    print(f"[Mendly] Gemini fallback also failed: {exc2}")
-
-    elif provider == "gemini":
-        model = _get_gemini()
-        if model:
-            try:
-                return await _gemini_answer(model, message, msg, location, history or [])
-            except Exception as exc:
-                print(f"[Mendly] Gemini call failed: {exc}")
-                # Try NVIDIA as secondary fallback
-                if _nvidia_is_configured():
-                    try:
-                        return await _nvidia_answer(message, msg, location, history or [])
-                    except Exception as exc2:
-                        print(f"[Mendly] NVIDIA fallback also failed: {exc2}")
+    if tasks:
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        for i, result in enumerate(results):
+            if isinstance(result, str) and result.strip():
+                print(f"[Mendly] Winner: {task_names[i]}")
+                return result
+        # Log failures
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                print(f"[Mendly] {task_names[i]} failed: {result}")
 
     # 2. Fallback: rule-based engine
     return _rule_based_response(msg, message, location)
 
 
-# ── Gemini answer ────────────────────────────────────────────────────────────
+# ── Groq answer ─────────────────────────────────────────────────────────────
 
-async def _gemini_answer(
-    model,
+async def _groq_answer(
     original: str,
     msg_lower: str,
     location: Optional[dict],
     history: list,
 ) -> str:
-    import google.generativeai as genai
-
     kb_ctx = _build_kb_context(msg_lower)
     fda_ctx = await _build_fda_context(msg_lower)
 
@@ -298,22 +276,54 @@ async def _gemini_answer(
 
     location_hint = ""
     if location:
-        location_hint = f"\n[User location: lat={location.get('lat')}, lng={location.get('lng')}. For hospital/pharmacy queries, mention they can click the Hospitals or Pharmacies tab in Mendly.]"
+        lat = location.get("lat", "")
+        lng = location.get("lng", "")
+        location_hint = (
+            f"\n[User location: lat={lat}, lng={lng}. "
+            "For hospital/pharmacy queries, mention the Hospitals or Pharmacies tab in Mendly.]"
+        )
 
-    chat_history = []
+    system_msg = _SYSTEM_PROMPT
+    if context_block:
+        system_msg += context_block
+
+    messages = [{"role": "system", "content": system_msg}]
     for turn in history:
-        role = "user" if turn.role == "user" else "model"
-        chat_history.append({"role": role, "parts": [turn.content]})
+        role = "user" if turn.role == "user" else "assistant"
+        messages.append({"role": role, "content": turn.content})
 
-    chat = model.start_chat(history=chat_history)
-    full_prompt = f"{original}{context_block}{location_hint}"
+    user_msg = original
+    if location_hint:
+        user_msg += location_hint
+    messages.append({"role": "user", "content": user_msg})
 
-    loop = asyncio.get_running_loop()
-    response = await loop.run_in_executor(None, lambda: chat.send_message(full_prompt))
+    payload = {
+        "model": GROQ_MODEL,
+        "messages": messages,
+        "temperature": 0.3,
+        "top_p": 0.9,
+        "max_tokens": 2048,
+    }
 
-    text = response.text.strip()
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    async with httpx.AsyncClient(timeout=GROQ_TIMEOUT) as client:
+        response = await client.post(GROQ_API_URL, headers=headers, json=payload)
+        response.raise_for_status()
+        data = response.json()
+
+    text = ""
+    if data.get("choices"):
+        choice = data["choices"][0]
+        if isinstance(choice.get("message"), dict):
+            text = choice["message"].get("content", "") or ""
+
+    text = (text or "").strip()
     if not text:
-        raise ValueError("Empty Gemini response")
+        raise ValueError(f"Empty Groq response: {data}")
 
     disclaimer = "\n\n*This is health information for awareness — not a diagnosis. Consult a qualified healthcare professional for personal medical advice.*"
     if "disclaimer" not in text.lower() and "consult" not in text.lower()[-200:]:
@@ -448,7 +458,7 @@ def _parse_nvidia_response(data: dict) -> str:
 # ── Rule-based fallback ──────────────────────────────────────────────────────
 
 def _rule_based_response(msg: str, original: str, location: Optional[dict]) -> str:
-    """Comprehensive keyword-driven responses used when Gemini is unavailable."""
+    """Comprehensive keyword-driven responses used when AI providers are unavailable."""
 
     # Location
     if any(w in msg for w in ["hospital", "pharmacy", "nearby", "clinic", "chemist"]):
