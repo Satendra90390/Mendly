@@ -1,77 +1,81 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
   <defs>
-    <linearGradient id="shieldGrad" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#60A5FA"/>
-      <stop offset="50%" stop-color="#3B82F6"/>
-      <stop offset="100%" stop-color="#1E40AF"/>
+    <linearGradient id="shieldGrad" x1="100" y1="10" x2="100" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14B8A6"/>
+      <stop offset="100%" stop-color="#0D9488"/>
     </linearGradient>
-    <linearGradient id="helixGrad" x1="100" y1="30" x2="100" y2="175" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#BFDBFE"/>
-      <stop offset="100%" stop-color="#93C5FD"/>
+    <linearGradient id="shieldInner" x1="100" y1="20" x2="100" y2="170" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
     </linearGradient>
-    <linearGradient id="crossGrad" x1="100" y1="60" x2="100" y2="145" gradientUnits="userSpaceOnUse">
+    <linearGradient id="helixGrad" x1="100" y1="35" x2="100" y2="165" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5EEAD4"/>
+      <stop offset="100%" stop-color="#99F6E4"/>
+    </linearGradient>
+    <linearGradient id="crossGrad" x1="100" y1="75" x2="100" y2="140" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#DBEAFE"/>
+      <stop offset="100%" stop-color="#CCFBF1"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <filter id="innerGlow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
     <clipPath id="shieldClip">
-      <path d="M100 8 L175 35 C175 35 180 110 100 185 C20 110 25 35 25 35 Z"/>
+      <path d="M100 12 C100 12 100 12 100 12 L168 38 C168 38 172 100 100 178 C28 100 32 38 32 38 Z"/>
     </clipPath>
   </defs>
 
-  <!-- Shield shape -->
-  <path d="M100 8 L175 35 C175 35 180 110 100 185 C20 110 25 35 25 35 Z"
-        fill="url(#shieldGrad)" stroke="none"/>
+  <!-- Shield -->
+  <path d="M100 12 L168 38 C168 38 172 100 100 178 C28 100 32 38 32 38 Z"
+        fill="url(#shieldGrad)"/>
 
-  <!-- Shield inner highlight -->
-  <path d="M100 16 L168 40 C168 40 172 108 100 176 C28 108 32 40 32 40 Z"
-        fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+  <!-- Shield inner gradient overlay -->
+  <path d="M100 12 L168 38 C168 38 172 100 100 178 C28 100 32 38 32 38 Z"
+        fill="url(#shieldInner)"/>
+
+  <!-- Shield edge highlight -->
+  <path d="M100 12 L168 38 C168 38 172 100 100 178 C28 100 32 38 32 38 Z"
+        fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
 
   <!-- DNA Double Helix -->
-  <g clip-path="url(#shieldClip)" filter="url(#glow)">
-    <!-- Left strand -->
-    <path d="M70 40 C70 60 130 60 130 80 C130 100 70 100 70 120 C70 140 130 140 130 160"
-          fill="none" stroke="url(#helixGrad)" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
-    <!-- Right strand -->
-    <path d="M130 40 C130 60 70 60 70 80 C70 100 130 100 130 120 C130 140 70 140 70 160"
-          fill="none" stroke="url(#helixGrad)" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+  <g clip-path="url(#shieldClip)">
+    <!-- Strand 1 -->
+    <path d="M72 42 C72 58 128 58 128 74 C128 90 72 90 72 106 C72 122 128 122 128 138 C128 154 72 154 72 170"
+          fill="none" stroke="url(#helixGrad)" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+    <!-- Strand 2 -->
+    <path d="M128 42 C128 58 72 58 72 74 C72 90 128 90 128 106 C128 122 72 122 72 138 C72 154 128 154 128 170"
+          fill="none" stroke="url(#helixGrad)" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
 
-    <!-- Cross-links (rungs) -->
-    <line x1="80" y1="50" x2="120" y2="50" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="72" y1="70" x2="128" y2="70" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="80" y1="90" x2="120" y2="90" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="72" y1="110" x2="128" y2="110" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="80" y1="130" x2="120" y2="130" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="72" y1="150" x2="128" y2="150" stroke="rgba(191,219,254,0.5)" stroke-width="2" stroke-linecap="round"/>
+    <!-- Base pair rungs -->
+    <line x1="82" y1="50" x2="118" y2="50" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="74" y1="66" x2="126" y2="66" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="82" y1="82" x2="118" y2="82" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="74" y1="98" x2="126" y2="98" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="82" y1="114" x2="118" y2="114" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="74" y1="130" x2="126" y2="130" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="82" y1="146" x2="118" y2="146" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="74" y1="162" x2="126" y2="162" stroke="rgba(94,234,212,0.35)" stroke-width="1.8" stroke-linecap="round"/>
 
     <!-- Nucleotide dots -->
-    <circle cx="80" cy="50" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="120" cy="50" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="72" cy="70" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="128" cy="70" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="80" cy="90" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="120" cy="90" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="72" cy="110" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="128" cy="110" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="80" cy="130" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="120" cy="130" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="72" cy="150" r="3" fill="#BFDBFE" opacity="0.8"/>
-    <circle cx="128" cy="150" r="3" fill="#BFDBFE" opacity="0.8"/>
-  </g>
+    <circle cx="82" cy="50" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="118" cy="50" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="74" cy="66" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="126" cy="66" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="82" cy="82" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="118" cy="82" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="74" cy="98" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="126" cy="98" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="82" cy="114" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="118" cy="114" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="74" cy="130" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="126" cy="130" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="82" cy="146" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="118" cy="146" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="74" cy="162" r="2.5" fill="#5EEAD4" opacity="0.7"/>
+    <circle cx="126" cy="162" r="2.5" fill="#5EEAD4" opacity="0.7"/>
 
-  <!-- Medical Cross (centered) -->
-  <g clip-path="url(#shieldClip)">
-    <rect x="90" y="72" width="20" height="56" rx="4" fill="url(#crossGrad)" opacity="0.95"/>
-    <rect x="72" y="90" width="56" height="20" rx="4" fill="url(#crossGrad)" opacity="0.95"/>
+    <!-- Medical Cross (centered, subtle) -->
+    <rect x="92" y="78" width="16" height="44" rx="4" fill="url(#crossGrad)" opacity="0.92"/>
+    <rect x="78" y="92" width="44" height="16" rx="4" fill="url(#crossGrad)" opacity="0.92"/>
   </g>
-
-  <!-- Shield top accent line -->
-  <path d="M100 8 L175 35" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round"/>
-  <path d="M100 8 L25 35" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round"/>
 </svg>
