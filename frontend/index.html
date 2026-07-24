@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="logo-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="logo-192.png">
     <link rel="manifest" href="manifest.json">
-    <title>Mendly � Medicine & Health Information Platform</title>
+    <title>Mendly � Medicine & Health Information Platform</title>
     <title>Mendly � Medicine & Health Information Platform</title>
     <script>
     (function(){var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t="dark";document.documentElement.setAttribute("data-theme",t);})();
@@ -23,7 +23,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="styles.css?v=40">
+    <link rel="stylesheet" href="styles.css?v=41">
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
@@ -902,21 +902,36 @@
     <section id="view-interactions" class="view-section">
         <div class="hero-banner">
             <h1><i class="fa-solid fa-circle-exclamation" style="color:var(--emergency);"></i> <span>Drug Interaction Checker</span></h1>
-            <p>Check interactions between medications and your health conditions.</p>
+            <p>Check interactions between multiple medications and your health conditions. Add medicines as pills below.</p>
         </div>
         <div class="grid-2">
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-pills"></i> <span>Check Interactions</span></h3>
-                <div class="form-group"><label>Medicine Name</label><input type="text" id="interaction-medicine" placeholder="e.g., Paracetamol, Ibuprofen"></div>
-                <div class="form-group"><label>Your Health Conditions</label><textarea id="interaction-conditions" placeholder="e.g., liver disease, stomach ulcer" rows="3"></textarea></div>
-                <button onclick="checkInteractions()" class="btn-primary full-width"><i class="fa-solid fa-shield-halved"></i> <span>Check Interactions</span></button>
+                <h3 class="glass-card-title"><i class="fa-solid fa-pills"></i> <span>Your Medicines</span></h3>
+                <div class="medicine-pills" id="medicine-pills"></div>
+                <div class="medicine-input-row">
+                    <input type="text" id="interaction-medicine-input" placeholder="Add a medicine (e.g., Warfarin, Aspirin...)" autocomplete="off" aria-label="Medicine name">
+                    <button class="btn-primary" onclick="addMedicinePill()"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>Health Conditions (optional)</label>
+                    <textarea id="interaction-conditions" placeholder="e.g., liver disease, stomach ulcer, kidney disease, pregnancy" rows="3"></textarea>
+                    <small style="color:var(--text-muted);font-size:0.75rem;">Separate with commas. Helps detect condition-specific interactions.</small>
+                </div>
+                <button onclick="checkInteractions()" class="btn-primary full-width" id="check-interactions-btn" disabled><i class="fa-solid fa-shield-halved"></i> <span>Check Interactions</span></button>
+                <p class="interaction-hint" id="interaction-hint">Add at least 1 medicine to enable checking</p>
             </div>
             <div class="glass-card">
-                <h3 class="glass-card-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i> <span>Results</span></h3>
+                <h3 class="glass-card-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i> <span>Interaction Results</span></h3>
                 <div id="interaction-results">
-                    <div class="empty-state">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <p>Enter a medicine and your conditions to check interactions.</p>
+                    <div class="interaction-empty-state">
+                        <i class="fa-solid fa-flask-vial"></i>
+                        <p>Add medicines and click <strong>Check Interactions</strong> to see results.</p>
+                        <ul class="interaction-features">
+                            <li><i class="fa-solid fa-check"></i> Drug–Drug interactions</li>
+                            <li><i class="fa-solid fa-check"></i> Drug–Condition interactions</li>
+                            <li><i class="fa-solid fa-check"></i> Severity ratings (Major/Moderate/Minor)</li>
+                            <li><i class="fa-solid fa-check"></i> Clinical recommendations</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -1136,9 +1151,9 @@
     <span>You are offline. Some features may not work.</span>
 </div>
 
-<script src="config.js?v=40"></script>
-<script src="auth.js?v=40"></script>
-<script src="app.js?v=40"></script>
+<script src="config.js?v=41"></script>
+<script src="auth.js?v=41"></script>
+<script src="app.js?v=41"></script>
 <script>
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").then((reg) => {

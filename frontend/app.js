@@ -28,6 +28,25 @@ function debounce(fn, ms) {
     return function (...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
 }
 
+function showToast(message, type = "info") {
+    const container = document.getElementById("toast-container") || createToastContainer();
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    const icons = { success: "fa-check-circle", warning: "fa-triangle-exclamation", error: "fa-circle-xmark", info: "fa-circle-info" };
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${escapeHtml(message)}</span>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add("show"));
+    setTimeout(() => { toast.classList.remove("show"); setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+function createToastContainer() {
+    const container = document.createElement("div");
+    container.id = "toast-container";
+    container.style.cssText = "position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;";
+    document.body.appendChild(container);
+    return container;
+}
+
 let appInitialized = false;
 function resetApp() { appInitialized = false; }
 
@@ -153,6 +172,9 @@ function switchView(view) {
         if (!isLoggedIn() && document.getElementById("chat-messages").children.length === 0) {
             renderWelcomeChat();
         }
+    }
+    if (view === "interactions") {
+        initInteractionView();
     }
 
     // Close mobile menu if open
@@ -440,6 +462,24 @@ function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
+}
+
+function showToast(message, type = "info") {
+    let container = document.querySelector(".toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.className = "toast-container";
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    const icons = { success: "fa-check-circle", warning: "fa-triangle-exclamation", error: "fa-circle-exclamation", info: "fa-circle-info" };
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${escapeHtml(message)}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add("removing");
+        toast.addEventListener("animationend", () => toast.remove());
+    }, 3500);
 }
 
 function addTypingIndicator() {
@@ -732,37 +772,178 @@ async function searchDiseaseProfiles() {
 }
 
 // ============================================================
+// Interaction Checker State
+let interactionMedicines = [];
+
+// ============================================================
 // INTERACTIONS
 // ============================================================
+function addMedicinePill() {
+    const input = document.getElementById("interaction-medicine-input");
+    const name = input.value.trim();
+    if (!name) return;
+    if (interactionMedicines.some(m => m.toLowerCase() === name.toLowerCase())) {
+        showToast("Medicine already added", "warning");
+        return;
+    }
+    interactionMedicines.push(name);
+    renderMedicinePills();
+    input.value = "";
+    updateCheckButton();
+}
+
+function removeMedicinePill(name) {
+    interactionMedicines = interactionMedicines.filter(m => m !== name);
+    renderMedicinePills();
+    updateCheckButton();
+}
+
+function renderMedicinePills() {
+    const container = document.getElementById("medicine-pills");
+    if (interactionMedicines.length === 0) {
+        container.innerHTML = `<span style="font-size:0.75rem;color:var(--text-muted);">No medicines added yet</span>`;
+        return;
+    }
+    container.innerHTML = interactionMedicines.map(m => `
+        <span class="medicine-pill" data-name="${escapeHtml(m)}">
+            ${escapeHtml(m)}
+            <i class="fa-solid fa-xmark" onclick="removeMedicinePill('${escapeJS(m)}')" title="Remove"></i>
+        </span>
+    `).join("");
+}
+
+function updateCheckButton() {
+    const btn = document.getElementById("check-interactions-btn");
+    const hint = document.getElementById("interaction-hint");
+    if (interactionMedicines.length === 0) {
+        btn.disabled = true;
+        hint.textContent = "Add at least 1 medicine to enable checking";
+        hint.style.color = "var(--text-muted)";
+    } else {
+        btn.disabled = false;
+        hint.textContent = `${interactionMedicines.length} medicine${interactionMedicines.length > 1 ? "s" : ""} ready to check`;
+        hint.style.color = "var(--primary)";
+    }
+}
+
 async function checkInteractions() {
-    const medicine = document.getElementById("interaction-medicine").value.trim();
+    if (interactionMedicines.length === 0) return;
     const conditionsText = document.getElementById("interaction-conditions").value.trim();
     const container = document.getElementById("interaction-results");
-    if (!medicine) { alert("Please enter a medicine name."); return; }
+    container.innerHTML = `
+        <div class="interaction-skeleton"></div>
+        <div class="interaction-skeleton"></div>
+        <div class="interaction-skeleton"></div>
+    `;
     const conditions = conditionsText.split(",").map(c => c.trim()).filter(Boolean);
-    container.innerHTML = `<div style="text-align:center;padding:1rem 0;"><i class="fa-solid fa-spinner fa-spin" style="color:var(--primary);"></i></div>`;
     try {
-        const res = await authFetch("/medicines/interactions", { method: "POST", body: JSON.stringify({ medication: medicine, conditions }) });
+        const res = await authFetch("/medicines/interactions", {
+            method: "POST",
+            body: JSON.stringify({ medications: interactionMedicines, conditions })
+        });
         const data = await res.json();
-        if (data.error) { container.innerHTML = `<div class="interaction-result warning">${escapeHtml(data.error)}</div>`; return; }
-        let html = `<div class="interaction-result info"><strong>${escapeHtml(data.medication)}</strong></div>`;
-        const medCount = (data.medication || "").split(",").filter(Boolean).length;
-        if (data.warnings?.length) {
-            html += data.warnings.map(w => `<div class="interaction-result warning">${escapeHtml(w)}</div>`).join("");
-        } else if (medCount < 2 && !conditions.length) {
-            html += `<div class="interaction-result info">Enter multiple medicines separated by commas, or add your health conditions, to check for interactions.</div>`;
-        } else {
-            html += `<div class="interaction-result success">No significant interactions detected.</div>`;
+        if (data.error) {
+            container.innerHTML = `<div class="interaction-card safe"><div class="interaction-card-header"><div class="interaction-drugs"><span class="interaction-drug">Error</span></div></div><p class="interaction-description">${escapeHtml(data.error)}</p></div>`;
+            return;
         }
-        if (data.recommendations?.length) html += data.recommendations.map(r => `<div class="interaction-result info">${escapeHtml(r)}</div>`).join("");
-        container.innerHTML = html;
+        renderInteractionResults(data, container);
     } catch (e) {
         console.error(e);
-        const msg = String(e.message || "");
-        if (msg.includes("offline")) container.innerHTML = `<div class="interaction-result warning">You appear to be offline. Please check your internet connection.</div>`;
-        else if (msg.includes("Cannot reach server") || msg.includes("Session expired")) container.innerHTML = `<div class="interaction-result warning">${escapeHtml(e.message)}</div>`;
-        else container.innerHTML = `<div class="interaction-result warning">Could not check interactions. Please try again.</div>`;
+        container.innerHTML = `<div class="interaction-card safe"><div class="interaction-card-header"><div class="interaction-drugs"><span class="interaction-drug">Connection Error</span></div></div><p class="interaction-description">Could not check interactions. Please check your connection and try again.</p></div>`;
     }
+}
+
+function renderInteractionResults(data, container) {
+    const warnings = data.warnings || [];
+    const recommendations = data.recommendations || [];
+    const fdaCites = data.fda_citations || [];
+    
+    // Check for high-risk symptoms that need emergency banner
+    const hasHighRisk = warnings.some(w => w.severity === "high" || w.severity === "major" || w.severity === "critical");
+    
+    let html = "";
+    
+    // Emergency banner if high-risk detected
+    if (hasHighRisk) {
+        html += `
+            <div class="emergency-banner">
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> High-Risk Interaction Detected</h4>
+                <p>One or more interactions have <strong>Major</strong> severity. Consult your healthcare provider immediately before making any medication changes.</p>
+                <p class="hotline"><i class="fa-solid fa-phone"></i> Emergency: 108 (India) / 911 (USA) / 999 (UK)</p>
+            </div>
+        `;
+    }
+    
+    if (warnings.length === 0) {
+        html += `
+            <div class="interaction-card safe">
+                <div class="interaction-card-header">
+                    <div class="interaction-drugs">
+                        <span class="interaction-drug">${interactionMedicines.map(escapeHtml).join(" + ")}</span>
+                    </div>
+                    <span class="interaction-severity safe"><i class="fa-solid fa-shield-check"></i> Safe</span>
+                </div>
+                <p class="interaction-description">No significant interactions detected between these medications.</p>
+            </div>
+        `;
+    } else {
+        warnings.forEach(w => {
+            const severity = (w.severity || "moderate").toLowerCase();
+            const severityLabel = severity === "major" ? "high" : severity;
+            const icon = severityLabel === "high" ? "fa-triangle-exclamation" : severityLabel === "moderate" ? "fa-circle-exclamation" : severityLabel === "minor" ? "fa-circle-info" : "fa-shield-check";
+            html += `
+                <div class="interaction-card ${severityLabel}">
+                    <div class="interaction-card-header">
+                        <div class="interaction-drugs">
+                            ${w.drugs ? w.drugs.map(d => `<span class="interaction-drug">${escapeHtml(d)}</span>`).join("") : `<span class="interaction-drug">${escapeHtml(w.medication || w.drug)}</span>`}
+                        </div>
+                        <span class="interaction-severity ${severityLabel}"><i class="fa-solid ${icon}"></i> ${severityLabel.charAt(0).toUpperCase() + severityLabel.slice(1)}</span>
+                    </div>
+                    <p class="interaction-description">${escapeHtml(w.message || w.description || w.warning)}</p>
+            `;
+            // Add FDA citation if available
+            const cite = fdaCites.find(c => c.drug === w.drug || c.drug === w.medication);
+            if (cite) {
+                html += `<div class="interaction-fda-cite"><i class="fa-solid fa-file-lines"></i> <a href="${cite.url}" target="_blank" rel="noopener">FDA Label: ${cite.set_id}</a></div>`;
+            }
+            html += `</div>`;
+        });
+    }
+    
+    if (recommendations.length) {
+        html += `
+            <div class="interaction-card info">
+                <div class="interaction-recommendations">
+                    <h5><i class="fa-solid fa-lightbulb"></i> Clinical Recommendations</h5>
+                    <ul>
+                        ${recommendations.map(r => `<li>${escapeHtml(r)}</li>`).join("")}
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html || `<div class="interaction-empty-state"><i class="fa-solid fa-flask-vial"></i><p>No results returned.</p></div>`;
+}
+
+// Initialize on view switch
+function initInteractionView() {
+    interactionMedicines = [];
+    renderMedicinePills();
+    updateCheckButton();
+    document.getElementById("interaction-conditions").value = "";
+    document.getElementById("interaction-results").innerHTML = `
+        <div class="interaction-empty-state">
+            <i class="fa-solid fa-flask-vial"></i>
+            <p>Add medicines and click <strong>Check Interactions</strong> to see results.</p>
+            <ul class="interaction-features">
+                <li><i class="fa-solid fa-check"></i> Drug–Drug interactions</li>
+                <li><i class="fa-solid fa-check"></i> Drug–Condition interactions</li>
+                <li><i class="fa-solid fa-check"></i> Severity ratings (Major/Moderate/Minor)</li>
+                <li><i class="fa-solid fa-check"></i> Clinical recommendations</li>
+            </ul>
+        </div>
+    `;
 }
 
 // ============================================================
@@ -906,6 +1087,7 @@ async function loadNearbyPharmacies() {
         renderPharmacies(data.pharmacies || data);
         document.getElementById("dash-pharmacy-count").textContent = (data.pharmacies || data).length || 0;
     } catch (e) { console.error(e); renderPharmacies([]); }
+    updatePharmacyStats([]);
 }
 
 async function loadAllPharmacies() {
@@ -918,20 +1100,69 @@ async function loadAllPharmacies() {
 
 function renderPharmacies(pharmacies, emptyMessage = "No pharmacies found.") {
     const container = document.getElementById("pharmacy-results");
-    if (!pharmacies?.length) { container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p style="color:var(--text-muted);">${emptyMessage}</p></div>`; return; }
+    if (!pharmacies?.length) { container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2.5rem 1.5rem;"><div style="margin-bottom:0.75rem;"><i class="fa-solid fa-shop" style="font-size:2rem;color:var(--text-muted);opacity:0.4;"></i></div><p style="color:var(--text-muted);font-size:0.9rem;">${emptyMessage}</p></div>`; updatePharmacyStats([]); return; }
     pharmacies.sort((a, b) => (a.distance || 999) - (b.distance || 999));
-    container.innerHTML = pharmacies.map(p => `
-        <div class="location-card">
-            <h4>${escapeHtml(p.name)}</h4>
-            <p class="address">${escapeHtml(p.address || "Address not available")}</p>
-            <p class="phone">${escapeHtml(p.phone || "N/A")}</p>
-            ${p.distance ? `<p style="color:var(--text-muted);font-size:0.82rem;">${p.distance.toFixed(1)} km</p>` : ""}
-            <div style="margin-top:0.4rem;">${(p.services || []).map(s => `<span class="badge" style="background:var(--primary);color:white;">${escapeHtml(s)}</span> `).join("")}</div>
-            <button onclick="openDirections('${escapeJS(p.address || p.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
-                <i class="fa-solid fa-map"></i> Directions
-            </button>
-        </div>
-    `).join("");
+    const serviceIcons = { "delivery": "fa-truck", "24hr": "fa-clock", "open": "fa-door-open", "prescription": "fa-prescription", "otc": "fa-capsules", "wellness": "fa-heart-pulse", "lab": "fa-flask", "default": "fa-check" };
+    container.innerHTML = pharmacies.map((p, i) => {
+        const services = (p.services || []);
+        const is24hr = services.some(s => s.toLowerCase().includes("24"));
+        const hasDelivery = services.some(s => s.toLowerCase().includes("delivery"));
+        return `
+        <div class="location-card pharmacy-card" style="animation-delay:${i * 0.05}s;">
+            <div class="pharmacy-card-header">
+                <div class="pharmacy-card-icon"><i class="fa-solid fa-store"></i></div>
+                <div class="pharmacy-card-info">
+                    <h4>${escapeHtml(p.name)}</h4>
+                    <p class="address"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(p.address || "Address not available")}</p>
+                </div>
+                ${is24hr ? '<span class="pharmacy-badge-24"><i class="fa-solid fa-moon"></i> 24hr</span>' : ''}
+            </div>
+            <p class="phone"><i class="fa-solid fa-phone"></i> ${escapeHtml(p.phone || "N/A")}</p>
+            ${p.distance ? `<div class="pharmacy-distance"><i class="fa-solid fa-route"></i> ${p.distance.toFixed(1)} km away</div>` : ""}
+            <div class="pharmacy-services">
+                ${services.map(s => {
+                    const icon = Object.entries(serviceIcons).find(([k]) => s.toLowerCase().includes(k));
+                    return `<span class="pharmacy-service-tag"><i class="fa-solid ${icon ? icon[1] : serviceIcons.default}"></i> ${escapeHtml(s)}</span>`;
+                }).join("")}
+                ${hasDelivery ? '<span class="pharmacy-service-tag tag-delivery"><i class="fa-solid fa-truck"></i> Delivery</span>' : ''}
+            </div>
+            <div class="pharmacy-card-actions">
+                <button onclick="openDirections('${escapeJS(p.address || p.name)}')" class="btn-primary pharmacy-directions-btn">
+                    <i class="fa-solid fa-diamond-turn-right"></i> Directions
+                </button>
+                ${p.phone && p.phone !== "N/A" ? `<a href="tel:${escapeJS(p.phone)}" class="btn-secondary pharmacy-call-btn"><i class="fa-solid fa-phone"></i> Call</a>` : ''}
+            </div>
+        </div>`;
+    }).join("");
+    updatePharmacyStats(pharmacies);
+}
+
+function updatePharmacyStats(pharmacies) {
+    const total = pharmacies.length;
+    const nearby = pharmacies.filter(p => p.distance && p.distance < 5).length;
+    document.getElementById("pharm-total").textContent = total;
+    document.getElementById("pharm-nearby-count").textContent = nearby;
+    const statusEl = document.getElementById("pharmacy-location-status");
+    if (state.userLocation) {
+        statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color:#10B981;font-size:0.5rem;"></i> <span>Location active</span>';
+    } else {
+        statusEl.innerHTML = '<i class="fa-solid fa-signal" style="opacity:0.5;"></i> <span>Location off</span>';
+    }
+}
+
+function filterPharmacies(filter, btn) {
+    document.querySelectorAll(".pharmacy-filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    if (filter === "all") { searchPharmacies(); return; }
+    if (filter === "nearby") { if (state.userLocation) loadNearbyPharmacies(); else renderPharmacies([], "Enable location to see nearby pharmacies."); return; }
+    const allCards = document.querySelectorAll(".pharmacy-card");
+    allCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (filter === "24hr") card.style.display = text.includes("24hr") || text.includes("24 hr") ? "" : "none";
+        else if (filter === "delivery") card.style.display = text.includes("delivery") ? "" : "none";
+    });
+    const visible = document.querySelectorAll(".pharmacy-card:not([style*='display: none'])").length;
+    if (visible === 0) renderPharmacies([], `No pharmacies match the "${filter}" filter.`);
 }
 
 async function searchPharmacies() {
