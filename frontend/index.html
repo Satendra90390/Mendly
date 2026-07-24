@@ -23,7 +23,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="styles.css?v=41">
+    <link rel="stylesheet" href="styles.css?v=42">
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
@@ -994,11 +994,22 @@
             <h1><i class="fa-solid fa-hospital" style="color:#0284c7;"></i> <span>Find Hospitals</span></h1>
             <p>Search hospitals by name anywhere, or find ones near your location.</p>
         </div>
+        <div class="pharmacy-stats-row" id="hosp-stats-row">
+            <div class="pharmacy-stat-pill"><i class="fa-solid fa-hospital"></i><span id="hosp-total">0</span> Found</div>
+            <div class="pharmacy-stat-pill"><i class="fa-solid fa-location-dot"></i><span id="hosp-nearby-count">0</span> Nearby</div>
+            <div class="pharmacy-stat-pill" id="hosp-location-status"><i class="fa-solid fa-signal"></i> <span>Location off</span></div>
+        </div>
         <div class="glass-card">
             <div class="search-bar">
                 <input type="text" id="hospital-search" placeholder="Search hospitals by name (e.g. Apollo, AIIMS, City Hospital)..." onkeydown="if(event.key==='Enter') searchHospitals()">
                 <button onclick="searchHospitals()" class="btn-primary"><i class="fa-solid fa-search"></i> <span>Search</span></button>
                 <button onclick="getUserLocation(); loadNearbyHospitals();" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> <span>Nearby</span></button>
+            </div>
+            <div class="hospital-filter-row" id="hospital-filter-row">
+                <button class="hospital-filter pharmacy-filter active" data-filter="all" onclick="filterHospitals('all', this)"><i class="fa-solid fa-grid-2"></i> All</button>
+                <button class="hospital-filter pharmacy-filter" data-filter="nearby" onclick="filterHospitals('nearby', this)"><i class="fa-solid fa-location-crosshairs"></i> Nearby</button>
+                <button class="hospital-filter pharmacy-filter" data-filter="er24" onclick="filterHospitals('er24', this)"><i class="fa-solid fa-cross"></i> 24/7 ER</button>
+                <button class="hospital-filter pharmacy-filter" data-filter="specialty" onclick="filterHospitals('specialty', this)"><i class="fa-solid fa-stethoscope"></i> Specialty</button>
             </div>
         </div>
         <div id="hospital-results" class="grid-2"></div>
@@ -1151,9 +1162,9 @@
     <span>You are offline. Some features may not work.</span>
 </div>
 
-<script src="config.js?v=41"></script>
-<script src="auth.js?v=41"></script>
-<script src="app.js?v=41"></script>
+<script src="config.js?v=42"></script>
+<script src="auth.js?v=42"></script>
+<script src="app.js?v=42"></script>
 <script>
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").then((reg) => {

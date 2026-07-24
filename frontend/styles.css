@@ -1315,6 +1315,160 @@ textarea { resize: vertical; min-height: 56px; }
 #view-pharmacies .location-card { border-top-color: #10B981; }
 #view-pharmacies .location-card:hover { border-color: #10B981; }
 
+/* Hospital Card */
+.hospital-card { animation: fadeIn 0.3s ease both; }
+.hospital-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    margin-bottom: 0.5rem;
+}
+.hospital-card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(14,165,233,0.15), rgba(2,132,199,0.08));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0EA5E9;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.hospital-card-info { flex: 1; min-width: 0; }
+.hospital-card-info h4 { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.1rem; }
+.hospital-card-info .address { color: var(--text-muted); font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; }
+.hospital-card-info .address i { font-size: 0.7rem; color: #0EA5E9; }
+.hospital-badge.er24 {
+    background: rgba(239,68,68,0.12);
+    color: #EF4444;
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+.hospital-card .phone {
+    color: #0EA5E9;
+    font-size: 0.82rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.25rem;
+}
+.hospital-card .phone i { font-size: 0.72rem; }
+.hospital-distance {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-bottom: 0.4rem;
+}
+.hospital-distance i { font-size: 0.72rem; color: #0EA5E9; }
+.hospital-tags {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+}
+.hospital-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(14,165,233,0.08);
+    color: #0EA5E9;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+.hospital-tag.tag-type {
+    background: rgba(14,165,233,0.12);
+    font-weight: 700;
+}
+.hospital-card-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+.hospital-directions-btn {
+    flex: 1;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.8rem;
+    justify-content: center;
+}
+.hospital-call-btn {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+#view-hospitals .location-card { border-top-color: #0EA5E9; }
+#view-hospitals .location-card:hover { border-color: #0EA5E9; }
+
+/* Hospital/Pharmacy Stats Rows */
+.hospital-stats-row,
+.pharmacy-stats-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.hospital-stat-pill,
+.pharmacy-stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.hospital-stat-pill i { color: #0EA5E9; font-size: 0.82rem; }
+.pharmacy-stat-pill i { color: #10B981; font-size: 0.82rem; }
+.hospital-stat-pill span,
+.pharmacy-stat-pill span { color: var(--text-main); }
+
+/* Hospital/Pharmacy Filter Rows */
+.hospital-filter-row,
+.pharmacy-filter-row {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+.hospital-filter,
+.pharmacy-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+.hospital-filter:hover { border-color: rgba(14,165,233,0.3); color: var(--text-main); }
+.pharmacy-filter:hover { border-color: rgba(16,185,129,0.3); color: var(--text-main); }
+.hospital-filter.active { background: rgba(14,165,233,0.1); border-color: rgba(14,165,233,0.3); color: #0EA5E9; }
+.pharmacy-filter.active { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #10B981; }
+.hospital-filter i,
+.pharmacy-filter i { font-size: 0.7rem; }
+
 .emergency-contact {
     display: flex;
     justify-content: space-between;
@@ -1746,6 +1900,11 @@ textarea { resize: vertical; min-height: 56px; }
     .pharmacy-filter { padding: 0.3rem 0.6rem; font-size: 0.7rem; }
     .pharmacy-card-header { gap: 0.5rem; }
     .pharmacy-card-icon { width: 36px; height: 36px; font-size: 0.9rem; }
+    .hospital-stats-row { gap: 0.4rem; }
+    .hospital-stat-pill { padding: 0.3rem 0.65rem; font-size: 0.72rem; }
+    .hospital-filter { padding: 0.3rem 0.6rem; font-size: 0.7rem; }
+    .hospital-card-header { gap: 0.5rem; }
+    .hospital-card-icon { width: 36px; height: 36px; font-size: 0.9rem; }
     .search-bar { gap: 0.4rem; }
     .search-bar input { min-width: 0; font-size: 0.84rem; padding: 0.55rem 0.75rem; }
     .btn-primary { padding: 0.55rem 1rem; font-size: 0.8rem; }

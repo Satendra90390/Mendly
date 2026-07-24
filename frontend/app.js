@@ -1029,13 +1029,18 @@ function loadDefaultEmergencyContacts() { loadEmergencyContacts("India"); }
 // ============================================================
 // HOSPITALS / PHARMACIES
 // ============================================================
+let hospitalCache = [];
+let hospitalFilter = "all";
+
 async function loadNearbyHospitals() {
     if (!state.userLocation) { renderHospitals([], "Click <strong>Nearby</strong> to allow location access, or search by name above."); return; }
     try {
         const res = await fetch(`${API_BASE}/emergency/hospitals/nearby`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lat: state.userLocation.lat, lng: state.userLocation.lng, radius: 25 }) });
         const data = await res.json();
-        renderHospitals(data.hospitals || data);
-        document.getElementById("dash-hospital-count").textContent = (data.hospitals || data).length || 0;
+        hospitalCache = data.hospitals || data;
+        renderHospitals(hospitalCache);
+        updateHospitalStats(hospitalCache);
+        document.getElementById("dash-hospital-count").textContent = hospitalCache.length || 0;
     } catch (e) { console.error(e); renderHospitals([]); }
 }
 
@@ -1043,26 +1048,73 @@ async function loadAllHospitals() {
     try {
         const res = await fetch(`${API_BASE}/emergency/hospitals`);
         const data = await res.json();
-        renderHospitals(data);
+        hospitalCache = data;
+        renderHospitals(hospitalCache);
+        updateHospitalStats(hospitalCache);
     } catch (e) { console.error(e); }
+}
+
+function updateHospitalStats(hospitals) {
+    const total = hospitals.length;
+    const nearby = hospitals.filter(h => h.distance && h.distance < 5).length;
+    document.getElementById("hosp-total").textContent = total;
+    document.getElementById("hosp-nearby-count").textContent = nearby;
+    const statusEl = document.getElementById("hosp-location-status");
+    if (state.userLocation) {
+        statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color:#10B981;font-size:0.5rem;"></i> <span>Location active</span>';
+    } else {
+        statusEl.innerHTML = '<i class="fa-solid fa-signal" style="opacity:0.5;"></i> <span>Location off</span>';
+    }
 }
 
 function renderHospitals(hospitals, emptyMessage = "No hospitals found.") {
     const container = document.getElementById("hospital-results");
     if (!hospitals?.length) { container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p style="color:var(--text-muted);">${emptyMessage}</p></div>`; return; }
     hospitals.sort((a, b) => (a.distance || 999) - (b.distance || 999));
-    container.innerHTML = hospitals.map(h => `
-        <div class="location-card">
-            <h4>${escapeHtml(h.name)}</h4>
-            <p class="address">${escapeHtml(h.address || "Address not available")}</p>
-            <p class="phone">${escapeHtml(h.phone || "N/A")}</p>
-            ${h.distance ? `<p style="color:var(--text-muted);font-size:0.82rem;">${h.distance.toFixed(1)} km</p>` : ""}
-            <div style="margin-top:0.4rem;"><span class="badge available">${h.available !== false ? "Available" : "Unavailable"}</span></div>
-            <button onclick="openDirections('${escapeJS(h.address || h.name)}')" class="btn-primary" style="width:100%;margin-top:0.6rem;padding:0.5rem;font-size:0.85rem;justify-content:center;">
-                <i class="fa-solid fa-map"></i> Directions
-            </button>
-        </div>
-    `).join("");
+    container.innerHTML = hospitals.map((h, i) => {
+        const hasER24 = h.services && h.services.some(s => s.toLowerCase().includes("24") || s.toLowerCase().includes("er") || s.toLowerCase().includes("emergency"));
+        const isSpecialty = h.type && (h.type.toLowerCase().includes("special") || h.type.toLowerCase().includes("super"));
+        const type = h.type || (hasER24 ? "Emergency" : isSpecialty ? "Specialty" : "General");
+        return `
+        <div class="location-card hospital-card" data-type="${type.toLowerCase()}" data-has-er24="${hasER24}" style="animation-delay:${i * 0.05}s;">
+            <div class="hospital-card-header">
+                <div class="hospital-card-icon"><i class="fa-solid fa-hospital"></i></div>
+                <div class="hospital-card-info">
+                    <h4>${escapeHtml(h.name)}</h4>
+                    <p class="address"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(h.address || "Address not available")}</p>
+                </div>
+                ${hasER24 ? '<span class="hospital-badge er24"><i class="fa-solid fa-cross"></i> 24/7 ER</span>' : ''}
+            </div>
+            <p class="phone"><i class="fa-solid fa-phone"></i> ${escapeHtml(h.phone || "N/A")}</p>
+            ${h.distance ? `<div class="hospital-distance"><i class="fa-solid fa-route"></i> ${h.distance.toFixed(1)} km away</div>` : ""}
+            <div class="hospital-tags">
+                <span class="hospital-tag tag-type">${escapeHtml(type)}</span>
+                ${h.services ? h.services.slice(0, 3).map(s => `<span class="hospital-tag">${escapeHtml(s)}</span>`).join("") : ""}
+            </div>
+            <div class="hospital-card-actions">
+                ${h.phone && h.phone !== "N/A" ? `<a href="tel:${escapeJS(h.phone)}" class="btn-secondary hospital-call-btn"><i class="fa-solid fa-phone"></i> Call</a>` : ''}
+                <button onclick="openDirections('${escapeJS(h.address || h.name)}')" class="btn-primary hospital-directions-btn">
+                    <i class="fa-solid fa-map-location-dot"></i> Directions
+                </button>
+            </div>
+        </div>`;
+    }).join("");
+}
+
+function filterHospitals(filter, btn) {
+    document.querySelectorAll(".hospital-filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    hospitalFilter = filter;
+    if (filter === "all") { renderHospitals(hospitalCache); return; }
+    if (filter === "nearby") { if (state.userLocation) loadNearbyHospitals(); else renderHospitals([], "Enable location to see nearby hospitals."); return; }
+    const filtered = hospitalCache.filter(h => {
+        const hasER24 = h.services && h.services.some(s => s.toLowerCase().includes("24") || s.toLowerCase().includes("er") || s.toLowerCase().includes("emergency"));
+        const isSpecialty = h.type && (h.type.toLowerCase().includes("special") || h.type.toLowerCase().includes("super"));
+        if (filter === "er24") return hasER24;
+        if (filter === "specialty") return isSpecialty;
+        return true;
+    });
+    renderHospitals(filtered, `No hospitals match the "${filter}" filter.`);
 }
 
 async function searchHospitals() {
@@ -1075,8 +1127,11 @@ async function searchHospitals() {
     try {
         const res = await fetch(`${API_BASE}/emergency/hospitals/search`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, lat: state.userLocation?.lat || 0, lng: state.userLocation?.lng || 0 }) });
         const data = await res.json();
-        renderHospitals(data.hospitals || data, `No hospitals found for "${escapeHtml(q)}". Try a different name.`);
+        hospitalCache = data.hospitals || data;
+        renderHospitals(hospitalCache, `No hospitals found for "${escapeHtml(q)}". Try a different name.`);
+        updateHospitalStats(hospitalCache);
     } catch (e) { console.error(e); renderHospitals([]); }
+}
 }
 
 async function loadNearbyPharmacies() {

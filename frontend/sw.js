@@ -1,4 +1,4 @@
-const CACHE_NAME = "mendly-v11";
+const CACHE_NAME = "mendly-v12";
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
