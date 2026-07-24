@@ -15,11 +15,11 @@
     <script>
     (function(){var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t="dark";document.documentElement.setAttribute("data-theme",t);})();
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="styles.css?v=33">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=34">
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
@@ -553,7 +553,7 @@
         </div>
         <div class="topnav-links" id="topnav-links">
             <div class="topnav-link active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
-            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Elix</span></div>
+            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>AI Chat</span></div>
             <div class="topnav-link" onclick="switchView('medicines')" id="nav-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i><span>Medicines</span></div>
             <div class="topnav-link" onclick="switchView('conditions')" id="nav-conditions"><i class="fa-solid fa-stethoscope"></i><span>Conditions</span></div>
             <div class="topnav-link" onclick="switchView('interactions')" id="nav-interactions"><i class="fa-solid fa-circle-exclamation"></i><span>Interactions</span></div>
@@ -995,11 +995,27 @@
     <span>You are offline. Some features may not work.</span>
 </div>
 
-<script src="config.js?v=30"></script>
-<script src="auth.js?v=30"></script>
-<script src="app.js?v=30"></script>
+<script src="config.js?v=34"></script>
+<script src="auth.js?v=34"></script>
+<script src="app.js?v=34"></script>
 <script>
-if ("serviceWorker" in navigator) { navigator.serviceWorker.register("./sw.js"); }
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").then((reg) => {
+        reg.addEventListener("updatefound", () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+                newWorker.addEventListener("statechange", () => {
+                    if (newWorker.state === "activated" && navigator.serviceWorker.controller) {
+                        newWorker.postMessage({ type: "SKIP_WAITING" });
+                    }
+                });
+            }
+        });
+    });
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+        window.location.reload();
+    });
+}
 function toggleLandingSidebar() {
     const sidebar = document.getElementById('landing-sidebar');
     const overlay = document.getElementById('landing-sidebar-overlay');
