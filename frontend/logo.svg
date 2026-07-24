@@ -4,80 +4,40 @@
       <stop offset="0%" stop-color="#0D9488"/>
       <stop offset="100%" stop-color="#0F766E"/>
     </linearGradient>
-    <linearGradient id="helix" x1="100" y1="30" x2="100" y2="170" gradientUnits="userSpaceOnUse">
+    <linearGradient id="pulse" x1="30" y1="100" x2="170" y2="100" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#5EEAD4"/>
       <stop offset="50%" stop-color="#99F6E4"/>
       <stop offset="100%" stop-color="#CCFBF1"/>
     </linearGradient>
-    <linearGradient id="crossW" x1="100" y1="130" x2="100" y2="175" gradientUnits="userSpaceOnUse">
+    <linearGradient id="cross" x1="100" y1="148" x2="100" y2="178" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#FFFFFF"/>
       <stop offset="100%" stop-color="#CCFBF1"/>
     </linearGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="2.5" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
 
-  <!-- Rounded shield background -->
-  <rect x="10" y="10" width="180" height="180" rx="40" fill="url(#bg)"/>
-  <rect x="10" y="10" width="180" height="180" rx="40" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+  <!-- Rounded background -->
+  <rect x="8" y="8" width="184" height="184" rx="44" fill="url(#bg)"/>
+  <rect x="8" y="8" width="184" height="184" rx="44" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
 
-  <!-- DNA Helix forming "M" -->
+  <!-- Heartbeat / Pulse line forming "M" -->
   <g filter="url(#glow)">
-    <!-- Left strand of M (top-left to bottom-center-left) -->
-    <path d="M52 50 C52 50 80 50 80 75 C80 100 52 100 52 125 C52 150 80 150 80 175"
-          fill="none" stroke="url(#helix)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M35 105 L55 105 L65 70 L80 135 L95 55 L110 135 L120 70 L135 105 L165 105"
+          fill="none" stroke="url(#pulse)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 
-    <!-- Right strand of M (top-right to bottom-center-right) -->
-    <path d="M148 50 C148 50 120 50 120 75 C120 100 148 100 148 125 C148 150 120 150 120 175"
-          fill="none" stroke="url(#helix)" stroke-width="4" stroke-linecap="round"/>
-
-    <!-- Center V of M (connecting the two strands) -->
-    <path d="M80 75 L100 50 L120 75" fill="none" stroke="url(#helix)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-
-    <!-- Cross-links (base pairs) -->
-    <line x1="56" y1="62" x2="76" y2="62" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="56" y1="88" x2="76" y2="88" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="56" y1="113" x2="76" y2="113" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="56" y1="138" x2="76" y2="138" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="56" y1="163" x2="76" y2="163" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-
-    <line x1="124" y1="62" x2="144" y2="62" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="124" y1="88" x2="144" y2="88" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="124" y1="113" x2="144" y2="113" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="124" y1="138" x2="144" y2="138" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="124" y1="163" x2="144" y2="163" stroke="rgba(94,234,212,0.4)" stroke-width="2" stroke-linecap="round"/>
-
-    <!-- Nucleotide dots on left strand -->
-    <circle cx="56" cy="62" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="76" cy="62" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="56" cy="88" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="76" cy="88" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="56" cy="113" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="76" cy="113" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="56" cy="138" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="76" cy="138" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="56" cy="163" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="76" cy="163" r="3" fill="#5EEAD4" opacity="0.8"/>
-
-    <!-- Nucleotide dots on right strand -->
-    <circle cx="124" cy="62" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="144" cy="62" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="124" cy="88" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="144" cy="88" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="124" cy="113" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="144" cy="113" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="124" cy="138" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="144" cy="138" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="124" cy="163" r="3" fill="#5EEAD4" opacity="0.8"/>
-    <circle cx="144" cy="163" r="3" fill="#5EEAD4" opacity="0.8"/>
-
-    <!-- Center dots at the V peak -->
-    <circle cx="100" cy="50" r="3.5" fill="#FFFFFF" opacity="0.9"/>
+    <!-- Small pulse dots at key points -->
+    <circle cx="80" cy="135" r="4" fill="#5EEAD4" opacity="0.9"/>
+    <circle cx="95" cy="55" r="4.5" fill="#FFFFFF" opacity="0.95"/>
+    <circle cx="110" cy="135" r="4" fill="#5EEAD4" opacity="0.9"/>
   </g>
 
-  <!-- Small medical cross at bottom center -->
-  <rect x="94" y="155" width="12" height="30" rx="3" fill="url(#crossW)" opacity="0.9"/>
-  <rect x="85" y="162" width="30" height="12" rx="3" fill="url(#crossW)" opacity="0.9"/>
+  <!-- Medical cross at bottom -->
+  <rect x="95" y="155" width="10" height="26" rx="3" fill="url(#cross)" opacity="0.9"/>
+  <rect x="87" y="163" width="26" height="10" rx="3" fill="url(#cross)" opacity="0.9"/>
 </svg>

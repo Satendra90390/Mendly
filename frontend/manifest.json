@@ -2,12 +2,14 @@
   "name": "Mendly — Medicine & Health Information",
   "short_name": "Mendly",
   "description": "AI-powered medicine information platform with drug search, disease info, chatbot, and nearby care finder.",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0F172A",
   "theme_color": "#0D9488",
   "orientation": "portrait-primary",
+  "categories": ["health", "medical", "lifestyle"],
   "icons": [
     {
       "src": "logo-192.png",
