@@ -577,22 +577,31 @@
 <nav class="topnav" id="topnav">
     <div class="topnav-inner">
         <div class="topnav-left">
-            <div class="topnav-logo" onclick="handleLogoClick()" style="cursor:pointer"><img src="logo.svg" alt="Mendly" class="logo-img logo-img-nav"><span>Mendly</span></div>
+            <div class="topnav-logo" onclick="handleLogoClick()" style="cursor:pointer">
+                <div class="topnav-logo-icon"><img src="logo.svg" alt="Mendly" class="logo-img logo-img-nav"></div>
+                <span>Mendly</span>
+            </div>
         </div>
-        <div class="topnav-links" id="topnav-links">
-            <div class="topnav-link active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
-            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Elix</span></div>
-            <div class="topnav-link" onclick="switchView('medicines')" id="nav-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i><span>Medicines</span></div>
-            <div class="topnav-link" onclick="switchView('conditions')" id="nav-conditions"><i class="fa-solid fa-stethoscope"></i><span>Conditions</span></div>
-            <div class="topnav-link" onclick="switchView('interactions')" id="nav-interactions"><i class="fa-solid fa-circle-exclamation"></i><span>Interactions</span></div>
-            <div class="topnav-link" onclick="switchView('hospitals')" id="nav-hospitals"><i class="fa-solid fa-hospital"></i><span>Hospitals</span></div>
-            <div class="topnav-link" onclick="switchView('pharmacies')" id="nav-pharmacies"><i class="fa-solid fa-shop"></i><span>Pharmacies</span></div>
-            <div class="topnav-link" onclick="switchView('emergency')" id="nav-emergency"><i class="fa-solid fa-phone"></i><span>Emergency</span></div>
-            <div class="topnav-link" onclick="switchView('saved')" id="nav-saved"><i class="fa-solid fa-bookmark"></i><span>Saved</span></div>
-            <div class="topnav-link" onclick="switchView('activity')" id="nav-activity"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></div>
-            <div class="topnav-link" onclick="switchView('account')" id="nav-account"><i class="fa-solid fa-gear"></i><span>Account</span></div>
+        <div class="topnav-pill" id="topnav-links">
+            <div class="topnav-pill-track">
+                <div class="topnav-link active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
+                <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Elix</span></div>
+                <div class="topnav-link" onclick="switchView('medicines')" id="nav-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i><span>Medicines</span></div>
+                <div class="topnav-link" onclick="switchView('conditions')" id="nav-conditions"><i class="fa-solid fa-stethoscope"></i><span>Conditions</span></div>
+                <div class="topnav-link" onclick="switchView('interactions')" id="nav-interactions"><i class="fa-solid fa-circle-exclamation"></i><span>Interactions</span></div>
+                <div class="topnav-link" onclick="switchView('hospitals')" id="nav-hospitals"><i class="fa-solid fa-hospital"></i><span>Hospitals</span></div>
+                <div class="topnav-link" onclick="switchView('pharmacies')" id="nav-pharmacies"><i class="fa-solid fa-shop"></i><span>Pharmacies</span></div>
+                <div class="topnav-link" onclick="switchView('emergency')" id="nav-emergency"><i class="fa-solid fa-phone"></i><span>Emergency</span></div>
+                <div class="topnav-link" onclick="switchView('saved')" id="nav-saved"><i class="fa-solid fa-bookmark"></i><span>Saved</span></div>
+                <div class="topnav-link" onclick="switchView('activity')" id="nav-activity"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></div>
+                <div class="topnav-link" onclick="switchView('account')" id="nav-account"><i class="fa-solid fa-gear"></i><span>Account</span></div>
+                <div class="topnav-pill-indicator"></div>
+            </div>
         </div>
         <div class="topnav-right">
+            <div class="topnav-pulse-line">
+                <svg viewBox="0 0 60 12" fill="none"><path d="M0 6 L12 6 L16 2 L22 10 L28 1 L34 10 L38 2 L44 6 L60 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
             <button class="topnav-theme-btn theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
             <div class="topnav-user" id="topnav-user-section">
                 <div class="topnav-avatar" id="sidebar-avatar">U</div>

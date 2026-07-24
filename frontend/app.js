@@ -105,6 +105,17 @@ const VIEW_TITLES = {
     account: "Account Settings",
 };
 
+function movePillIndicator() {
+    const active = document.querySelector(".topnav-pill .topnav-link.active");
+    const indicator = document.querySelector(".topnav-pill-indicator");
+    const track = document.querySelector(".topnav-pill-track");
+    if (!active || !indicator || !track) return;
+    const trackRect = track.getBoundingClientRect();
+    const linkRect = active.getBoundingClientRect();
+    indicator.style.left = (linkRect.left - trackRect.left) + "px";
+    indicator.style.width = linkRect.width + "px";
+}
+
 function switchView(view) {
     if (["saved", "activity", "account"].includes(view) && !isLoggedIn()) {
         openAuthModal("login");
@@ -121,6 +132,8 @@ function switchView(view) {
     if (mob) mob.classList.add("active");
     const mobBottom = document.getElementById(`mob-bottom-${view}`);
     if (mobBottom) mobBottom.classList.add("active");
+
+    requestAnimationFrame(movePillIndicator);
 
     const title = document.getElementById("topbar-title");
     if (title) title.textContent = VIEW_TITLES[view] || "Mendly";
@@ -542,6 +555,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    requestAnimationFrame(movePillIndicator);
+    window.addEventListener("resize", movePillIndicator);
 });
 
 // ============================================================
