@@ -884,7 +884,7 @@ textarea { resize: vertical; min-height: 56px; }
 /* ============================================================ */
 /* CHAT                                                            */
 /* ============================================================ */
-#view-chatbot { display: flex; flex-direction: column; }
+#view-chatbot.active { display: flex; flex-direction: column; }
 .chat-hero { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; }
 .chat-container {
     flex: 1;
