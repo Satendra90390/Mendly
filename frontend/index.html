@@ -85,9 +85,8 @@
                     <div class="hero-stat"><i class="fa-solid fa-hospital"></i><span>Nearby care</span></div>
                 </div>
                 <div class="landing-hero-actions">
-                    <button class="btn-primary btn-lg" onclick="enterAppDirect()"><i class="fa-solid fa-rocket"></i> Explore Now</button>
-                    <button class="btn-secondary btn-lg" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
-                    <button class="btn-outline btn-lg" onclick="openAuthModal('signup')"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+                    <button class="btn-primary btn-lg" onclick="enterAppDirect()"><i class="fa-solid fa-rocket"></i> Get Started Free</button>
+                    <button class="btn-outline btn-lg" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
                 </div>
             </div>
 
@@ -166,11 +165,13 @@
 
     <!-- CTA SECTION -->
     <section class="landing-cta">
-        <h2>Start exploring your health info today</h2>
-        <p>Free access to medicine data, AI guidance, and nearby care — no credit card needed.</p>
-        <button class="btn-primary landing-cta-btn" onclick="enterAppDirect()">
-            <i class="fa-solid fa-rocket"></i> <span>Explore Now</span>
-        </button>
+        <div class="landing-cta-icon"><i class="fa-solid fa-rocket"></i></div>
+        <h2>Ready to take control of your health?</h2>
+        <p>Join thousands using Mendly for medicine info, AI health guidance, and nearby care — completely free.</p>
+        <div class="landing-cta-actions">
+            <button class="btn-primary btn-lg" onclick="enterAppDirect()"><i class="fa-solid fa-rocket"></i> <span>Get Started Free</span></button>
+            <button class="btn-outline btn-lg" onclick="openAuthModal('signup')"><i class="fa-solid fa-user-plus"></i> <span>Create Account</span></button>
+        </div>
     </section>
 
     <!-- FAQ SECTION -->
@@ -187,7 +188,34 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>Mendly is an AI-powered medicine and health information platform. It helps you search medications, check drug interactions, understand diseases, find nearby hospitals, and get instant health guidance from our AI assistant, Elix.</p>
+                        <p>Mendly is an AI-powered medicine and health information platform. Search any drug by name or brand, check drug interactions, understand diseases and symptoms, find nearby hospitals and pharmacies, and get instant health guidance from our AI assistant, Elix.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Is Mendly free to use?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. Mendly is completely free. Search medicines, chat with Elix, check drug interactions, find nearby care, and access all features — no subscription or hidden fees. Guests can try 10 free AI messages; sign up for unlimited access.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>How does Elix, the AI assistant, work?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Elix uses advanced AI models to answer your health questions in real time. It understands medicines, symptoms, diseases, and drug interactions. Simply type your question or use voice input to get instant, clear guidance in plain language.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Can I use Mendly without creating an account?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. You can enter the app as a guest and try up to 10 AI messages for free. Create a free account to unlock unlimited chat, save searches, view activity history, and get a personalized experience.</p>
                     </div>
                 </div>
                 <div class="faq-item">
@@ -210,29 +238,29 @@
                 </div>
                 <div class="faq-item">
                     <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-                        <span>Can I use Mendly for free?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Yes. Mendly is completely free to use. You can search medicines, chat with Elix, check drug interactions, and access all features without any subscription or hidden fees.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
-                        <span>How does Elix, the AI assistant, work?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Elix uses advanced AI models to answer your health questions in real time. It runs multiple AI engines in parallel for faster, more accurate responses. Just type your question or use voice input to get instant guidance.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
                         <span>Can I find hospitals and pharmacies near me?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>Yes. Mendly uses your device's GPS to locate nearby hospitals and pharmacies. You can get directions and contact information directly from the app.</p>
+                        <p>Yes. Mendly uses your device's GPS to locate nearby hospitals and pharmacies. You can search by name, get directions, and access contact information directly from the app.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>What drug interactions can Mendly check?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Mendly can check interactions between multiple medications at once. Enter two or more drug names and get instant warnings about dangerous combinations, severity levels, and precautions to take.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Does Mendly work offline?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Mendly caches recently viewed medicine data for quick access. However, AI chat, drug interactions, and nearby search features require an internet connection to work.</p>
                     </div>
                 </div>
             </div>
