@@ -2,7 +2,7 @@
 // Mendly — App Controller
 // ============================================================
 
-const GUEST_CHAT_LIMIT = 5;
+const GUEST_CHAT_LIMIT = 10;
 
 function isLoggedIn() {
     return !!getToken();
@@ -232,14 +232,14 @@ async function sendChatMessage() {
     if (!isLoggedIn()) {
         const used = parseInt(localStorage.getItem("mendly_guest_chats") || "0", 10);
         if (used >= GUEST_CHAT_LIMIT) {
-            addChatMessage("bot", `You've used all ${GUEST_CHAT_LIMIT} free messages. **Sign up for free** to continue chatting with Elix — no credit card needed.`);
+            addChatMessage("bot", `You've used all ${GUEST_CHAT_LIMIT} free messages. **Create a free account** to chat unlimited with Elix and save your search history.`);
             return;
         }
         localStorage.setItem("mendly_guest_chats", String(used + 1));
         const remaining = GUEST_CHAT_LIMIT - used - 1;
-        if (remaining > 0 && remaining <= 2) {
+        if (remaining > 0 && remaining <= 3) {
             setTimeout(() => {
-                addChatMessage("bot", `💡 You have **${remaining} free message${remaining > 1 ? "s" : ""}** left. Sign up to chat unlimited with Elix.`);
+                addChatMessage("bot", `You have **${remaining} free message${remaining > 1 ? "s" : ""}** left. Create a free account to continue chatting.`);
             }, 1500);
         }
     }

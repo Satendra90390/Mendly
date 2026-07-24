@@ -555,6 +555,12 @@ function enterAppDirect() {
     const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "none";
     const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
     if (typeof initApp === "function") initApp();
+    if (!getToken()) {
+        fetch(`${API_BASE}/auth/guest`, { method: "POST", headers: { "Content-Type": "application/json" } })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => { if (data && data.access_token) setSession(data.access_token, data.user); })
+            .catch(() => {});
+    }
 }
 
 function showWelcomeMessage(name) {
