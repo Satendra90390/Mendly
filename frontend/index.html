@@ -1168,17 +1168,34 @@
 <script>
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").then((reg) => {
+        // Check for updates immediately on load
+        reg.update();
+
+        // Check for updates every 30 minutes
+        setInterval(() => reg.update(), 30 * 60 * 1000);
+
         reg.addEventListener("updatefound", () => {
             const newWorker = reg.installing;
             if (newWorker) {
                 newWorker.addEventListener("statechange", () => {
+                    // If new SW is waiting (installed but waiting for old tabs to close)
+                    if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                        // Prompt user to refresh
+                        if (confirm("A new version of Mendly is available. Reload now?")) {
+                            newWorker.postMessage({ type: "SKIP_WAITING" });
+                            window.location.reload();
+                        }
+                    }
+                    // If activated and we have a controller, reload
                     if (newWorker.state === "activated" && navigator.serviceWorker.controller) {
-                        newWorker.postMessage({ type: "SKIP_WAITING" });
+                        window.location.reload();
                     }
                 });
             }
         });
     });
+
+    // Reload when SW takes control
     navigator.serviceWorker.addEventListener("controllerchange", () => {
         window.location.reload();
     });
