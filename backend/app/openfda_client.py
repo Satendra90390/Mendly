@@ -1,18 +1,15 @@
 """
 Live medicine data via the openFDA Drug Label API (https://api.fda.gov/drug/label.json).
-No API key required. Public, free, rate-limited to 240 req/min / 120,000 req/day.
-
-We normalize the messy openFDA label fields into a consistent shape the frontend
-already expects (name, brand, category, uses, side_effects, dosage, etc.), and
-cache results in-memory for a while since the same medicine is looked up often
-and openFDA labels don't change minute to minute.
+API key increases rate limits from 40 req/min to 120 req/min.
 """
+import os
 import time
 import re
 import httpx
 from typing import Optional
 
 OPENFDA_BASE = "https://api.fda.gov/drug/label.json"
+OPENFDA_API_KEY = os.getenv("OPENFDA_API_KEY", "ppuCypLAwNIy1JdhHIKVAl1zPxKU2OK35OoGPOI8")
 
 # Simple in-memory TTL cache: { cache_key: (timestamp, data) }
 _cache: dict[str, tuple[float, dict]] = {}
@@ -119,7 +116,7 @@ def normalize_label(result: dict) -> dict:
 
 async def _fda_search(search_expr: str, limit: int) -> list[dict]:
     """Execute a raw openFDA search and return normalized, deduped results."""
-    params = {"search": search_expr, "limit": str(limit)}
+    params = {"search": search_expr, "limit": str(limit), "api_key": OPENFDA_API_KEY}
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
             resp = await client.get(OPENFDA_BASE, params=params)
