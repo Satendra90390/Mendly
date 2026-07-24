@@ -154,6 +154,9 @@ function initApp() {
     } else {
         renderWelcomeChat();
     }
+
+    // Set initial view
+    switchView('dashboard');
 }
 
 // ------------------------------------------------------------

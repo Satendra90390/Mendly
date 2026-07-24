@@ -555,6 +555,7 @@ function enterAppDirect() {
     const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "";
     const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
     if (typeof initApp === "function") initApp();
+    if (typeof switchView === "function") switchView("dashboard");
     if (!getToken()) {
         fetch(`${API_BASE}/auth/guest`, { method: "POST", headers: { "Content-Type": "application/json" } })
             .then(r => r.ok ? r.json() : null)
