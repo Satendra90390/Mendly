@@ -1,5 +1,5 @@
-const CACHE_NAME = "mendly-v5";
-const STATIC_CACHE = "mendly-static-v5";
+const CACHE_NAME = "mendly-v6";
+const STATIC_CACHE = "mendly-static-v6";
 
 const STATIC_ASSETS = [
   "./",

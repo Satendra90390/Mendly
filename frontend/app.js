@@ -93,7 +93,7 @@ async function authFetch(path, options = {}) {
 // ============================================================
 const VIEW_TITLES = {
     dashboard: "Dashboard",
-    chatbot: "Elix",
+    chatbot: "AI Chat",
     medicines: "Medicines",
     conditions: "Conditions",
     interactions: "Interactions",
