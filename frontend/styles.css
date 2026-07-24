@@ -295,23 +295,65 @@ body {
     gap: 0.6rem;
     font-size: 1.2rem;
     font-weight: 800;
-    color: var(--primary);
     white-space: nowrap;
     transition: opacity 0.2s;
+    cursor: pointer;
+    position: relative;
 }
-.topnav-logo:hover { opacity: 0.85; }
+.topnav-logo:hover { opacity: 0.9; }
+.topnav-logo span {
+    background: linear-gradient(135deg, var(--primary), var(--accent), #8B5CF6, var(--primary));
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brandShimmer 4s ease-in-out infinite;
+}
+@keyframes brandShimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
 .topnav-logo-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
     background: linear-gradient(135deg, rgba(13,148,136,0.15), rgba(94,234,212,0.08));
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(13,148,136,0.2);
-    animation: logoPulse 3s ease-in-out infinite;
+    border: 1.5px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    animation: logoFloat 4s ease-in-out infinite;
 }
-.topnav-logo .logo-img { height: 28px; width: 28px; filter: none; }
+.topnav-logo-icon::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--accent), #8B5CF6);
+    background-size: 300% 300%;
+    animation: logoBorder 3s ease-in-out infinite;
+    z-index: -1;
+    opacity: 0.6;
+}
+.topnav-logo-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: var(--bg);
+    z-index: -1;
+}
+.topnav-logo .logo-img { height: 28px; width: 28px; filter: none; position: relative; z-index: 1; }
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+@keyframes logoBorder {
+    0%, 100% { background-position: 0% 50%; opacity: 0.6; }
+    50% { background-position: 100% 50%; opacity: 1; }
+}
 @keyframes logoPulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(13,148,136,0.2); }
     50% { box-shadow: 0 0 0 4px rgba(13,148,136,0.08); }
@@ -1347,15 +1389,23 @@ textarea { resize: vertical; min-height: 56px; }
 .landing-logo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     font-size: 1.3rem;
     font-weight: 800;
-    color: var(--primary);
     flex-shrink: 0;
     min-width: 0;
     transition: opacity 0.2s;
+    cursor: pointer;
 }
 .landing-logo:hover { opacity: 0.85; }
+.landing-logo span {
+    background: linear-gradient(135deg, var(--primary), var(--accent), #8B5CF6, var(--primary));
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brandShimmer 4s ease-in-out infinite;
+}
 .logo-img { height: 36px; width: auto; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(13,148,136,0.3)); }
 .logo-img-lg { height: 44px; }
 .logo-img-sm { height: 30px; }
@@ -1614,11 +1664,18 @@ textarea { resize: vertical; min-height: 56px; }
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--primary);
     margin-bottom: 0.3rem;
+}
+.landing-form-logo span {
+    background: linear-gradient(135deg, var(--primary), var(--accent), #8B5CF6, var(--primary));
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brandShimmer 4s ease-in-out infinite;
 }
 .landing-form-logo .logo-img { height: 44px; }
 .landing-form-subtitle {
