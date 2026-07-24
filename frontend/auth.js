@@ -526,7 +526,9 @@ function handleLogout() {
 // ============================================================
 function enterApp(user, isNew) {
     document.getElementById("landing-page").style.display = "none";
-    document.getElementById("app-root").style.display = "flex";
+    const appRoot = document.getElementById("app-root");
+    appRoot.style.display = "";
+    appRoot.classList.add("ready");
     if (user) updateUserUI(user);
     if (isNew && user) showWelcomeMessage(user.name);
     if (user && user.auth_provider === "guest") {
@@ -544,7 +546,9 @@ function enterApp(user, isNew) {
 
 function enterAppDirect() {
     document.getElementById("landing-page").style.display = "none";
-    document.getElementById("app-root").style.display = "flex";
+    const appRoot = document.getElementById("app-root");
+    appRoot.style.display = "";
+    appRoot.classList.add("ready");
     const banner = document.getElementById("guest-banner");
     if (banner) banner.style.display = "";
     const uname = document.getElementById("sidebar-username"); if (uname) uname.textContent = "Guest";

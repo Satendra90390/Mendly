@@ -258,7 +258,8 @@ body {
 /* ============================================================ */
 /* APP SHELL / LAYOUT                                              */
 /* ============================================================ */
-.app-root { display: flex; flex-direction: column; min-height: 100vh; }
+.app-root { display: none; flex-direction: column; min-height: 100vh; }
+.app-root.ready { display: flex; }
 
 /* ============================================================ */
 /* TOP NAVBAR                                                     */
