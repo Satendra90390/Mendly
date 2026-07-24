@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="styles.css?v=35">
+    <link rel="stylesheet" href="styles.css?v=36">
 </head>
 <body>
 <noscript><div style="padding:2rem;text-align:center;background:#fee2e2;color:#991b1b;"><strong>JavaScript is required.</strong> Please enable JavaScript to use Mendly.</div></noscript>
@@ -553,7 +553,7 @@
         </div>
         <div class="topnav-links" id="topnav-links">
             <div class="topnav-link active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
-            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>AI Chat</span></div>
+            <div class="topnav-link" onclick="switchView('chatbot')" id="nav-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Elix</span></div>
             <div class="topnav-link" onclick="switchView('medicines')" id="nav-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i><span>Medicines</span></div>
             <div class="topnav-link" onclick="switchView('conditions')" id="nav-conditions"><i class="fa-solid fa-stethoscope"></i><span>Conditions</span></div>
             <div class="topnav-link" onclick="switchView('interactions')" id="nav-interactions"><i class="fa-solid fa-circle-exclamation"></i><span>Interactions</span></div>
@@ -598,7 +598,7 @@
     </div>
     <div class="mobile-dropdown-links">
         <div class="mobile-dropdown-link active" onclick="switchView('dashboard')" id="mob-dashboard"><i class="fa-solid fa-house"></i> <span>Dashboard</span></div>
-        <div class="mobile-dropdown-link" onclick="switchView('chatbot')" id="mob-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>AI Chat</span></div>
+        <div class="mobile-dropdown-link" onclick="switchView('chatbot')" id="mob-chatbot"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>Elix</span></div>
         <div class="mobile-dropdown-link" onclick="switchView('medicines')" id="mob-medicines"><i class="fa-solid fa-prescription-bottle-medical"></i> <span>Medicines</span></div>
         <div class="mobile-dropdown-link" onclick="switchView('conditions')" id="mob-conditions"><i class="fa-solid fa-stethoscope"></i> <span>Conditions</span></div>
         <div class="mobile-dropdown-link" onclick="switchView('interactions')" id="mob-interactions"><i class="fa-solid fa-circle-exclamation"></i> <span>Interactions</span></div>
@@ -640,8 +640,18 @@
 
     <!-- ===== DASHBOARD ===== -->
     <section id="view-dashboard" class="view-section active">
-        <div class="hero-banner"><h1 id="dash-greeting">Your Medicine Information Hub</h1><p>Search any medicine or disease, check drug interactions, and find nearby care.</p></div>
-        <div class="grid-4" style="margin-bottom:1.5rem;">
+        <div class="hero-banner dash-hero">
+            <div class="dash-hero-content">
+                <h1 id="dash-greeting">Good Morning! 👋</h1>
+                <p>Your personal health companion — search medicines, check interactions, and find care near you.</p>
+            </div>
+            <div class="dash-hero-actions">
+                <button class="btn btn-primary" onclick="switchView('chatbot')"><i class="fa-solid fa-wand-magic-sparkles"></i> Ask Elix</button>
+                <button class="btn btn-ghost" onclick="switchView('medicines')"><i class="fa-solid fa-magnifying-glass"></i> Search Medicines</button>
+            </div>
+        </div>
+
+        <div class="grid-4" style="margin-bottom:1.2rem;">
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
                     <div class="stat-icon stat-purple"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
@@ -657,17 +667,62 @@
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
                     <div class="stat-icon stat-green"><i class="fa-solid fa-hospital"></i></div>
-                    <div><span class="stat-label">Hospitals</span><strong id="dash-hospital-count" class="stat-number">0</strong></div>
+                    <div><span class="stat-label">Nearby Hospitals</span><strong id="dash-hospital-count" class="stat-number">0</strong></div>
                 </div>
             </div>
             <div class="glass-card stat-card" style="margin-bottom:0;">
                 <div class="stat-icon-wrapper">
-                    <div class="stat-icon stat-pink"><i class="fa-solid fa-shop"></i></div>
-                    <div><span class="stat-label">Pharmacies</span><strong id="dash-pharmacy-count" class="stat-number">0</strong></div>
+                    <div class="stat-icon stat-pink"><i class="fa-solid fa-comments"></i></div>
+                    <div><span class="stat-label">Chat Messages</span><strong id="dash-chat-count" class="stat-number">0</strong></div>
                 </div>
             </div>
         </div>
-        <div class="glass-card" style="margin-bottom:1.5rem;">
+
+        <div class="grid-2" style="margin-bottom:1.2rem;">
+            <div class="dash-section glass-card">
+                <h3 class="dash-section-title"><i class="fa-solid fa-bolt" style="color:var(--primary);"></i> Quick Actions</h3>
+                <div class="dash-actions-grid">
+                    <div class="dash-action-card" onclick="switchView('chatbot')">
+                        <div class="dash-action-icon stat-purple"><i class="fa-solid fa-robot"></i></div>
+                        <span>Ask Elix</span>
+                    </div>
+                    <div class="dash-action-card" onclick="switchView('interactions')">
+                        <div class="dash-action-icon stat-orange"><i class="fa-solid fa-shuffle"></i></div>
+                        <span>Interactions</span>
+                    </div>
+                    <div class="dash-action-card" onclick="switchView('hospitals')">
+                        <div class="dash-action-icon stat-green"><i class="fa-solid fa-location-dot"></i></div>
+                        <span>Hospitals</span>
+                    </div>
+                    <div class="dash-action-card" onclick="switchView('emergency')" style="--hover-c:#EF4444;">
+                        <div class="dash-action-icon stat-pink"><i class="fa-solid fa-phone-volume"></i></div>
+                        <span>SOS</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-section glass-card">
+                <h3 class="dash-section-title"><i class="fa-solid fa-lightbulb" style="color:#F59E0B;"></i> Health Tip</h3>
+                <div id="dash-health-tip" class="dash-health-tip">
+                    <div class="dash-tip-icon"><i class="fa-solid fa-droplet"></i></div>
+                    <div>
+                        <strong>Stay Hydrated</strong>
+                        <p>Drink at least 8 glasses of water daily. Staying hydrated helps your body function properly and improves energy levels.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-section glass-card" style="margin-bottom:1.2rem;">
+            <h3 class="dash-section-title"><i class="fa-solid fa-shield-heart" style="color:#EF4444;"></i> Emergency Contacts</h3>
+            <div id="dash-emergency-quick" class="dash-emergency-grid">
+                <div class="dash-emergency-item"><span class="dash-emergency-label">Ambulance</span><a href="tel:108" class="dash-emergency-num">108</a></div>
+                <div class="dash-emergency-item"><span class="dash-emergency-label">Police</span><a href="tel:100" class="dash-emergency-num">100</a></div>
+                <div class="dash-emergency-item"><span class="dash-emergency-label">Fire</span><a href="tel:101" class="dash-emergency-num">101</a></div>
+                <div class="dash-emergency-item"><span class="dash-emergency-label">Health Helpline</span><a href="tel:104" class="dash-emergency-num">104</a></div>
+            </div>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:1.2rem;">
             <div class="dash-disclaimer">
                 <p><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> Health information for awareness only. Always consult a qualified healthcare professional for medical advice.</p>
             </div>
@@ -995,9 +1050,9 @@
     <span>You are offline. Some features may not work.</span>
 </div>
 
-<script src="config.js?v=35"></script>
-<script src="auth.js?v=35"></script>
-<script src="app.js?v=35"></script>
+<script src="config.js?v=36"></script>
+<script src="auth.js?v=36"></script>
+<script src="app.js?v=36"></script>
 <script>
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").then((reg) => {

@@ -93,7 +93,7 @@ async function authFetch(path, options = {}) {
 // ============================================================
 const VIEW_TITLES = {
     dashboard: "Dashboard",
-    chatbot: "AI Chat",
+    chatbot: "Elix",
     medicines: "Medicines",
     conditions: "Conditions",
     interactions: "Interactions",
@@ -937,6 +937,23 @@ async function searchPharmacies() {
 // DASHBOARD
 // ============================================================
 async function loadDashboardStats() {
+    const h = new Date().getHours();
+    const g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
+    document.getElementById("dash-greeting").textContent = g + "! 👋";
+
+    const tips = [
+        { icon: "fa-droplet", title: "Stay Hydrated", text: "Drink at least 8 glasses of water daily. Staying hydrated helps your body function properly and improves energy levels." },
+        { icon: "fa-bed", title: "Get Enough Sleep", text: "Aim for 7-9 hours of quality sleep each night. Good sleep is essential for memory, immunity, and overall health." },
+        { icon: "fa-person-walking", title: "Move More", text: "Walk at least 30 minutes a day. Regular physical activity reduces the risk of heart disease, diabetes, and stress." },
+        { icon: "fa-apple-whole", title: "Eat Balanced Meals", text: "Include fruits, vegetables, whole grains, and protein in every meal. A balanced diet strengthens your immune system." },
+        { icon: "fa-brain", title: "Manage Stress", text: "Practice deep breathing, meditation, or yoga. Chronic stress can weaken immunity and cause various health issues." },
+        { icon: "fa-hand-holding-medical", title: "Wash Your Hands", text: "Wash hands frequently with soap for 20 seconds. This simple habit prevents the spread of infections significantly." },
+    ];
+    const tip = tips[new Date().getDay() % tips.length];
+    document.getElementById("dash-health-tip").innerHTML = `
+        <div class="dash-tip-icon"><i class="fa-solid ${tip.icon}"></i></div>
+        <div><strong>${tip.title}</strong><p>${tip.text}</p></div>`;
+
     try {
         const res = await authFetch("/medicines");
         const meds = await res.json();
@@ -945,6 +962,24 @@ async function loadDashboardStats() {
         meds.forEach(m => (m.uses || []).forEach(u => conditions.add(u)));
         document.getElementById("dash-condition-count").textContent = conditions.size || 0;
     } catch (e) { console.error(e); }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            try {
+                const { latitude: lat, longitude: lon } = pos.coords;
+                const hospRes = await authFetch(`/emergency/hospitals/nearby`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ lat, lng: lon })
+                });
+                if (hospRes.ok) {
+                    const data = await hospRes.json();
+                    document.getElementById("dash-hospital-count").textContent = data.count || 0;
+                }
+            } catch (e) { document.getElementById("dash-hospital-count").textContent = "~"; }
+        }, () => { document.getElementById("dash-hospital-count").textContent = "~"; }, { timeout: 5000 });
+    }
+
     if (isLoggedIn()) {
         try {
             const res = await authFetch("/profile/stats");

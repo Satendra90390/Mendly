@@ -1,24 +1,6 @@
-const CACHE_NAME = "mendly-v6";
-const STATIC_CACHE = "mendly-static-v6";
-
-const STATIC_ASSETS = [
-  "./",
-  "./index.html",
-  "./styles.css",
-  "./config.js",
-  "./auth.js",
-  "./app.js",
-  "./manifest.json",
-  "./logo.svg",
-  "./logo-192.png",
-  "./logo-512.png",
-  "./favicon.svg"
-];
+const CACHE_NAME = "mendly-v7";
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => cache.addAll(STATIC_ASSETS)).catch(() => {})
-  );
   self.skipWaiting();
 });
 
@@ -27,7 +9,7 @@ self.addEventListener("activate", (e) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((k) => k !== CACHE_NAME && k !== STATIC_CACHE)
+          .filter((k) => k !== CACHE_NAME)
           .map((k) => caches.delete(k))
       )
     )
@@ -47,15 +29,6 @@ self.addEventListener("fetch", (e) => {
   if (url.pathname.startsWith("/api/")) return;
   if (e.request.method !== "GET") return;
 
-  const isStaticAsset =
-    url.pathname.endsWith(".css") ||
-    url.pathname.endsWith(".js") ||
-    url.pathname.endsWith(".svg") ||
-    url.pathname.endsWith(".png") ||
-    url.pathname.endsWith(".ico") ||
-    url.pathname.endsWith(".woff2") ||
-    url.pathname.endsWith(".woff");
-
   const isHTML =
     e.request.headers.get("accept")?.includes("text/html") ||
     url.pathname === "/" ||
@@ -71,39 +44,24 @@ self.addEventListener("fetch", (e) => {
           }
           return res;
         })
-        .catch(() => caches.match(e.request).then((cached) => cached || caches.match("./index.html")))
-    );
-    return;
-  }
-
-  if (isStaticAsset) {
-    e.respondWith(
-      caches.match(e.request).then((cached) => {
-        const fetchPromise = fetch(e.request)
-          .then((res) => {
-            if (res && res.status === 200 && res.type === "basic") {
-              const clone = res.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-            }
-            return res;
-          })
-          .catch(() => cached);
-
-        return cached || fetchPromise;
-      })
+        .catch(() => caches.match(e.request))
     );
     return;
   }
 
   e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        if (res && res.status === 200 && res.type === "basic") {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-        }
-        return res;
-      })
-      .catch(() => caches.match(e.request).then((cached) => cached || caches.match("./index.html")))
+    caches.match(e.request).then((cached) => {
+      const fetchPromise = fetch(e.request)
+        .then((res) => {
+          if (res && res.status === 200 && (res.type === "basic" || res.type === "opaque")) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+          }
+          return res;
+        })
+        .catch(() => cached);
+
+      return cached || fetchPromise;
+    })
   );
 });
