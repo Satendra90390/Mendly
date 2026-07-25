@@ -772,6 +772,24 @@ html.light .detail-section p { color: rgba(71,85,105,0.6); }
 .save-reminder { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 50; width: 90%; max-width: 500px; border-radius: 1.5rem; padding: 1rem; background: rgba(26,35,50,0.92); backdrop-filter: blur(24px); border: 1px solid rgba(20,184,166,0.2); box-shadow: 0 0 40px rgba(20,184,166,0.1); animation: fade-up 0.4s ease; }
 html.light .save-reminder { background: rgba(255,255,255,0.92); }
 
+/* ---- FOCUS VISIBLE ---- */
+:focus-visible { outline: 2px solid #14B8A6; outline-offset: 2px; border-radius: 0.375rem; }
+button:focus-visible, a:focus-visible { outline: 2px solid #14B8A6; outline-offset: 2px; }
+input:focus-visible, textarea:focus-visible { outline: none; }
+
+/* ---- TOUCH TARGETS ---- */
+.mob-link, .mobile-nav-item, .pill-nav-item, .nav-link { min-height: 44px; min-width: 44px; display: flex; align-items: center; }
+
+/* ---- SKELETON LOADERS ---- */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.skeleton { background: rgba(255,255,255,0.04); border-radius: 0.5rem; animation: skeleton-pulse 1.5s ease-in-out infinite; }
+html.light .skeleton { background: rgba(0,0,0,0.04); }
+.skeleton-text { height: 0.8rem; border-radius: 0.25rem; margin-bottom: 0.5rem; }
+.skeleton-text:last-child { width: 60%; }
+
 /* ---- SCROLL ANIMATIONS ---- */
 .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
 .status-dot.online { background: #10B981; box-shadow: 0 0 6px rgba(16,185,129,0.4); }

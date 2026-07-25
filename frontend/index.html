@@ -260,14 +260,30 @@ LANDING PAGE
   </section>
 
   <!-- FOOTER -->
-  <footer id="footer" style="padding:2rem 1rem;border-top:1px solid rgba(255,255,255,0.04);text-align:center;">
-    <div style="max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-      <div style="display:flex;align-items:center;gap:0.5rem;">
-        <span style="width:1.75rem;height:1.75rem;border-radius:0.5rem;background:linear-gradient(135deg,#14B8A6,#0D9488);display:flex;align-items:center;justify-content:center;font-size:0.85rem;">💊</span>
-        <span class="gradient-text" style="font-weight:700;font-size:1rem;">Mendly</span>
+  <footer id="footer" style="padding:3rem 1rem 2rem;border-top:1px solid rgba(255,255,255,0.04);text-align:center;">
+    <div style="max-width:1000px;margin:0 auto;">
+      <!-- Trust badges -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:2rem;">
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:rgba(148,163,184,0.5);"><i class="fa-solid fa-user-doctor" style="color:#14B8A6;"></i> Doctor-reviewed</div>
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:rgba(148,163,184,0.5);"><i class="fa-solid fa-lock" style="color:#14B8A6;"></i> Encrypted</div>
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:rgba(148,163,184,0.5);"><i class="fa-solid fa-database" style="color:#14B8A6;"></i> FDA & NHS Data</div>
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:rgba(148,163,184,0.5);"><i class="fa-solid fa-gift" style="color:#14B8A6;"></i> Free to start</div>
       </div>
-      <p style="font-size:0.8rem;color:rgba(148,163,184,0.4);">Providing informational guidance only. Not a substitute for professional medical advice.</p>
-      <p style="font-size:0.75rem;color:rgba(148,163,184,0.3);">&copy; 2025 Mendly</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span style="width:1.75rem;height:1.75rem;border-radius:0.5rem;background:linear-gradient(135deg,#14B8A6,#0D9488);display:flex;align-items:center;justify-content:center;font-size:0.85rem;">💊</span>
+          <span class="gradient-text" style="font-weight:700;font-size:1rem;">Mendly</span>
+        </div>
+        <div style="display:flex;gap:1.5rem;">
+          <a href="#features" style="font-size:0.8rem;color:rgba(148,163,184,0.5);text-decoration:none;">Features</a>
+          <a href="#how-it-works" style="font-size:0.8rem;color:rgba(148,163,184,0.5);text-decoration:none;">How It Works</a>
+          <a href="#about" style="font-size:0.8rem;color:rgba(148,163,184,0.5);text-decoration:none;">About</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <p style="font-size:0.75rem;color:rgba(148,163,184,0.35);">Providing informational guidance only. Not a substitute for professional medical advice.</p>
+          <p style="font-size:0.7rem;color:rgba(148,163,184,0.25);">&copy; 2025 Mendly. All rights reserved.</p>
+        </div>
+      </div>
     </div>
   </footer>
 
@@ -533,17 +549,12 @@ APP SHELL
     <div class="pill-nav topnav-pill" style="display:none;" id="topnav-pill">
       <div class="topnav-pill-track" style="display:flex;align-items:center;gap:2px;position:relative;">
         <div class="topnav-pill-indicator" style="position:absolute;bottom:-2px;left:0;height:2px;background:linear-gradient(90deg,#14B8A6,#5EEAD4);border-radius:1px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);"></div>
-        <span class="pill-nav-item topnav-link active" id="nav-dashboard" onclick="switchView('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</span>
+        <span class="pill-nav-item topnav-link" id="nav-dashboard" onclick="switchView('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</span>
         <span class="pill-nav-item topnav-link" id="nav-chatbot" onclick="switchView('chatbot')"><i class="fa-solid fa-robot"></i> Elix</span>
         <span class="pill-nav-item topnav-link" id="nav-medicines" onclick="switchView('medicines')"><i class="fa-solid fa-pills"></i> Medicines</span>
-        <span class="pill-nav-item topnav-link" id="nav-conditions" onclick="switchView('conditions')"><i class="fa-solid fa-stethoscope"></i> Conditions</span>
-        <span class="pill-nav-item topnav-link" id="nav-interactions" onclick="switchView('interactions')"><i class="fa-solid fa-flask-vial"></i> Interactions</span>
-        <span class="pill-nav-item topnav-link" id="nav-hospitals" onclick="switchView('hospitals')"><i class="fa-solid fa-hospital"></i> Hospitals</span>
-        <span class="pill-nav-item topnav-link" id="nav-pharmacies" onclick="switchView('pharmacies')"><i class="fa-solid fa-truck-medical"></i> Pharmacies</span>
+        <span class="pill-nav-item topnav-link" id="nav-interactions" onclick="switchView('interactions')"><i class="fa-solid fa-flask-vial"></i> Drug Check</span>
+        <span class="pill-nav-item topnav-link" id="nav-hospitals" onclick="switchView('hospitals')"><i class="fa-solid fa-hospital"></i> Nearby</span>
         <span class="pill-nav-item topnav-link" id="nav-emergency" onclick="switchView('emergency')"><i class="fa-solid fa-triangle-exclamation"></i> Emergency</span>
-        <span class="pill-nav-item topnav-link" id="nav-saved" onclick="switchView('saved')"><i class="fa-solid fa-bookmark"></i> Saved</span>
-        <span class="pill-nav-item topnav-link" id="nav-activity" onclick="switchView('activity')"><i class="fa-solid fa-clock-rotate-left"></i> Activity</span>
-        <span class="pill-nav-item topnav-link" id="nav-account" onclick="switchView('account')"><i class="fa-solid fa-user"></i> Account</span>
       </div>
     </div>
 
@@ -555,11 +566,13 @@ APP SHELL
           <span id="sidebar-avatar" style="width:1.75rem;height:1.75rem;border-radius:0.5rem;background:linear-gradient(135deg,#14B8A6,#0D9488);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#fff;font-weight:700;">M</span>
           <span id="sidebar-username" style="font-weight:600;font-size:0.85rem;">User</span>
         </button>
-        <div id="user-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);right:0;min-width:180px;border-radius:0.75rem;background:rgba(26,35,50,0.95);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);box-shadow:var(--shadow-glass-hover);padding:0.25rem;z-index:60;">
+        <div id="user-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);right:0;min-width:200px;border-radius:0.75rem;background:rgba(26,35,50,0.95);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);box-shadow:var(--shadow-glass-hover);padding:0.25rem;z-index:60;">
+          <div class="mob-link" onclick="switchView('conditions')"><i class="fa-solid fa-stethoscope"></i> Conditions</div>
+          <div class="mob-link" onclick="switchView('pharmacies')"><i class="fa-solid fa-truck-medical"></i> Pharmacies</div>
           <div class="mob-link" onclick="switchView('saved')"><i class="fa-solid fa-bookmark"></i> Saved</div>
           <div class="mob-link" onclick="switchView('activity')"><i class="fa-solid fa-clock-rotate-left"></i> Activity</div>
-          <div class="mob-link" onclick="switchView('account')"><i class="fa-solid fa-user"></i> Account</div>
           <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.25rem 0;"></div>
+          <div class="mob-link" onclick="switchView('account')"><i class="fa-solid fa-user"></i> Account</div>
           <div class="mob-link" onclick="handleLogout()" style="color:#EF4444;"><i class="fa-solid fa-right-from-bracket"></i> Log out</div>
         </div>
       </div>
@@ -580,36 +593,60 @@ APP SHELL
 
     <!-- VIEW: Dashboard -->
     <section id="view-dashboard" class="view-section active">
+      <!-- Greeting + Health Tip -->
       <div class="glass-card" style="padding:1.5rem;margin-bottom:1.25rem;">
-        <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:0.25rem;" id="topbar-title">Dashboard</h2>
-        <p style="font-size:0.85rem;color:rgba(148,163,184,0.5);">Your medical overview</p>
-      </div>
-      <div class="glass-card" style="padding:1.25rem;margin-bottom:1rem;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-          <h3 id="dash-greeting" style="font-weight:700;font-size:1.1rem;">Good Morning! 👋</h3>
-          <span id="chat-status-badge" class="chat-status-badge" style="font-size:0.75rem;color:rgba(148,163,184,0.5);"><span class="status-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(148,163,184,0.3);margin-right:4px;"></span> Checking...</span>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+          <div>
+            <h2 id="dash-greeting" style="font-weight:800;font-size:1.4rem;margin-bottom:0.15rem;">Good Morning!</h2>
+            <p style="font-size:0.85rem;color:var(--text-muted);">Here's your health overview for today.</p>
+          </div>
+          <span id="chat-status-badge" class="chat-status-badge" style="font-size:0.75rem;color:var(--text-muted);display:flex;align-items:center;gap:0.35rem;"><span class="status-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(148,163,184,0.3);margin-right:2px;"></span> Checking...</span>
         </div>
-        <div id="dash-health-tip" style="margin-top:0.75rem;padding:0.75rem;background:rgba(20,184,166,0.04);border:1px solid rgba(20,184,166,0.08);border-radius:0.75rem;font-size:0.85rem;line-height:1.6;display:flex;align-items:center;gap:0.75rem;">
-          <div style="width:2rem;height:2rem;border-radius:0.5rem;background:rgba(20,184,166,0.1);display:flex;align-items:center;justify-content:center;color:#14B8A6;flex-shrink:0;"><i class="fa-solid fa-droplet"></i></div>
-          <div><strong>Health Tip</strong><p style="color:rgba(148,163,184,0.6);margin-top:2px;">Loading...</p></div>
+        <div id="dash-health-tip" style="margin-top:1rem;padding:1rem;background:rgba(20,184,166,0.04);border:1px solid rgba(20,184,166,0.08);border-radius:0.875rem;font-size:0.85rem;line-height:1.6;display:flex;align-items:center;gap:0.75rem;">
+          <div class="dash-tip-icon"><i class="fa-solid fa-droplet"></i></div>
+          <div><strong>Health Tip</strong><p style="color:var(--text-muted);margin-top:2px;">Loading...</p></div>
         </div>
       </div>
-      <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-bottom:1.25rem;" id="dashboard-stats">
-        <div class="stat-card glass-card"><div class="stat-number" id="dash-medicine-count">-</div><div class="stat-label">Medicines</div></div>
-        <div class="stat-card glass-card"><div class="stat-number" id="dash-condition-count">-</div><div class="stat-label">Conditions</div></div>
-        <div class="stat-card glass-card"><div class="stat-number" id="dash-hospital-count">-</div><div class="stat-label">Hospitals</div></div>
-        <div class="stat-card glass-card"><div class="stat-number" id="dash-pharmacy-count">-</div><div class="stat-label">Pharmacies</div></div>
-        <div class="stat-card glass-card"><div class="stat-number" id="dash-chat-count">-</div><div class="stat-label">Messages</div></div>
+
+      <!-- Stat Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.75rem;margin-bottom:1.25rem;" id="dashboard-stats">
+        <div class="stat-card glass-card" style="padding:1.25rem;text-align:center;">
+          <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:rgba(20,184,166,0.1);display:flex;align-items:center;justify-content:center;color:#14B8A6;font-size:1rem;margin:0 auto 0.5rem;"><i class="fa-solid fa-pills"></i></div>
+          <div class="stat-number" id="dash-medicine-count" style="font-size:1.5rem;font-weight:800;color:#14B8A6;">-</div>
+          <div class="stat-label" style="font-size:0.75rem;color:var(--text-muted);">Medicines</div>
+        </div>
+        <div class="stat-card glass-card" style="padding:1.25rem;text-align:center;">
+          <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:rgba(236,72,153,0.1);display:flex;align-items:center;justify-content:center;color:#EC4899;font-size:1rem;margin:0 auto 0.5rem;"><i class="fa-solid fa-stethoscope"></i></div>
+          <div class="stat-number" id="dash-condition-count" style="font-size:1.5rem;font-weight:800;color:#EC4899;">-</div>
+          <div class="stat-label" style="font-size:0.75rem;color:var(--text-muted);">Conditions</div>
+        </div>
+        <div class="stat-card glass-card" style="padding:1.25rem;text-align:center;">
+          <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;color:#10B981;font-size:1rem;margin:0 auto 0.5rem;"><i class="fa-solid fa-hospital"></i></div>
+          <div class="stat-number" id="dash-hospital-count" style="font-size:1.5rem;font-weight:800;color:#10B981;">-</div>
+          <div class="stat-label" style="font-size:0.75rem;color:var(--text-muted);">Hospitals</div>
+        </div>
+        <div class="stat-card glass-card" style="padding:1.25rem;text-align:center;">
+          <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;color:#8B5CF6;font-size:1rem;margin:0 auto 0.5rem;"><i class="fa-solid fa-truck-medical"></i></div>
+          <div class="stat-number" id="dash-pharmacy-count" style="font-size:1.5rem;font-weight:800;color:#8B5CF6;">-</div>
+          <div class="stat-label" style="font-size:0.75rem;color:var(--text-muted);">Pharmacies</div>
+        </div>
+        <div class="stat-card glass-card" style="padding:1.25rem;text-align:center;">
+          <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;color:#F59E0B;font-size:1rem;margin:0 auto 0.5rem;"><i class="fa-solid fa-comment-dots"></i></div>
+          <div class="stat-number" id="dash-chat-count" style="font-size:1.5rem;font-weight:800;color:#F59E0B;">-</div>
+          <div class="stat-label" style="font-size:0.75rem;color:var(--text-muted);">Messages</div>
+        </div>
       </div>
-      <div class="glass-card" style="padding:1.5rem;">
-        <h3 style="font-weight:600;font-size:1rem;margin-bottom:0.75rem;">Quick Actions</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-          <button onclick="switchView('chatbot')" class="btn btn-sm btn-primary"><i class="fa-solid fa-robot"></i> Ask Elix</button>
-          <button onclick="switchView('medicines')" class="btn btn-sm btn-secondary"><i class="fa-solid fa-pills"></i> Browse Medicines</button>
-          <button onclick="switchView('interactions')" class="btn btn-sm btn-secondary"><i class="fa-solid fa-flask-vial"></i> Check Interactions</button>
-          <button onclick="switchView('hospitals')" class="btn btn-sm btn-secondary"><i class="fa-solid fa-hospital"></i> Nearby Hospitals</button>
-          <button onclick="switchView('pharmacies')" class="btn btn-sm btn-secondary"><i class="fa-solid fa-truck-medical"></i> Nearby Pharmacies</button>
-          <button onclick="switchView('emergency')" class="btn btn-sm btn-secondary" style="color:#EF4444;border-color:rgba(239,68,68,0.3);"><i class="fa-solid fa-triangle-exclamation"></i> Emergency</button>
+
+      <!-- Quick Actions -->
+      <div class="glass-card" style="padding:1.25rem;">
+        <h3 style="font-weight:700;font-size:1rem;margin-bottom:0.75rem;">Quick Actions</h3>
+        <div style="display:flex;gap:0.5rem;overflow-x:auto;padding-bottom:0.25rem;scrollbar-width:none;">
+          <button onclick="switchView('chatbot')" class="btn btn-primary" style="white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-robot"></i> Ask Elix</button>
+          <button onclick="switchView('medicines')" class="btn btn-secondary" style="white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-pills"></i> Medicines</button>
+          <button onclick="switchView('interactions')" class="btn btn-secondary" style="white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-flask-vial"></i> Drug Check</button>
+          <button onclick="switchView('hospitals')" class="btn btn-secondary" style="white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-hospital"></i> Nearby</button>
+          <button onclick="switchView('pharmacies')" class="btn btn-secondary" style="white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-truck-medical"></i> Pharmacies</button>
+          <button onclick="switchView('emergency')" class="btn btn-secondary" style="white-space:nowrap;flex-shrink:0;color:#EF4444;border-color:rgba(239,68,68,0.2);"><i class="fa-solid fa-triangle-exclamation"></i> Emergency</button>
         </div>
       </div>
     </section>
@@ -908,13 +945,8 @@ MOBILE BOTTOM NAV
   <div class="mobile-nav-item active" id="mob-bottom-dashboard" onclick="switchView('dashboard')"><i class="fa-solid fa-chart-pie"></i><span>Home</span></div>
   <div class="mobile-nav-item" id="mob-bottom-chatbot" onclick="switchView('chatbot')"><i class="fa-solid fa-robot"></i><span>Elix</span></div>
   <div class="mobile-nav-item" id="mob-bottom-medicines" onclick="switchView('medicines')"><i class="fa-solid fa-pills"></i><span>Meds</span></div>
-  <div class="mobile-nav-item" id="mob-bottom-conditions" onclick="switchView('conditions')"><i class="fa-solid fa-stethoscope"></i><span>Conditions</span></div>
-  <div class="mobile-nav-item" id="mob-bottom-interactions" onclick="switchView('interactions')"><i class="fa-solid fa-flask-vial"></i><span>Drug Check</span></div>
-  <div class="mobile-nav-item" id="mob-bottom-hospitals" onclick="switchView('hospitals')"><i class="fa-solid fa-hospital"></i><span>Hospitals</span></div>
-  <div class="mobile-nav-item" id="mob-bottom-pharmacies" onclick="switchView('pharmacies')"><i class="fa-solid fa-truck-medical"></i><span>Pharmacies</span></div>
-  <div class="mobile-nav-item" id="mob-bottom-saved" onclick="switchView('saved')"><i class="fa-solid fa-bookmark"></i><span>Saved</span></div>
-  <div class="mobile-nav-item" id="mob-bottom-activity" onclick="switchView('activity')"><i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span></div>
-  <div class="mobile-nav-item" id="mob-bottom-account" onclick="switchView('account')"><i class="fa-solid fa-user"></i><span>Account</span></div>
+  <div class="mobile-nav-item" id="mob-bottom-hospitals" onclick="switchView('hospitals')"><i class="fa-solid fa-hospital"></i><span>Nearby</span></div>
+  <div class="mobile-nav-item" onclick="toggleMobileMenu()"><i class="fa-solid fa-ellipsis"></i><span>More</span></div>
 </nav>
 
 <!-- ============================================================

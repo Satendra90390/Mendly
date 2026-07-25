@@ -557,15 +557,17 @@ function renderWelcomeChat() {
             <div class="chat-bubble bot">
                 <span class="chat-orb"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                 <div class="bubble-content">
-                    <div class="bubble-text"><strong>Welcome to Elix! 👋</strong><br>
-                    I can help you with disease information, medicine details, drug interactions, and finding nearby hospitals.<br><br>
-                    ${remaining > 0 ? `<em>You have <strong>${remaining} free message${remaining > 1 ? "s" : ""}</strong> — sign up for unlimited access.</em><br><br>` : `<em>Sign up free to chat with Elix.</em><br><br>`}
-                    <strong>Try asking:</strong><br>
-                    "What are the symptoms of diabetes?"<br>
-                    "Tell me about Atorvastatin"<br>
-                    "How to treat a migraine?"</div>
+                    <div class="bubble-text"><strong>Welcome to Elix</strong><br>
+                    Your AI health assistant. I can help with disease information, medicine details, drug interactions, and nearby hospitals.<br><br>
+                    ${remaining > 0 ? `<em>You have <strong>${remaining} free message${remaining > 1 ? "s" : ""}</strong> — sign up for unlimited access.</em><br><br>` : `<em>Sign up free to continue chatting.</em><br><br>`}
+                    <strong>Try asking:</strong></div>
                 </div>
             </div>
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;padding:0.5rem 0 0.5rem 2.5rem;">
+            <button onclick="suggestQuery('What are the symptoms of diabetes?')" class="btn btn-sm btn-ghost" style="font-size:0.75rem;border:1px solid rgba(255,255,255,0.06);white-space:nowrap;">What are the symptoms of diabetes?</button>
+            <button onclick="suggestQuery('Tell me about Atorvastatin')" class="btn btn-sm btn-ghost" style="font-size:0.75rem;border:1px solid rgba(255,255,255,0.06);white-space:nowrap;">Tell me about Atorvastatin</button>
+            <button onclick="suggestQuery('How to treat a migraine?')" class="btn btn-sm btn-ghost" style="font-size:0.75rem;border:1px solid rgba(255,255,255,0.06);white-space:nowrap;">How to treat a migraine?</button>
         </div>`;
 }
 
@@ -1380,7 +1382,7 @@ async function searchPharmacies() {
 async function loadDashboardStats() {
     const h = new Date().getHours();
     const g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
-    document.getElementById("dash-greeting").textContent = g + "! 👋";
+    document.getElementById("dash-greeting").textContent = g + "!";
 
     const tips = [
         { icon: "fa-droplet", title: "Stay Hydrated", text: "Drink at least 8 glasses of water daily. Staying hydrated helps your body function properly and improves energy levels." },
