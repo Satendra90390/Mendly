@@ -1001,8 +1001,8 @@ async function loadEmergencyContacts(country) {
         const res = await fetch(`${API_BASE}/emergency/contacts?country=${encodeURIComponent(country)}`);
         const data = await res.json();
         const contacts = Array.isArray(data) ? data[0] : data;
-        if (!contacts) { container.innerHTML = `<p style="color:rgba(148,163,184,0.4);font-size:0.85rem;">No emergency data available.</p>`; return; }
         const container = document.getElementById("emergency-contacts");
+        if (!contacts) { container.innerHTML = `<p style="color:rgba(148,163,184,0.4);font-size:0.85rem;">No emergency data available.</p>`; return; }
         const items = [
             ["Ambulance", contacts.ambulance],
             ["Police", contacts.police],

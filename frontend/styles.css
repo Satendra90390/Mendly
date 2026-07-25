@@ -37,6 +37,10 @@
 @source "./";
 
 /* ---- BASE ---- */
+:root {
+  --text-muted: rgba(148,163,184,0.5);
+  --primary: #14B8A6;
+}
 *, ::before, ::after { box-sizing: border-box; border-width: 0; }
 html { scroll-behavior: smooth; }
 
@@ -53,6 +57,7 @@ body {
 }
 
 html.light body {
+  --text-muted: rgba(71,85,105,0.5);
   background: var(--color-light-bg);
   color: #0F172A;
   background-image: radial-gradient(ellipse at 50% 0%, rgba(20,184,166,0.04) 0%, transparent 60%);
@@ -678,6 +683,24 @@ html.light .hospital-tag { background: rgba(0,0,0,0.02); border-color: rgba(0,0,
 .hospital-call-btn:hover { background: rgba(20,184,166,0.15); }
 .hospital-directions-btn { background: linear-gradient(135deg,#14B8A6,#0D9488); color: #fff; border: none; }
 .hospital-directions-btn:hover { box-shadow: 0 0 20px rgba(20,184,166,0.3); }
+
+/* ---- PHARMACY CARDS ---- */
+.pharmacy-card-header { display: flex; gap: 0.75rem; margin-bottom: 0.5rem; }
+.pharmacy-card-icon { width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgba(139,92,246,0.1); display: flex; align-items: center; justify-content: center; color: #8B5CF6; font-size: 1rem; flex-shrink: 0; }
+.pharmacy-card-info { flex: 1; min-width: 0; }
+.pharmacy-card-info h4 { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.15rem; }
+.pharmacy-badge-24 { font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; background: rgba(245,158,11,0.1); color: #F59E0B; white-space: nowrap; height: fit-content; }
+.pharmacy-distance { font-size: 0.78rem; color: rgba(148,163,184,0.5); margin: 0.25rem 0; }
+html.light .pharmacy-distance { color: rgba(71,85,105,0.5); }
+.pharmacy-services { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.35rem 0; }
+.pharmacy-service-tag { font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); color: rgba(148,163,184,0.5); display: inline-flex; align-items: center; gap: 0.25rem; }
+html.light .pharmacy-service-tag { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.04); color: rgba(71,85,105,0.5); }
+.pharmacy-card-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.pharmacy-call-btn, .pharmacy-directions-btn { padding: 0.4rem 0.8rem; font-size: 0.78rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer; transition: all 0.25s; text-decoration: none; }
+.pharmacy-call-btn { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.15); color: #8B5CF6; }
+.pharmacy-call-btn:hover { background: rgba(139,92,246,0.15); }
+.pharmacy-directions-btn { background: linear-gradient(135deg,#8B5CF6,#6D28D9); color: #fff; border: none; }
+.pharmacy-directions-btn:hover { box-shadow: 0 0 20px rgba(139,92,246,0.3); }
 .phone { font-size: 0.8rem; color: rgba(148,163,184,0.5); margin: 0.15rem 0; display: flex; align-items: center; gap: 0.3rem; }
 
 /* ---- CHAT ---- */
