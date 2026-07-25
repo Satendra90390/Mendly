@@ -51,8 +51,8 @@ LANDING PAGE
       </div>
       <div style="display:flex;align-items:center;gap:0.5rem;">
         <button onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"><i class="fa-regular fa-moon"></i></button>
-        <button onclick="openAuthModal('login')" class="btn btn-sm btn-secondary">Log in</button>
-        <button onclick="openAuthModal('signup')" class="btn btn-sm btn-primary">Sign up free</button>
+        <button id="landing-login-btn" onclick="openAuthModal('login')" class="btn btn-sm btn-secondary">Log in</button>
+        <button id="landing-signup-btn" onclick="openAuthModal('signup')" class="btn btn-sm btn-primary">Sign up free</button>
       </div>
     </div>
   </nav>
@@ -560,7 +560,7 @@ APP SHELL
           <div class="mob-link" onclick="switchView('activity')"><i class="fa-solid fa-clock-rotate-left"></i> Activity</div>
           <div class="mob-link" onclick="switchView('account')"><i class="fa-solid fa-user"></i> Account</div>
           <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.25rem 0;"></div>
-          <div class="mob-link" onclick="logout()" style="color:#EF4444;"><i class="fa-solid fa-right-from-bracket"></i> Log out</div>
+          <div class="mob-link" onclick="handleLogout()" style="color:#EF4444;"><i class="fa-solid fa-right-from-bracket"></i> Log out</div>
         </div>
       </div>
       <button onclick="openAuthModal('login')" id="login-btn-top" class="btn btn-sm btn-secondary" style="display:none;">Log in</button>
@@ -920,20 +920,42 @@ MOBILE BOTTOM NAV
 <!-- ============================================================
 SCRIPTS
 ============================================================ -->
-<script>
-// Mendly global configuration for auth
-window.MENDLY_CONFIG = {
-  API_KEYS: {
-    googleMaps: "" // set via env or build
-  },
-  API_BASE: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:3000/api'
-    : 'https://mendly-api.onrender.com/api'
-};
-const API_BASE = window.MENDLY_CONFIG.API_BASE;
-</script>
 <script src="config.js"></script>
 <script src="auth.js"></script>
 <script src="app.js"></script>
+<script>
+function toggleUserMenu() {
+  const dd = document.getElementById("user-dropdown");
+  if (dd) dd.style.display = dd.style.display === "block" ? "none" : "block";
+}
+document.addEventListener("click", function(e) {
+  const dd = document.getElementById("user-dropdown");
+  const btn = document.getElementById("user-menu-btn");
+  if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) dd.style.display = "none";
+});
+
+async function saveProfile() {
+  const name = document.getElementById("profile-name")?.value.trim();
+  const dob = document.getElementById("profile-dob")?.value;
+  const blood = document.getElementById("profile-blood")?.value;
+  const msgEl = document.getElementById("profile-update-msg");
+  const btn = document.getElementById("profile-save-btn");
+  if (!name) { if(msgEl){msgEl.textContent="Name is required";msgEl.style.display="block";msgEl.className="auth-error"} return; }
+  btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+  try {
+    const res = await authFetch("/profile", { method: "PUT", body: JSON.stringify({ name, date_of_birth: dob, blood_type: blood }) });
+    const data = await res.json();
+    if (!res.ok) { if(msgEl){msgEl.textContent=data.detail||"Failed";msgEl.style.display="block";msgEl.className="auth-error"} return; }
+    if(msgEl){msgEl.textContent="Profile updated!";msgEl.style.display="block";msgEl.className="auth-success"}
+    const user = getStoredUser();
+    if (user) { user.name = name; localStorage.setItem("mendly_user", JSON.stringify(user)); }
+    setTimeout(() => { if(msgEl)msgEl.style.display="none"; }, 3000);
+  } catch(e) {
+    if(msgEl){msgEl.textContent="Connection error";msgEl.style.display="block";msgEl.className="auth-error"}
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Changes';
+  }
+}
+</script>
 </body>
 </html>
