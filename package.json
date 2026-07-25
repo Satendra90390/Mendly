@@ -4,6 +4,19 @@
   "description": "AI-powered medicine and health information platform.",
   "private": true,
   "scripts": {
-    "build": "echo 'Static site — no build needed'"
+    "dev": "npx @tailwindcss/cli -i ./frontend/styles.css -o ./frontend/styles.build.css --watch",
+    "build": "npx @tailwindcss/cli -i ./frontend/styles.css -o ./frontend/styles.build.css --minify",
+    "build:prod": "npm run build",
+    "preview": "npx serve ./frontend"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.5.4",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "^1.26.0",
+    "postcss": "^8.5.23",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3"
   }
 }

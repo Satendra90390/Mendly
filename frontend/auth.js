@@ -151,7 +151,7 @@ function createTurnstileWidget(widgetId) {
             callback: (token) => { el.dataset.token = token; },
             "error-callback": () => { el.dataset.token = ""; },
             "expired-callback": () => { el.dataset.token = ""; },
-            theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light",
+            theme: document.documentElement.classList.contains("light") ? "light" : "dark",
             size: "normal",
         });
     } catch (e) { console.warn("Turnstile widget creation failed:", e); }

@@ -1851,33 +1851,70 @@ async function clearActivity() {
 // THEME (light / dark / system)
 // ============================================================
 function initTheme() {
-    setTheme(localStorage.getItem("theme") || "dark");
-}
-
-function setTheme(theme) {
-    if (theme !== "dark" && theme !== "light") theme = "dark";
-    document.documentElement.setAttribute("data-theme", theme);
+    const saved = localStorage.getItem("theme");
+    const theme = (saved === "light" || saved === "dark") ? saved : "dark";
+    document.documentElement.classList.toggle("light", theme === "light");
     localStorage.setItem("theme", theme);
-    updateThemeButtons(theme);
-}
-
-function updateThemeButtons(theme) {
-    const isDark = theme === "dark";
-    const iconClass = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
-    const title = isDark ? "Switch to light mode" : "Switch to dark mode";
-
-    document.querySelectorAll(".theme-toggle-btn, .landing-sidebar-theme, .mobile-dropdown-theme").forEach(btn => {
-        const icon = btn.querySelector("i");
-        const lbl = btn.querySelector("span");
-        if (icon) icon.className = iconClass;
-        if (lbl) lbl.textContent = isDark ? "Light" : "Dark";
-        btn.title = title;
-    });
+    updateThemeIcons(theme);
 }
 
 function toggleTheme() {
-    const current = localStorage.getItem("theme") || "dark";
-    setTheme(current === "dark" ? "light" : "dark");
+    const isLight = document.documentElement.classList.contains("light");
+    const theme = isLight ? "dark" : "light";
+    document.documentElement.classList.toggle("light", theme === "light");
+    localStorage.setItem("theme", theme);
+    updateThemeIcons(theme);
+}
+
+function updateThemeIcons(theme) {
+    const isDark = theme === "dark";
+    const icon = isDark ? "fa-moon" : "fa-sun";
+    document.querySelectorAll(".theme-toggle .fa-moon, .theme-toggle .fa-sun").forEach(el => {
+        el.className = `fa-solid ${icon}`;
+    });
+    document.querySelectorAll(".mobile-dropdown-theme i, .landing-sidebar-theme i").forEach(el => {
+        el.className = `fa-solid ${icon}`;
+    });
 }
 
 document.addEventListener("DOMContentLoaded", initTheme);
+
+// ============================================================
+// SCROLL ANIMATION OBSERVER (AOS-style)
+// ============================================================
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.fade-in-view, .fade-in-left, .fade-in-right').forEach(el => {
+        observer.observe(el);
+    });
+}
+
+// Run on load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initScrollAnimations);
+} else {
+    initScrollAnimations();
+}
+
+// Re-run when view switches
+function reinitScrollAnimations() {
+    setTimeout(initScrollAnimations, 100);
+}
+
+// Hook into switchView
+const _origSwitchView = window.switchView;
+if (_origSwitchView) {
+    const _patchedSwitch = function(view) {
+        _origSwitchView(view);
+        setTimeout(initScrollAnimations, 150);
+    };
+    window.switchView = _patchedSwitch;
+}
