@@ -371,13 +371,13 @@ async function handleGuestLogin() {
         try {
             const res = await fetch(`${API_BASE}/auth/guest`, { method: "POST", headers: { "Content-Type": "application/json" } });
             const data = await res.json();
-            if (!res.ok) { alert(data.detail || "Guest login failed."); return; }
+            if (!res.ok) { showToast(data.detail || "Guest login failed.", "error"); return; }
             setSession(data.access_token, data.user);
             enterApp(data.user, false);
             setTimeout(() => { const banner = document.getElementById("guest-banner"); if (banner) banner.style.display = "block"; }, 500);
         } catch (err) {
-            if (!navigator.onLine) alert("You are offline. Please check your internet connection.");
-            else alert("Couldn't reach the server. Please try again.");
+            if (!navigator.onLine) showToast("You are offline. Please check your internet connection.", "error");
+            else showToast("Couldn't reach the server. Please try again.", "error");
         }
         finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-user-secret" style="font-size:18px;color:var(--primary);"></i> <span>Continue as Guest</span>'; } }
     });
@@ -629,7 +629,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (token || authError) window.history.replaceState({}, document.title, window.location.pathname);
 
-    if (authError) { alert(`Social login failed: ${authError}`); return; }
+    if (authError) { showToast(`Social login failed: ${authError}`, "error"); return; }
     if (token) {
         setSession(token, null);
         try { const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }); if (res.ok) { const user = await res.json(); setSession(token, user); enterApp(user); return; } } catch {}

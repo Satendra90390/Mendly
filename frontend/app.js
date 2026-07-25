@@ -476,6 +476,26 @@ function showToast(message, type = "info") {
     }, 3500);
 }
 
+function showConfirm(message) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;animation:fade-in 0.2s ease;";
+        overlay.innerHTML = `
+            <div style="background:var(--color-dark-card,#1E293B);border:1px solid var(--color-dark-border,rgba(255,255,255,0.06));border-radius:1rem;padding:1.5rem;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:scale-in 0.2s ease;">
+                <div style="font-size:2rem;margin-bottom:0.75rem;">⚠️</div>
+                <p style="color:rgba(148,163,184,0.8);font-size:0.9rem;margin-bottom:1.25rem;line-height:1.6;">${escapeHtml(message)}</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;">
+                    <button class="btn btn-sm btn-secondary confirm-cancel" style="flex:1;">Cancel</button>
+                    <button class="btn btn-sm confirm-ok" style="flex:1;color:#fff;background:#EF4444;border:none;">Confirm</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        overlay.querySelector(".confirm-ok").onclick = () => { overlay.remove(); resolve(true); };
+        overlay.querySelector(".confirm-cancel").onclick = () => { overlay.remove(); resolve(false); };
+        overlay.addEventListener("click", (e) => { if (e.target === overlay) { overlay.remove(); resolve(false); } });
+    });
+}
+
 function addTypingIndicator() {
     const container = document.getElementById("chat-messages");
     const wrap = document.createElement("div");
@@ -529,7 +549,7 @@ async function loadChatHistoryFromServer() {
 
 async function clearChat() {
     if (!isLoggedIn()) { openAuthModal("login"); return; }
-    if (!confirm("Clear all chat history? This cannot be undone.")) return;
+    if (!await showConfirm("Clear all chat history? This cannot be undone.")) return;
     try {
         await authFetch("/chat/history", { method: "DELETE" });
     } catch (e) {
@@ -707,7 +727,7 @@ async function saveCurrentMedicine() {
 // ============================================================
 async function searchByCondition() {
     const q = document.getElementById("condition-search").value.trim();
-    if (!q) { alert("Please enter a symptom or condition."); return; }
+    if (!q) { showToast("Please enter a symptom or condition.", "warning"); return; }
     try {
         const res = await authFetch("/medicines/conditions", { method: "POST", body: JSON.stringify({ query: q }) });
         const data = await res.json();
@@ -737,7 +757,7 @@ async function searchByCondition() {
 
 async function searchDiseaseProfiles() {
     const q = document.getElementById("condition-search").value.trim();
-    if (!q) { alert("Please enter a disease name or symptom."); return; }
+    if (!q) { showToast("Please enter a disease name or symptom.", "warning"); return; }
     try {
         const res = await authFetch("/diseases/search", { method: "POST", body: JSON.stringify({ query: q }) });
         const data = await res.json();
@@ -959,7 +979,7 @@ async function saveSearch(queryType, queryValue) {
         if (res.ok) {
             const item = await res.json();
             state.savedSearches.unshift(item);
-            alert(`Saved "${queryValue}" to bookmarks.`);
+            showToast(`Saved "${queryValue}" to bookmarks.`, "success");
             renderSavedSearches();
         }
     } catch (e) { console.error(e); }
@@ -1291,12 +1311,7 @@ function formatPharmacyFromGoogle(details, userLocation) {
 }
 
 function haversineDistance(lat1, lng1, lat2, lng2) {
-    const R = 6371; // km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return Math.round(R * c * 10) / 10;
+    return calculateDistance(lat1, lng1, lat2, lng2);
 }
 
 function renderPharmacies(pharmacies, emptyMessage = "No pharmacies found.") {
@@ -1640,9 +1655,9 @@ async function deleteAccount() {
         if (landingHero) landingHero.style.display = "";
         if (landingFooter) landingFooter.style.display = "";
         goToStep("login");
-        alert("Your account has been permanently deleted.");
+        showToast("Your account has been permanently deleted.", "success");
     } catch (e) {
-        alert("Failed to delete account. Please try again.");
+        showToast("Failed to delete account. Please try again.", "error");
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Yes, Delete';
@@ -1692,10 +1707,11 @@ async function loadActivityLog() {
 }
 
 async function clearActivity() {
-    if (!confirm("Clear all activity logs?")) return;
+    if (!await showConfirm("Clear all activity logs?")) return;
     try {
         await authFetch("/activity", { method: "DELETE" });
         loadActivityLog();
+        showToast("Activity logs cleared.", "success");
     } catch (e) { console.error(e); }
 }
 

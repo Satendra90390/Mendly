@@ -11,8 +11,6 @@
   },
   "dependencies": {
     "autoprefixer": "^10.5.4",
-    "framer-motion": "^12.42.2",
-    "lucide-react": "^1.26.0",
     "postcss": "^8.5.23",
     "tailwindcss": "^4.3.3"
   },
