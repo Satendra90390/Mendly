@@ -32,12 +32,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ——— XSS Protection ———
-function escapeHtml(str) {
-    if (!str) return "";
-    const div = document.createElement("div");
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
+// escapeHtml is defined in app.js (single source of truth)
 
 function escapeAttr(str) {
     if (!str) return "";
@@ -194,7 +189,7 @@ function handleLogoClick() {
     const landingPage = document.getElementById("landing-page");
     const landingSidebar = document.getElementById("landing-sidebar");
     const sidebarOverlay = document.getElementById("landing-sidebar-overlay");
-    if (appRoot && appRoot.style.display === "flex") {
+    if (appRoot && appRoot.style.display !== "none" && appRoot.offsetParent !== null) {
         if (landingSidebar) landingSidebar.classList.remove("active");
         if (sidebarOverlay) sidebarOverlay.classList.remove("active");
         if (typeof switchView === "function") switchView("dashboard");
@@ -238,7 +233,7 @@ function goToStep(step) {
 }
 
 function hideAllErrors() {
-    ["login-error", "signup-error", "otp-error", "phone-error", "phone-otp-error", "phone-complete-error", "forgot-error", "forgot-otp-error", "reset-error", "upgrade-error"].forEach(id => {
+    ["login-error", "signup-error", "forgot-error", "forgot-otp-error", "reset-error", "upgrade-error"].forEach(id => {
         const el = document.getElementById(id); if (el) el.style.display = "none";
     });
 }

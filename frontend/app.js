@@ -44,95 +44,6 @@ function debounce(fn, ms) {
     return function (...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
 }
 
-function showToast(message, type = "info") {
-    const container = document.getElementById("toast-container") || createToastContainer();
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
-    const icons = { success: "fa-check-circle", warning: "fa-triangle-exclamation", error: "fa-circle-xmark", info: "fa-circle-info" };
-    toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${escapeHtml(message)}</span>`;
-    container.appendChild(toast);
-    requestAnimationFrame(() => toast.classList.add("show"));
-    setTimeout(() => { toast.classList.remove("show"); setTimeout(() => toast.remove(), 300); }, 3000);
-}
-
-function createToastContainer() {
-    const container = document.createElement("div");
-    container.id = "toast-container";
-    container.style.cssText = "position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;";
-    document.body.appendChild(container);
-    return container;
-}
-
-// ============================================================
-// Google Maps Places API Integration
-// ============================================================
-
-async function googlePlacesNearbySearch(lat, lng, type, radius = 5000) {
-    if (!GOOGLE_MAPS_API_KEY) {
-        console.warn("Google Maps API key not configured");
-        return [];
-    }
-    const url = `${GOOGLE_MAPS_BASE}/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${GOOGLE_MAPS_API_KEY}`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === "OK" || data.status === "ZERO_RESULTS") {
-            return data.results || [];
-        }
-        console.warn("Google Places API:", data.status, data.error_message);
-        return [];
-    } catch (e) {
-        console.error("Google Places nearby search failed:", e);
-        return [];
-    }
-}
-
-async function googlePlaceDetails(placeId, fields = "name,formatted_address,formatted_phone_number,website,opening_hours,rating,geometry") {
-    if (!GOOGLE_MAPS_API_KEY) return null;
-    const url = `${GOOGLE_MAPS_BASE}/details/json?place_id=${placeId}&fields=${fields}&key=${GOOGLE_MAPS_API_KEY}`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === "OK") return data.result;
-        return null;
-    } catch (e) {
-        console.error("Google Place Details failed:", e);
-        return null;
-    }
-}
-
-async function googlePlacesTextSearch(query, lat, lng, radius = 10000) {
-    if (!GOOGLE_MAPS_API_KEY) return [];
-    const locationBias = lat && lng ? `&location=${lat},${lng}&radius=${radius}` : "";
-    const url = `${GOOGLE_MAPS_BASE}/textsearch/json?query=${encodeURIComponent(query)}${locationBias}&key=${GOOGLE_MAPS_API_KEY}`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === "OK" || data.status === "ZERO_RESULTS") return data.results || [];
-        console.warn("Google Places Text Search:", data.status, data.error_message);
-        return [];
-    } catch (e) {
-        console.error("Google Places text search failed:", e);
-        return [];
-    }
-}
-
-function googleDirectionsUrl(origin, destination) {
-    const originStr = typeof origin === "object" ? `${origin.lat},${origin.lng}` : encodeURIComponent(origin);
-    const destStr = typeof destination === "object" ? `${destination.lat},${destination.lng}` : encodeURIComponent(destination);
-    return `https://www.google.com/maps/dir/?api=1&origin=${originStr}&destination=${destStr}&travelmode=driving`;
-}
-
-function googleMapsUrl(lat, lng, label = "") {
-    const labelStr = label ? `&query=${encodeURIComponent(label)}` : "";
-    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}${labelStr}`;
-}
-
-function openDirections(origin, destination) {
-    const url = googleDirectionsUrl(origin, destination);
-    window.open(url, "_blank");
-}
-
 let appInitialized = false;
 function resetApp() { appInitialized = false; }
 
@@ -335,12 +246,6 @@ async function getAddress(lat, lng) {
     }
 }
 
-function openDirections(address) {
-    if (!address) return;
-    const encodedAddress = encodeURIComponent(address);
-    window.open(`https://www.google.com/maps/search/${encodedAddress}`, "_blank");
-}
-
 // ============================================================
 // CHATBOT
 // ============================================================
@@ -395,10 +300,10 @@ async function sendChatMessage() {
         if (String(e.message).includes("Session expired")) {
             addChatMessage("bot", "Please **sign up or log in** to continue chatting with Elix.");
         } else {
-            const msg = String(e.message || "");
-            if (msg.includes("offline")) {
+            const errMsg = String(e.message || "");
+            if (errMsg.includes("offline")) {
                 addChatMessage("bot", "You appear to be offline. Please check your internet connection and try again.");
-            } else if (msg.includes("Cannot reach server")) {
+            } else if (errMsg.includes("Cannot reach server")) {
                 addChatMessage("bot", "Unable to reach the server. The service may be starting up — please try again in a moment.");
             } else {
                 addChatMessage("bot", "Connection error. Please try again later.");
@@ -751,7 +656,7 @@ async function searchMedicines() {
 }
 
 function filterMedicines(filter) {
-    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.toggle("active", b.dataset.filter === filter));
+    document.querySelectorAll(".pill-nav-item").forEach((b) => b.classList.toggle("active", b.dataset.filter === filter));
     if (filter === "all") { renderMedicines(state.medicines); return; }
     renderMedicines(state.medicines.filter(m => m.category && m.category.toLowerCase().includes(filter.toLowerCase())));
 }
@@ -1096,6 +1001,7 @@ async function loadEmergencyContacts(country) {
         const res = await fetch(`${API_BASE}/emergency/contacts?country=${encodeURIComponent(country)}`);
         const data = await res.json();
         const contacts = Array.isArray(data) ? data[0] : data;
+        if (!contacts) { container.innerHTML = `<p style="color:rgba(148,163,184,0.4);font-size:0.85rem;">No emergency data available.</p>`; return; }
         const container = document.getElementById("emergency-contacts");
         const items = [
             ["Ambulance", contacts.ambulance],
@@ -1107,9 +1013,6 @@ async function loadEmergencyContacts(country) {
         ];
         container.innerHTML = `<h4 style="margin-bottom:0.5rem;">${escapeHtml(contacts.country || "Emergency")} Contacts</h4>
             ${items.filter(i => i[1]).map(i => `<div class="emergency-contact"><span>${i[0]}</span><span class="number">${escapeHtml(String(i[1]))}</span></div>`).join("")}`;
-        container.closest(".glass-card").querySelectorAll(".filter-btn").forEach(btn => {
-            btn.classList.toggle("active", btn.textContent.trim() === country);
-        });
     } catch (e) { console.error(e); }
 }
 
@@ -1165,10 +1068,6 @@ function googleDirectionsUrl(origin, destination) {
     return `https://www.google.com/maps/dir/?api=1&origin=${o}&destination=${d}&travelmode=driving`;
 }
 
-function googleMapsSearchUrl(query) {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-}
-
 function openDirections(address) {
     // Use Google Maps for directions
     const url = googleDirectionsUrl(state.userLocation, address);
@@ -1219,16 +1118,6 @@ async function loadNearbyHospitals() {
     document.getElementById("dash-hospital-count").textContent = hospitals.length || 0;
 }
 
-async function loadAllHospitals() {
-    try {
-        const res = await fetch(`${API_BASE}/emergency/hospitals`);
-        const data = await res.json();
-        hospitalCache = data;
-        renderHospitals(hospitalCache);
-        updateHospitalStats(hospitalCache);
-    } catch (e) { console.error(e); }
-}
-
 function updateHospitalStats(hospitals) {
     const total = hospitals.length;
     const nearby = hospitals.filter(h => h.distance && h.distance < 5).length;
@@ -1274,22 +1163,6 @@ function renderHospitals(hospitals, emptyMessage = "No hospitals found.") {
             </div>
         </div>`;
     }).join("");
-}
-
-function filterHospitals(filter, btn) {
-    document.querySelectorAll(".hospital-filter").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    hospitalFilter = filter;
-    if (filter === "all") { renderHospitals(hospitalCache); return; }
-    if (filter === "nearby") { if (state.userLocation) loadNearbyHospitals(); else renderHospitals([], "Enable location to see nearby hospitals."); return; }
-    const filtered = hospitalCache.filter(h => {
-        const hasER24 = h.services && h.services.some(s => s.toLowerCase().includes("24") || s.toLowerCase().includes("er") || s.toLowerCase().includes("emergency"));
-        const isSpecialty = h.type && (h.type.toLowerCase().includes("special") || h.type.toLowerCase().includes("super"));
-        if (filter === "er24") return hasER24;
-        if (filter === "specialty") return isSpecialty;
-        return true;
-    });
-    renderHospitals(filtered, `No hospitals match the "${filter}" filter.`);
 }
 
 async function searchHospitals() {
@@ -1424,14 +1297,6 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
     return Math.round(R * c * 10) / 10;
 }
 
-async function loadAllPharmacies() {
-    try {
-        const res = await fetch(`${API_BASE}/emergency/pharmacies`);
-        const data = await res.json();
-        renderPharmacies(data);
-    } catch (e) { console.error(e); }
-}
-
 function renderPharmacies(pharmacies, emptyMessage = "No pharmacies found.") {
     const container = document.getElementById("pharmacy-results");
     if (!pharmacies?.length) { container.innerHTML = `<div class="glass-card" style="grid-column:1/-1;text-align:center;padding:2.5rem 1.5rem;"><div style="margin-bottom:0.75rem;"><i class="fa-solid fa-shop" style="font-size:2rem;color:var(--text-muted);opacity:0.4;"></i></div><p style="color:var(--text-muted);font-size:0.9rem;">${emptyMessage}</p></div>`; updatePharmacyStats([]); return; }
@@ -1482,21 +1347,6 @@ function updatePharmacyStats(pharmacies) {
     } else {
         statusEl.innerHTML = '<i class="fa-solid fa-signal" style="opacity:0.5;"></i> <span>Location off</span>';
     }
-}
-
-function filterPharmacies(filter, btn) {
-    document.querySelectorAll(".pharmacy-filter").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    if (filter === "all") { searchPharmacies(); return; }
-    if (filter === "nearby") { if (state.userLocation) loadNearbyPharmacies(); else renderPharmacies([], "Enable location to see nearby pharmacies."); return; }
-    const allCards = document.querySelectorAll(".pharmacy-card");
-    allCards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        if (filter === "24hr") card.style.display = text.includes("24hr") || text.includes("24 hr") ? "" : "none";
-        else if (filter === "delivery") card.style.display = text.includes("delivery") ? "" : "none";
-    });
-    const visible = document.querySelectorAll(".pharmacy-card:not([style*='display: none'])").length;
-    if (visible === 0) renderPharmacies([], `No pharmacies match the "${filter}" filter.`);
 }
 
 async function searchPharmacies() {
@@ -1892,7 +1742,7 @@ function initScrollAnimations() {
         });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-    document.querySelectorAll('.fade-in-view, .fade-in-left, .fade-in-right').forEach(el => {
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
         observer.observe(el);
     });
 }

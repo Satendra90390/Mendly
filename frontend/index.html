@@ -105,7 +105,7 @@ LANDING PAGE
   <section id="features" class="section" style="padding:6rem 1rem;">
     <div class="container" style="max-width:1100px;margin:0 auto;">
       <div class="section-badge animate-fade-up" style="margin-bottom:1rem;"><i class="fa-solid fa-layer-group"></i> Features</div>
-      <h2 class="animate-fade-up" style="font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:0.75rem;" animation-delay:0.05s>Everything you need for informed health decisions</h2>
+      <h2 class="animate-fade-up" style="font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:0.75rem;animation-delay:0.05s;">Everything you need for informed health decisions</h2>
       <p class="animate-fade-up" style="color:rgba(148,163,184,0.6);max-width:500px;margin-bottom:3rem;animation-delay:0.1s;">Powered by up-to-date medical databases and AI.</p>
       <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;">
         <!-- Feature 1 -->
@@ -643,7 +643,7 @@ APP SHELL
         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
           <div class="input-wrapper" style="flex:1;min-width:200px;">
             <i class="fa-solid fa-search input-icon"></i>
-            <input id="medicine-search" type="text" class="input" placeholder="Search medicines..." style="padding-left:2.75rem;" onkeyup="debounce(searchMedicines,300)()">
+            <input id="medicine-search" type="text" class="input" placeholder="Search medicines..." style="padding-left:2.75rem;" onkeyup="debouncedSearchMedicines()">
           </div>
           <button onclick="searchMedicines()" class="btn btn-sm btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
         </div>
@@ -863,7 +863,7 @@ APP SHELL
           </div>
         </div>
         <div id="profile-update-msg" style="font-size:0.85rem;display:none;margin-top:0.5rem;"></div>
-        <button id="profile-save-btn" onclick="saveProfile()" class="btn btn-sm btn-primary" style="margin-top:0.75rem;"><i class="fa-solid fa-check"></i> Save Changes</button>
+        <button id="profile-save-btn" onclick="updateProfile()" class="btn btn-sm btn-primary" style="margin-top:0.75rem;"><i class="fa-solid fa-check"></i> Save Changes</button>
       </div>
       <!-- Security / Password -->
       <div class="glass-card" style="padding:1.5rem;margin-bottom:1.25rem;">
@@ -924,6 +924,8 @@ SCRIPTS
 <script src="auth.js"></script>
 <script src="app.js"></script>
 <script>
+const debouncedSearchMedicines = debounce(searchMedicines, 300);
+
 function toggleUserMenu() {
   const dd = document.getElementById("user-dropdown");
   if (dd) dd.style.display = dd.style.display === "block" ? "none" : "block";
@@ -933,29 +935,6 @@ document.addEventListener("click", function(e) {
   const btn = document.getElementById("user-menu-btn");
   if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) dd.style.display = "none";
 });
-
-async function saveProfile() {
-  const name = document.getElementById("profile-name")?.value.trim();
-  const dob = document.getElementById("profile-dob")?.value;
-  const blood = document.getElementById("profile-blood")?.value;
-  const msgEl = document.getElementById("profile-update-msg");
-  const btn = document.getElementById("profile-save-btn");
-  if (!name) { if(msgEl){msgEl.textContent="Name is required";msgEl.style.display="block";msgEl.className="auth-error"} return; }
-  btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
-  try {
-    const res = await authFetch("/profile", { method: "PUT", body: JSON.stringify({ name, date_of_birth: dob, blood_type: blood }) });
-    const data = await res.json();
-    if (!res.ok) { if(msgEl){msgEl.textContent=data.detail||"Failed";msgEl.style.display="block";msgEl.className="auth-error"} return; }
-    if(msgEl){msgEl.textContent="Profile updated!";msgEl.style.display="block";msgEl.className="auth-success"}
-    const user = getStoredUser();
-    if (user) { user.name = name; localStorage.setItem("mendly_user", JSON.stringify(user)); }
-    setTimeout(() => { if(msgEl)msgEl.style.display="none"; }, 3000);
-  } catch(e) {
-    if(msgEl){msgEl.textContent="Connection error";msgEl.style.display="block";msgEl.className="auth-error"}
-  } finally {
-    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Changes';
-  }
-}
 </script>
 </body>
 </html>
