@@ -326,7 +326,7 @@ function addChatMessage(sender, text, options = {}) {
     bubble.className = `chat-bubble ${sender}`;
 
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const messageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const messageId = `msg-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
     if (sender === "bot") {
         const html = renderMarkdown(text);
@@ -406,9 +406,9 @@ function renderMarkdown(text) {
     // Inline code
     html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
 
-    // Code blocks
+    // Code blocks (before other inline processing to protect content)
     html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-        return `<pre class="md-code-block"><code class="language-${lang || ''}">${escapeHtml(code.trim())}</code></pre>`;
+        return `<pre class="md-code-block"><code class="language-${lang || ''}">${code.trim()}</code></pre>`;
     });
 
     // Tables
@@ -920,7 +920,7 @@ function renderInteractionResults(data, container) {
             // Add FDA citation if available
             const cite = fdaCites.find(c => c.drug === w.drug || c.drug === w.medication);
             if (cite) {
-                html += `<div class="interaction-fda-cite"><i class="fa-solid fa-file-lines"></i> <a href="${cite.url}" target="_blank" rel="noopener">FDA Label: ${cite.set_id}</a></div>`;
+                html += `<div class="interaction-fda-cite"><i class="fa-solid fa-file-lines"></i> <a href="${escapeAttr(cite.url)}" target="_blank" rel="noopener">FDA Label: ${escapeHtml(cite.set_id)}</a></div>`;
             }
             html += `</div>`;
         });
@@ -1143,13 +1143,17 @@ async function loadNearbyHospitals() {
 function updateHospitalStats(hospitals) {
     const total = hospitals.length;
     const nearby = hospitals.filter(h => h.distance && h.distance < 5).length;
-    document.getElementById("hosp-total").textContent = total;
-    document.getElementById("hosp-nearby-count").textContent = nearby;
+    const totalEl = document.getElementById("hosp-total");
+    const nearbyEl = document.getElementById("hosp-nearby-count");
     const statusEl = document.getElementById("hosp-location-status");
-    if (state.userLocation) {
-        statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color:#10B981;font-size:0.5rem;"></i> <span>Location active</span>';
-    } else {
-        statusEl.innerHTML = '<i class="fa-solid fa-signal" style="opacity:0.5;"></i> <span>Location off</span>';
+    if (totalEl) totalEl.textContent = total;
+    if (nearbyEl) nearbyEl.textContent = nearby;
+    if (statusEl) {
+        if (state.userLocation) {
+            statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color:#10B981;font-size:0.5rem;"></i> <span>Location active</span>';
+        } else {
+            statusEl.innerHTML = '<i class="fa-solid fa-signal" style="opacity:0.5;"></i> <span>Location off</span>';
+        }
     }
 }
 
@@ -1274,7 +1278,6 @@ async function loadNearbyPharmacies() {
         renderPharmacies(data.pharmacies || data);
         document.getElementById("dash-pharmacy-count").textContent = (data.pharmacies || data).length || 0;
     } catch (e) { console.error(e); renderPharmacies([]); }
-    updatePharmacyStats([]);
 }
 
 function formatPharmacyFromGoogleBasic(place, userLocation) {
@@ -1356,13 +1359,17 @@ function renderPharmacies(pharmacies, emptyMessage = "No pharmacies found.") {
 function updatePharmacyStats(pharmacies) {
     const total = pharmacies.length;
     const nearby = pharmacies.filter(p => p.distance && p.distance < 5).length;
-    document.getElementById("pharm-total").textContent = total;
-    document.getElementById("pharm-nearby-count").textContent = nearby;
+    const totalEl = document.getElementById("pharm-total");
+    const nearbyEl = document.getElementById("pharm-nearby-count");
     const statusEl = document.getElementById("pharmacy-location-status");
-    if (state.userLocation) {
-        statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color:#10B981;font-size:0.5rem;"></i> <span>Location active</span>';
-    } else {
-        statusEl.innerHTML = '<i class="fa-solid fa-signal" style="opacity:0.5;"></i> <span>Location off</span>';
+    if (totalEl) totalEl.textContent = total;
+    if (nearbyEl) nearbyEl.textContent = nearby;
+    if (statusEl) {
+        if (state.userLocation) {
+            statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color:#10B981;font-size:0.5rem;"></i> <span>Location active</span>';
+        } else {
+            statusEl.innerHTML = '<i class="fa-solid fa-signal" style="opacity:0.5;"></i> <span>Location off</span>';
+        }
     }
 }
 

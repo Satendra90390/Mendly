@@ -24,7 +24,7 @@ from .database import (
 from .knowledge_base import DISEASE_KNOWLEDGE, LOCAL_MEDICINES, EMERGENCY_CONTACTS, DRUG_ALIASES, SYMPTOM_TO_DISEASE
 from .auth import (
     signup_route, login_route, guest_login_route, guest_upgrade_route,
-    get_me as get_me_route, change_password, get_account_stats,
+    update_profile_route, change_password as change_pw, get_account_stats as get_stats,
     delete_account, get_activity_log, clear_activity_log,
     block_user, unblock_user,
     get_current_user_profile, get_admin_user, _log_activity,
@@ -47,9 +47,6 @@ if _origins_env.strip() == "*":
     _allow_credentials = False
 else:
     allow_origins = [o.strip() for o in _origins_env.split(",") if o.strip()]
-    allow_origins += [
-        "https://localhost",
-    ]
     allow_origins = list(dict.fromkeys(allow_origins))
     _allow_credentials = True
 
@@ -143,19 +140,16 @@ async def get_me_endpoint(current_user: dict = Depends(get_current_user_profile)
 
 @app.put("/api/profile", response_model=schemas.UserOut)
 async def update_profile_endpoint(payload: schemas.ProfileUpdateRequest, request: Request, current_user: dict = Depends(get_current_user_profile)):
-    from .auth import update_profile_route
     return await update_profile_route(payload, request, current_user)
 
 
 @app.post("/api/profile/change-password")
 async def change_password_endpoint(payload: schemas.PasswordChangeRequest, request: Request, current_user: dict = Depends(get_current_user_profile)):
-    from .auth import change_password as change_pw
     return await change_pw(payload, request, current_user)
 
 
 @app.get("/api/profile/stats", response_model=schemas.AccountStats)
 async def get_account_stats_endpoint(current_user: dict = Depends(get_current_user_profile)):
-    from .auth import get_account_stats as get_stats
     return await get_stats(current_user)
 
 
@@ -170,7 +164,7 @@ async def delete_account_endpoint(request: Request, current_user: dict = Depends
 
 @app.get("/api/activity", response_model=List[schemas.ActivityLogOut])
 async def list_activity_log(limit: int = 50, current_user: dict = Depends(get_current_user_profile)):
-    return await get_activity_log(limit, current_user)
+    return await get_activity_log(min(limit, 200), current_user)
 
 
 @app.delete("/api/activity")
@@ -229,7 +223,7 @@ async def get_chat_status(current_user: dict = Depends(get_current_user_profile)
 
 @app.get("/api/chat/history", response_model=List[schemas.ChatMessageOut])
 async def list_chat_history(current_user: dict = Depends(get_current_user_profile), limit: int = 100):
-    return await get_chat_history(current_user["id"], limit)
+    return await get_chat_history(current_user["id"], min(limit, 500))
 
 
 @app.delete("/api/chat/history")
@@ -356,18 +350,21 @@ async def check_interactions(payload: schemas.InteractionCheck):
     warnings: List[str] = []
     recommendations: List[str] = []
 
-    for i, m_name in enumerate(med_names):
+    resolved = []
+    for m_name in med_names:
         lower = m_name.lower()
         resolved_name = DRUG_ALIASES.get(lower, lower)
-        for alias, real in DRUG_ALIASES.items():
-            if alias in lower or lower in alias:
-                resolved_name = real
-                break
+        if resolved_name == lower:
+            for alias, real in DRUG_ALIASES.items():
+                if alias == lower or lower.startswith(alias + " ") or lower.endswith(" " + alias):
+                    resolved_name = real
+                    break
         if "+" in resolved_name:
             parts = [p.strip() for p in resolved_name.split("+") if p.strip()]
-            med_names[i:i+1] = parts
+            resolved.extend(parts)
         else:
-            med_names[i] = resolved_name
+            resolved.append(resolved_name)
+    med_names = resolved
 
     for m_name in med_names:
         med = next((m for m in LOCAL_MEDICINES if m["name"].lower() == m_name.lower()), None)

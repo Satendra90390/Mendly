@@ -38,3 +38,6 @@ backend/stderr.log
 backend/stdout.log
 backend/tmp_*
 backend/supabase/
+
+# Build tools
+.wrangler/

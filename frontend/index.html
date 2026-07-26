@@ -57,7 +57,7 @@ LANDING PAGE
         <span style="display:flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:0.625rem;background:linear-gradient(135deg,#14B8A6,#0D9488);font-size:1.2rem;">💊</span>
         <span class="gradient-text" style="font-weight:800;font-size:1.25rem;letter-spacing:-0.02em;">Mendly</span>
       </a>
-      <div class="nav-links" style="display:none;align-items:center;gap:0.25rem;">
+      <div class="nav-links" style="display:flex;align-items:center;gap:0.25rem;">
         <a href="#features" class="nav-link">Features</a>
         <a href="#how-it-works" class="nav-link">How It Works</a>
         <a href="#about" class="nav-link">About</a>
@@ -561,7 +561,7 @@ APP SHELL
   <!-- TOP NAVIGATION BAR -->
   <div class="topbar" style="margin:0.75rem 1rem 0;" role="banner">
     <div style="display:flex;align-items:center;gap:0.75rem;">
-      <button onclick="toggleMobileMenu()" class="btn btn-sm btn-ghost" id="mobile-menu-btn" style="display:none;">
+      <button onclick="toggleMobileMenu()" class="btn btn-sm btn-ghost" id="mobile-menu-btn" style="display:none;" aria-label="Open navigation menu">
         <i class="fa-solid fa-bars"></i>
       </button>
       <a href="#" onclick="handleLogoClick()" style="display:flex;align-items:center;gap:0.4rem;text-decoration:none;color:inherit;">
@@ -795,10 +795,10 @@ APP SHELL
         <h3 style="font-weight:800;font-size:1.25rem;color:#EF4444;">Emergency Numbers</h3>
         <p style="font-size:0.85rem;color:rgba(148,163,184,0.6);margin-bottom:0.5rem;">In case of a medical emergency, call your local emergency number immediately.</p>
         <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:0.75rem;">
-          <div class="pill-nav-item" onclick="loadEmergencyContacts('India')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;">India</div>
-          <div class="pill-nav-item" onclick="loadEmergencyContacts('USA')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;">USA</div>
-          <div class="pill-nav-item" onclick="loadEmergencyContacts('UK')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;">UK</div>
-          <div class="pill-nav-item" onclick="loadEmergencyContacts('Australia')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;">Australia</div>
+          <button class="pill-nav-item" onclick="loadEmergencyContacts('India')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;border:none;cursor:pointer;">India</button>
+          <button class="pill-nav-item" onclick="loadEmergencyContacts('USA')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;border:none;cursor:pointer;">USA</button>
+          <button class="pill-nav-item" onclick="loadEmergencyContacts('UK')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;border:none;cursor:pointer;">UK</button>
+          <button class="pill-nav-item" onclick="loadEmergencyContacts('Australia')" style="background:rgba(239,68,68,0.1);color:#EF4444;font-weight:700;border:none;cursor:pointer;">Australia</button>
         </div>
       </div>
       <div id="emergency-contacts">
@@ -1024,7 +1024,7 @@ document.querySelectorAll('.accordion-trigger').forEach(btn => {
   btn.addEventListener('click', function() {
     const item = this.parentElement;
     const isOpen = item.classList.contains('open');
-    this.setAttribute('aria-expanded', String(!isOpen));
+    this.setAttribute('aria-expanded', String(isOpen));
   });
 });
 

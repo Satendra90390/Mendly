@@ -9,7 +9,7 @@ import httpx
 from typing import Optional
 
 OPENFDA_BASE = "https://api.fda.gov/drug/label.json"
-OPENFDA_API_KEY = os.getenv("OPENFDA_API_KEY", "ppuCypLAwNIy1JdhHIKVAl1zPxKU2OK35OoGPOI8")
+OPENFDA_API_KEY = os.getenv("OPENFDA_API_KEY", "")
 
 # Simple in-memory TTL cache: { cache_key: (timestamp, data) }
 _cache: dict[str, tuple[float, dict]] = {}

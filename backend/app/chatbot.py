@@ -10,6 +10,7 @@ Priority order:
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import re
 from typing import Optional, List
@@ -18,6 +19,8 @@ import httpx
 
 from .knowledge_base import DISEASE_KNOWLEDGE, SYMPTOM_TO_DISEASE, LOCAL_MEDICINES
 from . import openfda_client
+
+logger = logging.getLogger("mendly")
 
 # ── AI provider setup ───────────────────────────────────────────────────────
 CHATBOT_PROVIDER = os.getenv("CHATBOT_PROVIDER", "nvidia").strip().lower()
@@ -243,12 +246,12 @@ async def chatbot_response(
         results = await asyncio.gather(*tasks, return_exceptions=True)
         for i, result in enumerate(results):
             if isinstance(result, str) and result.strip():
-                print(f"[Mendly] Winner: {task_names[i]}")
+                logger.info(f"[Mendly] Winner: {task_names[i]}")
                 return result
         # Log failures
         for i, result in enumerate(results):
             if isinstance(result, Exception):
-                print(f"[Mendly] {task_names[i]} failed: {result}")
+                logger.error(f"[Mendly] {task_names[i]} failed: {result}")
 
     # 2. Fallback: rule-based engine
     return _rule_based_response(msg, message, location)
@@ -401,7 +404,7 @@ async def _nvidia_answer(
             break
         except (httpx.TimeoutException, httpx.HTTPStatusError, httpx.ConnectError) as exc:
             last_error = exc
-            print(f"[Mendly] NVIDIA API attempt {attempt + 1} failed: {exc}")
+            logger.warning(f"[Mendly] NVIDIA API attempt {attempt + 1} failed: {exc}")
             if attempt < NVIDIA_MAX_RETRIES:
                 await asyncio.sleep(1.0 * (attempt + 1))
     else:

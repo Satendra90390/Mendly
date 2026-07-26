@@ -366,7 +366,7 @@ async function handleSignup(e) {
 async function handleGuestLogin() {
     hideAllErrors();
     requireTerms(async () => {
-        const btn = document.querySelector(".social-btn.social-google");
+        const btn = document.querySelector('button[onclick="handleGuestLogin()"]');
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Starting guest session...'; }
         try {
             const res = await fetch(`${API_BASE}/auth/guest`, { method: "POST", headers: { "Content-Type": "application/json" } });
@@ -463,7 +463,11 @@ async function handleForgotOtpVerify(e) {
 
 async function handleForgotResendOtp() {
     hideAllErrors();
-    try { await fetch(`${API_BASE}/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail }) }); startOtpTimer(60, "forgot-otp-timer", "forgot-otp-resend-btn"); } catch { showStepError("forgot-otp", "Could not resend code. Please try again."); }
+    try {
+        const res = await fetch(`${API_BASE}/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: _currentEmail }) });
+        if (res.ok) { startOtpTimer(60, "forgot-otp-timer", "forgot-otp-resend-btn"); }
+        else { const data = await res.json(); showStepError("forgot-otp", data.detail || "Could not resend code."); }
+    } catch { showStepError("forgot-otp", "Could not resend code. Please try again."); }
 }
 
 async function handleResetPassword(e) {

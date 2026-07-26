@@ -1,6 +1,7 @@
 import os
 import time
 import secrets
+import logging
 import urllib.parse
 from pathlib import Path
 from dotenv import load_dotenv
@@ -27,6 +28,7 @@ from .database import (
 )
 
 security = HTTPBearer(auto_error=False)
+logger = logging.getLogger("mendly")
 
 JWT_SECRET = os.getenv("JWT_SECRET")
 if not JWT_SECRET or len(JWT_SECRET) < 32:
@@ -181,7 +183,7 @@ async def login_route(payload: schemas.LoginRequest, request: Request) -> schema
     if profile.get("is_blocked"):
         raise HTTPException(status_code=403, detail="Your account has been blocked.")
 
-    await update_profile(profile["id"], {"last_login": _now()})
+        await update_profile(profile["id"], {"last_login": datetime.now(timezone.utc)})
     await _log_activity(profile["id"], "logged_in", "Successful login", request)
 
     token = create_access_token({"sub": profile["id"]})
@@ -310,7 +312,7 @@ async def delete_account(request: Request, current_user: dict = Depends(get_curr
     try:
         await delete_profile(user_id)
     except Exception as e:
-        print(f"User deletion error: {e}")
+        logger.error(f"User deletion error: {e}")
     return {"status": "deleted", "message": "Your account has been permanently deleted."}
 
 
@@ -404,13 +406,13 @@ async def oauth_google_callback(code: str, state: str, request: Request):
         profile = await get_profile(user_id)
         await _log_activity(user_id, "oauth_account_created", f"Account created via Google ({email})", request)
     else:
-        await update_profile(profile["id"], {"last_login": _now()})
+    await update_profile(profile["id"], {"last_login": datetime.now(timezone.utc)})
         await _log_activity(profile["id"], "oauth_logged_in", f"Logged in via Google ({email})", request)
     token = create_access_token({"sub": profile["id"]})
     return RedirectResponse(url=f"{FRONTEND_URL}?token={token}")
 
 
-async def _log_activity(user_id: str, action: str, detail: str = "", request: Request = None):
+async def _log_activity(user_id: str, action: str, detail: str = "", request: Optional[Request] = None):
     ip = ""
     if request:
         forwarded = request.headers.get("x-forwarded-for")
@@ -426,4 +428,4 @@ async def _log_activity(user_id: str, action: str, detail: str = "", request: Re
             "ip_address": ip,
         })
     except Exception as e:
-        print(f"Activity log failed: {e}")
+        logger.error(f"Activity log failed: {e}")
