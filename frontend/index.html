@@ -609,12 +609,14 @@ APP SHELL
           <span id="sidebar-username" style="font-weight:600;font-size:0.85rem;">User</span>
         </button>
         <div id="user-dropdown" role="menu" aria-label="User menu" style="display:none;position:absolute;top:calc(100% + 4px);right:0;min-width:200px;border-radius:0.75rem;background:rgba(26,35,50,0.95);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);box-shadow:var(--shadow-glass-hover);padding:0.25rem;z-index:60;">
-          <button class="mob-link" role="menuitem" onclick="switchView('conditions')"><i class="fa-solid fa-stethoscope"></i> Conditions</button>
-          <button class="mob-link" role="menuitem" onclick="switchView('pharmacies')"><i class="fa-solid fa-truck-medical"></i> Pharmacies</button>
-          <button class="mob-link" role="menuitem" onclick="switchView('saved')"><i class="fa-solid fa-bookmark"></i> Saved</button>
+          <div style="padding:0.5rem 1rem;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:0.25rem;">
+            <p style="font-weight:600;font-size:0.85rem;color:#fff;margin:0;" id="dropdown-username">User</p>
+            <p style="font-size:0.75rem;color:rgba(148,163,184,0.5);margin:0;" id="dropdown-email"></p>
+          </div>
+          <button class="mob-link" role="menuitem" onclick="switchView('account')"><i class="fa-solid fa-user-gear"></i> Account</button>
+          <button class="mob-link" role="menuitem" onclick="switchView('saved')"><i class="fa-solid fa-bookmark"></i> Saved Items</button>
           <button class="mob-link" role="menuitem" onclick="switchView('activity')"><i class="fa-solid fa-clock-rotate-left"></i> Activity</button>
           <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.25rem 0;" role="separator"></div>
-          <button class="mob-link" role="menuitem" onclick="switchView('account')"><i class="fa-solid fa-user"></i> Account</button>
           <button class="mob-link" role="menuitem" onclick="handleLogout()" style="color:#EF4444;"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
         </div>
       </div>

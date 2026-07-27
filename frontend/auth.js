@@ -595,6 +595,8 @@ function updateUserUI(user) {
     const initial = (user.name || "U").charAt(0).toUpperCase();
     const color = user.avatar_color || "#0D9488";
     const uname = document.getElementById("sidebar-username"); if (uname) uname.textContent = user.name;
+    const dropName = document.getElementById("dropdown-username"); if (dropName) dropName.textContent = user.name;
+    const dropEmail = document.getElementById("dropdown-email"); if (dropEmail) dropEmail.textContent = user.email;
     const avatar = document.getElementById("sidebar-avatar"); if (avatar) { avatar.textContent = initial; avatar.style.background = color; }
     const mobileName = document.getElementById("mobile-username"); if (mobileName) mobileName.textContent = user.name;
     const mobileEmail = document.getElementById("mobile-email"); if (mobileEmail) mobileEmail.textContent = user.email;
