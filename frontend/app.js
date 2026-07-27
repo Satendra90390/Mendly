@@ -1114,38 +1114,62 @@ async function loadNearbyHospitals() {
     if (!state.userLocation) { renderHospitals([], "Click <strong>Nearby</strong> to allow location access, or search by name above."); return; }
     const { lat, lng } = state.userLocation;
     
-    // Use Google Maps Places API for real-time data
-    const googleResults = await googlePlacesNearbySearch(lat, lng, "hospital", 10000);
-    const hospitals = googleResults.map((place, i) => ({
-        name: place.name,
-        address: place.vicinity || place.formatted_address,
-        phone: null, // Will be populated from details if needed
-        lat: place.geometry.location.lat,
-        lng: place.geometry.location.lng,
-        distance: place.geometry.location ? calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng) : null,
-        types: place.types,
-        place_id: place.place_id,
-        rating: place.rating,
-        open_now: place.opening_hours?.open_now,
-        services: place.types.includes("emergency") || place.types.includes("hospital") ? ["Emergency", "24/7"] : ["General"]
-    }));
-    
-    // Optionally enrich with details (phone, hours)
-    for (let i = 0; i < Math.min(hospitals.length, 5); i++) {
-        if (hospitals[i].place_id) {
-            const details = await googlePlaceDetails(hospitals[i].place_id);
-            if (details) {
-                hospitals[i].phone = details.formatted_phone_number;
-                hospitals[i].website = details.website;
-                hospitals[i].opening_hours = details.opening_hours?.weekday_text;
+    try {
+        // Use Google Maps Places API for real-time data
+        const googleResults = await googlePlacesNearbySearch(lat, lng, "hospital", 10000);
+        if (googleResults.length > 0) {
+            const hospitals = googleResults.map((place, i) => ({
+                name: place.name,
+                address: place.vicinity || place.formatted_address,
+                phone: null,
+                lat: place.geometry.location.lat,
+                lng: place.geometry.location.lng,
+                distance: place.geometry.location ? calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng) : null,
+                types: place.types,
+                place_id: place.place_id,
+                rating: place.rating,
+                open_now: place.opening_hours?.open_now,
+                services: place.types.includes("emergency") || place.types.includes("hospital") ? ["Emergency", "24/7"] : ["General"]
+            }));
+            
+            for (let i = 0; i < Math.min(hospitals.length, 5); i++) {
+                if (hospitals[i].place_id) {
+                    const details = await googlePlaceDetails(hospitals[i].place_id);
+                    if (details) {
+                        hospitals[i].phone = details.formatted_phone_number;
+                        hospitals[i].website = details.website;
+                        hospitals[i].opening_hours = details.opening_hours?.weekday_text;
+                    }
+                }
             }
+            
+            hospitalCache = hospitals;
+            renderHospitals(hospitals);
+            updateHospitalStats(hospitals);
+            document.getElementById("dash-hospital-count").textContent = hospitals.length || 0;
+            return;
         }
+    } catch (e) {
+        console.warn("Google Maps failed, falling back to backend:", e);
     }
-    
-    hospitalCache = hospitals;
-    renderHospitals(hospitals);
-    updateHospitalStats(hospitals);
-    document.getElementById("dash-hospital-count").textContent = hospitals.length || 0;
+
+    // Fallback to backend OSM data
+    try {
+        const res = await fetch(`${API_BASE}/emergency/hospitals/nearby`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lat, lng, radius: 25 })
+        });
+        const data = await res.json();
+        const hospitals = data.hospitals || [];
+        hospitalCache = hospitals;
+        renderHospitals(hospitals);
+        updateHospitalStats(hospitals);
+        document.getElementById("dash-hospital-count").textContent = hospitals.length || 0;
+    } catch (e2) {
+        console.error("Backend fallback also failed:", e2);
+        renderHospitals([], "Could not load hospitals. Please try again.");
+    }
 }
 
 function updateHospitalStats(hospitals) {
