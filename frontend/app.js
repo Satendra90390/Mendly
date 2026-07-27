@@ -200,6 +200,7 @@ function getUserLocation() {
     status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Getting location...';
     navigator.geolocation.getCurrentPosition(
         async (pos) => {
+            const accuracy = pos.coords.accuracy;
             state.userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
             await getAddress(pos.coords.latitude, pos.coords.longitude);
             loadNearbyHospitals();
@@ -207,9 +208,13 @@ function getUserLocation() {
         },
         (err) => {
             console.log("Geolocation failed:", err.message);
-            getLocationFromIP();
+            if (err.code === 1) {
+                status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Location permission denied — <a href="javascript:void(0)" onclick="getUserLocation()" style="color:var(--accent);text-decoration:underline;">tap to retry</a>';
+            } else {
+                getLocationFromIP();
+            }
         },
-        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
     );
 }
 
@@ -228,7 +233,7 @@ async function getLocationFromIP() {
                 state.userLocation = { lat: loc.lat, lng: loc.lng };
                 const safeCity = escapeHtml(loc.city || "");
                 const safeCountry = escapeHtml(loc.country || "");
-                status.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${safeCity}${safeCity && safeCountry ? ", " : ""}${safeCountry}`;
+                status.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${safeCity}${safeCity && safeCountry ? ", " : ""}${safeCountry} <span style="font-size:0.7rem;color:var(--text-muted);">(approximate — enable GPS for exact location)</span>`;
                 loadNearbyHospitals();
                 loadNearbyPharmacies();
                 return;
