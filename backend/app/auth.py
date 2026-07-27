@@ -351,7 +351,7 @@ async def unblock_user(user_id: str, request: Request, admin_user: dict = Depend
 
 async def oauth_google_login(request: Request):
     if not GOOGLE_CLIENT_ID:
-        raise HTTPException(status_code=501, detail="Google OAuth is not configured on the server.")
+        return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Google+login+is+not+configured+yet.+Please+use+email+login.")
     _oauth_state_cleanup()
     state = secrets.token_urlsafe(32)
     _oauth_states[state] = {"provider": "google", "created_at": time.time()}
