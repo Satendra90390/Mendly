@@ -54,8 +54,8 @@ LANDING PAGE
 
   <!-- NAVBAR -->
   <nav id="landing-nav" class="navbar" style="position:fixed;top:0;left:0;right:0;z-index:100;" aria-label="Landing navigation">
-    <div class="glass-card" style="margin:0.75rem 1rem;padding:0.5rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-radius:1rem;">
-      <a href="#" onclick="handleLogoClick()" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:inherit;" class="group">
+    <div class="landing-nav-bar">
+      <a href="#" onclick="handleLogoClick()" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:inherit;flex-shrink:0;" class="group">
         <span style="display:flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:0.625rem;background:linear-gradient(135deg,#14B8A6,#0D9488);font-size:1.2rem;">💊</span>
         <span class="gradient-text" style="font-weight:800;font-size:1.25rem;letter-spacing:-0.02em;">Mendly</span>
       </a>
@@ -64,7 +64,7 @@ LANDING PAGE
         <a href="#how-it-works" class="nav-link">How It Works</a>
         <a href="#about" class="nav-link">About</a>
       </div>
-      <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
         <button onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"><i class="fa-regular fa-moon"></i></button>
         <button id="landing-login-btn" onclick="openAuthModal('login')" class="btn btn-sm btn-secondary">Log in</button>
         <button id="landing-signup-btn" onclick="openAuthModal('signup')" class="btn btn-sm btn-primary">Sign up free</button>
@@ -275,7 +275,7 @@ LANDING PAGE
   </section>
 
   <!-- FOOTER -->
-  <footer id="footer" style="padding:3rem 1rem 2rem;border-top:1px solid rgba(255,255,255,0.04);text-align:center;">
+  <footer id="footer" style="padding:3rem 1rem 2rem;border-top:1px solid rgba(255,255,255,0.04);">
     <div style="max-width:1000px;margin:0 auto;">
       <!-- Trust badges -->
       <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:2rem;">
@@ -284,17 +284,17 @@ LANDING PAGE
         <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:rgba(148,163,184,0.5);"><i class="fa-solid fa-database" style="color:#14B8A6;"></i> FDA & NHS Data</div>
         <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:rgba(148,163,184,0.5);"><i class="fa-solid fa-gift" style="color:#14B8A6;"></i> Free to start</div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-        <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div class="footer-row">
+        <div style="display:flex;align-items:center;gap:0.5rem;justify-content:center;">
           <span style="width:1.75rem;height:1.75rem;border-radius:0.5rem;background:linear-gradient(135deg,#14B8A6,#0D9488);display:flex;align-items:center;justify-content:center;font-size:0.85rem;">💊</span>
           <span class="gradient-text" style="font-weight:700;font-size:1rem;">Mendly</span>
         </div>
-        <div style="display:flex;gap:1.5rem;">
+        <div style="display:flex;gap:1.5rem;justify-content:center;">
           <a href="#features" style="font-size:0.8rem;color:rgba(148,163,184,0.5);text-decoration:none;">Features</a>
           <a href="#how-it-works" style="font-size:0.8rem;color:rgba(148,163,184,0.5);text-decoration:none;">How It Works</a>
           <a href="#about" style="font-size:0.8rem;color:rgba(148,163,184,0.5);text-decoration:none;">About</a>
         </div>
-        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+        <div style="text-align:center;">
           <p style="font-size:0.75rem;color:rgba(148,163,184,0.35);">Providing informational guidance only. Not a substitute for professional medical advice.</p>
           <p style="font-size:0.7rem;color:rgba(148,163,184,0.25);">&copy; <span id="footer-year"></span> Mendly. All rights reserved.</p>
         </div>
@@ -561,7 +561,7 @@ APP SHELL
 <div id="app-root" style="display:none;min-height:100vh;">
 
   <!-- TOP NAVIGATION BAR -->
-  <div class="topbar" style="margin:0.75rem 1rem 0;" role="banner">
+  <div class="topbar" style="margin:0.75rem 1rem;" role="banner">
     <div style="display:flex;align-items:center;gap:0.75rem;">
       <button onclick="toggleMobileMenu()" class="btn btn-sm btn-ghost" id="mobile-menu-btn" style="display:none;" aria-label="Open navigation menu">
         <i class="fa-solid fa-bars"></i>

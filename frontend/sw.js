@@ -1,4 +1,4 @@
-const CACHE_NAME = "mendly-v16";
+const CACHE_NAME = "mendly-v17";
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
@@ -34,7 +34,12 @@ self.addEventListener("fetch", (e) => {
     url.pathname === "/" ||
     url.pathname.endsWith(".html");
 
-  if (isHTML) {
+  const isVersionedAsset =
+    url.pathname.endsWith(".css") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".build.css");
+
+  if (isHTML || isVersionedAsset) {
     e.respondWith(
       fetch(e.request)
         .then((res) => {
