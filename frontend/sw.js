@@ -1,4 +1,5 @@
-const CACHE_NAME = "mendly-v17";
+const CACHE_NAME = "mendly-v18";
+const CACHE_VERSION = "18";
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
@@ -14,12 +15,25 @@ self.addEventListener("activate", (e) => {
       )
     )
   );
+  e.waitUntil(
+    self.clients.matchAll({ type: "window" }).then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({ type: "SW_UPDATED", version: CACHE_VERSION });
+      });
+    })
+  );
   self.clients.claim();
 });
 
 self.addEventListener("message", (e) => {
   if (e.data && e.data.type === "SKIP_WAITING") {
     self.skipWaiting();
+  }
+  if (e.data && e.data.type === "RELOAD") {
+    self.registration.update();
+    self.clients.matchAll({ type: "window" }).then((clients) => {
+      clients.forEach((client) => client.reload());
+    });
   }
 });
 
@@ -34,12 +48,7 @@ self.addEventListener("fetch", (e) => {
     url.pathname === "/" ||
     url.pathname.endsWith(".html");
 
-  const isVersionedAsset =
-    url.pathname.endsWith(".css") ||
-    url.pathname.endsWith(".js") ||
-    url.pathname.endsWith(".build.css");
-
-  if (isHTML || isVersionedAsset) {
+  if (isHTML) {
     e.respondWith(
       fetch(e.request)
         .then((res) => {
