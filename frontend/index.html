@@ -1017,26 +1017,7 @@ document.getElementById('footer-year').textContent = new Date().getFullYear();
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then((reg) => {
-      navigator.serviceWorker.addEventListener('message', (e) => {
-        if (e.data && e.data.type === 'SW_UPDATED') {
-          if (reg.waiting) {
-            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-          }
-          setTimeout(() => window.location.reload(), 500);
-        }
-      });
-      reg.addEventListener('updatefound', () => {
-        const newSW = reg.installing;
-        if (newSW) {
-          newSW.addEventListener('statechange', () => {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              newSW.postMessage({ type: 'SKIP_WAITING' });
-            }
-          });
-        }
-      });
-    }).catch(() => {});
+    navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
 

@@ -1,5 +1,4 @@
-const CACHE_NAME = "mendly-v18";
-const CACHE_VERSION = "18";
+const CACHE_NAME = "mendly-static-v1";
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
@@ -15,13 +14,6 @@ self.addEventListener("activate", (e) => {
       )
     )
   );
-  e.waitUntil(
-    self.clients.matchAll({ type: "window" }).then((clients) => {
-      clients.forEach((client) => {
-        client.postMessage({ type: "SW_UPDATED", version: CACHE_VERSION });
-      });
-    })
-  );
   self.clients.claim();
 });
 
@@ -29,53 +21,47 @@ self.addEventListener("message", (e) => {
   if (e.data && e.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
-  if (e.data && e.data.type === "RELOAD") {
-    self.registration.update();
-    self.clients.matchAll({ type: "window" }).then((clients) => {
-      clients.forEach((client) => client.reload());
-    });
-  }
 });
 
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
 
-  if (url.pathname.startsWith("/api/")) return;
   if (e.request.method !== "GET") return;
+  if (url.pathname.startsWith("/api/")) return;
 
-  const isHTML =
-    e.request.headers.get("accept")?.includes("text/html") ||
-    url.pathname === "/" ||
-    url.pathname.endsWith(".html");
+  const isFont =
+    url.pathname.includes("/fonts/") ||
+    url.hostname === "fonts.googleapis.com" ||
+    url.hostname === "fonts.gstatic.com" ||
+    url.hostname === "cdnjs.cloudflare.com";
 
-  if (isHTML) {
+  const isImage =
+    url.pathname.endsWith(".png") ||
+    url.pathname.endsWith(".jpg") ||
+    url.pathname.endsWith(".jpeg") ||
+    url.pathname.endsWith(".gif") ||
+    url.pathname.endsWith(".svg") ||
+    url.pathname.endsWith(".webp") ||
+    url.pathname.endsWith(".ico");
+
+  if (isFont || isImage) {
     e.respondWith(
-      fetch(e.request)
-        .then((res) => {
-          if (res && res.status === 200 && res.type === "basic") {
+      caches.match(e.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(e.request).then((res) => {
+          if (res && res.status === 200) {
             const clone = res.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
           }
           return res;
-        })
-        .catch(() => caches.match(e.request))
+        }).catch(() => cached);
+      })
     );
     return;
   }
 
+  // HTML, CSS, JS — always fetch fresh from network
   e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const fetchPromise = fetch(e.request)
-        .then((res) => {
-          if (res && res.status === 200 && (res.type === "basic" || res.type === "opaque")) {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-          }
-          return res;
-        })
-        .catch(() => cached);
-
-      return cached || fetchPromise;
-    })
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
