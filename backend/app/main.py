@@ -578,61 +578,81 @@ async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: 
 
 async def _search_osm_by_name(query: str, place_type: str):
     headers = {"User-Agent": "MendlyHealthPlatform/1.0 (contact@mendlyhealth.com)", "Accept-Language": "en"}
-    search_query = f"{query} {place_type}"
+    search_variants = {
+        "hospital": [f"{query} hospital", f"{query} clinic", f"{query} healthcare"],
+        "pharmacy": [f"{query} pharmacy", f"{query} chemist", f"{query} drugstore", f"{query} medical store"]
+    }
+    queries = search_variants.get(place_type, [f"{query} {place_type}"])
     
     # Try Photon first
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
-            response = await client.get(
-                "https://photon.komoot.io/api/",
-                params={"q": search_query, "limit": 20, "lang": "en"},
-                headers=headers
-            )
-            response.raise_for_status()
-            data = response.json()
-            features = data.get("features", [])
-            if features:
-                places = []
-                for f in features:
-                    props = f.get("properties", {})
-                    coords = f.get("geometry", {}).get("coordinates", [0, 0])
-                    raw_address = ", ".join(filter(None, [
-                        props.get("name", ""),
-                        props.get("street", ""),
-                        props.get("city", ""),
-                        props.get("state", ""),
-                        props.get("country", "")
-                    ]))
-                    address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
-                    places.append({
-                        "name": props.get("name", place_type).split(",")[0],
-                        "address": address, "phone": "N/A", "distance": None,
-                        "lat": coords[1], "lng": coords[0],
-                        "types": [place_type.capitalize()], "available": True, "services": ["Name search"],
-                    })
-                return places
+            all_places = []
+            seen = set()
+            for q in queries:
+                try:
+                    response = await client.get(
+                        "https://photon.komoot.io/api/",
+                        params={"q": q, "limit": 10, "lang": "en"},
+                        headers=headers
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                    for f in data.get("features", []):
+                        props = f.get("properties", {})
+                        coords = f.get("geometry", {}).get("coordinates", [0, 0])
+                        key = f"{coords[1]},{coords[0]}"
+                        if key in seen:
+                            continue
+                        seen.add(key)
+                        raw_address = ", ".join(filter(None, [
+                            props.get("name", ""),
+                            props.get("street", ""),
+                            props.get("city", ""),
+                            props.get("state", ""),
+                            props.get("country", "")
+                        ]))
+                        address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
+                        all_places.append({
+                            "name": props.get("name", place_type).split(",")[0],
+                            "address": address, "phone": "N/A", "distance": None,
+                            "lat": coords[1], "lng": coords[0],
+                            "types": [place_type.capitalize()], "available": True, "services": ["Name search"],
+                        })
+                except Exception:
+                    continue
+            if all_places:
+                return all_places[:20]
     except Exception as e:
         logger.warning(f"Photon name search failed, trying Nominatim: {e}")
     
     # Fallback to Nominatim
-    params = {"format": "json", "q": search_query, "addressdetails": 1, "limit": 20}
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)
-            response.raise_for_status()
-            results = response.json()
-            if isinstance(results, list) and results:
-                places = []
-                for item in results:
-                    raw_address = item.get("display_name", "")
-                    address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
-                    places.append({
-                        "name": item.get("display_name", place_type).split(",")[0],
-                        "address": address, "phone": "N/A", "distance": None,
-                        "lat": float(item.get("lat", 0)), "lng": float(item.get("lon", 0)),
-                        "types": [place_type.capitalize()], "available": True, "services": ["Name search"],
-                    })
-                return places
+            all_places = []
+            seen = set()
+            for q in queries:
+                params = {"format": "json", "q": q, "addressdetails": 1, "limit": 10}
+                try:
+                    response = await client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)
+                    response.raise_for_status()
+                    for item in response.json():
+                        key = f"{item.get('lat','')},{item.get('lon','')}"
+                        if key in seen:
+                            continue
+                        seen.add(key)
+                        raw_address = item.get("display_name", "")
+                        address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
+                        all_places.append({
+                            "name": item.get("display_name", place_type).split(",")[0],
+                            "address": address, "phone": "N/A", "distance": None,
+                            "lat": float(item.get("lat", 0)), "lng": float(item.get("lon", 0)),
+                            "types": [place_type.capitalize()], "available": True, "services": ["Name search"],
+                        })
+                except Exception:
+                    continue
+            if all_places:
+                return all_places[:20]
     except Exception as e:
         logger.warning(f"OSM name search failed: {e}")
     return []
@@ -640,21 +660,35 @@ async def _search_osm_by_name(query: str, place_type: str):
 
 async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int = 10):
     type_query = "hospital" if place_type == "hospital" else "pharmacy"
+    search_terms = {
+        "hospital": ["hospital", "clinic", "healthcare", "medical center", "health centre"],
+        "pharmacy": ["pharmacy", "chemist", "drugstore", "medical store", "pharmacy centre"]
+    }
+    terms = search_terms.get(type_query, [type_query])
     try:
-        osm_results = await _query_osm_places(lat, lng, type_query, radius)
-        if isinstance(osm_results, list) and osm_results:
-            places = []
-            for item in osm_results:
-                distance = _haversine_distance(lat, lng, float(item.get("lat", lat)), float(item.get("lon", lng)))
-                raw_address = item.get("display_name", "")
-                address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
-                places.append({
-                    "name": item.get("display_name", type_query).split(",")[0],
-                    "address": address, "phone": "N/A", "distance": round(distance, 1),
-                    "types": [place_type.capitalize()], "available": True, "services": ["Near you"],
-                })
-            places.sort(key=lambda x: x["distance"])
-            return places[:25]
+        # Search all terms and merge results (deduplicate by coordinates)
+        seen = set()
+        all_results = []
+        for term in terms:
+            osm_results = await _query_osm_places(lat, lng, term, radius)
+            if isinstance(osm_results, list):
+                for item in osm_results:
+                    key = f"{item.get('lat','')},{item.get('lon','')}"
+                    if key not in seen:
+                        seen.add(key)
+                        all_results.append(item)
+        places = []
+        for item in all_results:
+            distance = _haversine_distance(lat, lng, float(item.get("lat", lat)), float(item.get("lon", lng)))
+            raw_address = item.get("display_name", "")
+            address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
+            places.append({
+                "name": item.get("display_name", type_query).split(",")[0],
+                "address": address, "phone": "N/A", "distance": round(distance, 1),
+                "types": [place_type.capitalize()], "available": True, "services": ["Near you"],
+            })
+        places.sort(key=lambda x: x["distance"])
+        return places[:25]
     except Exception as e:
         logger.warning(f"Nearby places search failed: {e}")
     return []
