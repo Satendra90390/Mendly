@@ -10,7 +10,6 @@ const API_BASE = (() => {
 })();
 
 const API_KEYS = {
-    googleMaps: "AIzaSyBwOhoM_V65Vf1QGpEydoyqpM6hSAGeMKQ",
     openFda: "ppuCypLAwNIy1JdhHIKVAl1zPxKU2OK35OoGPOI8"
 };
 

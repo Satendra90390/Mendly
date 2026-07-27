@@ -5,8 +5,6 @@
 const GUEST_CHAT_LIMIT = 10;
 
 // Google Maps configuration
-const GOOGLE_MAPS_API_KEY = (window.MENDLY_CONFIG?.API_KEYS?.googleMaps) || "";
-const GOOGLE_MAPS_BASE = "https://maps.googleapis.com/maps/api/place";
 
 function isLoggedIn() {
     return !!getToken();
@@ -1048,49 +1046,6 @@ async function loadEmergencyContacts(country) {
 
 function loadDefaultEmergencyContacts() { loadEmergencyContacts("India"); }
 
-// ============================================================
-// Google Maps Places API Integration
-// ============================================================
-async function googlePlacesNearbySearch(lat, lng, type, radius = 5000) {
-    if (!GOOGLE_MAPS_API_KEY) return [];
-    const url = `${GOOGLE_MAPS_BASE}/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${GOOGLE_MAPS_API_KEY}`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
-            console.warn("Google Places API:", data.status, data.error_message);
-            return [];
-        }
-        return data.results || [];
-    } catch (e) { console.error(e); return []; }
-}
-
-async function googlePlacesTextSearch(query, lat, lng, radius = 25000) {
-    if (!GOOGLE_MAPS_API_KEY) return [];
-    const location = lat && lng ? `&location=${lat},${lng}&radius=${radius}` : "";
-    const url = `${GOOGLE_MAPS_BASE}/textsearch/json?query=${encodeURIComponent(query)}${location}&key=${GOOGLE_MAPS_API_KEY}`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
-            console.warn("Google Places API:", data.status, data.error_message);
-            return [];
-        }
-        return data.results || [];
-    } catch (e) { console.error(e); return []; }
-}
-
-async function googlePlaceDetails(placeId) {
-    if (!GOOGLE_MAPS_API_KEY) return null;
-    const fields = "name,formatted_address,formatted_phone_number,geometry/location,opening_hours,website,rating,types,photos";
-    const url = `${GOOGLE_MAPS_BASE}/details/json?place_id=${placeId}&fields=${fields}&key=${GOOGLE_MAPS_API_KEY}`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        return data.result || null;
-    } catch (e) { console.error(e); return null; }
-}
-
 function googleDirectionsUrl(origin, destination) {
     // Returns a Google Maps directions URL that opens in Maps app
     const o = typeof origin === "object" ? `${origin.lat},${origin.lng}` : encodeURIComponent(origin);
@@ -1113,47 +1068,6 @@ let hospitalFilter = "all";
 async function loadNearbyHospitals() {
     if (!state.userLocation) { renderHospitals([], "Click <strong>Nearby</strong> to allow location access, or search by name above."); return; }
     const { lat, lng } = state.userLocation;
-    
-    try {
-        // Use Google Maps Places API for real-time data
-        const googleResults = await googlePlacesNearbySearch(lat, lng, "hospital", 10000);
-        if (googleResults.length > 0) {
-            const hospitals = googleResults.map((place, i) => ({
-                name: place.name,
-                address: place.vicinity || place.formatted_address,
-                phone: null,
-                lat: place.geometry.location.lat,
-                lng: place.geometry.location.lng,
-                distance: place.geometry.location ? calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng) : null,
-                types: place.types,
-                place_id: place.place_id,
-                rating: place.rating,
-                open_now: place.opening_hours?.open_now,
-                services: place.types.includes("emergency") || place.types.includes("hospital") ? ["Emergency", "24/7"] : ["General"]
-            }));
-            
-            for (let i = 0; i < Math.min(hospitals.length, 5); i++) {
-                if (hospitals[i].place_id) {
-                    const details = await googlePlaceDetails(hospitals[i].place_id);
-                    if (details) {
-                        hospitals[i].phone = details.formatted_phone_number;
-                        hospitals[i].website = details.website;
-                        hospitals[i].opening_hours = details.opening_hours?.weekday_text;
-                    }
-                }
-            }
-            
-            hospitalCache = hospitals;
-            renderHospitals(hospitals);
-            updateHospitalStats(hospitals);
-            document.getElementById("dash-hospital-count").textContent = hospitals.length || 0;
-            return;
-        }
-    } catch (e) {
-        console.warn("Google Maps failed, falling back to backend:", e);
-    }
-
-    // Fallback to backend OSM data
     try {
         const res = await fetch(`${API_BASE}/emergency/hospitals/nearby`, {
             method: "POST",
@@ -1166,8 +1080,8 @@ async function loadNearbyHospitals() {
         renderHospitals(hospitals);
         updateHospitalStats(hospitals);
         document.getElementById("dash-hospital-count").textContent = hospitals.length || 0;
-    } catch (e2) {
-        console.error("Backend fallback also failed:", e2);
+    } catch (e) {
+        console.error("Failed to load hospitals:", e);
         renderHospitals([], "Could not load hospitals. Please try again.");
     }
 }
@@ -1231,19 +1145,6 @@ async function searchHospitals() {
         return;
     }
     try {
-        // Use Google Maps Places Text Search
-        const places = await googlePlacesTextSearch(q, state.userLocation?.lat, state.userLocation?.lng, 25000);
-        if (places.length > 0) {
-            const hospitals = await Promise.all(places.slice(0, 20).map(async (place) => {
-                const details = await googlePlaceDetails(place.place_id);
-                return details ? formatHospitalFromGoogle(details, state.userLocation) : formatHospitalFromGoogleBasic(place, state.userLocation);
-            }));
-            hospitalCache = hospitals.filter(Boolean);
-            renderHospitals(hospitalCache, `No hospitals found for "${escapeHtml(q)}". Try a different name.`);
-            updateHospitalStats(hospitalCache);
-            return;
-        }
-        // Fallback to backend
         const res = await fetch(`${API_BASE}/emergency/hospitals/search`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, lat: state.userLocation?.lat || 0, lng: state.userLocation?.lng || 0 }) });
         const data = await res.json();
         hospitalCache = data.hospitals || data;
@@ -1252,101 +1153,19 @@ async function searchHospitals() {
     } catch (e) { console.error(e); renderHospitals([]); }
 }
 
-function formatHospitalFromGoogleBasic(place, userLocation) {
-    const dist = userLocation ? haversineDistance(userLocation.lat, userLocation.lng, place.geometry.location.lat, place.geometry.location.lng) : null;
-    return {
-        name: place.name,
-        address: place.vicinity || place.formatted_address,
-        phone: null,
-        distance: dist,
-        types: place.types,
-        place_id: place.place_id,
-        rating: place.rating,
-        open_now: place.opening_hours?.open_now,
-        services: place.types.includes("emergency") ? ["Emergency", "24/7"] : ["General"]
-    };
-}
-
-function formatHospitalFromGoogle(details, userLocation) {
-    const dist = userLocation ? haversineDistance(userLocation.lat, userLocation.lng, details.geometry.location.lat, details.geometry.location.lng) : null;
-    const services = [];
-    if (details.opening_hours?.open_now) services.push("Open Now");
-    if (details.types?.includes("hospital")) services.push("Hospital");
-    if (details.types?.includes("emergency")) services.push("Emergency", "24/7");
-    return {
-        name: details.name,
-        address: details.formatted_address,
-        phone: details.formatted_phone_number,
-        distance: dist,
-        types: details.types,
-        place_id: details.place_id,
-        geometry: details.geometry,
-        website: details.website,
-        rating: details.rating,
-        opening_hours: details.opening_hours?.weekday_text,
-        services: services.length ? services : ["General"]
-    };
-}
-
 async function loadNearbyPharmacies() {
     if (!state.userLocation) { renderPharmacies([], "Click <strong>Nearby</strong> to allow location access, or search by name above."); return; }
     try {
-        // Try Google Maps Places API first
-        const places = await googlePlacesNearbySearch(state.userLocation.lat, state.userLocation.lng, "pharmacy", 5000);
-        if (places.length > 0) {
-            // Fetch details for each place
-            const pharmacies = await Promise.all(places.slice(0, 20).map(async (place) => {
-                const details = await googlePlaceDetails(place.place_id);
-                return details ? formatPharmacyFromGoogle(details, state.userLocation) : formatPharmacyFromGoogleBasic(place, state.userLocation);
-            }));
-            renderPharmacies(pharmacies.filter(Boolean));
-            document.getElementById("dash-pharmacy-count").textContent = pharmacies.filter(Boolean).length || 0;
-            updatePharmacyStats(pharmacies.filter(Boolean));
-            return;
-        }
-        // Fallback to backend
         const res = await fetch(`${API_BASE}/emergency/pharmacies/nearby`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lat: state.userLocation.lat, lng: state.userLocation.lng, radius: 25 }) });
         const data = await res.json();
-        renderPharmacies(data.pharmacies || data);
-        document.getElementById("dash-pharmacy-count").textContent = (data.pharmacies || data).length || 0;
-    } catch (e) { console.error(e); renderPharmacies([]); }
-}
-
-function formatPharmacyFromGoogleBasic(place, userLocation) {
-    const dist = userLocation ? haversineDistance(userLocation.lat, userLocation.lng, place.geometry.location.lat, place.geometry.location.lng) : null;
-    return {
-        name: place.name,
-        address: place.vicinity || place.formatted_address,
-        phone: null,
-        distance: dist,
-        services: place.types || [],
-        place_id: place.place_id,
-        geometry: place.geometry
-    };
-}
-
-function formatPharmacyFromGoogle(details, userLocation) {
-    const dist = userLocation ? haversineDistance(userLocation.lat, userLocation.lng, details.geometry.location.lat, details.geometry.location.lng) : null;
-    const services = [];
-    if (details.opening_hours?.open_now) services.push("Open Now");
-    if (details.types?.includes("pharmacy")) services.push("Pharmacy");
-    if (details.types?.includes("store")) services.push("Store");
-    if (details.opening_hours?.periods?.some(p => p.open?.day === 0 && p.open?.time === "0000" && p.close?.time === "2359")) services.push("24hr");
-    return {
-        name: details.name,
-        address: details.formatted_address,
-        phone: details.formatted_phone_number,
-        distance: dist,
-        services: services,
-        place_id: details.place_id,
-        geometry: details.geometry,
-        website: details.website,
-        rating: details.rating
-    };
-}
-
-function haversineDistance(lat1, lng1, lat2, lng2) {
-    return calculateDistance(lat1, lng1, lat2, lng2);
+        const pharmacies = data.pharmacies || [];
+        renderPharmacies(pharmacies);
+        document.getElementById("dash-pharmacy-count").textContent = pharmacies.length || 0;
+        updatePharmacyStats(pharmacies);
+    } catch (e) {
+        console.error("Failed to load pharmacies:", e);
+        renderPharmacies([], "Could not load pharmacies. Please try again.");
+    }
 }
 
 function renderPharmacies(pharmacies, emptyMessage = "No pharmacies found.") {
@@ -1413,17 +1232,6 @@ async function searchPharmacies() {
         return;
     }
     try {
-        // Use Google Maps Places API for text search
-        const places = await googlePlacesTextSearch(q, state.userLocation?.lat, state.userLocation?.lng, 25000);
-        if (places.length > 0) {
-            const pharmacies = await Promise.all(places.slice(0, 20).map(async (place) => {
-                const details = await googlePlaceDetails(place.place_id);
-                return details ? formatPharmacyFromGoogle(details, state.userLocation) : formatPharmacyFromGoogleBasic(place, state.userLocation);
-            }));
-            renderPharmacies(pharmacies.filter(Boolean), `No pharmacies found for "${escapeHtml(q)}". Try a different name.`);
-            return;
-        }
-        // Fallback to backend
         const res = await fetch(`${API_BASE}/emergency/pharmacies/search`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q, lat: state.userLocation?.lat || 0, lng: state.userLocation?.lng || 0 }) });
         const data = await res.json();
         renderPharmacies(data.pharmacies || data, `No pharmacies found for "${escapeHtml(q)}". Try a different name.`);
