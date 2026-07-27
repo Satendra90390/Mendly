@@ -94,6 +94,13 @@ async function authFetch(path, options = {}) {
             },
         });
         if (res.status === 401) {
+            if (typeof clearSession === "function") clearSession();
+            if (typeof handleLogout === "function") {
+                handleLogout();
+            } else {
+                document.getElementById("app-root").style.display = "none";
+                document.getElementById("landing-page").style.display = "block";
+            }
             throw new Error("Session expired. Please log in again.");
         }
         return res;
@@ -191,6 +198,7 @@ function getUserLocation() {
         getLocationFromIP();
         return;
     }
+    if (status) status.style.display = "";
     status.innerHTML = '<i class="fa-solid fa-location-dot"></i> Getting location...';
     navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -855,7 +863,7 @@ async function checkInteractions() {
     try {
         const res = await authFetch("/medicines/interactions", {
             method: "POST",
-            body: JSON.stringify({ medications: interactionMedicines, conditions })
+            body: JSON.stringify({ medication: interactionMedicines.join(", "), conditions })
         });
         const data = await res.json();
         if (data.error) {

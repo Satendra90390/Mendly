@@ -513,8 +513,8 @@ function handleLogout() {
     if (landingNav) landingNav.style.display = "";
     if (landingHero) landingHero.style.display = "";
     if (landingFooter) landingFooter.style.display = "";
-    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "";
-    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
+    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "none";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "";
     goToStep("login");
     ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
     window.scrollTo(0, 0);
@@ -549,14 +549,14 @@ function enterAppDirect() {
     appRoot.style.display = "";
     appRoot.classList.add("ready");
     const banner = document.getElementById("guest-banner");
-    if (banner) banner.style.display = "";
+    if (banner) banner.style.display = "block";
     const uname = document.getElementById("sidebar-username"); if (uname) uname.textContent = "Guest";
     const avatar = document.getElementById("sidebar-avatar"); if (avatar) { avatar.textContent = "G"; avatar.style.background = "#64748B"; }
     const mName = document.getElementById("mobile-username"); if (mName) mName.textContent = "Guest";
     const mEmail = document.getElementById("mobile-email"); if (mEmail) mEmail.textContent = "Sign up for full access";
     const mAvatar = document.getElementById("mobile-avatar"); if (mAvatar) { mAvatar.textContent = "G"; mAvatar.style.background = "#64748B"; }
-    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "";
-    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
+    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "none";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "";
     if (typeof initApp === "function") initApp();
     if (typeof switchView === "function") switchView("dashboard");
     if (!getToken()) {
