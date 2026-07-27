@@ -534,8 +534,42 @@ def _build_osm_viewbox(lat: float, lng: float, radius_km: float) -> str:
 
 async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: int = 10):
     viewbox = _build_osm_viewbox(lat, lng, radius_km)
-    params = {"format": "json", "q": place_type, "addressdetails": 1, "limit": 50, "bounded": 1, "viewbox": viewbox}
     headers = {"User-Agent": "MendlyHealthPlatform/1.0 (contact@mendlyhealth.com)", "Accept-Language": "en"}
+    
+    # Try Photon first (faster, OSM-based)
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            response = await client.get(
+                "https://photon.komoot.io/api/",
+                params={"q": place_type, "lat": lat, "lon": lng, "limit": 50, "lang": "en"},
+                headers=headers
+            )
+            response.raise_for_status()
+            data = response.json()
+            features = data.get("features", [])
+            if features:
+                results = []
+                for f in features:
+                    props = f.get("properties", {})
+                    coords = f.get("geometry", {}).get("coordinates", [0, 0])
+                    results.append({
+                        "lat": str(coords[1]),
+                        "lon": str(coords[0]),
+                        "display_name": ", ".join(filter(None, [
+                            props.get("name", ""),
+                            props.get("street", ""),
+                            props.get("city", ""),
+                            props.get("state", ""),
+                            props.get("country", "")
+                        ])),
+                        "address": props
+                    })
+                return results
+    except Exception as e:
+        logger.warning(f"Photon nearby search failed, trying Nominatim: {e}")
+    
+    # Fallback to Nominatim
+    params = {"format": "json", "q": place_type, "addressdetails": 1, "limit": 50, "bounded": 1, "viewbox": viewbox}
     async with httpx.AsyncClient(timeout=10.0) as client:
         response = await client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)
         response.raise_for_status()
@@ -543,8 +577,45 @@ async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: 
 
 
 async def _search_osm_by_name(query: str, place_type: str):
-    params = {"format": "json", "q": f"{query} {place_type}", "addressdetails": 1, "limit": 20}
     headers = {"User-Agent": "MendlyHealthPlatform/1.0 (contact@mendlyhealth.com)", "Accept-Language": "en"}
+    search_query = f"{query} {place_type}"
+    
+    # Try Photon first
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            response = await client.get(
+                "https://photon.komoot.io/api/",
+                params={"q": search_query, "limit": 20, "lang": "en"},
+                headers=headers
+            )
+            response.raise_for_status()
+            data = response.json()
+            features = data.get("features", [])
+            if features:
+                places = []
+                for f in features:
+                    props = f.get("properties", {})
+                    coords = f.get("geometry", {}).get("coordinates", [0, 0])
+                    raw_address = ", ".join(filter(None, [
+                        props.get("name", ""),
+                        props.get("street", ""),
+                        props.get("city", ""),
+                        props.get("state", ""),
+                        props.get("country", "")
+                    ]))
+                    address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
+                    places.append({
+                        "name": props.get("name", place_type).split(",")[0],
+                        "address": address, "phone": "N/A", "distance": None,
+                        "lat": coords[1], "lng": coords[0],
+                        "types": [place_type.capitalize()], "available": True, "services": ["Name search"],
+                    })
+                return places
+    except Exception as e:
+        logger.warning(f"Photon name search failed, trying Nominatim: {e}")
+    
+    # Fallback to Nominatim
+    params = {"format": "json", "q": search_query, "addressdetails": 1, "limit": 20}
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)

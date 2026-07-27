@@ -241,6 +241,23 @@ async function getLocationFromIP() {
 
 async function getAddress(lat, lng) {
     try {
+        // Try Photon first (faster, OSM-based)
+        const res = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}&limit=1&lang=en`);
+        const data = await res.json();
+        const feature = data.features?.[0];
+        if (feature) {
+            const p = feature.properties || {};
+            const parts = [p.name, p.street, p.city, p.state, p.country].filter(Boolean).slice(0, 3);
+            if (parts.length) {
+                document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${escapeHtml(parts.join(", "))}`;
+                return;
+            }
+        }
+    } catch (e) {
+        console.log("Photon reverse geocoding failed, trying Nominatim");
+    }
+    try {
+        // Fallback to Nominatim
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
         const data = await res.json();
         if (data.display_name) {
