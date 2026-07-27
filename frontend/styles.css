@@ -553,6 +553,14 @@ html.light .mob-link { color: rgba(71,85,105,0.8); }
 }
 html.light .topbar { background: rgba(255,255,255,0.6); border-color: rgba(0,0,0,0.04); }
 
+/* ---- APP NAV VISIBILITY ---- */
+#topnav-pill { display: none; }
+#user-menu { display: none; }
+#login-btn-top { display: flex; }
+#topnav-signup-btn { display: flex; }
+#topnav-logout { display: none; }
+#mobile-menu-btn { display: none; }
+
 /* ---- STATS ---- */
 .stat-card { padding: 1.25rem; }
 .stat-number { font-size: 1.5rem; font-weight: 800; }
@@ -861,6 +869,11 @@ html.light .landing-nav-bar {
 .footer-row > div { flex-shrink: 0; }
 
 /* ---- RESPONSIVE ---- */
+@media (min-width: 769px) {
+  #topnav-pill { display: flex !important; }
+  #user-menu { display: block !important; }
+  #mobile-menu-btn { display: none !important; }
+}
 @media (max-width: 768px) {
   .landing-nav-bar { margin: 0.5rem 0.75rem; padding: 0.4rem 0.75rem; }
   .landing-nav-bar .nav-links { display: none !important; }
@@ -870,6 +883,9 @@ html.light .landing-nav-bar {
   .about-grid { grid-template-columns: 1fr !important; }
   #mobile-menu-btn { display: flex !important; }
   #topnav-pill { display: none !important; }
+  #user-menu { display: none !important; }
+  #topnav-signup-btn { display: flex !important; }
+  #login-btn-top { display: flex !important; }
   .footer-row { flex-direction: column; align-items: center; gap: 1rem; }
   .footer-row > div { text-align: center; }
 }

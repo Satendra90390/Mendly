@@ -514,7 +514,9 @@ function handleLogout() {
     if (landingHero) landingHero.style.display = "";
     if (landingFooter) landingFooter.style.display = "";
     const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "none";
-    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
+    const loginBtn = document.getElementById("login-btn-top"); if (loginBtn) loginBtn.style.display = "none";
+    const userMenu = document.getElementById("user-menu"); if (userMenu) userMenu.style.display = "none";
     goToStep("login");
     ["signup-name", "signup-email", "signup-password", "signup-confirm", "login-email", "login-password", "forgot-email", "reset-password", "reset-confirm"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
     window.scrollTo(0, 0);
@@ -537,8 +539,10 @@ function enterApp(user, isNew) {
         const banner = document.getElementById("guest-banner");
         if (banner) banner.style.display = "none";
     }
-    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "";
+    const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "flex";
     const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "none";
+    const loginBtn = document.getElementById("login-btn-top"); if (loginBtn) loginBtn.style.display = "none";
+    const userMenu = document.getElementById("user-menu"); if (userMenu) userMenu.style.display = "block";
     if (typeof initApp === "function") initApp();
     if (typeof updatePasswordForm === "function") updatePasswordForm();
 }
@@ -556,7 +560,9 @@ function enterAppDirect() {
     const mEmail = document.getElementById("mobile-email"); if (mEmail) mEmail.textContent = "Sign up for full access";
     const mAvatar = document.getElementById("mobile-avatar"); if (mAvatar) { mAvatar.textContent = "G"; mAvatar.style.background = "#64748B"; }
     const logoutBtn = document.getElementById("topnav-logout"); if (logoutBtn) logoutBtn.style.display = "none";
-    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "";
+    const signupBtn = document.getElementById("topnav-signup-btn"); if (signupBtn) signupBtn.style.display = "flex";
+    const loginBtn = document.getElementById("login-btn-top"); if (loginBtn) loginBtn.style.display = "none";
+    const userMenu = document.getElementById("user-menu"); if (userMenu) userMenu.style.display = "block";
     if (typeof initApp === "function") initApp();
     if (typeof switchView === "function") switchView("dashboard");
     if (!getToken()) {
