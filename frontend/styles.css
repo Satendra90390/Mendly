@@ -886,11 +886,13 @@ html.light .landing-nav-bar {
   #user-menu { display: none !important; }
   #topnav-signup-btn { display: flex !important; }
   #login-btn-top { display: flex !important; }
+  #dashboard-stats { grid-template-columns: repeat(3, 1fr) !important; }
   .footer-row { flex-direction: column; align-items: center; gap: 1rem; }
   .footer-row > div { text-align: center; }
 }
 @media (max-width: 480px) {
   .landing-nav-bar .btn-primary, .landing-nav-bar .btn-secondary { padding: 0.3rem 0.5rem; font-size: 0.72rem; }
+  #dashboard-stats { grid-template-columns: repeat(2, 1fr) !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
