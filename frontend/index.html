@@ -13,6 +13,21 @@
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"></noscript>
 <link rel="stylesheet" href="styles.build.css">
+<script>
+(function(){
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('token') || window.location.hash.indexOf('access_token') !== -1) {
+        document.documentElement.style.background = '#0A0F1E';
+        document.addEventListener('DOMContentLoaded', function(){
+            var d = document.createElement('div');
+            d.id = 'oauth-loading';
+            d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0A0F1E;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;';
+            d.innerHTML = '<div style="width:48px;height:48px;border:3px solid rgba(255,255,255,0.1);border-top-color:#6C63FF;border-radius:50%;animation:spin .8s linear infinite;"></div><p style="color:#A0AEC0;font-size:0.9rem;">Signing you in...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
+            document.body.appendChild(d);
+        });
+    }
+})();
+</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
 </head>

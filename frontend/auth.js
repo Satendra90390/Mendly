@@ -526,6 +526,8 @@ function handleLogout() {
 // ENTER APP / UPDATE UI
 // ============================================================
 function enterApp(user, isNew) {
+    const oauthLoader = document.getElementById("oauth-loading");
+    if (oauthLoader) oauthLoader.remove();
     document.getElementById("landing-page").style.display = "none";
     const appRoot = document.getElementById("app-root");
     appRoot.style.display = "";
