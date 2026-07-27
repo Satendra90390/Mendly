@@ -720,7 +720,7 @@ html.light .pharmacy-service-tag { background: rgba(0,0,0,0.02); border-color: r
 /* ---- CHAT ---- */
 .chat-bubble-wrap { animation: fade-up 0.35s ease both; }
 .chat-bubble-wrap.visible { opacity: 1; }
-.chat-orb { width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; background: linear-gradient(135deg,#14B8A6,#0D9488); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #fff; flex-shrink: 0; }
+.chat-orb { width: 2rem; height: 2rem; border-radius: 0.65rem; background: linear-gradient(135deg,#14B8A6,#0891B2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #fff; flex-shrink: 0; box-shadow: 0 0 12px rgba(20,184,166,0.3); }
 .bubble-content { flex: 1; min-width: 0; }
 .bubble-text { font-size: 0.9rem; line-height: 1.7; }
 .bubble-text p { margin: 0.4rem 0; }
