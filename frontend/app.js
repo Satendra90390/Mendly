@@ -241,13 +241,17 @@ async function getLocationFromIP() {
 
 async function getAddress(lat, lng) {
     try {
-        // Try Photon first (faster, OSM-based)
-        const res = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}&limit=1&lang=en`);
+        // Try Photon first (faster, OSM-based) — get multiple results, pick most specific
+        const res = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}&limit=5&lang=en`);
         const data = await res.json();
-        const feature = data.features?.[0];
-        if (feature) {
-            const p = feature.properties || {};
-            const parts = [p.name, p.street, p.city, p.state, p.country].filter(Boolean).slice(0, 3);
+        const features = data.features || [];
+        // Prefer result with street-level detail (housenumber or street)
+        const best = features.find(f => f.properties?.street || f.properties?.housenumber)
+                   || features.find(f => f.properties?.city || f.properties?.village)
+                   || features[0];
+        if (best) {
+            const p = best.properties || {};
+            const parts = [p.housenumber, p.street, p.city || p.village || p.town, p.state, p.country].filter(Boolean).slice(0, 4);
             if (parts.length) {
                 document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${escapeHtml(parts.join(", "))}`;
                 return;
@@ -257,11 +261,19 @@ async function getAddress(lat, lng) {
         console.log("Photon reverse geocoding failed, trying Nominatim");
     }
     try {
-        // Fallback to Nominatim
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
+        // Fallback to Nominatim — zoom=18 for street-level precision
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
         const data = await res.json();
+        if (data.address) {
+            const a = data.address;
+            const parts = [a.house_number, a.road, a.suburb || a.neighbourhood || a.city_district, a.city || a.town || a.village, a.state, a.country].filter(Boolean).slice(0, 4);
+            if (parts.length) {
+                document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${escapeHtml(parts.join(", "))}`;
+                return;
+            }
+        }
         if (data.display_name) {
-            const parts = data.display_name.split(",").slice(0, 3).map(p => escapeHtml(p.trim()));
+            const parts = data.display_name.split(",").slice(0, 4).map(p => escapeHtml(p.trim()));
             document.getElementById("location-status").innerHTML = `<i class="fa-solid fa-location-dot"></i> ${parts.join(", ")}`;
         }
     } catch (e) {
