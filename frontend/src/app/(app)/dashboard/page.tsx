@@ -246,23 +246,23 @@ export default function DashboardPage() {
           borderTop: "1px solid var(--border)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-14">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
 
             {/* Brand */}
             <div>
-              <Link href="/dashboard" className="flex items-center gap-2.5">
+              <Link href="/dashboard" className="flex items-center gap-3">
                 <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base"
                   style={{ background: "var(--gradient-1)" }}
                 >
                   M
                 </div>
-                <span className="text-lg font-bold" style={{ color: "var(--text)" }}>
+                <span className="text-xl font-bold" style={{ color: "var(--text)" }}>
                   Mendly
                 </span>
               </Link>
-              <p className="mt-4 text-sm leading-relaxed" style={{ color: "var(--text-dim)" }}>
+              <p className="mt-5 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
                 Your AI-powered medical assistant for medicines, drug interactions, and nearby
                 healthcare facilities.
               </p>
@@ -270,15 +270,15 @@ export default function DashboardPage() {
 
             {/* Quick Links */}
             <div>
-              <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>
+              <h3 className="text-sm font-semibold mb-5 uppercase tracking-wider" style={{ color: "var(--text)" }}>
                 Quick Links
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-3.5">
                 {NAV_LINKS.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm transition-colors hover:underline"
+                      className="text-sm transition-colors hover:text-teal-400"
                       style={{ color: "var(--text-muted)" }}
                     >
                       {link.label}
@@ -290,10 +290,10 @@ export default function DashboardPage() {
 
             {/* Resources */}
             <div>
-              <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>
+              <h3 className="text-sm font-semibold mb-5 uppercase tracking-wider" style={{ color: "var(--text)" }}>
                 Resources
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-3.5">
                 {[
                   { label: "AI Chat (Elix)", href: "/chatbot" },
                   { label: "Pharmacies", href: "/pharmacies" },
@@ -303,7 +303,7 @@ export default function DashboardPage() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm transition-colors hover:underline"
+                      className="text-sm transition-colors hover:text-teal-400"
                       style={{ color: "var(--text-muted)" }}
                     >
                       {link.label}
@@ -315,10 +315,10 @@ export default function DashboardPage() {
 
             {/* Disclaimer */}
             <div>
-              <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>
+              <h3 className="text-sm font-semibold mb-5 uppercase tracking-wider" style={{ color: "var(--text)" }}>
                 Medical Disclaimer
               </h3>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--text-dim)" }}>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
                 Mendly provides health information for educational purposes only and is not a
                 substitute for professional medical advice, diagnosis, or treatment. Always consult a
                 qualified healthcare provider.
@@ -328,30 +328,30 @@ export default function DashboardPage() {
 
           {/* Copyright */}
           <div
-            className="mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
+            className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
             style={{ borderTop: "1px solid var(--border)" }}
           >
             <p className="text-sm" style={{ color: "var(--text-dim)" }}>
               &copy; {new Date().getFullYear()} Mendly. All rights reserved.
             </p>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-6">
               <Link
                 href="/account"
-                className="text-sm transition-colors hover:underline"
+                className="text-sm transition-colors hover:text-teal-400"
                 style={{ color: "var(--text-dim)" }}
               >
                 Account
               </Link>
               <Link
                 href="/saved"
-                className="text-sm transition-colors hover:underline"
+                className="text-sm transition-colors hover:text-teal-400"
                 style={{ color: "var(--text-dim)" }}
               >
                 Saved Items
               </Link>
               <Link
                 href="/pharmacies"
-                className="text-sm transition-colors hover:underline"
+                className="text-sm transition-colors hover:text-teal-400"
                 style={{ color: "var(--text-dim)" }}
               >
                 Pharmacies
