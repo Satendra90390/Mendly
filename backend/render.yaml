@@ -12,9 +12,9 @@ services:
       - key: MONGODB_URI
         sync: false
       - key: FRONTEND_ORIGINS
-        value: https://mendly-xi.vercel.app
+        value: https://mendlyweb.vercel.app
       - key: FRONTEND_URL
-        value: https://mendly-xi.vercel.app
+        value: https://mendlyweb.vercel.app
       - key: CHATBOT_PROVIDER
         value: nvidia
       - key: NVIDIA_API_KEY
