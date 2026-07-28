@@ -67,7 +67,14 @@ export default function PharmaciesPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div
+      className="min-h-screen p-4 md:p-8"
+      style={{
+        background: "var(--bg)",
+        backgroundImage: "var(--bg-gradient)",
+      }}
+    >
+      <div className="max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-1">Nearby Pharmacies</h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Find pharmacies and medical stores near you</p>
@@ -121,6 +128,7 @@ export default function PharmaciesPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

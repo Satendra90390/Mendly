@@ -116,14 +116,14 @@ export default function AccountPage() {
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-screen p-4 md:p-8"
       style={{
         background: "var(--bg)",
         backgroundImage: "var(--bg-gradient)",
       }}
     >
       {/* Header */}
-      <div className="max-w-3xl mx-auto px-4 md:px-8 mb-8">
+      <div className="max-w-3xl mx-auto mb-8">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
             <i className="fa-solid fa-user-gear text-teal-400 text-xl"></i>
