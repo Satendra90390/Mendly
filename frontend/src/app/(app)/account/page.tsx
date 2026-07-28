@@ -107,32 +107,25 @@ export default function AccountPage() {
   };
 
   return (
-    <div
-      className="min-h-screen p-4 md:p-8"
-      style={{
-        background: "var(--bg)",
-        backgroundImage: "var(--bg-gradient)",
-      }}
-    >
-      {/* Header */}
+    <div className="page-wrap p-4 md:p-8">
       <div className="max-w-3xl mx-auto mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
-            <i className="fa-solid fa-user-gear text-teal-400 text-xl"></i>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "rgba(20,184,166,0.2)", border: "1px solid rgba(20,184,166,0.3)" }}>
+            <i className="fa-solid fa-user-gear text-xl" style={{ color: "var(--accent)" }}></i>
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Account</h1>
-            <p className="text-gray-400 text-sm">Manage your profile and preferences</p>
+            <h1 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--text)" }}>Account</h1>
+            <p className="text-sm text-muted">Manage your profile and preferences</p>
           </div>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Profile Card */}
-        <div className="rounded-xl bg-gray-800/40 backdrop-blur-md border border-gray-700/30 p-6">
+        <div className="rounded-xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
             {/* Avatar */}
-            <div className="w-20 h-20 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center flex-shrink-0">
+            <div className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(20,184,166,0.2)", border: "1px solid rgba(20,184,166,0.3)" }}>
               {user?.profile_photo ? (
                 <img
                   src={user.profile_photo}
@@ -140,7 +133,7 @@ export default function AccountPage() {
                   className="w-full h-full rounded-2xl object-cover"
                 />
               ) : (
-                <span className="text-2xl font-bold text-teal-300">
+                <span className="text-2xl font-bold" style={{ color: "var(--accent-light)" }}>
                   {getInitials(user?.name || "U")}
                 </span>
               )}
@@ -161,14 +154,16 @@ export default function AccountPage() {
                         setEditing(false);
                       }
                     }}
-                    className="w-full sm:w-64 px-4 py-2 rounded-lg bg-gray-700/50 border border-teal-500/40 text-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+                    className="w-full sm:w-64 px-4 py-2 rounded-lg text-sm outline-none"
+                    style={{ background: "var(--surface-hover)", border: "1px solid var(--accent)", color: "var(--text)" }}
                     autoFocus
                   />
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleSaveName}
                       disabled={saving}
-                      className="px-4 py-2 rounded-lg bg-teal-500/20 border border-teal-500/30 text-teal-300 text-sm font-medium hover:bg-teal-500/30 transition-all disabled:opacity-50"
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+                      style={{ background: "rgba(20,184,166,0.2)", border: "1px solid rgba(20,184,166,0.3)", color: "var(--accent-light)" }}
                     >
                       {saving ? (
                         <i className="fa-solid fa-spinner fa-spin"></i>
@@ -181,7 +176,8 @@ export default function AccountPage() {
                         setName(user?.name || "");
                         setEditing(false);
                       }}
-                      className="px-4 py-2 rounded-lg bg-gray-700/40 border border-gray-600/30 text-gray-400 text-sm font-medium hover:text-white transition-all"
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                      style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
                     >
                       <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -189,11 +185,14 @@ export default function AccountPage() {
                 </div>
               ) : (
                 <>
-                  <h2 className="text-white font-bold text-xl">{user?.name || "User"}</h2>
-                  <p className="text-gray-400 text-sm mt-0.5">{user?.email}</p>
+                  <h2 className="font-bold text-xl" style={{ color: "var(--text)" }}>{user?.name || "User"}</h2>
+                  <p className="text-sm mt-0.5 text-muted">{user?.email}</p>
                   <button
                     onClick={() => setEditing(true)}
-                    className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700/40 border border-gray-600/30 text-gray-400 text-sm font-medium hover:text-white hover:bg-gray-700/60 transition-all"
+                    className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; e.currentTarget.style.color = "var(--text)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "var(--surface)"; e.currentTarget.style.color = "var(--text-muted)"; }}
                   >
                     <i className="fa-solid fa-pen text-[11px]"></i>
                     <span>Edit Name</span>
@@ -226,59 +225,54 @@ export default function AccountPage() {
               color: "#EC4899",
             },
           ].map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-xl bg-gray-800/40 backdrop-blur-md border border-gray-700/30 p-5 flex flex-col gap-3"
-            >
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ background: `${stat.color}18` }}
-              >
+            <div key={stat.label} className="rounded-xl p-5 flex flex-col gap-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: `${stat.color}18` }}>
                 <i className={stat.icon} style={{ color: stat.color }} />
               </div>
               {statsLoading ? (
-                <div
-                  className="h-6 w-16 rounded-md animate-pulse"
-                  style={{ background: "rgba(255,255,255,0.05)" }}
-                />
+                <div className="h-6 w-16 rounded-md animate-pulse" style={{ background: "var(--surface-hover)" }} />
               ) : (
-                <span className="text-xl font-bold text-white">{stat.value}</span>
+                <span className="text-xl font-bold" style={{ color: "var(--text)" }}>{stat.value}</span>
               )}
-              <p className="text-xs text-gray-500">{stat.label}</p>
+              <p className="text-xs text-dim">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {/* Danger Zone */}
-        <div className="rounded-xl bg-gray-800/40 backdrop-blur-md border border-red-500/20 p-6">
+        <div className="rounded-xl p-6" style={{ background: "var(--surface)", border: "1px solid rgba(239,68,68,0.2)" }}>
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <i className="fa-solid fa-triangle-exclamation text-red-400 text-sm"></i>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}>
+              <i className="fa-solid fa-triangle-exclamation text-sm" style={{ color: "#EF4444" }}></i>
             </div>
             <div className="flex-1">
-              <h3 className="text-white font-semibold text-sm">Danger Zone</h3>
-              <p className="text-gray-400 text-xs mt-1 mb-4">
+              <h3 className="font-semibold text-sm" style={{ color: "var(--text)" }}>Danger Zone</h3>
+              <p className="text-xs mt-1 mb-4 text-muted">
                 Permanently delete your account and all associated data. This action cannot be undone.
               </p>
 
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/20 hover:border-red-500/30 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                  style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#EF4444" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(239,68,68,0.2)"; e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(239,68,68,0.1)"; e.currentTarget.style.borderColor = "rgba(239,68,68,0.2)"; }}
                 >
                   <i className="fa-solid fa-trash-can text-[11px]"></i>
                   <span>Delete Account</span>
                 </button>
               ) : (
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                  <p className="text-red-300 text-sm font-medium">
+                  <p className="text-sm font-medium" style={{ color: "#FCA5A5" }}>
                     Are you sure? This cannot be undone.
                   </p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleDeleteAccount}
                       disabled={deleting}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-medium hover:bg-red-500/30 transition-all disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+                      style={{ background: "rgba(239,68,68,0.2)", border: "1px solid rgba(239,68,68,0.3)", color: "#FCA5A5" }}
                     >
                       {deleting ? (
                         <i className="fa-solid fa-spinner fa-spin"></i>
@@ -289,7 +283,10 @@ export default function AccountPage() {
                     </button>
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="px-4 py-2 rounded-lg bg-gray-700/40 border border-gray-600/30 text-gray-400 text-sm font-medium hover:text-white transition-all"
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                      style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; }}
                     >
                       Cancel
                     </button>

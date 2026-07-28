@@ -100,45 +100,43 @@ export default function MedicinesPage() {
   };
 
   return (
-    <div
-      className="min-h-screen p-4 md:p-8"
-      style={{
-        background: "var(--bg)",
-        backgroundImage: "var(--bg-gradient)",
-      }}
-    >
-      {/* Header */}
+    <div className="page-wrap p-4 md:p-8">
       <div className="max-w-7xl mx-auto mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
-            <i className="fa-solid fa-capsules text-teal-400 text-xl"></i>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "rgba(20,184,164,0.2)", border: "1px solid rgba(20,184,164,0.3)" }}>
+            <i className="fa-solid fa-capsules text-xl" style={{ color: "var(--accent)" }}></i>
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">
+            <h1 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--text)" }}>
               Medicine Guide
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-sm text-muted">
               Search medicines, check dosage &amp; side effects
             </p>
           </div>
         </div>
       </div>
 
-      {/* Search Bar */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="relative">
-          <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-dim"></i>
           <input
             type="text"
             placeholder="Search medicines by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-gray-800/60 backdrop-blur-md border border-gray-700/50 text-white placeholder-gray-500 focus:outline-none focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20 transition-all duration-300"
+            className="w-full pl-12 pr-4 py-3.5 rounded-xl outline-none transition-all duration-300"
+            style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(20,184,166,0.1)"; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
+              style={{ color: "var(--text-dim)" }}
+              onMouseEnter={(e) => e.currentTarget.style.color = "var(--text)"}
+              onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-dim)"}
             >
               <i className="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -146,18 +144,18 @@ export default function MedicinesPage() {
         </div>
       </div>
 
-      {/* Filter Pills */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
               onClick={() => setActiveCategory(cat.value)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-md border ${
-                activeCategory === cat.value
-                  ? "bg-teal-500/20 border-teal-500/40 text-teal-300 shadow-lg shadow-teal-500/10"
-                  : "bg-gray-800/40 border-gray-700/40 text-gray-400 hover:bg-gray-700/40 hover:text-gray-300 hover:border-gray-600/40"
-              }`}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300"
+              style={{
+                background: activeCategory === cat.value ? "rgba(20,184,166,0.2)" : "var(--surface)",
+                border: activeCategory === cat.value ? "1px solid rgba(20,184,166,0.4)" : "1px solid var(--border)",
+                color: activeCategory === cat.value ? "var(--accent-light)" : "var(--text-muted)",
+              }}
             >
               <i className={cat.icon}></i>
               <span>{cat.label}</span>
@@ -166,36 +164,30 @@ export default function MedicinesPage() {
         </div>
       </div>
 
-      {/* Error State */}
       {error && (
         <div className="max-w-7xl mx-auto mb-6">
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 backdrop-blur-md">
+          <div className="p-4 rounded-xl" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}>
             <div className="flex items-center gap-3">
-              <i className="fa-solid fa-triangle-exclamation text-red-400"></i>
-              <p className="text-red-300 text-sm">{error}</p>
+              <i className="fa-solid fa-triangle-exclamation" style={{ color: "#EF4444" }}></i>
+              <p className="text-sm" style={{ color: "#FCA5A5" }}>{error}</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Loading State */}
       {loading && (
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-48 rounded-xl bg-gray-800/40 border border-gray-700/30 animate-pulse"
-              />
+              <div key={i} className="h-48 rounded-xl animate-pulse" style={{ background: "var(--surface)", border: "1px solid var(--border)" }} />
             ))}
           </div>
         </div>
       )}
 
-      {/* Medicines Grid */}
       {!loading && medicines.length > 0 && (
         <div className="max-w-7xl mx-auto">
-          <p className="text-gray-500 text-sm mb-4">
+          <p className="text-sm mb-4 text-dim">
             {medicines.length} medicine{medicines.length !== 1 ? "s" : ""} found
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -203,30 +195,31 @@ export default function MedicinesPage() {
               <button
                 key={medicine.id || medicine.name}
                 onClick={() => handleViewDetail(medicine)}
-                className="text-left p-5 rounded-xl bg-gray-800/40 backdrop-blur-md border border-gray-700/30 hover:border-teal-500/30 hover:bg-gray-800/60 hover:shadow-lg hover:shadow-teal-500/5 transition-all duration-300 group"
+                className="text-left p-5 rounded-xl transition-all duration-300 group card-hover"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
-                    <i className={`${getCategoryIcon(medicine.category)} text-teal-400 text-sm`}></i>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "rgba(20,184,166,0.1)", border: "1px solid rgba(20,184,166,0.2)" }}>
+                    <i className={`${getCategoryIcon(medicine.category)} text-sm`} style={{ color: "var(--accent)" }}></i>
                   </div>
-                  <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-gray-700/50 text-gray-400 border border-gray-600/30">
+                  <span className="text-[11px] font-medium px-2.5 py-1 rounded-full text-dim" style={{ background: "var(--surface-hover)", border: "1px solid var(--border)" }}>
                     {medicine.category || "General"}
                   </span>
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-1 group-hover:text-teal-300 transition-colors">
+                <h3 className="font-semibold text-lg mb-1 transition-colors" style={{ color: "var(--text)" }}>
                   {medicine.name}
                 </h3>
                 {medicine.brand && (
-                  <p className="text-gray-500 text-xs mb-2">
+                  <p className="text-xs mb-2 text-dim">
                     by {medicine.brand}
                   </p>
                 )}
                 {medicine.key_info && (
-                  <p className="text-gray-400 text-sm line-clamp-2">
+                  <p className="text-sm line-clamp-2 text-muted">
                     {medicine.key_info}
                   </p>
                 )}
-                <div className="mt-4 flex items-center gap-2 text-teal-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="mt-4 flex items-center gap-2 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--accent)" }}>
                   <span>View Details</span>
                   <i className="fa-solid fa-arrow-right text-[10px]"></i>
                 </div>
@@ -236,45 +229,44 @@ export default function MedicinesPage() {
         </div>
       )}
 
-      {/* Empty State */}
       {!loading && medicines.length === 0 && !error && (
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-gray-800/60 border border-gray-700/30 flex items-center justify-center mb-6">
-              <i className="fa-solid fa-microscope text-gray-600 text-3xl"></i>
+            <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <i className="fa-solid fa-microscope text-3xl text-dim"></i>
             </div>
-            <h3 className="text-white font-semibold text-lg mb-2">
+            <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--text)" }}>
               No medicines found
             </h3>
-            <p className="text-gray-500 text-sm max-w-sm">
+            <p className="text-sm max-w-sm text-muted">
               Try adjusting your search query or selecting a different category.
             </p>
           </div>
         </div>
       )}
 
-      {/* Detail Modal Overlay */}
       {selectedMedicine && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}
           onClick={() => setSelectedMedicine(null)}
         >
           <div
-            className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl bg-gray-900/90 backdrop-blur-xl border border-gray-700/40 shadow-2xl shadow-black/40"
+            className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl"
+            style={{ background: "var(--glass)", border: "1px solid var(--glass-border)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between p-6 pb-4 bg-gray-900/90 backdrop-blur-xl border-b border-gray-700/30">
+            <div className="sticky top-0 z-10 flex items-center justify-between p-6 pb-4" style={{ background: "var(--glass)", borderBottom: "1px solid var(--glass-border)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-teal-500/15 border border-teal-500/25 flex items-center justify-center">
-                  <i className={`${getCategoryIcon(selectedMedicine.category)} text-teal-400`}></i>
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: "rgba(20,184,166,0.15)", border: "1px solid rgba(20,184,166,0.25)" }}>
+                  <i className={`${getCategoryIcon(selectedMedicine.category)}`} style={{ color: "var(--accent)" }}></i>
                 </div>
                 <div>
-                  <h2 className="text-white font-bold text-xl">
+                  <h2 className="font-bold text-xl" style={{ color: "var(--text)" }}>
                     {selectedMedicine.name}
                   </h2>
                   {selectedMedicine.brand && (
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-sm text-muted">
                       Brand: {selectedMedicine.brand}
                     </p>
                   )}
@@ -282,88 +274,73 @@ export default function MedicinesPage() {
               </div>
               <button
                 onClick={() => setSelectedMedicine(null)}
-                className="w-9 h-9 rounded-lg bg-gray-800/60 border border-gray-700/40 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700/60 transition-all"
+                className="w-9 h-9 rounded-lg flex items-center justify-center transition-all"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-dim)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; e.currentTarget.style.color = "var(--text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--surface)"; e.currentTarget.style.color = "var(--text-dim)"; }}
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 space-y-5">
               {detailLoading ? (
                 <div className="space-y-4">
                   {[...Array(4)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-20 rounded-xl bg-gray-800/40 animate-pulse"
-                    />
+                    <div key={i} className="h-20 rounded-xl animate-pulse" style={{ background: "var(--surface)" }} />
                   ))}
                 </div>
               ) : (
                 <>
-                  {/* Category Badge */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-semibold px-3 py-1.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/20">
+                    <span className="text-[11px] font-semibold px-3 py-1.5 rounded-full" style={{ background: "rgba(20,184,166,0.15)", color: "var(--accent-light)", border: "1px solid rgba(20,184,166,0.2)" }}>
                       {selectedMedicine.category || "General"}
                     </span>
                   </div>
 
-                  {/* Uses */}
                   {selectedMedicine.uses && (
                     <DetailSection
                       icon="fa-solid fa-bullseye"
                       title="Uses"
                       content={selectedMedicine.uses}
-                      color="text-blue-400"
-                      bg="bg-blue-500/10"
-                      border="border-blue-500/20"
+                      color="var(--accent-blue)"
                     />
                   )}
 
-                  {/* Dosage */}
                   {selectedMedicine.dosage && (
                     <DetailSection
                       icon="fa-solid fa-prescription-bottle-medical"
                       title="Dosage"
                       content={selectedMedicine.dosage}
-                      color="text-emerald-400"
-                      bg="bg-emerald-500/10"
-                      border="border-emerald-500/20"
+                      color="#34D399"
                     />
                   )}
 
-                  {/* Side Effects */}
                   {selectedMedicine.side_effects && (
                     <DetailSection
                       icon="fa-solid fa-triangle-exclamation"
                       title="Side Effects"
                       content={selectedMedicine.side_effects}
-                      color="text-amber-400"
-                      bg="bg-amber-500/10"
-                      border="border-amber-500/20"
+                      color="#FBBF24"
                     />
                   )}
 
-                  {/* Precautions */}
                   {selectedMedicine.precautions && (
                     <DetailSection
                       icon="fa-solid fa-shield-halved"
                       title="Precautions"
                       content={selectedMedicine.precautions}
-                      color="text-rose-400"
-                      bg="bg-rose-500/10"
-                      border="border-rose-500/20"
+                      color="#FB7185"
                     />
                   )}
 
-                  {/* No details */}
                   {!selectedMedicine.uses &&
                     !selectedMedicine.dosage &&
                     !selectedMedicine.side_effects &&
                     !selectedMedicine.precautions && (
                       <div className="text-center py-8">
-                        <i className="fa-solid fa-file-circle-question text-gray-600 text-3xl mb-3"></i>
-                        <p className="text-gray-500 text-sm">
+                        <i className="fa-solid fa-file-circle-question text-3xl mb-3 text-dim"></i>
+                        <p className="text-sm text-muted">
                           No detailed information available for this medicine.
                         </p>
                       </div>
@@ -372,9 +349,8 @@ export default function MedicinesPage() {
               )}
             </div>
 
-            {/* Modal Footer */}
             <div className="p-6 pt-2">
-              <p className="text-[11px] text-gray-600 text-center">
+              <p className="text-[11px] text-center text-dim">
                 <i className="fa-solid fa-circle-info mr-1"></i>
                 Always consult a healthcare professional before taking any medication.
               </p>
@@ -391,23 +367,19 @@ function DetailSection({
   title,
   content,
   color,
-  bg,
-  border,
 }: {
   icon: string;
   title: string;
   content: string;
   color: string;
-  bg: string;
-  border: string;
 }) {
   return (
-    <div className={`p-4 rounded-xl ${bg} border ${border} backdrop-blur-sm`}>
+    <div className="p-4 rounded-xl backdrop-blur-sm" style={{ background: `${color}15`, border: `1px solid ${color}25` }}>
       <div className="flex items-center gap-2.5 mb-2">
-        <i className={`${icon} ${color} text-sm`}></i>
-        <h4 className="text-white font-semibold text-sm">{title}</h4>
+        <i className={`${icon} text-sm`} style={{ color }}></i>
+        <h4 className="font-semibold text-sm" style={{ color: "var(--text)" }}>{title}</h4>
       </div>
-      <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+      <p className="text-sm leading-relaxed whitespace-pre-line text-muted">
         {content}
       </p>
     </div>

@@ -559,14 +559,20 @@ onMouseEnter={(e) => {
               />
               Mendly
             </span>
-            {["Privacy", "Terms", "Support"].map((link) => (
-              <span
-                key={link}
+            {[
+              { label: "Privacy", href: "#" },
+              { label: "Terms", href: "#" },
+              { label: "Support", href: "#" },
+            ].map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
                 style={{
                   color: "var(--text-muted, rgba(148, 163, 184, 0.7))",
                   fontSize: "0.85rem",
                   cursor: "pointer",
                   transition: "color 0.2s ease",
+                  textDecoration: "none",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = "#F1F5F9";
@@ -576,8 +582,8 @@ onMouseEnter={(e) => {
                     "var(--text-muted, rgba(148, 163, 184, 0.7))";
                 }}
               >
-                {link}
-              </span>
+                {link.label}
+              </a>
             ))}
           </div>
 

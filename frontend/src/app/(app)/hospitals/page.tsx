@@ -109,8 +109,7 @@ export default function HospitalsPage() {
         setLocationStatus("denied");
       }
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchNearby]);
 
   const openDirections = (hospital: Hospital) => {
     if (hospital.lat && hospital.lng) {
@@ -130,28 +129,28 @@ export default function HospitalsPage() {
     switch (locationStatus) {
       case "loading":
         return (
-          <div className="flex items-center gap-2 text-teal-300 text-sm">
+          <div className="flex items-center gap-2 text-sm" style={{ color: "var(--accent-light)" }}>
             <i className="fa-solid fa-spinner fa-spin" />
             Getting location...
           </div>
         );
       case "ready":
         return (
-          <div className="flex items-center gap-2 text-emerald-400 text-sm">
+          <div className="flex items-center gap-2 text-sm" style={{ color: "#34D399" }}>
             <i className="fa-solid fa-location-dot" />
             Location acquired
           </div>
         );
       case "denied":
         return (
-          <div className="flex items-center gap-2 text-amber-400 text-sm">
+          <div className="flex items-center gap-2 text-sm" style={{ color: "#FBBF24" }}>
             <i className="fa-solid fa-triangle-exclamation" />
             Location access denied
           </div>
         );
       case "error":
         return (
-          <div className="flex items-center gap-2 text-red-400 text-sm">
+          <div className="flex items-center gap-2 text-sm" style={{ color: "#EF4444" }}>
             <i className="fa-solid fa-circle-xmark" />
             Geolocation unavailable
           </div>
@@ -162,28 +161,20 @@ export default function HospitalsPage() {
   };
 
   return (
-    <div
-      className="min-h-screen p-4 py-8 md:px-8 lg:px-16"
-      style={{
-        background: "var(--bg)",
-        backgroundImage: "var(--bg-gradient)",
-      }}
-    >
+    <div className="page-wrap p-4 py-8 md:px-8 lg:px-16">
       <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header */}
         <header className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--text)" }}>
             Nearby Hospitals
           </h1>
-          <p className="text-gray-400">
+          <p className="text-muted">
             Find emergency care and hospital services near you.
           </p>
         </header>
 
-        {/* Location & Search Bar */}
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-dim" />
             <input
               type="text"
               value={query}
@@ -192,7 +183,10 @@ export default function HospitalsPage() {
                 if (e.key === "Enter") searchHospitals(query);
               }}
               placeholder="Search hospitals by name..."
-              className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition-colors"
+              className="w-full pl-11 pr-4 py-3 rounded-xl outline-none transition-colors"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
+              onFocus={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
+              onBlur={(e) => e.currentTarget.style.borderColor = "var(--border)"}
             />
           </div>
 
@@ -201,7 +195,10 @@ export default function HospitalsPage() {
               if (query) searchHospitals(query);
               else if (coords) fetchNearby(coords.lat, coords.lng);
             }}
-            className="px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-semibold transition-colors flex items-center justify-center gap-2 shrink-0"
+            className="px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 shrink-0"
+            style={{ background: "var(--accent)", color: "#fff" }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.9"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
           >
             <i className="fa-solid fa-magnifying-glass" />
             Search
@@ -209,26 +206,27 @@ export default function HospitalsPage() {
 
           <button
             onClick={getLocation}
-            className="px-6 py-3 rounded-xl border border-teal-400/40 text-teal-300 hover:bg-teal-400/10 transition-colors flex items-center justify-center gap-2 shrink-0"
+            className="px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shrink-0"
+            style={{ border: "1px solid var(--accent)", color: "var(--accent-light)", background: "transparent" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
           >
             <i className="fa-solid fa-location-crosshairs" />
             Use My Location
           </button>
         </div>
 
-        {/* Status */}
         {statusLabel()}
 
-        {/* Results */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
-            <i className="fa-solid fa-bridge-circle-exclamation text-4xl text-teal-400/60" />
+          <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted">
+            <i className="fa-solid fa-bridge-circle-exclamation text-4xl" style={{ color: "var(--accent)" }} />
             <p>Loading hospitals...</p>
           </div>
         ) : hospitals.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500 gap-3">
-            <i className="fa-solid fa-hospital text-5xl text-white/10" />
-            <p>No hospitals found. Try adjusting your search or location.</p>
+          <div className="flex flex-col items-center justify-center py-20 gap-3 text-dim">
+            <i className="fa-solid fa-hospital text-5xl" style={{ color: "var(--text-dim)" }} />
+            <p className="text-muted">No hospitals found. Try adjusting your search or location.</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -236,55 +234,48 @@ export default function HospitalsPage() {
               <div
                 key={h.id}
                 onClick={() => openDirections(h)}
-                className="group cursor-pointer rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-md p-5 hover:border-teal-400/30 hover:bg-teal-400/[0.04] transition-all duration-200 flex flex-col gap-3"
+                className="group cursor-pointer rounded-2xl p-5 transition-all duration-200 flex flex-col gap-3 card-hover"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
               >
-                {/* Name & Distance */}
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold text-white leading-snug group-hover:text-teal-300 transition-colors">
+                  <h3 className="font-semibold leading-snug transition-colors" style={{ color: "var(--text)" }}>
                     {h.name}
                   </h3>
                   {h.distance != null && (
-                    <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-teal-400/10 text-teal-300 border border-teal-400/20">
+                    <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "rgba(20,184,166,0.1)", color: "var(--accent-light)", border: "1px solid rgba(20,184,166,0.2)" }}>
                       {h.distance.toFixed(1)} km
                     </span>
                   )}
                 </div>
 
-                {/* Address */}
-                <p className="text-sm text-gray-400 flex items-start gap-2">
-                  <i className="fa-solid fa-location-dot mt-0.5 text-gray-500 shrink-0" />
+                <p className="text-sm flex items-start gap-2 text-muted">
+                  <i className="fa-solid fa-location-dot mt-0.5 shrink-0 text-dim" />
                   {h.address}
                 </p>
 
-                {/* Phone */}
                 {h.phone && (
-                  <p className="text-sm text-gray-400 flex items-center gap-2">
-                    <i className="fa-solid fa-phone text-gray-500 shrink-0" />
+                  <p className="text-sm flex items-center gap-2 text-muted">
+                    <i className="fa-solid fa-phone shrink-0 text-dim" />
                     {h.phone}
                   </p>
                 )}
 
-                {/* Services */}
                 {h.services && h.services.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {h.services.slice(0, 4).map((s) => (
-                      <span
-                        key={s}
-                        className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 border border-white/[0.06] text-gray-400"
-                      >
+                      <span key={s} className="text-[11px] px-2 py-0.5 rounded-full text-dim" style={{ background: "var(--surface-hover)", border: "1px solid var(--border)" }}>
                         {s}
                       </span>
                     ))}
                     {h.services.length > 4 && (
-                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 border border-white/[0.06] text-gray-500">
+                      <span className="text-[11px] px-2 py-0.5 rounded-full text-dim" style={{ background: "var(--surface-hover)", border: "1px solid var(--border)" }}>
                         +{h.services.length - 4} more
                       </span>
                     )}
                   </div>
                 )}
 
-                {/* Directions badge */}
-                <div className="mt-auto pt-2 flex items-center gap-1.5 text-xs text-teal-400/70 group-hover:text-teal-300 transition-colors">
+                <div className="mt-auto pt-2 flex items-center gap-1.5 text-xs transition-colors" style={{ color: "var(--accent-light)" }}>
                   <i className="fa-solid fa-diamond-turn-right" />
                   Get directions
                 </div>

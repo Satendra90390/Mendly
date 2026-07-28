@@ -179,16 +179,16 @@ export default function ChatbotPage() {
     new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-[#0B1120] text-white chat-container">
+    <div className="flex flex-col h-[100dvh]" style={{ background: "var(--bg)", color: "var(--text)" }}>
 
-      <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0B1120]/80 backdrop-blur-md z-10 shrink-0">
+      <header className="flex items-center justify-between px-4 py-3 shrink-0" style={{ background: "var(--glass)", borderBottom: "1px solid var(--glass-border)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center shadow-[0_0_18px_rgba(20,184,166,0.4)]">
             <i className="fa-solid fa-robot text-white text-sm" />
           </div>
           <div>
-            <h1 className="text-base font-semibold tracking-tight">Elix AI</h1>
-            <p className="text-xs text-emerald-400/80 flex items-center gap-1">
+            <h1 className="text-base font-semibold tracking-tight" style={{ color: "var(--text)" }}>Elix AI</h1>
+            <p className="text-xs flex items-center gap-1" style={{ color: "var(--accent-light)" }}>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
               Online
             </p>
@@ -197,8 +197,10 @@ export default function ChatbotPage() {
         {messages.length > 0 && (
           <button
             onClick={clearChat}
-            className="p-2 rounded-lg text-white/40 hover:text-white/80 hover:bg-white/5 transition-all"
-            title="Clear chat"
+            className="p-2 rounded-lg transition-all"
+            style={{ color: "var(--text-dim)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; e.currentTarget.style.color = "var(--text)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-dim)"; }}
           >
             <i className="fa-solid fa-trash-can text-sm" />
           </button>
@@ -213,17 +215,20 @@ export default function ChatbotPage() {
                 <i className="fa-solid fa-stethoscope text-3xl text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold tracking-tight mb-1">How can I help you today?</h2>
-                <p className="text-sm text-white/40">Ask me anything about health, medications, or symptoms.</p>
+                <h2 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "var(--text)" }}>How can I help you today?</h2>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>Ask me anything about health, medications, or symptoms.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg mt-2">
                 {QUICK_SUGGESTIONS.map((suggestion) => (
                   <button
                     key={suggestion}
                     onClick={() => sendMessage(suggestion)}
-                    className="text-left text-sm px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] hover:border-teal-500/30 text-white/70 hover:text-white transition-all"
+                    className="text-left text-sm px-4 py-3 rounded-xl transition-all"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(20,184,166,0.3)"; e.currentTarget.style.color = "var(--text)"; e.currentTarget.style.background = "var(--surface-hover)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "var(--surface)"; }}
                   >
-                    <i className="fa-solid fa-bolt text-teal-400/70 mr-2 text-xs" />
+                    <i className="fa-solid fa-bolt mr-2 text-xs" style={{ color: "var(--accent-light)" }} />
                     {suggestion}
                   </button>
                 ))}
@@ -243,8 +248,9 @@ export default function ChatbotPage() {
                   className={`px-4 py-3 text-sm leading-relaxed ${
                     msg.role === "user"
                       ? "bg-gradient-to-br from-[#14B8A6] to-[#0891B2] text-white rounded-2xl rounded-tr-md shadow-lg"
-                      : "bg-[rgba(26,35,50,0.6)] backdrop-blur-md border border-white/[0.06] text-white/90 rounded-2xl rounded-tl-md shadow-lg"
+                      : "rounded-2xl rounded-tl-md shadow-lg"
                   }`}
+                  style={msg.role === "assistant" ? { background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" } : {}}
                 >
                   {msg.role === "assistant" ? (
                     <div
@@ -255,7 +261,7 @@ export default function ChatbotPage() {
                     msg.content
                   )}
                 </div>
-                <span className="text-[10px] text-white/25 mt-1 px-1">{formatTime(msg.timestamp)}</span>
+                <span className="text-[10px] mt-1 px-1" style={{ color: "var(--text-dim)" }}>{formatTime(msg.timestamp)}</span>
               </div>
             </div>
           ))}
@@ -265,10 +271,10 @@ export default function ChatbotPage() {
               <div className="w-8 h-8 rounded-full shrink-0 bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center shadow-[0_0_14px_rgba(20,184,166,0.35)]">
                 <i className="fa-solid fa-comment-medical text-white text-xs" />
               </div>
-              <div className="px-4 py-3 bg-[rgba(26,35,50,0.6)] backdrop-blur-md border border-white/[0.06] rounded-2xl rounded-tl-md shadow-lg flex items-center gap-1.5 h-10">
-                <span className="typing-dot w-2 h-2 rounded-full bg-teal-400/60 inline-block" />
-                <span className="typing-dot w-2 h-2 rounded-full bg-teal-400/60 inline-block" />
-                <span className="typing-dot w-2 h-2 rounded-full bg-teal-400/60 inline-block" />
+              <div className="px-4 py-3 rounded-2xl rounded-tl-md shadow-lg flex items-center gap-1.5 h-10" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <span className="typing-dot w-2 h-2 rounded-full inline-block" style={{ background: "var(--accent-light)" }} />
+                <span className="typing-dot w-2 h-2 rounded-full inline-block" style={{ background: "var(--accent-light)" }} />
+                <span className="typing-dot w-2 h-2 rounded-full inline-block" style={{ background: "var(--accent-light)" }} />
               </div>
             </div>
           )}
@@ -278,12 +284,12 @@ export default function ChatbotPage() {
               <div className="w-8 h-8 rounded-full shrink-0 bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center shadow-[0_0_14px_rgba(20,184,166,0.35)]">
                 <i className="fa-solid fa-comment-medical text-white text-xs" />
               </div>
-              <div className="max-w-[75%] px-4 py-3 bg-[rgba(26,35,50,0.6)] backdrop-blur-md border border-white/[0.06] text-white/90 rounded-2xl rounded-tl-md shadow-lg text-sm leading-relaxed">
+              <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tl-md shadow-lg text-sm leading-relaxed" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}>
                 <div
                   className="bot-msg"
                   dangerouslySetInnerHTML={{ __html: renderMarkdown(streamingContent) }}
                 />
-                <span className="inline-block w-0.5 h-4 bg-teal-400 ml-0.5 animate-pulse align-text-bottom" />
+                <span className="inline-block w-0.5 h-4 ml-0.5 animate-pulse align-text-bottom" style={{ background: "var(--accent)" }} />
               </div>
             </div>
           )}
@@ -292,7 +298,7 @@ export default function ChatbotPage() {
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-white/[0.06] bg-[#0B1120]/80 backdrop-blur-md px-4 py-3">
+      <div className="shrink-0 px-4 py-3" style={{ background: "var(--glass)", borderTop: "1px solid var(--glass-border)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
         <div className="max-w-3xl mx-auto">
           {messages.length === 0 && (
             <div className="flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
@@ -300,7 +306,10 @@ export default function ChatbotPage() {
                 <button
                   key={s}
                   onClick={() => sendMessage(s)}
-                  className="whitespace-nowrap text-xs px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-white/50 hover:text-white/80 hover:bg-white/[0.08] hover:border-teal-500/25 transition-all shrink-0"
+                  className="whitespace-nowrap text-xs px-3 py-1.5 rounded-full transition-all shrink-0"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(20,184,166,0.25)"; e.currentTarget.style.color = "var(--text)"; e.currentTarget.style.background = "var(--surface-hover)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "var(--surface)"; }}
                 >
                   {s}
                 </button>
@@ -315,7 +324,10 @@ export default function ChatbotPage() {
               onKeyDown={handleKeyDown}
               placeholder="Ask Elix AI anything..."
               rows={1}
-              className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-teal-500/40 resize-none max-h-40 transition-colors"
+              className="flex-1 rounded-xl px-4 py-3 text-sm outline-none resize-none max-h-40 transition-colors"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
+              onFocus={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
+              onBlur={(e) => e.currentTarget.style.borderColor = "var(--border)"}
             />
             <button
               onClick={() => sendMessage()}

@@ -157,6 +157,30 @@ body {
   border-color: rgba(13, 148, 136, 0.2);
 }
 
+/* ── Theme-aware layout utilities ── */
+.page-wrap {
+  background: var(--bg);
+  background-image: var(--bg-gradient);
+  color: var(--text);
+  min-height: 100vh;
+}
+.card-surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.card-hover {
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.card-hover:hover {
+  border-color: rgba(20, 184, 166, 0.25);
+  background: var(--surface-hover);
+  box-shadow: var(--shadow);
+}
+.text-muted { color: var(--text-muted); }
+.text-dim { color: var(--text-dim); }
+.border-theme { border-color: var(--border); }
+
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }

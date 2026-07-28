@@ -11,8 +11,8 @@ const NAV_LINKS = [
   { label: "Dashboard", href: "/dashboard", icon: "fa-solid fa-chart-pie" },
   { label: "Elix", href: "/chatbot", icon: "fa-solid fa-robot" },
   { label: "Medicines", href: "/medicines", icon: "fa-solid fa-pills" },
-  { label: "Drug Check", href: "/medicines", icon: "fa-solid fa-flask-vial" },
-  { label: "Nearby", href: "/hospitals", icon: "fa-solid fa-hospital" },
+  { label: "Hospitals", href: "/hospitals", icon: "fa-solid fa-hospital" },
+  { label: "Pharmacies", href: "/pharmacies", icon: "fa-solid fa-prescription-bottle-medical" },
   { label: "Emergency", href: "/emergency", icon: "fa-solid fa-triangle-exclamation" },
 ];
 
@@ -82,18 +82,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={link.href}
                 href={link.href}
                 className="flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:scale-[1.02]"
-                style={{
-                  color: "var(--text-muted)",
-                  background: "transparent",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "var(--surface-hover)";
-                  e.currentTarget.style.color = "var(--text)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "var(--text-muted)";
-                }}
+                style={{ color: "var(--text-muted)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; e.currentTarget.style.color = "var(--text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-muted)"; }}
               >
                 <i className={link.icon} style={{ fontSize: "0.85rem" }} />
                 {link.label}
@@ -168,7 +159,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     {[
                       { label: "Account", href: "/account", icon: "M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" },
                       { label: "Saved Items", href: "/saved", icon: "M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" },
-                      { label: "Activity", href: "/activity", icon: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" },
+                      { label: "Conditions", href: "/conditions", icon: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" },
                     ].map((item) => (
                       <Link
                         key={item.href}
