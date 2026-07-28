@@ -23,17 +23,17 @@ const STAT_CARDS: { key: keyof Counts; label: string; icon: string; color: strin
 
 const QUICK_ACTIONS = [
   { label: "Search Medicines", href: "/medicines", icon: "fa-solid fa-magnifying-glass", color: "#14B8A6" },
-  { label: "Drug Interaction", href: "/drug-check", icon: "fa-solid fa-shield-halved", color: "#EC4899" },
-  { label: "AI Chat (Elix)", href: "/elix", icon: "fa-solid fa-robot", color: "#8B5CF6" },
-  { label: "Find Nearby", href: "/nearby", icon: "fa-solid fa-location-dot", color: "#10B981" },
+  { label: "Drug Interaction", href: "/medicines", icon: "fa-solid fa-shield-halved", color: "#EC4899" },
+  { label: "AI Chat (Elix)", href: "/chatbot", icon: "fa-solid fa-robot", color: "#8B5CF6" },
+  { label: "Find Nearby", href: "/hospitals", icon: "fa-solid fa-location-dot", color: "#10B981" },
   { label: "Emergency Help", href: "/emergency", icon: "fa-solid fa-truck-medical", color: "#EF4444" },
   { label: "My Conditions", href: "/conditions", icon: "fa-solid fa-notes-medical", color: "#F59E0B" },
 ];
 
 const NAV_LINKS = [
   { label: "Medicines", href: "/medicines" },
-  { label: "Drug Check", href: "/drug-check" },
-  { label: "Nearby", href: "/nearby" },
+  { label: "Drug Check", href: "/medicines" },
+  { label: "Nearby", href: "/hospitals" },
   { label: "Emergency", href: "/emergency" },
 ];
 
@@ -295,7 +295,7 @@ export default function DashboardPage() {
               </h3>
               <ul className="space-y-2">
                 {[
-                  { label: "AI Chat (Elix)", href: "/elix" },
+                  { label: "AI Chat (Elix)", href: "/chatbot" },
                   { label: "Account", href: "/account" },
                   { label: "Saved Items", href: "/saved" },
                 ].map((link) => (

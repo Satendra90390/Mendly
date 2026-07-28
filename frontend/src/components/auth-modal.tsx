@@ -66,7 +66,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_BASE}/auth/google`;
+    window.location.href = `${API_BASE}/auth/google?redirect=${encodeURIComponent(window.location.origin)}`;
   };
 
   return (

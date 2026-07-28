@@ -29,7 +29,7 @@ export default function HospitalsPage() {
     async (lat: number, lng: number) => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/api/emergency/hospitals/nearby`, {
+        const res = await fetch(`${API_BASE}/emergency/hospitals/nearby`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ lat, lng, radius: 25 }),
@@ -53,7 +53,7 @@ export default function HospitalsPage() {
       }
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/api/emergency/hospitals/search`, {
+        const res = await fetch(`${API_BASE}/emergency/hospitals/search`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

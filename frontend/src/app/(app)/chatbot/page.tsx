@@ -32,7 +32,7 @@ function renderMarkdown(text: string): string {
 }
 
 export default function ChatbotPage() {
-  const { user, authFetch } = useAuth();
+  const { user, token, authFetch } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -84,7 +84,7 @@ export default function ChatbotPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           body: JSON.stringify({ message: content, history }),
           signal: abortControllerRef.current.signal,
