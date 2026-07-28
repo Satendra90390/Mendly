@@ -3,10 +3,10 @@
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/config";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import LandingPage from "@/components/landing-page";
 
-export default function Home() {
+function HomeContent() {
   const { user, loading, login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -52,4 +52,16 @@ export default function Home() {
 
   if (user) return null;
   return <LandingPage oauthError={oauthError} />;
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+        <div style={{ width: 40, height: 40, border: "3px solid rgba(255,255,255,0.1)", borderTopColor: "#14B8A6", borderRadius: "50%", animation: "spin .8s linear infinite" }} />
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
+  );
 }
