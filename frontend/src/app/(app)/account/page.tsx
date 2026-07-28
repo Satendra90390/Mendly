@@ -11,7 +11,7 @@ interface AccountStats {
 }
 
 export default function AccountPage() {
-  const { user, authFetch, logout } = useAuth();
+  const { user, token, authFetch, logout, login } = useAuth();
 
   const [name, setName] = useState(user?.name || "");
   const [editing, setEditing] = useState(false);
@@ -21,10 +21,6 @@ export default function AccountPage() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    if (user?.name) setName(user.name);
-  }, [user?.name]);
 
   const fetchStats = useCallback(async () => {
     setStatsLoading(true);
@@ -42,6 +38,7 @@ export default function AccountPage() {
   }, [authFetch]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStats();
   }, [fetchStats]);
 
@@ -59,13 +56,8 @@ export default function AccountPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.name) {
-          const stored = localStorage.getItem("mendly_user");
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            parsed.name = data.name;
-            localStorage.setItem("mendly_user", JSON.stringify(parsed));
-          }
+        if (data.name && token && user) {
+          login(token, { ...user, name: data.name });
         }
       }
     } catch {

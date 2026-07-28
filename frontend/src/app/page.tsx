@@ -39,6 +39,7 @@ function HomeContent() {
 
     if (error) {
       processed.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOauthError(error.replace(/\+/g, " "));
       router.replace("/");
       return;

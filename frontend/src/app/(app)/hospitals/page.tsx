@@ -20,7 +20,7 @@ export default function HospitalsPage() {
   const [loading, setLoading] = useState(false);
   const [locationStatus, setLocationStatus] = useState<
     "idle" | "loading" | "ready" | "denied" | "error"
-  >("idle");
+  >("loading");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null
   );
@@ -73,7 +73,7 @@ export default function HospitalsPage() {
     [coords, fetchNearby]
   );
 
-  const useMyLocation = () => {
+  const getLocation = () => {
     if (!navigator.geolocation) {
       setLocationStatus("error");
       return;
@@ -93,7 +93,22 @@ export default function HospitalsPage() {
   };
 
   useEffect(() => {
-    useMyLocation();
+    if (!navigator.geolocation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLocationStatus("error");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setCoords(c);
+        setLocationStatus("ready");
+        fetchNearby(c.lat, c.lng);
+      },
+      () => {
+        setLocationStatus("denied");
+      }
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -193,7 +208,7 @@ export default function HospitalsPage() {
           </button>
 
           <button
-            onClick={useMyLocation}
+            onClick={getLocation}
             className="px-6 py-3 rounded-xl border border-teal-400/40 text-teal-300 hover:bg-teal-400/10 transition-colors flex items-center justify-center gap-2 shrink-0"
           >
             <i className="fa-solid fa-location-crosshairs" />

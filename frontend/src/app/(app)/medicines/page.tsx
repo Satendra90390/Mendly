@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { API_BASE } from "@/lib/config";
 
 interface Medicine {
@@ -73,6 +73,7 @@ export default function MedicinesPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMedicines(debouncedSearch, activeCategory);
   }, [debouncedSearch, activeCategory, fetchMedicines]);
 

@@ -169,3 +169,20 @@ body {
   50% { opacity: 0.7; }
 }
 .animate-in { animation: fade-in 0.4s ease both; }
+
+/* Chatbot styles */
+.chat-scrollbar::-webkit-scrollbar { width: 6px; }
+.chat-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.chat-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+.chat-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+.bot-msg p { margin: 0.4em 0; }
+.bot-msg ul { margin: 0.4em 0; padding-left: 1.4em; }
+.bot-msg li { margin: 0.2em 0; }
+.bot-msg pre { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 0.8em; overflow-x: auto; margin: 0.6em 0; }
+.bot-msg code { font-family: "JetBrains Mono", monospace; font-size: 0.85em; }
+.bot-msg p code { background: rgba(255,255,255,0.08); padding: 0.15em 0.4em; border-radius: 4px; }
+.typing-dot { animation: typingBounce 1.4s infinite ease-in-out; }
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }

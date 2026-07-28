@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/config";
 
 interface Message {
@@ -19,7 +18,7 @@ const QUICK_SUGGESTIONS = [
 ];
 
 function renderMarkdown(text: string): string {
-  let html = text
+  const html = text
     .replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
@@ -32,7 +31,7 @@ function renderMarkdown(text: string): string {
 }
 
 export default function ChatbotPage() {
-  const { user, token, authFetch } = useAuth();
+  const { token } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -143,8 +142,8 @@ export default function ChatbotPage() {
           };
           setMessages((prev) => [...prev, botMessage]);
         }
-      } catch (err: any) {
-        if (err.name === "AbortError") return;
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") return;
         const errorMessage: Message = {
           id: crypto.randomUUID(),
           role: "assistant",
@@ -158,7 +157,7 @@ export default function ChatbotPage() {
         abortControllerRef.current = null;
       }
     },
-    [input, isStreaming, messages, user]
+    [input, isStreaming, messages, token]
   );
 
   const clearChat = () => {
@@ -179,25 +178,7 @@ export default function ChatbotPage() {
     new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-[#0B1120] text-white">
-      <style jsx global>{`
-        @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css");
-        .chat-scrollbar::-webkit-scrollbar { width: 6px; }
-        .chat-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .chat-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-        .chat-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
-        .bot-msg p { margin: 0.4em 0; }
-        .bot-msg ul { margin: 0.4em 0; padding-left: 1.4em; }
-        .bot-msg li { margin: 0.2em 0; }
-        .bot-msg pre { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 0.8em; overflow-x: auto; margin: 0.6em 0; }
-        .bot-msg code { font-family: "JetBrains Mono", monospace; font-size: 0.85em; }
-        .bot-msg p code { background: rgba(255,255,255,0.08); padding: 0.15em 0.4em; border-radius: 4px; }
-        .typing-dot { animation: typingBounce 1.4s infinite ease-in-out; }
-        .typing-dot:nth-child(1) { animation-delay: 0s; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
-      `}</style>
+    <div className="flex flex-col h-[100dvh] bg-[#0B1120] text-white chat-container">
 
       <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0B1120]/80 backdrop-blur-md z-10 shrink-0">
         <div className="flex items-center gap-3">

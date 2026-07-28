@@ -44,7 +44,7 @@ export default function EmergencyContactsPage() {
   }, []);
 
   function handleCall(number: string) {
-    window.location.href = `tel:${number}`;
+    window.location.assign(`tel:${number}`);
   }
 
   return (

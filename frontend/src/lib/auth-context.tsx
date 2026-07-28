@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 
 interface User {
   id: string;
@@ -23,19 +23,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("mendly_token");
-    const storedUser = localStorage.getItem("mendly_user");
-    if (stored && storedUser) {
-      setToken(stored);
-      try { setUser(JSON.parse(storedUser)); } catch {}
+  const [token, setToken] = useState<string | null>(
+    () => typeof window !== "undefined" ? localStorage.getItem("mendly_token") : null
+  );
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("mendly_user");
+        return stored ? JSON.parse(stored) : null;
+      } catch {}
     }
-    setLoading(false);
-  }, []);
+    return null;
+  });
+  const [loading] = useState(false);
 
   const login = useCallback((t: string, u: User) => {
     setToken(t);

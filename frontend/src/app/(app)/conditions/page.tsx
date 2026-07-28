@@ -38,6 +38,7 @@ export default function ConditionsPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchConditions();
   }, [fetchConditions]);
 
@@ -62,8 +63,6 @@ export default function ConditionsPage() {
       }
     }
   };
-
-  const detail = expandedId ? detailData[expandedId] || conditions.find((c) => c.id === expandedId) : null;
 
   return (
     <div
@@ -133,7 +132,7 @@ export default function ConditionsPage() {
                   key={condition.id}
                   className={`rounded-xl bg-gray-800/40 backdrop-blur-md border transition-all duration-300 ${
                     isExpanded
-                      ? "border-pink-500/40 bg-gray-800/60 shadow-lg shadow-pink-500/5 col-span-1 sm:col-span-2 lg:col-span-3"
+                      ? "border-pink-500/40 bg-gray-800/60 shadow-lg shadow-pink-500/5"
                       : "border-gray-700/30 hover:border-pink-500/30 hover:bg-gray-800/60"
                   }`}
                 >

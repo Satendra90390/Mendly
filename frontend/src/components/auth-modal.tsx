@@ -23,14 +23,6 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
 
   useEffect(() => { requestAnimationFrame(() => setMounted(true)); }, []);
 
-  useEffect(() => {
-    setError("");
-    setEmail("");
-    setPassword("");
-    setName("");
-    setShowPassword(false);
-  }, [mode]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -103,7 +95,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
           style={{
             width: "45%",
                   background: "linear-gradient(135deg, rgba(13, 148, 136, 0.12), rgba(6, 182, 212, 0.08))",
-            borderRight: "1px solid rgba(255, 255, 255, 0.04)",
+                  borderRight: "1px solid rgba(255, 255, 255, 0.04)",
           }}
         >
           {/* Decorative blurs */}
@@ -207,7 +199,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form key={mode} onSubmit={handleSubmit} className="space-y-3">
               {mode === "signup" && (
                 <div style={{ animation: "fade-in 0.3s ease" }}>
                   <label className="block text-xs font-medium mb-1.5 ml-1" style={{ color: "rgba(148, 163, 184, 0.6)" }}>Full name</label>

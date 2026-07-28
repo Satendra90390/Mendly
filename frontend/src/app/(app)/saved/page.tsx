@@ -36,6 +36,7 @@ export default function SavedPage() {
   }, [authFetch]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSaved();
   }, [fetchSaved]);
 
