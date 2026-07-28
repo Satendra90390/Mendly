@@ -1,17 +1,46 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { API_BASE } from "@/lib/config";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import LandingPage from "@/components/landing-page";
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { user, loading, login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [oauthError, setOauthError] = useState("");
 
   useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
-  }, [user, loading, router]);
+    if (loading) return;
+
+    const token = searchParams.get("token");
+    const error = searchParams.get("auth_error");
+
+    if (token) {
+      fetch(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data) {
+            login(token, data);
+          }
+        })
+        .catch(() => {});
+      router.replace("/", undefined);
+      return;
+    }
+
+    if (error) {
+      setOauthError(error.replace(/\+/g, " "));
+      router.replace("/", undefined);
+      return;
+    }
+
+    if (user) router.replace("/dashboard");
+  }, [user, loading, searchParams, login, router]);
 
   if (loading) {
     return (
@@ -22,5 +51,5 @@ export default function Home() {
   }
 
   if (user) return null;
-  return <LandingPage />;
+  return <LandingPage oauthError={oauthError} />;
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import AuthModal from "@/components/auth-modal";
 
-export default function LandingPage() {
+export default function LandingPage({ oauthError = "" }: { oauthError?: string }) {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
 
@@ -182,6 +182,24 @@ export default function LandingPage() {
             Ask health questions, check drug interactions, find nearby care, and
             manage your medications — all in one place.
           </p>
+
+          {oauthError && (
+            <div
+              style={{
+                maxWidth: "480px",
+                margin: "0 auto 1.5rem",
+                padding: "0.75rem 1rem",
+                borderRadius: "12px",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid rgba(239, 68, 68, 0.2)",
+                color: "#FCA5A5",
+                fontSize: "0.85rem",
+                textAlign: "center",
+              }}
+            >
+              {oauthError}
+            </div>
+          )}
 
           <div
             style={{
