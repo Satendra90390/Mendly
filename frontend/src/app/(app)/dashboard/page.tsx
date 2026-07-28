@@ -116,8 +116,8 @@ export default function DashboardPage() {
   }, [authFetch]);
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg)", backgroundImage: "var(--bg-gradient)" }}>
-      <div className="max-w-7xl mx-auto px-5 lg:px-8 py-10 space-y-10">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--bg)", backgroundImage: "var(--bg-gradient)" }}>
+      <div className="max-w-7xl mx-auto px-5 lg:px-8 py-10 space-y-10 flex-1">
 
         {/* ── Greeting Card ── */}
         <section
@@ -240,7 +240,7 @@ export default function DashboardPage() {
 
       {/* ── Footer ── */}
       <footer
-        className="mt-12 pb-24 lg:pb-0 lg:mt-16"
+        className="mt-auto pb-24 lg:pb-0"
         style={{
           background: "var(--surface)",
           borderTop: "1px solid var(--border)",
