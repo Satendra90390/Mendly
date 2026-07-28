@@ -75,16 +75,16 @@ export default function PharmaciesPage() {
     <div
       className="min-h-screen p-4 md:p-8"
       style={{
-        background: "var(--bg)",
+        backgroundColor: "hsl(var(--background))",
         backgroundImage: "var(--bg-gradient)",
       }}
     >
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--text)" }}>
+          <h1 className="text-2xl font-bold mb-1" style={{ color: "hsl(var(--foreground))" }}>
             Nearby Pharmacies
           </h1>
-          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
             Find pharmacies and medical stores near you
           </p>
         </div>
@@ -102,11 +102,11 @@ export default function PharmaciesPage() {
               />
             </div>
             <button onClick={handleSearch} className="btn btn-primary">
-              <i className="fa-solid fa-magnifying-glass" /> Search
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle mr-1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search
             </button>
           </div>
-          <p className="text-xs mt-2" style={{ color: "var(--text-dim)" }}>
-            <i className="fa-solid fa-location-dot text-teal-500" /> {locationStatus}
+          <p className="text-xs mt-2" style={{ color: "hsl(var(--muted-foreground) / 0.6)" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-500 inline-block align-middle mr-1"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {locationStatus}
           </p>
         </div>
 
@@ -122,8 +122,8 @@ export default function PharmaciesPage() {
           </div>
         ) : pharmacies.length === 0 ? (
           <div className="glass-subtle p-12 text-center">
-            <i className="fa-solid fa-shop text-3xl mb-3 block" style={{ color: "var(--text-dim)" }} />
-            <p style={{ color: "var(--text-muted)" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="block mx-auto mb-3" style={{ color: "hsl(var(--muted-foreground) / 0.6)" }}><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M10 20v-4h4v4"/></svg>
+            <p style={{ color: "hsl(var(--muted-foreground))" }}>
               No pharmacies found. Try enabling location or searching by name.
             </p>
           </div>
@@ -134,26 +134,26 @@ export default function PharmaciesPage() {
                 <div className="flex items-start gap-3">
                   <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: "rgba(139,92,246,0.1)" }}
+                    style={{ background: "hsl(260 90% 66% / 0.1)" }}
                   >
-                    <i className="fa-solid fa-store" style={{ color: "#8B5CF6" }} />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "hsl(260 90% 66%)" }}><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M10 20v-4h4v4"/></svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 truncate" style={{ color: "var(--text)" }}>
+                    <h3 className="font-semibold text-sm mb-1 truncate" style={{ color: "hsl(var(--foreground))" }}>
                       {p.name}
                     </h3>
-                    <p className="text-xs mb-1 truncate" style={{ color: "var(--text-muted)" }}>
-                      <i className="fa-solid fa-location-dot" /> {p.address || "Address not available"}
+                    <p className="text-xs mb-1 truncate" style={{ color: "hsl(var(--muted-foreground))" }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle mr-1"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {p.address || "Address not available"}
                     </p>
                     {p.phone && p.phone !== "N/A" && (
-                      <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>
-                        <i className="fa-solid fa-phone" /> {p.phone}
+                      <p className="text-xs mb-1" style={{ color: "hsl(var(--muted-foreground))" }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle mr-1"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> {p.phone}
                       </p>
                     )}
                     {p.distance != null && (
                       <span
                         className="inline-block text-xs px-2 py-0.5 rounded-full mt-1"
-                        style={{ background: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}
+                        style={{ background: "hsl(260 90% 66% / 0.1)", color: "hsl(260 90% 66%)" }}
                       >
                         {p.distance.toFixed(1)} km
                       </span>
@@ -163,7 +163,7 @@ export default function PharmaciesPage() {
                 <div className="flex gap-2 mt-3">
                   {p.phone && p.phone !== "N/A" && (
                     <a href={`tel:${p.phone}`} className="btn btn-ghost text-xs flex-1">
-                      <i className="fa-solid fa-phone" /> Call
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle mr-1"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> Call
                     </a>
                   )}
                   <button
@@ -174,7 +174,7 @@ export default function PharmaciesPage() {
                     }
                     className="btn btn-primary text-xs flex-1"
                   >
-                    <i className="fa-solid fa-diamond-turn-right" /> Directions
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle mr-1"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg> Directions
                   </button>
                 </div>
               </div>

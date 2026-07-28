@@ -18,10 +18,10 @@ export default function MobileNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)]"
       style={{
-        background: "var(--glass)",
+        background: "hsl(var(--card) / 0.7)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        borderTop: "1px solid var(--glass-border)",
+        borderTop: "1px solid hsl(var(--border))",
       }}
     >
       <div className="flex items-center justify-around h-18 max-w-lg mx-auto">
@@ -33,19 +33,19 @@ export default function MobileNav() {
               href={tab.href}
               className="flex flex-col items-center gap-1.5 min-w-[60px] py-2.5 rounded-xl transition-all duration-200"
               style={{
-                color: active ? "#14B8A6" : "var(--text-dim)",
+                color: active ? "hsl(var(--primary))" : "hsl(var(--muted-foreground) / 0.6)",
               }}
             >
               <div
                 className="relative w-11 h-9 flex items-center justify-center rounded-xl transition-all duration-200"
                 style={{
-                  background: active ? "rgba(20, 184, 166, 0.12)" : "transparent",
+                  background: active ? "hsl(173 80% 36% / 0.12)" : "transparent",
                 }}
               >
                 {active && (
                   <div
                     className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full"
-                    style={{ background: "linear-gradient(135deg, #14B8A6, #0891B2)" }}
+                    style={{ background: "linear-gradient(135deg, hsl(173 80% 36%), hsl(188 95% 43%))" }}
                   />
                 )}
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={active ? 2 : 1.5} viewBox="0 0 24 24">

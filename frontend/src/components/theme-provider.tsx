@@ -13,7 +13,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    document.documentElement.className = theme;
+    const root = document.documentElement;
+    root.classList.remove("dark", "light");
+    root.classList.add(theme);
     localStorage.setItem("mendly_theme", theme);
   }, [theme]);
 

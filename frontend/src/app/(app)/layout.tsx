@@ -7,14 +7,38 @@ import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/components/theme-provider";
 import MobileNav from "@/components/mobile-nav";
 
+// Inline SVG icons
+function ChartIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>; }
+function RobotIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6v3.75m0 3v.75m-6-3.75H9m1.5-3h.75m0 0v3m0 0h-.75M12 3a9 9 0 00-9 9v2.25a9 9 0 0018 0V12a9 9 0 00-9-9z" /></svg>; }
+function PillsIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>; }
+function HospitalIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m-9 0h18M3 6.75h18M4.5 3h15M6 3v3M18 3v3" /></svg>; }
+function BottleIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19 14.5M3 21h18" /></svg>; }
+function AlertIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>; }
+
 const NAV_LINKS = [
-  { label: "Dashboard", href: "/dashboard", icon: "fa-solid fa-chart-pie" },
-  { label: "Elix", href: "/chatbot", icon: "fa-solid fa-robot" },
-  { label: "Medicines", href: "/medicines", icon: "fa-solid fa-pills" },
-  { label: "Hospitals", href: "/hospitals", icon: "fa-solid fa-hospital" },
-  { label: "Pharmacies", href: "/pharmacies", icon: "fa-solid fa-prescription-bottle-medical" },
-  { label: "Emergency", href: "/emergency", icon: "fa-solid fa-triangle-exclamation" },
+  { label: "Dashboard", href: "/dashboard", icon: ChartIcon },
+  { label: "Elix", href: "/chatbot", icon: RobotIcon },
+  { label: "Medicines", href: "/medicines", icon: PillsIcon },
+  { label: "Hospitals", href: "/hospitals", icon: HospitalIcon },
+  { label: "Pharmacies", href: "/pharmacies", icon: BottleIcon },
+  { label: "Emergency", href: "/emergency", icon: AlertIcon },
 ];
+
+function SunIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+    </svg>
+  );
+}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -41,8 +65,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen" style={{ background: "var(--bg)" }}>
-        <div className="w-8 h-8 rounded-full border-2 border-transparent border-t-[#14B8A6] animate-spin" />
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-8 h-8 rounded-full border-2 border-transparent animate-spin" style={{ borderTopColor: "hsl(var(--primary))" }} />
       </div>
     );
   }
@@ -50,110 +74,79 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   const userInitial = user.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || "U";
-  const avatarBg = user.avatar_color || "#14B8A6";
+  const avatarBg = user.avatar_color || "hsl(var(--primary))";
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 px-5 lg:px-8"
-        style={{
-          background: "var(--glass)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-        }}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-18">
+    <div className="min-h-screen bg-background">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-5 lg:px-8 glass" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-16">
           <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "var(--gradient-1)" }}
-            >
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+              style={{ background: "var(--gradient-1)" }}>
               M
             </div>
-            <span className="text-xl font-bold hidden sm:block" style={{ color: "var(--text)" }}>
+            <span className="text-xl font-bold hidden sm:block text-foreground">
               Mendly
             </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-1.5">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 hover:scale-[1.02]"
-                style={{ color: "var(--text-muted)" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; e.currentTarget.style.color = "var(--text)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-muted)"; }}
-              >
-                <i className={link.icon} style={{ fontSize: "0.85rem" }} />
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+                  style={{ color: "hsl(var(--muted-foreground))" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}
+                >
+                  <Icon />
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={toggle}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-              style={{ color: "var(--text-muted)" }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
+              style={{ color: "hsl(var(--muted-foreground))" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
             >
-              {theme === "dark" ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                </svg>
-              )}
+              {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
 
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-2 p-1.5 rounded-full transition-colors"
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
                 {user.profile_photo ? (
                   <img src={user.profile_photo} alt="" className="w-9 h-9 rounded-full object-cover" />
                 ) : (
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                    style={{ background: avatarBg }}
-                  >
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: avatarBg }}>
                     {userInitial}
                   </div>
                 )}
-                <svg
-                  className="w-4 h-4 hidden sm:block transition-transform"
-                  style={{ color: "var(--text-dim)", transform: dropdownOpen ? "rotate(180deg)" : undefined }}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4 hidden sm:block transition-transform" style={{ color: "hsl(var(--muted-foreground))", transform: dropdownOpen ? "rotate(180deg)" : undefined }}
+                  fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
               </button>
 
               {dropdownOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-64 rounded-xl overflow-hidden py-1 animate-in"
-                  style={{
-                    background: "var(--glass)",
-                    backdropFilter: "blur(20px)",
-                    WebkitBackdropFilter: "blur(20px)",
-                    border: "1px solid var(--glass-border)",
-                    boxShadow: "var(--shadow)",
-                  }}
-                >
-                  <div className="px-5 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
-                    <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>{user.name}</p>
-                    <p className="text-xs truncate mt-0.5" style={{ color: "var(--text-dim)" }}>{user.email}</p>
+                <div className="absolute right-0 mt-2 w-64 rounded-xl overflow-hidden py-1 animate-in shadow-lg"
+                  style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
+                  <div className="px-5 py-4" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
+                    <p className="text-sm font-semibold truncate text-foreground">{user.name}</p>
+                    <p className="text-xs truncate mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>{user.email}</p>
                   </div>
                   <div className="py-1.5">
                     {[
@@ -166,32 +159,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         href={item.href}
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-3 px-5 py-3 text-sm transition-colors"
-                        style={{ color: "var(--text-muted)" }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "var(--surface-hover)";
-                          e.currentTarget.style.color = "var(--text)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "transparent";
-                          e.currentTarget.style.color = "var(--text-muted)";
-                        }}
+                        style={{ color: "hsl(var(--muted-foreground))" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                         </svg>
                         {item.label}
                       </Link>
                     ))}
                   </div>
-                  <div style={{ borderTop: "1px solid var(--border)" }} className="py-1.5">
+                  <div style={{ borderTop: "1px solid hsl(var(--border))" }} className="py-1.5">
                     <button
                       onClick={() => { setDropdownOpen(false); logout(); }}
                       className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors"
-                      style={{ color: "#EF4444" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.08)"; }}
+                      style={{ color: "hsl(var(--destructive))" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(0 84% 60% / 0.08)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                       </svg>
                       Log out

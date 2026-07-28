@@ -10,6 +10,77 @@ interface AuthModalProps {
   onSwitch: (mode: "login" | "signup") => void;
 }
 
+function XMark() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <rect width="20" height="16" x="2" y="4" rx="2" /><path d="M22 7l-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7" />
+    </svg>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
+    </svg>
+  );
+}
+
+function EyeIcon({ off }: { off: boolean }) {
+  return off ? (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
+  ) : (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function AlertIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" className="shrink-0">
+      <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
+    </svg>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" strokeOpacity="0.3" /><path d="M12 2a10 10 0 0110 10" />
+    </svg>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+    </svg>
+  );
+}
+
 export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -65,22 +136,21 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
       style={{
-        backgroundColor: mounted ? "rgba(0, 0, 0, 0.8)" : "rgba(0, 0, 0, 0)",
-        backdropFilter: "blur(16px)",
+        backgroundColor: mounted ? "hsl(0 0% 0% / 0.7)" : "hsl(0 0% 0% / 0)",
+        backdropFilter: "blur(16px) saturate(1.4)",
         transition: "all 0.3s ease",
       }}
       onClick={onClose}
     >
       <div
-        className="w-full overflow-hidden flex"
+        className="w-full overflow-hidden flex rounded-2xl"
         style={{
           maxWidth: "960px",
           minHeight: "600px",
           height: "min(600px, 90vh)",
-          background: "linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(8, 15, 30, 0.99))",
-          borderRadius: "1.25rem",
-          border: "1px solid rgba(255, 255, 255, 0.06)",
-          boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.03), 0 40px 80px -20px rgba(0, 0, 0, 0.7), 0 0 160px -60px rgba(20, 184, 166, 0.1)",
+          background: "hsl(var(--card))",
+          border: "1px solid hsl(var(--border))",
+          boxShadow: "0 40px 80px -20px hsl(0 0% 0% / 0.5), 0 0 160px -60px hsl(173 80% 36% / 0.08)",
           transform: mounted ? (shake ? "translateX(-6px)" : "translateY(0) scale(1)") : "translateY(24px) scale(0.95)",
           opacity: mounted ? 1 : 0,
           transition: shake
@@ -94,54 +164,52 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
           className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden"
           style={{
             width: "40%",
-            background: "linear-gradient(135deg, rgba(13, 148, 136, 0.12), rgba(6, 182, 212, 0.08))",
-            borderRight: "1px solid rgba(255, 255, 255, 0.04)",
+            background: "var(--gradient-hero)",
+            borderRight: "1px solid hsl(var(--border))",
           }}
         >
           <div style={{
             position: "absolute", top: "-80px", left: "-80px",
             width: "300px", height: "300px", borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(13, 148, 136, 0.2), transparent 70%)",
+            background: "radial-gradient(circle, hsl(173 80% 36% / 0.15), transparent 70%)",
             filter: "blur(60px)", pointerEvents: "none",
           }} />
           <div style={{
             position: "absolute", bottom: "-60px", right: "-60px",
             width: "250px", height: "250px", borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(8, 145, 178, 0.15), transparent 70%)",
+            background: "radial-gradient(circle, hsl(188 95% 43% / 0.12), transparent 70%)",
             filter: "blur(50px)", pointerEvents: "none",
           }} />
 
           <div className="relative z-10 text-center px-8">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-8" style={{
-              background: "linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(8, 145, 178, 0.12))",
-              border: "1px solid rgba(20, 184, 166, 0.2)",
-              boxShadow: "0 8px 40px rgba(13, 148, 136, 0.15)",
-            }}>
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-8"
+              style={{
+                background: "hsl(173 80% 36% / 0.15)",
+                border: "1px solid hsl(173 80% 36% / 0.2)",
+                boxShadow: "0 8px 40px hsl(173 80% 36% / 0.12)",
+              }}>
               <span className="text-5xl">💊</span>
             </div>
-            <h2 className="text-3xl font-bold mb-3" style={{
-              background: "linear-gradient(135deg, #F1F5F9, rgba(241, 245, 249, 0.85))",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            }}>
+            <h2 className="text-3xl font-bold mb-3 gradient-text">
               Mendly
             </h2>
-            <p className="text-base leading-relaxed mb-8" style={{ color: "rgba(148, 163, 184, 0.6)" }}>
+            <p className="text-base leading-relaxed mb-8" style={{ color: "hsl(var(--muted-foreground))" }}>
               Your AI-powered health companion.<br />
               Smarter care, better outcomes.
             </p>
 
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3 text-left">
               {[
-                { icon: "fa-solid fa-robot", text: "AI Health Chat" },
-                { icon: "fa-solid fa-pills", text: "Medicine Tracker" },
-                { icon: "fa-solid fa-hospital", text: "Find Nearby Care" },
+                { icon: "M15.75 6v3.75m0 3v.75m-6-3.75H9m1.5-3h.75m0 0v3m0 0h-.75M12 3a9 9 0 00-9 9v2.25a9 9 0 0018 0V12a9 9 0 00-9-9z", text: "AI Health Chat" },
+                { icon: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z", text: "Medicine Tracker" },
+                { icon: "M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m-9 0h18M3 6.75h18M4.5 3h15M6 3v3M18 3v3", text: "Find Nearby Care" },
               ].map((item) => (
-                <div key={item.text} className="flex items-center gap-3 px-5 py-3 rounded-xl" style={{
-                  background: "rgba(255, 255, 255, 0.03)",
-                  border: "1px solid rgba(255, 255, 255, 0.04)",
-                }}>
-                  <i className={item.icon} style={{ color: "#14B8A6", fontSize: "0.9rem", width: "20px", textAlign: "center" }} />
-                  <span className="text-sm" style={{ color: "rgba(241, 245, 249, 0.7)" }}>{item.text}</span>
+                <div key={item.text} className="flex items-center gap-3 px-5 py-3 rounded-xl"
+                  style={{ background: "hsl(var(--muted) / 0.5)", border: "1px solid hsl(var(--border))" }}>
+                  <svg className="w-4 h-4 shrink-0" style={{ color: "hsl(173 80% 36%)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d={item.icon} />
+                  </svg>
+                  <span className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>{item.text}</span>
                 </div>
               ))}
             </div>
@@ -152,61 +220,50 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
         <div className="flex-1 flex flex-col relative overflow-y-auto">
           <button
             onClick={() => { setMounted(false); setTimeout(onClose, 200); }}
-            className="absolute top-5 right-5 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white/5"
-            style={{ color: "rgba(148, 163, 184, 0.4)" }}
+            className="absolute top-5 right-5 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200"
+            style={{ color: "hsl(var(--muted-foreground))" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
+            <XMark />
           </button>
 
           <div className="flex-1 flex flex-col justify-center px-8 sm:px-12 py-10">
             <div className="lg:hidden text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4" style={{
-                background: "linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(8, 145, 178, 0.08))",
-                border: "1px solid rgba(20, 184, 166, 0.15)",
-              }}>
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+                style={{ background: "hsl(173 80% 36% / 0.15)", border: "1px solid hsl(173 80% 36% / 0.15)" }}>
                 <span className="text-3xl">💊</span>
               </div>
             </div>
 
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2" style={{ color: "#F1F5F9" }}>
+              <h1 className="text-3xl font-bold mb-2 text-foreground">
                 {mode === "login" ? "Welcome back" : "Create your account"}
               </h1>
-              <p className="text-base" style={{ color: "rgba(148, 163, 184, 0.5)" }}>
+              <p className="text-base" style={{ color: "hsl(var(--muted-foreground))" }}>
                 {mode === "login" ? "Sign in to continue to Mendly" : "Join Mendly for smarter health management"}
               </p>
             </div>
 
             {error && (
-              <div className="mb-5 px-4 py-3.5 rounded-xl text-sm flex items-center gap-2.5" style={{
-                background: "rgba(239, 68, 68, 0.08)",
-                border: "1px solid rgba(239, 68, 68, 0.15)",
-                color: "#FCA5A5",
-                animation: "fade-in 0.3s ease",
-              }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" className="flex-shrink-0">
-                  <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
-                </svg>
+              <div className="mb-5 px-4 py-3.5 rounded-xl text-sm flex items-center gap-2.5 animate-in"
+                style={{ background: "hsl(0 84% 60% / 0.08)", border: "1px solid hsl(0 84% 60% / 0.15)", color: "hsl(0 84% 70%)" }}>
+                <AlertIcon />
                 {error}
               </div>
             )}
 
-            <form key={mode} onSubmit={handleSubmit} className="space-y-5">
+            <form key={mode} onSubmit={handleSubmit} className="flex flex-col gap-5">
               {mode === "signup" && (
-                <div style={{ animation: "fade-in 0.3s ease" }}>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "rgba(148, 163, 184, 0.7)" }}>Full name</label>
+                <div className="animate-in">
+                  <label className="block text-sm font-medium mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>Full name</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "rgba(148, 163, 184, 0.3)" }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}>
+                      <UserIcon />
                     </span>
                     <input
                       type="text" value={name} onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 rounded-xl text-base outline-none transition-all duration-200"
-                      style={{ backgroundColor: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.06)", color: "#F1F5F9" }}
-                      onFocus={(e) => e.currentTarget.style.borderColor = "rgba(20, 184, 166, 0.4)"}
-                      onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.06)"}
+                      className="w-full pl-12 pr-4 py-4 rounded-xl text-base outline-none transition-all duration-200 input"
                       placeholder="John Doe" required
                     />
                   </div>
@@ -214,47 +271,39 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "rgba(148, 163, 184, 0.7)" }}>Email address</label>
+                <label className="block text-sm font-medium mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>Email address</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "rgba(148, 163, 184, 0.3)" }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="M22 7l-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7" /></svg>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}>
+                    <MailIcon />
                   </span>
                   <input
                     type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 rounded-xl text-base outline-none transition-all duration-200"
-                    style={{ backgroundColor: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.06)", color: "#F1F5F9" }}
-                    onFocus={(e) => e.currentTarget.style.borderColor = "rgba(20, 184, 166, 0.4)"}
-                    onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.06)"}
+                    className="w-full pl-12 pr-4 py-4 rounded-xl text-base outline-none transition-all duration-200 input"
                     placeholder="you@example.com" required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "rgba(148, 163, 184, 0.7)" }}>Password</label>
+                <label className="block text-sm font-medium mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>Password</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "rgba(148, 163, 184, 0.3)" }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}>
+                    <LockIcon />
                   </span>
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 py-4 rounded-xl text-base outline-none transition-all duration-200"
-                    style={{ backgroundColor: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.06)", color: "#F1F5F9" }}
-                    onFocus={(e) => e.currentTarget.style.borderColor = "rgba(20, 184, 166, 0.4)"}
-                    onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.06)"}
+                    className="w-full pl-12 pr-12 py-4 rounded-xl text-base outline-none transition-all duration-200 input"
                     placeholder="••••••••" required
                   />
                   <button
                     type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors hover:bg-white/5"
-                    style={{ color: "rgba(148, 163, 184, 0.4)" }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors"
+                    style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                   >
-                    {showPassword ? (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
-                    ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                    )}
+                    <EyeIcon off={showPassword} />
                   </button>
                 </div>
               </div>
@@ -262,10 +311,10 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
               {mode === "login" && (
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4 rounded accent-teal-500" />
-                    <span className="text-sm" style={{ color: "rgba(148, 163, 184, 0.5)" }}>Remember me</span>
+                    <input type="checkbox" className="w-4 h-4 rounded" style={{ accentColor: "hsl(173 80% 36%)" }} />
+                    <span className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>Remember me</span>
                   </label>
-                  <button type="button" className="text-sm font-medium transition-colors" style={{ color: "#14B8A6" }}>
+                  <button type="button" className="text-sm font-medium transition-colors text-primary">
                     Forgot password?
                   </button>
                 </div>
@@ -276,14 +325,14 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
                 className="w-full py-4 rounded-xl font-semibold text-base text-white transition-all duration-200 disabled:opacity-50"
                 style={{
                   background: "var(--gradient-1)",
-                  boxShadow: loading ? "none" : "0 4px 20px rgba(20, 184, 166, 0.3)",
+                  boxShadow: loading ? "none" : "0 4px 20px hsl(173 80% 36% / 0.3)",
                 }}
-                onMouseEnter={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 6px 28px rgba(20, 184, 166, 0.4)"; }}
-                onMouseLeave={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 4px 20px rgba(20, 184, 166, 0.3)"; }}
+                onMouseEnter={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 6px 28px hsl(173 80% 36% / 0.4)"; }}
+                onMouseLeave={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 4px 20px hsl(173 80% 36% / 0.3)"; }}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.3" /><path d="M12 2a10 10 0 0110 10" /></svg>
+                    <Spinner />
                     {mode === "login" ? "Signing in..." : "Creating account..."}
                   </span>
                 ) : (
@@ -294,37 +343,33 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t" style={{ borderColor: "rgba(255, 255, 255, 0.06)" }} />
+                <div className="w-full border-t" style={{ borderColor: "hsl(var(--border))" }} />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="px-5" style={{ backgroundColor: "rgba(15, 23, 42, 0.98)", color: "rgba(148, 163, 184, 0.4)" }}>or continue with</span>
+                <span className="px-5" style={{ backgroundColor: "hsl(var(--card))", color: "hsl(var(--muted-foreground))" }}>or continue with</span>
               </div>
             </div>
 
             <button
               onClick={handleGoogleLogin}
-              className="w-full py-4 rounded-xl font-medium text-base flex items-center justify-center gap-3 transition-all duration-200 border hover:bg-white/[0.06]"
+              className="w-full py-4 rounded-xl font-medium text-base flex items-center justify-center gap-3 transition-all duration-200 border"
               style={{
-                backgroundColor: "rgba(255, 255, 255, 0.03)",
-                borderColor: "rgba(255, 255, 255, 0.06)",
-                color: "rgba(241, 245, 249, 0.8)",
+                backgroundColor: "hsl(var(--muted) / 0.5)",
+                borderColor: "hsl(var(--border))",
+                color: "hsl(var(--muted-foreground))",
               }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "hsl(var(--muted) / 0.5)"}
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
+              <GoogleIcon />
               Google
             </button>
 
-            <p className="mt-6 text-center text-sm" style={{ color: "rgba(148, 163, 184, 0.4)" }}>
+            <p className="mt-6 text-center text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
               {mode === "login" ? "New to Mendly? " : "Already have an account? "}
               <button
                 onClick={() => onSwitch(mode === "login" ? "signup" : "login")}
-                className="font-semibold transition-colors duration-200 hover:underline"
-                style={{ color: "#14B8A6" }}
+                className="font-semibold transition-colors duration-200 hover:underline text-primary"
               >
                 {mode === "login" ? "Create an account" : "Sign in"}
               </button>
