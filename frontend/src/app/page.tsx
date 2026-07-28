@@ -3,7 +3,7 @@
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/config";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import LandingPage from "@/components/landing-page";
 
 function HomeContent() {
@@ -11,14 +11,16 @@ function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [oauthError, setOauthError] = useState("");
+  const processed = useRef(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || processed.current) return;
 
     const token = searchParams.get("token");
     const error = searchParams.get("auth_error");
 
     if (token) {
+      processed.current = true;
       fetch(`${API_BASE}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -27,19 +29,25 @@ function HomeContent() {
           if (data) {
             login(token, data);
           }
+          router.replace("/dashboard");
         })
-        .catch(() => {});
-      router.replace("/", undefined);
+        .catch(() => {
+          router.replace("/");
+        });
       return;
     }
 
     if (error) {
+      processed.current = true;
       setOauthError(error.replace(/\+/g, " "));
-      router.replace("/", undefined);
+      router.replace("/");
       return;
     }
 
-    if (user) router.replace("/dashboard");
+    if (user) {
+      processed.current = true;
+      router.replace("/dashboard");
+    }
   }, [user, loading, searchParams, login, router]);
 
   if (loading) {
