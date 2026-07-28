@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mendly — Frontend
+
+Next.js 16 (App Router) frontend for the Mendly AI medical companion.
+
+## Tech
+
+- **Next.js 16** with App Router
+- **React 19**
+- **TypeScript**
+- **Tailwind CSS v4** with CSS custom properties for theming
+- **Font Awesome 6.7.2** (CDN)
+
+## Pages
+
+| Route | Page |
+|-------|------|
+| `/` | Landing page with auth modal |
+| `/dashboard` | User dashboard with stats and quick actions |
+| `/chatbot` | AI chat interface (streaming SSE) |
+| `/medicines` | Medicine search + detail modal |
+| `/conditions` | Medical conditions browser |
+| `/hospitals` | Nearby hospitals finder |
+| `/pharmacies` | Nearby pharmacies finder |
+| `/emergency` | Emergency contacts |
+| `/saved` | Bookmarked items |
+| `/account` | Profile management |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server with Turbopack |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── globals.css           # Theme variables, utility classes, animations
+│   ├── layout.tsx            # Root layout
+│   ├── page.tsx              # Landing page + OAuth handler
+│   └── (app)/                # Authenticated routes
+│       ├── layout.tsx        # App shell
+│       ├── dashboard/
+│       ├── chatbot/
+│       ├── medicines/
+│       ├── conditions/
+│       ├── hospitals/
+│       ├── pharmacies/
+│       ├── emergency/
+│       ├── saved/
+│       └── account/
+├── components/
+│   ├── providers.tsx
+│   ├── theme-provider.tsx
+│   ├── auth-modal.tsx
+│   ├── landing-page.tsx
+│   └── mobile-nav.tsx
+└── lib/
+    ├── config.ts
+    ├── api.ts
+    └── auth-context.tsx
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app is configured for Vercel deployment via `next.config.ts` with `output: "standalone"`.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+```
