@@ -72,7 +72,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "0 1.5rem",
+          padding: "6rem 2rem 4rem",
         }}
       >
         {/* Decorative gradient blurs */}
@@ -130,13 +130,13 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
           <div
             style={{
               display: "inline-block",
-              padding: "0.4rem 1rem",
+              padding: "0.5rem 1.25rem",
               borderRadius: "9999px",
               border: "1px solid rgba(255, 255, 255, 0.06)",
               background: "rgba(255, 255, 255, 0.03)",
-              fontSize: "0.8rem",
+              fontSize: "0.85rem",
               color: "var(--text-muted, rgba(148, 163, 184, 0.7))",
-              marginBottom: "2rem",
+              marginBottom: "2.5rem",
               backdropFilter: "blur(12px)",
             }}
           >
@@ -152,7 +152,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
               fontWeight: 800,
               lineHeight: 1.1,
-              marginBottom: "1.5rem",
+              marginBottom: "2rem",
               letterSpacing: "-0.03em",
             }}
           >
@@ -176,8 +176,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               fontSize: "clamp(1rem, 2vw, 1.25rem)",
               color: "var(--text-muted, rgba(148, 163, 184, 0.7))",
               maxWidth: "560px",
-              margin: "0 auto 2.5rem",
-              lineHeight: 1.7,
+              margin: "0 auto 3rem",
+              lineHeight: 1.8,
             }}
           >
             Ask health questions, check drug interactions, find nearby care, and
@@ -205,7 +205,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
           <div
             style={{
               display: "flex",
-              gap: "1rem",
+              gap: "1.25rem",
               justifyContent: "center",
               flexWrap: "wrap",
             }}
@@ -213,12 +213,12 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             <button
               onClick={() => openAuth("signup")}
               style={{
-                padding: "0.875rem 2rem",
-                borderRadius: "12px",
+                padding: "1rem 2.5rem",
+                borderRadius: "14px",
                 border: "none",
                 background: "linear-gradient(135deg, #14B8A6, #0891B2)",
                 color: "#fff",
-                fontSize: "1rem",
+                fontSize: "1.05rem",
                 fontWeight: 600,
                 cursor: "pointer",
                 transition: "all 0.2s ease",
@@ -243,12 +243,12 @@ onMouseEnter={(e) => {
                   ?.scrollIntoView({ behavior: "smooth" });
               }}
               style={{
-                padding: "0.875rem 2rem",
-                borderRadius: "12px",
+                padding: "1rem 2.5rem",
+                borderRadius: "14px",
                 border: "1px solid rgba(255, 255, 255, 0.06)",
                 background: "rgba(255, 255, 255, 0.03)",
                 color: "#F1F5F9",
-                fontSize: "1rem",
+                fontSize: "1.05rem",
                 fontWeight: 600,
                 cursor: "pointer",
                 backdropFilter: "blur(12px)",
@@ -273,17 +273,17 @@ onMouseEnter={(e) => {
       <section
         id="features"
         style={{
-          padding: "6rem 1.5rem",
+          padding: "8rem 2rem",
           maxWidth: "1100px",
           margin: "0 auto",
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "5rem" }}>
           <h2
             style={{
               fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
               fontWeight: 700,
-              marginBottom: "1rem",
+              marginBottom: "1.25rem",
               letterSpacing: "-0.02em",
             }}
           >
@@ -315,14 +315,14 @@ onMouseEnter={(e) => {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "1.5rem",
+            gap: "2rem",
           }}
         >
           {features.map((feature) => (
             <div
               key={feature.title}
               style={{
-                padding: "2rem",
+                padding: "2.5rem 2rem",
                 borderRadius: "16px",
                 border: "1px solid rgba(255, 255, 255, 0.06)",
                 background: "rgba(255, 255, 255, 0.03)",
@@ -343,27 +343,27 @@ onMouseEnter={(e) => {
             >
               <div
                 style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "14px",
                   background:
                     "linear-gradient(135deg, rgba(13, 148, 136, 0.15), rgba(6, 182, 212, 0.15))",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: "1.25rem",
+                  marginBottom: "1.5rem",
                 }}
               >
                 <i
                   className={feature.icon}
-                  style={{ fontSize: "1.2rem", color: "#14B8A6" }}
+                  style={{ fontSize: "1.3rem", color: "#14B8A6" }}
                 />
               </div>
               <h3
                 style={{
-                  fontSize: "1.15rem",
+                  fontSize: "1.2rem",
                   fontWeight: 600,
-                  marginBottom: "0.5rem",
+                  marginBottom: "0.75rem",
                 }}
               >
                 {feature.title}
@@ -371,8 +371,8 @@ onMouseEnter={(e) => {
               <p
                 style={{
                   color: "var(--text-muted, rgba(148, 163, 184, 0.7))",
-                  fontSize: "0.9rem",
-                  lineHeight: 1.6,
+                  fontSize: "0.95rem",
+                  lineHeight: 1.7,
                 }}
               >
                 {feature.description}
@@ -385,17 +385,17 @@ onMouseEnter={(e) => {
       {/* How it Works Section */}
       <section
         style={{
-          padding: "6rem 1.5rem",
+          padding: "8rem 2rem",
           maxWidth: "900px",
           margin: "0 auto",
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "5rem" }}>
           <h2
             style={{
               fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
               fontWeight: 700,
-              marginBottom: "1rem",
+              marginBottom: "1.25rem",
               letterSpacing: "-0.02em",
             }}
           >
@@ -415,7 +415,7 @@ onMouseEnter={(e) => {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "1.5rem",
+            gap: "2rem",
           }}
         >
           {steps.map((step) => (
@@ -423,9 +423,9 @@ onMouseEnter={(e) => {
               key={step.number}
               style={{
                 display: "flex",
-                gap: "1.5rem",
+                gap: "2rem",
                 alignItems: "flex-start",
-                padding: "2rem",
+                padding: "2.5rem",
                 borderRadius: "16px",
                 border: "1px solid rgba(255, 255, 255, 0.06)",
                 background: "rgba(255, 255, 255, 0.03)",
@@ -434,15 +434,15 @@ onMouseEnter={(e) => {
             >
               <div
                 style={{
-                  minWidth: "56px",
-                  height: "56px",
-                  borderRadius: "14px",
+                  minWidth: "64px",
+                  height: "64px",
+                  borderRadius: "16px",
                   background: "linear-gradient(135deg, #0D9488, #06B6D4)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontWeight: 700,
-                  fontSize: "1.1rem",
+                  fontSize: "1.2rem",
                   color: "#fff",
                   flexShrink: 0,
                 }}
@@ -452,9 +452,9 @@ onMouseEnter={(e) => {
               <div>
                 <h3
                   style={{
-                    fontSize: "1.15rem",
+                    fontSize: "1.2rem",
                     fontWeight: 600,
-                    marginBottom: "0.4rem",
+                    marginBottom: "0.6rem",
                   }}
                 >
                   {step.title}
@@ -462,8 +462,8 @@ onMouseEnter={(e) => {
                 <p
                   style={{
                     color: "var(--text-muted, rgba(148, 163, 184, 0.7))",
-                    fontSize: "0.95rem",
-                    lineHeight: 1.6,
+                    fontSize: "1rem",
+                    lineHeight: 1.7,
                   }}
                 >
                   {step.description}
@@ -477,7 +477,7 @@ onMouseEnter={(e) => {
       {/* Footer */}
       <footer
         style={{
-          padding: "4rem 1.5rem 2rem",
+          padding: "5rem 2rem 2.5rem",
           borderTop: "1px solid rgba(255, 255, 255, 0.06)",
         }}
       >
@@ -488,7 +488,7 @@ onMouseEnter={(e) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "2rem",
+            gap: "2.5rem",
           }}
         >
           <div

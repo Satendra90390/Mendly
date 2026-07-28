@@ -117,11 +117,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg)", backgroundImage: "var(--bg-gradient)" }}>
-      <div className="max-w-7xl mx-auto px-4 lg:px-6 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-5 lg:px-8 py-10 space-y-10">
 
         {/* ── Greeting Card ── */}
         <section
-          className="relative rounded-2xl overflow-hidden p-6 sm:p-8"
+          className="relative rounded-2xl overflow-hidden p-8 sm:p-10"
           style={{
             background: "var(--surface)",
             border: "1px solid var(--border)",
@@ -137,16 +137,16 @@ export default function DashboardPage() {
             }}
           />
           <div className="relative z-10">
-            <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text)" }}>
+            <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: "var(--text)" }}>
               {greeting}, {firstName} 👋
             </h1>
-            <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+            <p className="mt-2 text-base" style={{ color: "var(--text-muted)" }}>
               Welcome back to your health dashboard.
             </p>
 
             {/* Health Tip */}
             <div
-              className="mt-4 rounded-xl px-4 py-3 flex items-start gap-3"
+              className="mt-6 rounded-xl px-5 py-4 flex items-start gap-3"
               style={{
                 background: "rgba(20,184,166,0.08)",
                 border: "1px solid rgba(20,184,166,0.15)",
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                 >
                   Health Tip
                 </span>
-                <p className="text-sm mt-1 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                <p className="text-sm mt-1.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>
                   {tip}
                 </p>
               </div>
@@ -169,18 +169,18 @@ export default function DashboardPage() {
         </section>
 
         {/* ── Stat Cards ── */}
-        <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
           {STAT_CARDS.map((stat) => (
             <div
               key={stat.key}
-              className="stat-card rounded-xl p-4 sm:p-5 flex flex-col gap-3 cursor-default"
+              className="stat-card rounded-xl p-5 sm:p-6 flex flex-col gap-3 cursor-default"
               style={{
                 background: "var(--surface)",
                 border: "1px solid var(--border)",
               }}
             >
               <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                className="w-11 h-11 rounded-xl flex items-center justify-center"
                 style={{ background: `${stat.color}18` }}
               >
                 <i className={stat.icon} style={{ color: stat.color }} />
@@ -188,15 +188,15 @@ export default function DashboardPage() {
               <div>
                 {countsLoading ? (
                   <div
-                    className="h-7 w-12 rounded-md animate-pulse"
+                    className="h-8 w-14 rounded-md animate-pulse"
                     style={{ background: "var(--surface-hover)" }}
                   />
                 ) : (
-                  <span className="text-2xl font-bold" style={{ color: "var(--text)" }}>
+                  <span className="text-3xl font-bold" style={{ color: "var(--text)" }}>
                     {counts[stat.key]}
                   </span>
                 )}
-                <p className="text-xs mt-0.5" style={{ color: "var(--text-dim)" }}>
+                <p className="text-sm mt-1" style={{ color: "var(--text-dim)" }}>
                   {stat.label}
                 </p>
               </div>
@@ -206,28 +206,28 @@ export default function DashboardPage() {
 
         {/* ── Quick Actions ── */}
         <section>
-          <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text)" }}>
+          <h2 className="text-xl font-semibold mb-5" style={{ color: "var(--text)" }}>
             Quick Actions
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {QUICK_ACTIONS.map((action) => (
               <Link
                 key={action.href}
                 href={action.href}
-                className="flex flex-col items-center gap-3 rounded-xl px-3 py-5 text-center transition-all duration-200 hover:scale-[1.03] hover:shadow-lg group"
+                className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:scale-[1.03] hover:shadow-lg group"
                 style={{
                   background: "var(--surface)",
                   border: "1px solid var(--border)",
                 }}
               >
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
+                  className="w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
                   style={{ background: `${action.color}14` }}
                 >
-                  <i className={action.icon} style={{ color: action.color, fontSize: "1.15rem" }} />
+                  <i className={action.icon} style={{ color: action.color, fontSize: "1.25rem" }} />
                 </div>
                 <span
-                  className="text-xs font-medium leading-tight"
+                  className="text-sm font-medium leading-tight"
                   style={{ color: "var(--text-muted)" }}
                 >
                   {action.label}
@@ -240,14 +240,13 @@ export default function DashboardPage() {
 
       {/* ── Footer ── */}
       <footer
-        className="mt-12"
         style={{
           background: "var(--surface)",
           borderTop: "1px solid var(--border)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 lg:px-6 py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
             {/* Brand */}
             <div>
@@ -262,7 +261,7 @@ export default function DashboardPage() {
                   Mendly
                 </span>
               </Link>
-              <p className="mt-3 text-xs leading-relaxed" style={{ color: "var(--text-dim)" }}>
+              <p className="mt-4 text-sm leading-relaxed" style={{ color: "var(--text-dim)" }}>
                 Your AI-powered medical assistant for medicines, drug interactions, and nearby
                 healthcare facilities.
               </p>
@@ -270,15 +269,15 @@ export default function DashboardPage() {
 
             {/* Quick Links */}
             <div>
-              <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>
+              <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>
                 Quick Links
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {NAV_LINKS.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-xs transition-colors hover:underline"
+                      className="text-sm transition-colors hover:underline"
                       style={{ color: "var(--text-muted)" }}
                     >
                       {link.label}
@@ -290,20 +289,20 @@ export default function DashboardPage() {
 
             {/* Resources */}
             <div>
-              <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>
+              <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>
                 Resources
               </h3>
-              <ul className="space-y-2">
-                  {[
-                    { label: "AI Chat (Elix)", href: "/chatbot" },
-                    { label: "Pharmacies", href: "/pharmacies" },
-                    { label: "Account", href: "/account" },
-                    { label: "Saved Items", href: "/saved" },
-                  ].map((link) => (
+              <ul className="space-y-3">
+                {[
+                  { label: "AI Chat (Elix)", href: "/chatbot" },
+                  { label: "Pharmacies", href: "/pharmacies" },
+                  { label: "Account", href: "/account" },
+                  { label: "Saved Items", href: "/saved" },
+                ].map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-xs transition-colors hover:underline"
+                      className="text-sm transition-colors hover:underline"
                       style={{ color: "var(--text-muted)" }}
                     >
                       {link.label}
@@ -315,10 +314,10 @@ export default function DashboardPage() {
 
             {/* Disclaimer */}
             <div>
-              <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>
+              <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>
                 Medical Disclaimer
               </h3>
-              <p className="text-xs leading-relaxed" style={{ color: "var(--text-dim)" }}>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-dim)" }}>
                 Mendly provides health information for educational purposes only and is not a
                 substitute for professional medical advice, diagnosis, or treatment. Always consult a
                 qualified healthcare provider.
@@ -328,30 +327,30 @@ export default function DashboardPage() {
 
           {/* Copyright */}
           <div
-            className="mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+            className="mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
             style={{ borderTop: "1px solid var(--border)" }}
           >
-            <p className="text-xs" style={{ color: "var(--text-dim)" }}>
+            <p className="text-sm" style={{ color: "var(--text-dim)" }}>
               &copy; {new Date().getFullYear()} Mendly. All rights reserved.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <Link
                 href="/account"
-                className="text-xs transition-colors hover:underline"
+                className="text-sm transition-colors hover:underline"
                 style={{ color: "var(--text-dim)" }}
               >
                 Account
               </Link>
               <Link
                 href="/saved"
-                className="text-xs transition-colors hover:underline"
+                className="text-sm transition-colors hover:underline"
                 style={{ color: "var(--text-dim)" }}
               >
                 Saved Items
               </Link>
               <Link
                 href="/pharmacies"
-                className="text-xs transition-colors hover:underline"
+                className="text-sm transition-colors hover:underline"
                 style={{ color: "var(--text-dim)" }}
               >
                 Pharmacies

@@ -16,7 +16,7 @@ export default function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 px-2 pb-[env(safe-area-inset-bottom)]"
+      className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)]"
       style={{
         background: "var(--glass)",
         backdropFilter: "blur(20px)",
@@ -24,27 +24,27 @@ export default function MobileNav() {
         borderTop: "1px solid var(--glass-border)",
       }}
     >
-      <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
+      <div className="flex items-center justify-around h-18 max-w-lg mx-auto">
         {TABS.map((tab) => {
           const active = pathname.startsWith(tab.href);
           return (
             <Link
               key={tab.href}
               href={tab.href}
-              className="flex flex-col items-center gap-1 min-w-[56px] py-2 rounded-xl transition-all duration-200"
+              className="flex flex-col items-center gap-1.5 min-w-[60px] py-2.5 rounded-xl transition-all duration-200"
               style={{
                 color: active ? "#14B8A6" : "var(--text-dim)",
               }}
             >
               <div
-                className="relative w-10 h-8 flex items-center justify-center rounded-lg transition-all duration-200"
+                className="relative w-11 h-9 flex items-center justify-center rounded-xl transition-all duration-200"
                 style={{
                   background: active ? "rgba(20, 184, 166, 0.12)" : "transparent",
                 }}
               >
                 {active && (
                   <div
-                    className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full"
+                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full"
                     style={{ background: "linear-gradient(135deg, #14B8A6, #0891B2)" }}
                   />
                 )}
@@ -52,7 +52,7 @@ export default function MobileNav() {
                   <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
                 </svg>
               </div>
-              <span className="text-[10px] font-medium leading-none">{tab.label}</span>
+              <span className="text-[11px] font-medium leading-none">{tab.label}</span>
             </Link>
           );
         })}

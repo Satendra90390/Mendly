@@ -55,7 +55,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 px-4 lg:px-6"
+        className="fixed top-0 left-0 right-0 z-50 px-5 lg:px-8"
         style={{
           background: "var(--glass)",
           backdropFilter: "blur(20px)",
@@ -63,25 +63,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           borderBottom: "1px solid var(--glass-border)",
         }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-16">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-18">
           <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
             <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm"
               style={{ background: "var(--gradient-1)" }}
             >
               M
             </div>
-            <span className="text-lg font-bold hidden sm:block" style={{ color: "var(--text)" }}>
+            <span className="text-xl font-bold hidden sm:block" style={{ color: "var(--text)" }}>
               Mendly
             </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1.5">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:scale-[1.02]"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 hover:scale-[1.02]"
                 style={{ color: "var(--text-muted)" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; e.currentTarget.style.color = "var(--text)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-muted)"; }}
@@ -92,10 +92,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={toggle}
-              className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
               style={{ color: "var(--text-muted)" }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
@@ -114,15 +114,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 p-1 rounded-full transition-colors"
+                className="flex items-center gap-2 p-1.5 rounded-full transition-colors"
                 onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-hover)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
                 {user.profile_photo ? (
-                  <img src={user.profile_photo} alt="" className="w-8 h-8 rounded-full object-cover" />
+                  <img src={user.profile_photo} alt="" className="w-9 h-9 rounded-full object-cover" />
                 ) : (
                   <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
                     style={{ background: avatarBg }}
                   >
                     {userInitial}
@@ -151,11 +151,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     boxShadow: "var(--shadow)",
                   }}
                 >
-                  <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <div className="px-5 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
                     <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>{user.name}</p>
-                    <p className="text-xs truncate" style={{ color: "var(--text-dim)" }}>{user.email}</p>
+                    <p className="text-xs truncate mt-0.5" style={{ color: "var(--text-dim)" }}>{user.email}</p>
                   </div>
-                  <div className="py-1">
+                  <div className="py-1.5">
                     {[
                       { label: "Account", href: "/account", icon: "M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" },
                       { label: "Saved Items", href: "/saved", icon: "M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" },
@@ -165,7 +165,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         key={item.href}
                         href={item.href}
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                        className="flex items-center gap-3 px-5 py-3 text-sm transition-colors"
                         style={{ color: "var(--text-muted)" }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = "var(--surface-hover)";
@@ -183,10 +183,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       </Link>
                     ))}
                   </div>
-                  <div style={{ borderTop: "1px solid var(--border)" }} className="py-1">
+                  <div style={{ borderTop: "1px solid var(--border)" }} className="py-1.5">
                     <button
                       onClick={() => { setDropdownOpen(false); logout(); }}
-                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm transition-colors"
+                      className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors"
                       style={{ color: "#EF4444" }}
                       onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.08)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
@@ -204,7 +204,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
 
-      <main className="pt-16 pb-20 lg:pb-0">
+      <main className="pt-20 pb-24 lg:pb-0">
         {children}
       </main>
 
