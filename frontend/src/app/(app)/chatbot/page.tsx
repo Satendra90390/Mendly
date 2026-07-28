@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/config";
 
 interface Message {
