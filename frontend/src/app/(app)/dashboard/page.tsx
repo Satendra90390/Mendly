@@ -240,12 +240,13 @@ export default function DashboardPage() {
 
       {/* ── Footer ── */}
       <footer
+        className="mt-12 pb-24 lg:pb-0 lg:mt-16"
         style={{
           background: "var(--surface)",
           borderTop: "1px solid var(--border)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-14">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
             {/* Brand */}
