@@ -116,7 +116,7 @@ export default function DashboardPage() {
   }, [authFetch]);
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+    <div className="min-h-screen" style={{ background: "var(--bg)", backgroundImage: "var(--bg-gradient)" }}>
       <div className="max-w-7xl mx-auto px-4 lg:px-6 py-8 space-y-8">
 
         {/* ── Greeting Card ── */}

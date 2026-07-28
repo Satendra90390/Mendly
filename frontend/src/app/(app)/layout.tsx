@@ -67,7 +67,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "linear-gradient(135deg, #14B8A6, #0891B2)" }}
+              style={{ background: "var(--gradient-1)" }}
             >
               M
             </div>

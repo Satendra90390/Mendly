@@ -102,7 +102,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
           className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden"
           style={{
             width: "45%",
-            background: "linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(8, 145, 178, 0.08))",
+                  background: "linear-gradient(135deg, rgba(13, 148, 136, 0.12), rgba(6, 182, 212, 0.08))",
             borderRight: "1px solid rgba(255, 255, 255, 0.04)",
           }}
         >
@@ -110,7 +110,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
           <div style={{
             position: "absolute", top: "-80px", left: "-80px",
             width: "300px", height: "300px", borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(20, 184, 166, 0.2), transparent 70%)",
+              background: "radial-gradient(circle, rgba(13, 148, 136, 0.2), transparent 70%)",
             filter: "blur(60px)", pointerEvents: "none",
           }} />
           <div style={{
@@ -124,7 +124,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6" style={{
               background: "linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(8, 145, 178, 0.12))",
               border: "1px solid rgba(20, 184, 166, 0.2)",
-              boxShadow: "0 8px 40px rgba(20, 184, 166, 0.15)",
+                  boxShadow: "0 8px 40px rgba(13, 148, 136, 0.15)",
             }}>
               <span className="text-4xl">💊</span>
             </div>
@@ -289,7 +289,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
                 type="submit" disabled={loading}
                 className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all duration-200 disabled:opacity-50"
                 style={{
-                  background: "linear-gradient(135deg, #14B8A6, #0891B2)",
+                  background: "var(--gradient-1)",
                   boxShadow: loading ? "none" : "0 4px 20px rgba(20, 184, 166, 0.3)",
                 }}
                 onMouseEnter={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 6px 28px rgba(20, 184, 166, 0.4)"; }}

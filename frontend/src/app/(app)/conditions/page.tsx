@@ -66,9 +66,15 @@ export default function ConditionsPage() {
   const detail = expandedId ? detailData[expandedId] || conditions.find((c) => c.id === expandedId) : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4 md:p-8">
+    <div
+      className="min-h-screen"
+      style={{
+        background: "var(--bg)",
+        backgroundImage: "var(--bg-gradient)",
+      }}
+    >
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mb-8">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-xl bg-pink-500/20 border border-pink-500/30 flex items-center justify-center">
             <i className="fa-solid fa-heart-pulse text-pink-400 text-xl"></i>

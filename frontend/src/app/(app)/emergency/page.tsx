@@ -48,8 +48,14 @@ export default function EmergencyContactsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
+    <div
+      className="min-h-screen"
+      style={{
+        background: "var(--bg)",
+        backgroundImage: "var(--bg-gradient)",
+      }}
+    >
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex items-center gap-3">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/20 backdrop-blur-sm">

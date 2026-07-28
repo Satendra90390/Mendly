@@ -57,8 +57,9 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
     <div
       style={{
         minHeight: "100vh",
-        background: "#050A14",
-        color: "var(--text, #F1F5F9)",
+        background: "var(--bg)",
+        backgroundImage: "var(--bg-gradient)",
+        color: "var(--text)",
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         overflowX: "hidden",
       }}
@@ -84,7 +85,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             height: "600px",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, transparent 70%)",
             filter: "blur(80px)",
             pointerEvents: "none",
           }}
@@ -98,7 +99,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             height: "500px",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(8, 145, 178, 0.12) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%)",
             filter: "blur(80px)",
             pointerEvents: "none",
           }}
@@ -112,7 +113,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             height: "300px",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(20, 184, 166, 0.08) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(13, 148, 136, 0.08) 0%, transparent 70%)",
             filter: "blur(60px)",
             pointerEvents: "none",
           }}
@@ -158,7 +159,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             <span style={{ color: "#F1F5F9" }}>Your </span>
             <span
               style={{
-                background: "linear-gradient(135deg, #14B8A6, #0891B2)",
+                background: "var(--gradient-1)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -221,21 +222,19 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
                 fontWeight: 600,
                 cursor: "pointer",
                 transition: "all 0.2s ease",
-                boxShadow: "0 4px 24px rgba(20, 184, 166, 0.25)",
+                boxShadow: "0 4px 24px rgba(13, 148, 136, 0.25)",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow =
-                  "0 8px 32px rgba(20, 184, 166, 0.35)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow =
-                  "0 4px 24px rgba(20, 184, 166, 0.25)";
-              }}
-            >
-              Get Started
-              <i className="fa-solid fa-arrow-right" style={{ marginLeft: "0.5rem" }} />
+onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "var(--glow-teal)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 24px rgba(13, 148, 136, 0.25)";
+                }}
+              >
+                Get Started
+                <i className="fa-solid fa-arrow-right" style={{ marginLeft: "0.5rem" }} />
             </button>
             <button
               onClick={() => {
@@ -291,7 +290,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             Everything you need for{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #14B8A6, #0891B2)",
+                background: "var(--gradient-1)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -348,7 +347,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
                   height: "48px",
                   borderRadius: "12px",
                   background:
-                    "linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(8, 145, 178, 0.15))",
+                    "linear-gradient(135deg, rgba(13, 148, 136, 0.15), rgba(6, 182, 212, 0.15))",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -438,7 +437,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
                   minWidth: "56px",
                   height: "56px",
                   borderRadius: "14px",
-                  background: "linear-gradient(135deg, #14B8A6, #0891B2)",
+                  background: "linear-gradient(135deg, #0D9488, #06B6D4)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -517,7 +516,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               >
                 <i
                   className={badge.icon}
-                  style={{ color: "#14B8A6", fontSize: "1rem" }}
+                  style={{ color: "#0D9488", fontSize: "1rem" }}
                 />
                 {badge.label}
               </div>
@@ -545,7 +544,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               style={{
                 fontSize: "1.1rem",
                 fontWeight: 700,
-                background: "linear-gradient(135deg, #14B8A6, #0891B2)",
+                background: "var(--gradient-1)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
