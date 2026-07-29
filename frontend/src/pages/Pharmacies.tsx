@@ -70,21 +70,26 @@ export default function PharmaciesPage() {
   };
 
   return (
-    <div
-      className="min-h-screen p-4 md:p-8"
-      style={{
-        backgroundColor: "hsl(var(--background))",
-        backgroundImage: "var(--bg-gradient)",
-      }}
-    >
+    <div className="page-wrap p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-1" style={{ color: "hsl(var(--foreground))" }}>
-            Nearby Pharmacies
-          </h1>
-          <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Find pharmacies and medical stores near you
-          </p>
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "hsl(260 90% 66% / 0.2)", border: "1px solid hsl(260 90% 66% / 0.3)" }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "hsl(260 90% 66%)" }}>
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
+                <path d="M10 20v-4h4v4"/>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+                Nearby Pharmacies
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Find pharmacies and medical stores near you
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="glass-subtle p-4 mb-6">
@@ -103,8 +108,8 @@ export default function PharmaciesPage() {
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle mr-1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search
             </button>
           </div>
-          <p className="text-xs mt-2" style={{ color: "hsl(var(--muted-foreground) / 0.6)" }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-500 inline-block align-middle mr-1"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {locationStatus}
+          <p className="text-xs mt-2 text-dim">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle mr-1" style={{ color: "hsl(173 80% 50%)" }}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {locationStatus}
           </p>
         </div>
 

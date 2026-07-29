@@ -227,10 +227,7 @@ export default function AccountPage() {
                   <p className="text-sm mt-0.5 text-muted">{user?.email}</p>
                   <button
                     onClick={() => setEditing(true)}
-                    className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                    style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = "hsl(var(--card))"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}
+                    className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-card border-border text-muted-foreground hover:bg-muted hover:text-foreground"
                   >
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -298,10 +295,8 @@ export default function AccountPage() {
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-[hsl(0_84%_60%/0.2)] hover:border-[hsl(0_84%_60%/0.3)]"
                   style={{ background: "hsl(0 84% 60% / 0.1)", border: "1px solid hsl(0 84% 60% / 0.2)", color: "#EF4444" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(0 84% 60% / 0.2)"; e.currentTarget.style.borderColor = "hsl(0 84% 60% / 0.3)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "hsl(0 84% 60% / 0.1)"; e.currentTarget.style.borderColor = "hsl(0 84% 60% / 0.2)"; }}
                 >
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -333,10 +328,7 @@ export default function AccountPage() {
                     </button>
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                      style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-card border-border text-muted-foreground hover:text-foreground"
                     >
                       Cancel
                     </button>

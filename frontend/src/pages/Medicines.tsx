@@ -292,18 +292,13 @@ export default function MedicinesPage() {
             placeholder="Search medicines by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 rounded-xl outline-none transition-all duration-300 bg-card text-foreground"
-            style={{ border: "1px solid hsl(var(--border))" }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = "hsl(var(--primary))"; e.currentTarget.style.boxShadow = "0 0 0 3px hsl(173 80% 36% / 0.1)"; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = "hsl(var(--border))"; e.currentTarget.style.boxShadow = "none"; }}
+            className="w-full pl-12 pr-4 py-3.5 rounded-xl outline-none transition-all duration-300 bg-card text-foreground border-border focus:border-primary focus:shadow-[0_0_0_3px_hsl(173_80%_36%/0.1)]"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors hover:text-foreground"
               style={{ color: "hsl(var(--muted-foreground) / 0.6)" }}
-              onMouseEnter={(e) => e.currentTarget.style.color = "hsl(var(--foreground))"}
-              onMouseLeave={(e) => e.currentTarget.style.color = "hsl(var(--muted-foreground) / 0.6)"}
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
@@ -441,10 +436,8 @@ export default function MedicinesPage() {
               </div>
               <button
                 onClick={() => setSelectedMedicine(null)}
-                className="w-9 h-9 rounded-lg flex items-center justify-center transition-all bg-card"
+                className="w-9 h-9 rounded-lg flex items-center justify-center transition-all bg-card hover:bg-muted hover:text-foreground"
                 style={{ border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground) / 0.6)" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "hsl(var(--card))"; e.currentTarget.style.color = "hsl(var(--muted-foreground) / 0.6)"; }}
               >
                 <XMarkIcon />
               </button>

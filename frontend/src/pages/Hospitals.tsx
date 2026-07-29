@@ -192,10 +192,7 @@ export default function HospitalsPage() {
                 if (e.key === "Enter") searchHospitals(query);
               }}
               placeholder="Search hospitals by name..."
-              className="w-full pl-11 pr-4 py-3 rounded-xl outline-none transition-colors"
-              style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }}
-              onFocus={(e) => e.currentTarget.style.borderColor = "hsl(var(--primary))"}
-              onBlur={(e) => e.currentTarget.style.borderColor = "hsl(var(--border))"}
+              className="w-full pl-11 pr-4 py-3 rounded-xl outline-none transition-all bg-card border-border text-foreground focus:border-primary"
             />
           </div>
 

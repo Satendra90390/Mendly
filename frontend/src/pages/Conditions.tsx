@@ -107,7 +107,7 @@ export default function ConditionsPage() {
 
       {!loading && conditions.length > 0 && (
         <div className="max-w-7xl mx-auto">
-          <p className="text-sm mb-4" style={{ color: "hsl(var(--muted-foreground) / 0.6)" }}>
+          <p className="text-sm mb-4 text-dim">
             {conditions.length} condition{conditions.length !== 1 ? "s" : ""} found
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

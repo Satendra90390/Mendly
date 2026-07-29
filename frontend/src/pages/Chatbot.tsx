@@ -181,10 +181,8 @@ export default function ChatbotPage() {
         {messages.length > 0 && (
           <button
             onClick={clearChat}
-            className="p-2 rounded-lg transition-all"
+            className="p-2 rounded-lg transition-all hover:bg-muted hover:text-foreground"
             style={{ color: "hsl(var(--muted-foreground))" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}
           >
             <TrashIcon className="w-4 h-4" />
           </button>
@@ -207,10 +205,7 @@ export default function ChatbotPage() {
                   <button
                     key={suggestion}
                     onClick={() => sendMessage(suggestion)}
-                    className="text-left text-sm px-4 py-3 rounded-xl transition-all"
-                    style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "hsl(173 80% 36% / 0.3)"; e.currentTarget.style.color = "hsl(var(--foreground))"; e.currentTarget.style.background = "hsl(var(--muted))"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "hsl(var(--border))"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; e.currentTarget.style.background = "hsl(var(--card))"; }}
+                    className="text-left text-sm px-4 py-3 rounded-xl transition-all bg-card border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-muted"
                   >
                     <BoltIcon className="w-3.5 h-3.5 inline mr-2" style={{ color: "hsl(173 80% 60%)" }} />
                     {suggestion}
@@ -287,10 +282,7 @@ export default function ChatbotPage() {
                 <button
                   key={s}
                   onClick={() => sendMessage(s)}
-                  className="whitespace-nowrap text-xs px-3 py-1.5 rounded-full transition-all shrink-0"
-                  style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "hsl(173 80% 36% / 0.25)"; e.currentTarget.style.color = "hsl(var(--foreground))"; e.currentTarget.style.background = "hsl(var(--muted))"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "hsl(var(--border))"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; e.currentTarget.style.background = "hsl(var(--card))"; }}
+                  className="whitespace-nowrap text-xs px-3 py-1.5 rounded-full transition-all shrink-0 bg-card border border-border text-muted-foreground hover:border-primary/25 hover:text-foreground hover:bg-muted"
                 >
                   {s}
                 </button>
@@ -305,18 +297,14 @@ export default function ChatbotPage() {
               onKeyDown={handleKeyDown}
               placeholder="Ask Elix AI anything..."
               rows={1}
-              className="flex-1 rounded-xl px-4 py-3 text-sm outline-none resize-none max-h-40 transition-colors"
-              style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--input))", color: "hsl(var(--foreground))" }}
-              onFocus={(e) => e.currentTarget.style.borderColor = "hsl(var(--ring))"}
-              onBlur={(e) => e.currentTarget.style.borderColor = "hsl(var(--input))"}
+              className="flex-1 rounded-xl px-4 py-3 text-sm outline-none resize-none max-h-40 transition-colors bg-card border-border text-foreground focus:border-ring focus:shadow-[0_0_0_3px_hsl(173_80%_36%/0.15)]"
+              style={{ border: "1px solid hsl(var(--input))" }}
             />
             <button
               onClick={() => sendMessage()}
               disabled={!input.trim() || isStreaming}
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 hover:shadow-[0_0_18px_hsl(173_80%_36%/0.35)]"
               style={{ background: "var(--gradient-1)" }}
-              onMouseEnter={(e) => { if (!(e.currentTarget as HTMLButtonElement).disabled) e.currentTarget.style.boxShadow = "0 0 18px hsl(173 80% 36% / 0.35)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
             >
               <SendIcon className="w-4 h-4 text-white" />
             </button>

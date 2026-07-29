@@ -183,10 +183,8 @@ export default function SavedPage() {
                     <button
                       onClick={() => handleRemove(item.id)}
                       disabled={removingId === item.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 disabled:opacity-50 hover:bg-[hsl(0_84%_60%/0.2)] hover:border-[hsl(0_84%_60%/0.3)]"
                       style={{ background: "hsl(0 84% 60% / 0.1)", border: "1px solid hsl(0 84% 60% / 0.2)", color: "#EF4444" }}
-                      onMouseEnter={(e) => { if (removingId !== item.id) { e.currentTarget.style.background = "hsl(0 84% 60% / 0.2)"; e.currentTarget.style.borderColor = "hsl(0 84% 60% / 0.3)"; }}}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "hsl(0 84% 60% / 0.1)"; e.currentTarget.style.borderColor = "hsl(0 84% 60% / 0.2)"; }}
                     >
                       {removingId === item.id ? (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-[10px] h-[10px] animate-spin">

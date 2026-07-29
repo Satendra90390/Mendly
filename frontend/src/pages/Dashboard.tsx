@@ -234,10 +234,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-5 lg:px-8 py-10 space-y-10 flex-1">
 
         {/* ── Greeting Card ── */}
-        <section
-          className="relative rounded-2xl overflow-hidden p-8 sm:p-10 bg-card border"
-          style={{ borderColor: "hsl(var(--border))" }}
-        >
+        <section className="relative rounded-2xl overflow-hidden p-8 sm:p-10 bg-card border-border">
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -284,8 +281,7 @@ export default function DashboardPage() {
           {STAT_CARDS.map((stat) => (
             <div
               key={stat.key}
-              className="rounded-xl p-5 sm:p-6 flex flex-col gap-3 cursor-default bg-card border"
-              style={{ borderColor: "hsl(var(--border))" }}
+              className="rounded-xl p-5 sm:p-6 flex flex-col gap-3 cursor-default bg-card border-border card-hover"
             >
               <div
                 className="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -322,8 +318,7 @@ export default function DashboardPage() {
               <Link
                 key={action.href}
                 to={action.href}
-                className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:scale-[1.03] hover:shadow-lg group bg-card border"
-                style={{ borderColor: "hsl(var(--border))" }}
+                className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:scale-[1.03] hover:shadow-lg group bg-card border-border"
               >
                 <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
@@ -341,10 +336,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Footer ── */}
-      <footer
-        className="mt-auto pb-24 lg:pb-0 bg-card border-t"
-        style={{ borderColor: "hsl(var(--border))" }}
-      >
+      <footer className="mt-auto pb-24 lg:pb-0 bg-card border-t border-border">
         <div className="max-w-7xl mx-auto px-5 lg:px-8 py-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
 
@@ -425,8 +417,7 @@ export default function DashboardPage() {
 
           {/* Copyright */}
           <div
-            className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t"
-            style={{ borderColor: "hsl(var(--border))" }}
+            className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border"
           >
             <p className="text-sm text-muted-foreground/60">
               &copy; {new Date().getFullYear()} Mendly. All rights reserved.

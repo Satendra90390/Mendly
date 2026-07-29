@@ -103,10 +103,7 @@ export default function EmergencyPage() {
             {contacts.map((contact, idx) => (
               <div
                 key={`${contact.country}-${contact.number}-${idx}`}
-                className="group relative overflow-hidden rounded-2xl p-6 shadow-lg backdrop-blur-md transition-all duration-300"
-                style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "hsl(0 84% 60% / 0.4)"; e.currentTarget.style.background = "hsl(var(--muted))"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "hsl(var(--border))"; e.currentTarget.style.background = "hsl(var(--card))"; }}
+                className="group relative overflow-hidden rounded-2xl p-6 shadow-lg backdrop-blur-md transition-all duration-300 bg-card border-border hover:border-[hsl(0_84%_60%/0.4)] hover:bg-muted"
               >
                 <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full transition-all duration-300 group-hover:scale-150" style={{ background: "hsl(0 84% 60% / 0.05)" }} />
 
@@ -130,10 +127,8 @@ export default function EmergencyPage() {
 
                 <button
                   onClick={() => handleCall(contact.number)}
-                  className="relative flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 active:scale-[0.97]"
-                  style={{ background: "#DC2626", boxShadow: "0 4px 16px rgba(220,38,38,0.25)" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#EF4444"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(239,68,68,0.3)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "#DC2626"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(220,38,38,0.25)"; }}
+                  className="relative flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 active:scale-[0.97] hover:bg-[#EF4444] hover:shadow-[0_6px_24px_rgba(239,68,68,0.3)]"
+                  style={{ background: "#DC2626" }}
                 >
                   <svg className="h-3 w-3" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
                     <path d="M164.3 36.1c11.4-6.8 26-4 32.1 8.6L222.8 94c5.7 11.6 3.1 25.7-6.4 34.3l-40.2 36.8c-6.6 6-6.4 16.2 .4 22.5 18.3 17.1 39.8 32.7 64 46.1 23.7 13.2 48.7 23.2 74.5 30.1 10.4 2.8 21.4-.2 28.9-7.8l40.2-36.8c10.4-10.4 27.3-11.7 39.4-3.1l59.1 41.9c12.6 8.9 15.2 26.8 5.6 39.1l-37.3 47.8c-9.9 12.7-25.8 19.6-43 18.2C187.1 349.1 89.7 276.5 55 170.9c-5.4-16.4-1.2-34.5 11.1-47.1L146.1 60.7c5.6-5.6 12.4-9.5 20.2-11.8 7.6-2.3 15.7-2.3 23.2 0z" />
