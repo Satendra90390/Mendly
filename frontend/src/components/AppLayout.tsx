@@ -1,13 +1,9 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Outlet, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/components/theme-provider";
 import MobileNav from "@/components/mobile-nav";
 
-// Inline SVG icons
 function ChartIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>; }
 function RobotIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6v3.75m0 3v.75m-6-3.75H9m1.5-3h.75m0 0v3m0 0h-.75M12 3a9 9 0 00-9 9v2.25a9 9 0 0018 0V12a9 9 0 00-9-9z" /></svg>; }
 function PillsIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>; }
@@ -24,52 +20,23 @@ const NAV_LINKS = [
   { label: "Emergency", href: "/emergency", icon: AlertIcon },
 ];
 
-function SunIcon() {
-  return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-    </svg>
-  );
-}
+function SunIcon() { return <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>; }
+function MoonIcon() { return <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>; }
 
-function MoonIcon() {
-  return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-    </svg>
-  );
-}
-
-export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, logout } = useAuth();
+export default function AppLayout() {
+  const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace("/");
-    }
-  }, [user, loading, router]);
-
-  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="w-8 h-8 rounded-full border-2 border-transparent animate-spin" style={{ borderTopColor: "hsl(var(--primary))" }} />
-      </div>
-    );
-  }
 
   if (!user) return null;
 
@@ -78,62 +45,43 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-5 lg:px-8 glass" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
         <div className="max-w-7xl mx-auto flex items-center justify-between h-16">
-          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "var(--gradient-1)" }}>
-              M
-            </div>
-            <span className="text-xl font-bold hidden sm:block text-foreground">
-              Mendly
-            </span>
+          <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ background: "var(--gradient-1)" }}>M</div>
+            <span className="text-xl font-bold hidden sm:block text-foreground">Mendly</span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
               const Icon = link.icon;
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
+                <Link key={link.href} to={link.href}
                   className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
                   style={{ color: "hsl(var(--muted-foreground))" }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}
-                >
-                  <Icon />
-                  {link.label}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}>
+                  <Icon /> {link.label}
                 </Link>
               );
             })}
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={toggle}
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-              style={{ color: "hsl(var(--muted-foreground))" }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-            >
+            <button onClick={toggle} className="w-10 h-10 rounded-full flex items-center justify-center transition-colors" style={{ color: "hsl(var(--muted-foreground))" }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
               {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
 
             <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 p-1.5 rounded-full transition-colors"
-                onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-              >
+              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 p-1.5 rounded-full transition-colors"
+                onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
                 {user.profile_photo ? (
                   <img src={user.profile_photo} alt="" className="w-9 h-9 rounded-full object-cover" />
                 ) : (
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: avatarBg }}>
-                    {userInitial}
-                  </div>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: avatarBg }}>{userInitial}</div>
                 )}
                 <svg className="w-4 h-4 hidden sm:block transition-transform" style={{ color: "hsl(var(--muted-foreground))", transform: dropdownOpen ? "rotate(180deg)" : undefined }}
                   fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -142,8 +90,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-xl overflow-hidden py-1 animate-in shadow-lg"
-                  style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
+                <div className="absolute right-0 mt-2 w-64 rounded-xl overflow-hidden py-1 animate-in shadow-lg" style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
                   <div className="px-5 py-4" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
                     <p className="text-sm font-semibold truncate text-foreground">{user.name}</p>
                     <p className="text-xs truncate mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>{user.email}</p>
@@ -154,33 +101,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       { label: "Saved Items", href: "/saved", icon: "M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" },
                       { label: "Conditions", href: "/conditions", icon: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" },
                     ].map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setDropdownOpen(false)}
+                      <Link key={item.href} to={item.href} onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-3 px-5 py-3 text-sm transition-colors"
                         style={{ color: "hsl(var(--muted-foreground))" }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                        </svg>
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
                         {item.label}
                       </Link>
                     ))}
                   </div>
                   <div style={{ borderTop: "1px solid hsl(var(--border))" }} className="py-1.5">
-                    <button
-                      onClick={() => { setDropdownOpen(false); logout(); }}
-                      className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors"
-                      style={{ color: "hsl(var(--destructive))" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(0 84% 60% / 0.08)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                      </svg>
+                    <button onClick={() => { setDropdownOpen(false); logout(); navigate("/"); }}
+                      className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors" style={{ color: "hsl(var(--destructive))" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "hsl(0 84% 60% / 0.08)"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
                       Log out
                     </button>
                   </div>
@@ -192,12 +128,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </nav>
 
       <main className="pt-20 pb-24 lg:pb-0">
-        {children}
+        <Outlet />
       </main>
 
-      <div className="lg:hidden">
-        <MobileNav />
-      </div>
+      <div className="lg:hidden"><MobileNav /></div>
     </div>
   );
 }

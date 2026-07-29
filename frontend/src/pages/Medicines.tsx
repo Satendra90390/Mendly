@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { API_BASE } from "@/lib/config";
 

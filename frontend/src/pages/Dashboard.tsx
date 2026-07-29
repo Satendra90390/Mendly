@@ -1,7 +1,5 @@
-"use client";
-
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/config";
 
@@ -323,7 +321,7 @@ export default function DashboardPage() {
             {QUICK_ACTIONS.map((action) => (
               <Link
                 key={action.href}
-                href={action.href}
+                to={action.href}
                 className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:scale-[1.03] hover:shadow-lg group bg-card border"
                 style={{ borderColor: "hsl(var(--border))" }}
               >
@@ -352,7 +350,7 @@ export default function DashboardPage() {
 
             {/* Brand */}
             <div>
-              <Link href="/dashboard" className="flex items-center gap-3">
+              <Link to="/dashboard" className="flex items-center gap-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base"
                   style={{ background: "var(--gradient-1)" }}
@@ -378,7 +376,7 @@ export default function DashboardPage() {
                 {NAV_LINKS.map((link) => (
                   <li key={link.href}>
                     <Link
-                      href={link.href}
+                      to={link.href}
                       className="text-sm transition-colors hover:text-teal-400 text-muted-foreground"
                     >
                       {link.label}
@@ -402,7 +400,7 @@ export default function DashboardPage() {
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
-                      href={link.href}
+                      to={link.href}
                       className="text-sm transition-colors hover:text-teal-400 text-muted-foreground"
                     >
                       {link.label}
@@ -435,19 +433,19 @@ export default function DashboardPage() {
             </p>
             <div className="flex items-center gap-6">
               <Link
-                href="/account"
+                to="/account"
                 className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60"
               >
                 Account
               </Link>
               <Link
-                href="/saved"
+                to="/saved"
                 className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60"
               >
                 Saved Items
               </Link>
               <Link
-                href="/pharmacies"
+                to="/pharmacies"
                 className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60"
               >
                 Pharmacies

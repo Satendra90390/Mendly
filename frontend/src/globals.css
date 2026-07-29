@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* ── shadcn/ui-style HSL Design Tokens ── */
 :root {
   --background: 220 20% 97%;
   --foreground: 222 47% 11%;
@@ -22,8 +21,6 @@
   --input: 220 13% 88%;
   --ring: 173 80% 36%;
   --radius: 0.75rem;
-
-  /* Extra tokens */
   --accent-blue: 188 95% 43%;
   --gradient-1: linear-gradient(135deg, hsl(173 80% 36%), hsl(188 95% 43%));
   --gradient-2: linear-gradient(135deg, hsl(250 95% 66%), hsl(239 84% 67%));
@@ -54,8 +51,6 @@
   --border: 217 33% 14%;
   --input: 217 33% 14%;
   --ring: 173 80% 36%;
-
-  /* Extra tokens */
   --shadow: 0 4px 24px hsl(0 0% 0% / 0.3);
   --shadow-lg: 0 12px 48px hsl(0 0% 0% / 0.4);
   --glow-teal: 0 0 24px hsl(173 80% 36% / 0.15);
@@ -72,28 +67,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── shadcn utility classes ── */
-.bg-background { background-color: hsl(var(--background)); }
-.bg-foreground { background-color: hsl(var(--foreground)); }
-.bg-card { background-color: hsl(var(--card)); }
-.bg-popover { background-color: hsl(var(--popover)); }
-.bg-primary { background-color: hsl(var(--primary)); }
-.bg-secondary { background-color: hsl(var(--secondary)); }
-.bg-muted { background-color: hsl(var(--muted)); }
-.bg-destructive { background-color: hsl(var(--destructive)); }
-.bg-border { background-color: hsl(var(--border)); }
-
-.text-foreground { color: hsl(var(--foreground)); }
-.text-muted-foreground { color: hsl(var(--muted-foreground)); }
-.text-primary { color: hsl(var(--primary)); }
-.text-destructive { color: hsl(var(--destructive)); }
-
-.border-border { border-color: hsl(var(--border)); }
-.ring-ring { --tw-ring-color: hsl(var(--ring)); }
-
-.rounded-custom { border-radius: var(--radius); }
-
-/* ── Glass / Surface utilities ── */
 .glass {
   background: hsl(var(--card) / 0.7);
   backdrop-filter: blur(24px);
@@ -101,17 +74,9 @@ body {
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
 }
-.glass-subtle {
-  background: hsl(var(--card) / 0.4);
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
-}
 
 .dark .glass {
   background: hsl(222 47% 6% / 0.75);
-}
-.dark .glass-subtle {
-  background: hsl(222 47% 6% / 0.4);
 }
 
 .gradient-text {
@@ -121,7 +86,6 @@ body {
   background-clip: text;
 }
 
-/* ── Button presets ── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -135,40 +99,34 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .btn-primary {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   box-shadow: 0 4px 16px hsl(var(--primary) / 0.25);
 }
+
 .btn-primary:hover {
   box-shadow: 0 6px 24px hsl(var(--primary) / 0.35);
   transform: translateY(-1px);
 }
+
 .btn-secondary {
   background: hsl(var(--secondary));
   color: hsl(var(--secondary-foreground));
   border: 1px solid hsl(var(--border));
 }
-.btn-secondary:hover {
-  background: hsl(var(--secondary) / 0.8);
-}
+
 .btn-ghost {
   background: transparent;
   color: hsl(var(--muted-foreground));
 }
+
 .btn-ghost:hover {
   background: hsl(var(--muted));
   color: hsl(var(--foreground));
 }
-.btn-destructive {
-  background: hsl(var(--destructive));
-  color: hsl(var(--destructive-foreground));
-}
-.btn-destructive:hover {
-  opacity: 0.9;
-}
 
-/* ── Input preset ── */
 .input {
   width: 100%;
   padding: 0.65rem 1rem;
@@ -180,38 +138,41 @@ body {
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
+
 .input:focus {
   border-color: hsl(var(--ring));
   box-shadow: 0 0 0 3px hsl(var(--ring) / 0.15);
 }
+
 .input::placeholder { color: hsl(var(--muted-foreground) / 0.5); }
 
-/* ── Card preset ── */
 .card {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
+
 .card:hover {
   border-color: hsl(var(--primary) / 0.3);
   box-shadow: var(--shadow);
 }
 
-/* ── Animations ── */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 @keyframes spin { to { transform: rotate(360deg); } }
+
 @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+
 .animate-in { animation: fade-in 0.4s ease both; }
 .typing-dot { animation: typingBounce 1.4s infinite ease-in-out; }
 .typing-dot:nth-child(1) { animation-delay: 0s; }
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-/* ── Chatbot ── */
 .chat-scrollbar::-webkit-scrollbar { width: 6px; }
 .chat-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .chat-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }

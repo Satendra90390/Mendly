@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/lib/config";
 
@@ -20,7 +18,7 @@ const FALLBACK_CONTACTS: EmergencyContact[] = [
   { country: "International", number: "112", description: "GSM Mobile Emergency" },
 ];
 
-export default function EmergencyContactsPage() {
+export default function EmergencyPage() {
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
