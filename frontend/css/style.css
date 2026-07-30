@@ -191,6 +191,9 @@ img { max-width: 100%; display: block; }
 
 /* ── Sidebar (logged-in) ── */
 .sidebar {
+  display: none; /* hidden by default; JS adds has-sidebar to body */
+}
+.has-sidebar .sidebar {
   position: fixed; top: var(--header-h); left: 0; bottom: 0;
   width: var(--sidebar-w); z-index: 100;
   background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -199,7 +202,7 @@ img { max-width: 100%; display: block; }
   overflow-y: auto; overflow-x: hidden;
   transition: transform 0.26s cubic-bezier(.4,0,.2,1);
 }
-.dark .sidebar { background: rgba(14,30,50,0.92); }
+.dark .has-sidebar .sidebar { background: rgba(14,30,50,0.92); }
 .sidebar-section { padding: 0 12px; margin-bottom: 4px; }
 .sidebar-label {
   font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
@@ -235,8 +238,8 @@ img { max-width: 100%; display: block; }
   .has-sidebar #view-chat.active { margin-left: var(--sidebar-w); }
 }
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); box-shadow: var(--shadow-lg); }
-  .sidebar.open { transform: translateX(0); }
+  .has-sidebar .sidebar { transform: translateX(-100%); box-shadow: var(--shadow-lg); }
+  .has-sidebar .sidebar.open { transform: translateX(0); }
   .has-sidebar .page,
   .has-sidebar #view-chat.active { margin-left: 0; }
 }

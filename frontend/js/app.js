@@ -249,7 +249,12 @@ function closeMobileDrawer() {
 ════════════════════════════════════════════════════ */
 function renderSidebar(route) {
   const s = document.getElementById("sidebar");
-  if (!state.user) { s.innerHTML = ""; return; }
+  if (!state.user) {
+    s.innerHTML = "";
+    s.style.display = "none";
+    return;
+  }
+  s.style.display = "";
 
   const items = [
     { h: "dashboard", icon: "🏠", l: "Home" },
