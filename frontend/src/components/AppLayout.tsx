@@ -45,7 +45,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="fixed top-0 left-0 right-0 z-50 px-5 lg:px-8 glass" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 px-5 lg:px-8 glass border-b border-border">
         <div className="max-w-7xl mx-auto flex items-center justify-between h-16">
           <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ background: "var(--gradient-1)" }}>M</div>
@@ -57,10 +57,8 @@ export default function AppLayout() {
               const Icon = link.icon;
               return (
                 <Link key={link.href} to={link.href}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
-                  style={{ color: "hsl(var(--muted-foreground))" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}>
+                  className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-muted hover:text-foreground"
+                  style={{ color: "hsl(var(--muted-foreground))" }}>
                   <Icon /> {link.label}
                 </Link>
               );
@@ -68,16 +66,12 @@ export default function AppLayout() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button onClick={toggle} className="w-10 h-10 rounded-full flex items-center justify-center transition-colors" style={{ color: "hsl(var(--muted-foreground))" }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
-              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+            <button onClick={toggle} className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-muted" style={{ color: "hsl(var(--muted-foreground))" }}>
               {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
 
             <div className="relative" ref={dropdownRef}>
-              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 p-1.5 rounded-full transition-colors"
-                onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
-                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 p-1.5 rounded-full transition-colors hover:bg-muted">
                 {user.profile_photo ? (
                   <img src={user.profile_photo} alt="" className="w-9 h-9 rounded-full object-cover" />
                 ) : (
@@ -91,7 +85,7 @@ export default function AppLayout() {
 
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-64 rounded-xl overflow-hidden py-1 animate-in shadow-lg" style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
-                  <div className="px-5 py-4" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
+                  <div className="px-5 py-4 border-b border-border">
                     <p className="text-sm font-semibold truncate text-foreground">{user.name}</p>
                     <p className="text-xs truncate mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>{user.email}</p>
                   </div>
@@ -102,20 +96,17 @@ export default function AppLayout() {
                       { label: "Conditions", href: "/conditions", icon: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" },
                     ].map((item) => (
                       <Link key={item.href} to={item.href} onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-5 py-3 text-sm transition-colors"
-                        style={{ color: "hsl(var(--muted-foreground))" }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "hsl(var(--muted))"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "hsl(var(--muted-foreground))"; }}>
+                        className="flex items-center gap-3 px-5 py-3 text-sm transition-colors hover:bg-muted hover:text-foreground"
+                        style={{ color: "hsl(var(--muted-foreground))" }}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
                         {item.label}
                       </Link>
                     ))}
                   </div>
-                  <div style={{ borderTop: "1px solid hsl(var(--border))" }} className="py-1.5">
+                  <div className="border-t border-border py-1.5">
                     <button onClick={() => { setDropdownOpen(false); logout(); navigate("/"); }}
-                      className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors" style={{ color: "hsl(var(--destructive))" }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = "hsl(0 84% 60% / 0.08)"}
-                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors hover:bg-[hsl(0_84%_60%/0.08)]"
+                      style={{ color: "hsl(var(--destructive))" }}>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
                       Log out
                     </button>

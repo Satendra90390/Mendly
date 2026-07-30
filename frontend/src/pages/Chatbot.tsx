@@ -165,7 +165,7 @@ export default function ChatbotPage() {
 
   return (
     <div className="flex flex-col h-[100dvh] bg-background text-foreground">
-      <header className="flex items-center justify-between px-4 py-3 shrink-0 glass" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
+      <header className="flex items-center justify-between px-4 py-3 shrink-0 glass border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "var(--gradient-1)", boxShadow: "0 0 18px hsl(173 80% 36% / 0.3)" }}>
             <RobotIcon className="w-5 h-5 text-white" />
@@ -274,7 +274,7 @@ export default function ChatbotPage() {
         </div>
       </div>
 
-      <div className="shrink-0 px-4 py-3 glass" style={{ borderTop: "1px solid hsl(var(--border))" }}>
+      <div className="shrink-0 px-4 py-3 glass border-t border-border">
         <div className="max-w-3xl mx-auto">
           {messages.length === 0 && (
             <div className="flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">

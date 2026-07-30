@@ -418,7 +418,8 @@ export default function MedicinesPage() {
             style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between p-6 pb-4" style={{ background: "hsl(var(--card))", borderBottom: "1px solid hsl(var(--border))", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
+            <div className="sticky top-0 z-10 flex items-center justify-between p-6 pb-4 border-b border-border"
+              style={{ background: "hsl(var(--card))", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: "hsl(173 80% 36% / 0.15)", border: "1px solid hsl(173 80% 36% / 0.25)" }}>
                   <span style={{ color: "hsl(var(--primary))" }}>{getCategoryIcon(selectedMedicine.category)}</span>

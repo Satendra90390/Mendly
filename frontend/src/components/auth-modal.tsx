@@ -218,10 +218,8 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
         <div className="flex-1 flex flex-col relative overflow-y-auto">
           <button
             onClick={() => { setMounted(false); setTimeout(onClose, 200); }}
-            className="absolute top-5 right-5 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200"
+            className="absolute top-5 right-5 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-muted"
             style={{ color: "hsl(var(--muted-foreground))" }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
           >
             <XMark />
           </button>
@@ -296,10 +294,8 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
                   />
                   <button
                     type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors hover:bg-muted"
                     style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                   >
                     <EyeIcon off={showPassword} />
                   </button>
@@ -320,13 +316,11 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
 
               <button
                 type="submit" disabled={loading}
-                className="w-full py-4 rounded-xl font-semibold text-base text-white transition-all duration-200 disabled:opacity-50"
+                className="w-full py-4 rounded-xl font-semibold text-base text-white transition-all duration-200 disabled:opacity-50 hover:shadow-[0_6px_28px_hsl(173_80%_36%/0.4)] active:scale-[0.98]"
                 style={{
                   background: "var(--gradient-1)",
                   boxShadow: loading ? "none" : "0 4px 20px hsl(173 80% 36% / 0.3)",
                 }}
-                onMouseEnter={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 6px 28px hsl(173 80% 36% / 0.4)"; }}
-                onMouseLeave={(e) => { if (!loading) e.currentTarget.style.boxShadow = "0 4px 20px hsl(173 80% 36% / 0.3)"; }}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -341,7 +335,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t" style={{ borderColor: "hsl(var(--border))" }} />
+                <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs">
                 <span className="px-5" style={{ backgroundColor: "hsl(var(--card))", color: "hsl(var(--muted-foreground))" }}>or continue with</span>
@@ -350,14 +344,11 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
 
             <button
               onClick={handleGoogleLogin}
-              className="w-full py-4 rounded-xl font-medium text-base flex items-center justify-center gap-3 transition-all duration-200 border"
+              className="w-full py-4 rounded-xl font-medium text-base flex items-center justify-center gap-3 transition-all duration-200 border border-border hover:bg-muted"
               style={{
                 backgroundColor: "hsl(var(--muted) / 0.5)",
-                borderColor: "hsl(var(--border))",
                 color: "hsl(var(--muted-foreground))",
               }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "hsl(var(--muted))"}
-              onMouseLeave={(e) => e.currentTarget.style.background = "hsl(var(--muted) / 0.5)"}
             >
               <GoogleIcon />
               Google

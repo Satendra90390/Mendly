@@ -13,12 +13,11 @@ export default function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)]"
+      className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)] border-t border-border"
       style={{
         background: "hsl(var(--card) / 0.7)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        borderTop: "1px solid hsl(var(--border))",
       }}
     >
       <div className="flex items-center justify-around h-18 max-w-lg mx-auto">

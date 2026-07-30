@@ -63,8 +63,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
 
         <div className="relative z-10 max-w-5xl mx-auto">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm mb-6 border"
-              style={{ background: "hsl(var(--card) / 0.6)", borderColor: "hsl(var(--border))" }}>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm mb-6 border border-border"
+              style={{ background: "hsl(var(--card) / 0.6)" }}>
               <Sparkles />
               <span className="text-muted-foreground">Powered by Advanced AI</span>
             </div>
@@ -129,10 +129,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {features.map((f) => (
               <div key={f.title}
-                className="group relative p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1"
-                style={{ background: "hsl(var(--card) / 0.5)", borderColor: "hsl(var(--border))" }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "hsl(173 80% 36% / 0.25)"; e.currentTarget.style.boxShadow = "var(--shadow)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "hsl(var(--border))"; e.currentTarget.style.boxShadow = "none"; }}>
+                className="group relative p-6 rounded-2xl border border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/25"
+                style={{ background: "hsl(var(--card) / 0.5)" }}>
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
                   style={{ background: "hsl(173 80% 36% / 0.1)", color: "hsl(var(--primary))" }}>
                   <FeatureIcon icon={f.icon} />
@@ -167,8 +165,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
                     style={{ background: "var(--gradient-1)", boxShadow: i === 0 ? "0 0 0 4px hsl(173 80% 36% / 0.2)" : undefined }}>
                     {step.num}
                   </div>
-                  <div className="flex-1 p-6 rounded-2xl border transition-all duration-300"
-                    style={{ background: "hsl(var(--card) / 0.5)", borderColor: "hsl(var(--border))" }}>
+                  <div className="flex-1 p-6 rounded-2xl border border-border transition-all duration-300"
+                    style={{ background: "hsl(var(--card) / 0.5)" }}>
                     <span className="md:hidden inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold text-white mr-3 mb-3"
                       style={{ background: "var(--gradient-1)" }}>{step.num}</span>
                     <h3 className="text-lg font-semibold mb-1.5 text-foreground">{step.title}</h3>
@@ -184,8 +182,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       {/* ── CTA ── */}
       <section className="px-6 py-20 md:py-28">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="p-10 md:p-14 rounded-3xl border relative overflow-hidden"
-            style={{ background: "hsl(var(--card) / 0.6)", borderColor: "hsl(var(--border))" }}>
+          <div className="p-10 md:p-14 rounded-3xl border border-border relative overflow-hidden"
+            style={{ background: "hsl(var(--card) / 0.6)" }}>
             <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full pointer-events-none"
               style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.1), transparent 70%)", filter: "blur(50px)" }} />
             <div className="relative z-10">
@@ -206,7 +204,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t px-6 py-12" style={{ borderColor: "hsl(var(--border))" }}>
+      <footer className="border-t border-border px-6 py-12">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
             <div className="flex items-center gap-3">
@@ -220,8 +218,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Support</a>
             </div>
           </div>
-          <div className="border-t pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
-            style={{ borderColor: "hsl(var(--border))" }}>
+          <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               &copy; {new Date().getFullYear()} Mendly. All rights reserved.
             </p>
