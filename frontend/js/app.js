@@ -43,7 +43,7 @@ function toggleTheme() {
 /* ── Router ── */
 const AUTH_REQUIRED = new Set(["dashboard", "account"]);
 const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "more", "features", "about", "faq"]);
-const SECTION_ROUTES = new Set(["features", "about", "faq"]);
+const LANDING_SECTIONS = new Set(["features", "about", "faq"]);
 
 function navigate(hash) {
   const target = hash || location.hash.slice(1) || (state.user ? "dashboard" : "landing");
@@ -69,17 +69,22 @@ function render() {
   if (AUTH_REQUIRED.has(route) && !state.user) { openAuth("signup"); return; }
   if (!GUEST_ALLOWED.has(route) && !state.user) { navigate("landing"); return; }
 
-  let targetView = route;
-  if (SECTION_ROUTES.has(route)) {
-    targetView = state.user ? "dashboard" : "landing";
-  } else if (state.user && route === "landing") {
-    navigate("dashboard"); return;
+  // Logged-in users should never see marketing sections (Features, About, FAQ)
+  if (state.user && LANDING_SECTIONS.has(route)) {
+    navigate("dashboard");
+    return;
   }
+  if (state.user && route === "landing") {
+    navigate("dashboard");
+    return;
+  }
+
+  const targetView = LANDING_SECTIONS.has(route) ? "landing" : route;
 
   renderHeader();
   const el = document.getElementById(`view-${targetView}`);
   if (el) el.classList.add("active");
-  renderMobileNav(route);
+  renderMobileNav(targetView);
 
   switch (targetView) {
     case "landing": break;
@@ -91,7 +96,7 @@ function render() {
     case "account": renderAccount(); break;
   }
 
-  if (SECTION_ROUTES.has(route)) {
+  if (!state.user && LANDING_SECTIONS.has(route)) {
     setTimeout(() => {
       const sec = document.getElementById(route);
       if (sec) sec.scrollIntoView({ behavior: "smooth" });
@@ -126,29 +131,26 @@ function renderHeader() {
     </div></div>`; return;
   }
   const init = (state.user.name || state.user.email || "U").charAt(0).toUpperCase();
-  const links = [
+  const appLinks = [
     { h: "#dashboard", l: "Dashboard" },
-    { h: "#chat", l: "Elix" },
+    { h: "#chat", l: "Elix AI" },
     { h: "#medicines", l: "Medicines" },
     { h: "#hospitals", l: "Hospitals" },
-    { h: "#features", l: "Features" },
-    { h: "#about", l: "About" },
-    { h: "#faq", l: "FAQ" },
-    { h: "#more", l: "More" },
+    { h: "#more", l: "Emergency" },
   ];
   h.innerHTML = `
     <div class="header-top"><div class="header-inner">
       <a href="#dashboard" class="logo"><div class="logo-icon">${logoSvg()}</div>Mendly</a>
-      <div class="header-links">${links.map(l => `<a href="${l.h}" class="${currentRoute === l.h.slice(1) ? 'active' : ''}">${l.l}</a>`).join("")}</div>
+      <div class="header-links">${appLinks.map(l => `<a href="${l.h}" class="${currentRoute === l.h.slice(1) ? 'active' : ''}">${l.l}</a>`).join("")}</div>
       <div class="header-actions">
         <button class="theme-btn" onclick="toggleTheme()">${state.theme === "dark" ? "☀️" : "🌙"}</button>
-        <div class="avatar" onclick="navigate('account')" style="cursor:pointer">${init}</div>
+        <div class="avatar" onclick="navigate('account')" style="cursor:pointer" title="Account Settings">${init}</div>
         <button class="btn-icon theme-btn" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" style="font-size:20px">☰</button>
       </div>
     </div></div>
     <div id="mobile-menu" class="mobile-menu hidden">
-      ${links.map(l => `<a href="${l.h}">${l.l}</a>`).join("")}
-      <a href="#account">Account</a>
+      ${appLinks.map(l => `<a href="${l.h}">${l.l}</a>`).join("")}
+      <a href="#account">Account Settings</a>
       <a href="#" onclick="logout()" style="color:#ef4444">Log Out</a>
     </div>`;
 }
