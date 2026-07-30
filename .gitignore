@@ -41,3 +41,6 @@ backend/supabase/
 
 # Build tools
 .wrangler/
+
+# Firebase
+frontend/.firebase/

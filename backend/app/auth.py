@@ -1,8 +1,5 @@
 import os
-import time
-import secrets
 import logging
-import urllib.parse
 from pathlib import Path
 from dotenv import load_dotenv
 import uuid
@@ -11,10 +8,8 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi.responses import RedirectResponse
 from bson import ObjectId
 import jwt
-import httpx
 
 # Load .env file
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
@@ -36,17 +31,7 @@ if not JWT_SECRET or len(JWT_SECRET) < 32:
 
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
 
-# ── OAuth ──────────────────────────────────────────────────────────
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5500")
-_oauth_states: dict[str, dict] = {}
-
-def _oauth_state_cleanup(max_age: int = 600):
-    now = time.time()
-    expired = [k for k, v in _oauth_states.items() if now - v.get("created_at", 0) > max_age]
-    for k in expired:
-        _oauth_states.pop(k, None)
 
 
 def _hash_password(password: str) -> str:
@@ -345,71 +330,7 @@ async def unblock_user(user_id: str, request: Request, admin_user: dict = Depend
     return {"status": "unblocked", "message": f"User '{target.get('name')}' has been unblocked."}
 
 
-# ============================================================
-# OAUTH — Google
-# ============================================================
-
-async def oauth_google_login(request: Request):
-    if not GOOGLE_CLIENT_ID:
-        return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Google+login+is+not+configured+yet.+Please+use+email+login.")
-    _oauth_state_cleanup()
-    state = secrets.token_urlsafe(32)
-    _oauth_states[state] = {"provider": "google", "created_at": time.time()}
-    base = str(request.base_url).rstrip("/")
-    redirect_uri = f"{base}/api/auth/google/callback"
-    params = urllib.parse.urlencode({
-        "client_id": GOOGLE_CLIENT_ID,
-        "redirect_uri": redirect_uri,
-        "response_type": "code",
-        "scope": "openid email profile",
-        "state": state,
-    })
-    return RedirectResponse(url=f"https://accounts.google.com/o/oauth2/v2/auth?{params}")
-
-
-async def oauth_google_callback(code: str, state: str, request: Request):
-    _oauth_state_cleanup()
-    oauth_state = _oauth_states.pop(state, None)
-    if not oauth_state or oauth_state.get("provider") != "google":
-        return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Invalid+OAuth+state")
-    base = str(request.base_url).rstrip("/")
-    redirect_uri = f"{base}/api/auth/google/callback"
-    async with httpx.AsyncClient(timeout=15) as client:
-        token_resp = await client.post("https://oauth2.googleapis.com/token", data={
-            "code": code, "client_id": GOOGLE_CLIENT_ID,
-            "client_secret": GOOGLE_CLIENT_SECRET,
-            "redirect_uri": redirect_uri, "grant_type": "authorization_code",
-        })
-        if token_resp.status_code != 200:
-            return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Token+exchange+failed")
-        token_data = token_resp.json()
-        access_token = token_data.get("access_token")
-        if not access_token:
-            return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=No+access+token")
-        user_resp = await client.get(
-            "https://www.googleapis.com/oauth2/v2/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"},
-        )
-        if user_resp.status_code != 200:
-            return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=Failed+to+fetch+user+info")
-        user_info = user_resp.json()
-    email = user_info.get("email", "")
-    if not email:
-        return RedirectResponse(url=f"{FRONTEND_URL}?auth_error=No+email+from+Google")
-    name = user_info.get("name", email.split("@")[0])
-    profile = await get_profile_by_email(email)
-    if not profile:
-        user_id = str(ObjectId())
-        profile_data = _make_profile_dict(user_id, {"name": name, "email": email}, provider="google")
-        profile_data["password_hash"] = _hash_password(secrets.token_hex(32))
-        await insert_profile(profile_data)
-        profile = await get_profile(user_id)
-        await _log_activity(user_id, "oauth_account_created", f"Account created via Google ({email})", request)
-    else:
-        await update_profile(profile["id"], {"last_login": datetime.now(timezone.utc)})
-        await _log_activity(profile["id"], "oauth_logged_in", f"Logged in via Google ({email})", request)
-    token = create_access_token({"sub": profile["id"]})
-    return RedirectResponse(url=f"{FRONTEND_URL}?token={token}")
+# (Google OAuth removed — will be re-added after 1 year with proper setup)
 
 
 async def _log_activity(user_id: str, action: str, detail: str = "", request: Optional[Request] = None):

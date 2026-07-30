@@ -28,7 +28,6 @@ from .auth import (
     delete_account, get_activity_log, clear_activity_log,
     block_user, unblock_user,
     get_current_user_profile, get_admin_user, _log_activity,
-    oauth_google_login, oauth_google_callback,
 )
 
 logger = logging.getLogger("mendly")
@@ -117,20 +116,6 @@ async def guest_login(request: Request):
 @limiter.limit("5/minute")
 async def guest_upgrade(request: Request, payload: schemas.GuestUpgradeRequest, current_user: dict = Depends(get_current_user_profile)):
     return await guest_upgrade_route(payload, request, current_user)
-
-
-# ============================================================
-# OAUTH — Google
-# ============================================================
-
-@app.get("/api/auth/google")
-async def google_login(request: Request):
-    return await oauth_google_login(request)
-
-
-@app.get("/api/auth/google/callback", include_in_schema=False)
-async def google_callback(code: str, state: str, request: Request):
-    return await oauth_google_callback(code, state, request)
 
 
 @app.get("/api/auth/me", response_model=schemas.UserOut)

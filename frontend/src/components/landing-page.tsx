@@ -21,7 +21,7 @@ const features = [
 ];
 
 const steps = [
-  { num: "01", title: "Create Account", desc: "Sign up free in seconds with email or Google. No credit card needed." },
+  { num: "01", title: "Create Account", desc: "Sign up free in seconds with email. No credit card needed." },
   { num: "02", title: "Explore Tools", desc: "Chat with Elix, search medicines, check interactions, and find nearby care." },
   { num: "03", title: "Stay Informed", desc: "Get health tips, track your conditions, and make smarter health decisions daily." },
 ];
