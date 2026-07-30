@@ -118,8 +118,26 @@ async def get_current_user_profile(user: dict = Depends(get_current_user)):
     if not profile:
         raise HTTPException(status_code=401, detail="User not found.")
     if profile.get("is_blocked"):
-        raise HTTPException(status_code=403, detail="Your account has been blocked.")
+        raise HTTPException(status_code=403, detail="Account blocked.")
     return profile
+
+
+async def get_optional_user_profile(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False))):
+    if credentials is None:
+        return None
+    try:
+        payload = decode_token(credentials.credentials)
+        if payload.get("type") != "access":
+            return None
+        user_id = payload.get("sub")
+        if not user_id:
+            return None
+        profile = await get_profile(user_id)
+        if not profile or profile.get("is_blocked"):
+            return None
+        return profile
+    except Exception:
+        return None
 
 
 async def authenticate_user(email: str, password: str) -> Optional[dict]:

@@ -41,6 +41,9 @@ function toggleTheme() {
 }
 
 /* ── Router ── */
+const AUTH_REQUIRED = new Set(["dashboard", "account"]);
+const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "more"]);
+
 function navigate(hash) {
   const target = hash || location.hash.slice(1) || (state.user ? "dashboard" : "landing");
   if (!hash) history.replaceState(null, "", `#${target}`);
@@ -57,7 +60,8 @@ function render() {
   const route = location.hash.slice(1) || (state.user ? "dashboard" : "landing");
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
 
-  if (!state.user && route !== "landing") { navigate("landing"); return; }
+  if (AUTH_REQUIRED.has(route) && !state.user) { openAuth("signup"); return; }
+  if (!GUEST_ALLOWED.has(route) && !state.user) { navigate("landing"); return; }
   if (state.user && route === "landing") { navigate("dashboard"); return; }
 
   renderHeader();
@@ -76,12 +80,16 @@ function render() {
   }
 }
 
+function logoSvg() {
+  return '<svg viewBox="0 0 32 32" fill="none"><defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#1a8a7d"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#lg)"/><text x="16" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="700" fill="white">M</text></svg>';
+}
+
 /* ── Header ── */
 function renderHeader() {
   const h = document.getElementById("header");
   if (!state.user) { h.innerHTML = `
     <div class="header-top"><div class="header-inner">
-      <a href="#landing" class="logo"><div class="logo-icon"><div class="logo-mark"></div></div>Mendly</a>
+      <a href="#landing" class="logo"><div class="logo-icon">${logoSvg()}</div>Mendly</a>
       <div class="header-links"><a href="#landing">Home</a></div>
       <div class="header-actions">
         <button class="theme-btn" onclick="toggleTheme()">${state.theme === "dark" ? "☀️" : "🌙"}</button>
@@ -99,7 +107,7 @@ function renderHeader() {
   const route = location.hash.slice(1) || "dashboard";
   h.innerHTML = `
     <div class="header-top"><div class="header-inner">
-      <a href="#dashboard" class="logo"><div class="logo-icon"><div class="logo-mark"></div></div>Mendly</a>
+      <a href="#dashboard" class="logo"><div class="logo-icon">${logoSvg()}</div>Mendly</a>
       <div class="header-links">${links.map(l => `<a href="${l.h}" class="${route === l.h.slice(1) ? 'active' : ''}">${l.l}</a>`).join("")}</div>
       <div class="header-actions">
         <button class="theme-btn" onclick="toggleTheme()">${state.theme === "dark" ? "☀️" : "🌙"}</button>
@@ -217,6 +225,7 @@ function renderDashboard() {
 /* ── Chat ── */
 let chatMsgs = [{ role: "bot", content: "Hi! I'm Elix, your AI health companion. How can I help you today?" }];
 let chatLoading = false;
+let chatFiles = [];
 
 const CHAT_PROMPTS = [
   "What are the side effects of ibuprofen?",
@@ -226,10 +235,19 @@ const CHAT_PROMPTS = [
 ];
 
 function renderChat() {
+  const isGuest = !state.user;
+  const guestBanner = isGuest
+    ? `<div class="guest-banner">
+        <span>You're chatting as a guest.</span>
+        <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Create Account</button>
+        <span class="guest-banner-hint">Sign up to save chats & upload files</span>
+       </div>`
+    : "";
   const msgs = chatMsgs.map((m) => `
     <div class="chat-msg ${m.role === "user" ? "chat-user" : "chat-bot"}">
       ${m.role === "bot" ? '<div class="chat-bot-label">Elix</div>' : ""}
       <div class="chat-msg-text">${escapeHtml(m.content)}</div>
+      ${m.files && m.files.length ? `<div class="chat-files">${m.files.map(f => `<span class="chat-file-badge">📎 ${escapeHtml(f.name)}</span>`).join("")}</div>` : ""}
     </div>`).join("");
   const typingHtml = chatLoading
     ? '<div class="chat-msg chat-bot"><div class="typing-dots"><span></span><span></span><span></span></div></div>'
@@ -239,11 +257,20 @@ function renderChat() {
         `<button class="chat-prompt" onclick="document.getElementById('chat-input').value='${p}';sendChat()">${escapeHtml(p)}</button>`
       ).join("")}</div>`
     : "";
+  const filePreview = chatFiles.length
+    ? `<div class="chat-file-preview">${chatFiles.map((f, i) =>
+        `<span class="chat-file-tag">📎 ${escapeHtml(f.name)} <button onclick="removeChatFile(${i})">✕</button></span>`
+      ).join("")}</div>`
+    : "";
   document.getElementById("view-chat").innerHTML = `
     <div class="chat-container">
+      ${guestBanner}
       <div class="chat-msgs" id="chat-msgs">${msgs}${typingHtml}${promptsHtml}</div>
+      ${filePreview}
       <div class="chat-input-wrap">
-        <textarea id="chat-input" class="chat-input" rows="1" placeholder="Ask about symptoms, medicines..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" ${chatLoading ? "disabled" : ""}></textarea>
+        <button class="chat-attach" onclick="triggerChatFileUpload()" title="Attach file" ${isGuest ? 'disabled' : ''}>📎</button>
+        <input type="file" id="chat-file-input" multiple accept="image/*,.pdf,.txt,.doc,.docx" style="display:none" onchange="handleChatFiles(this.files)" />
+        <textarea id="chat-input" class="chat-input" rows="1" placeholder="${isGuest ? 'Sign up to upload files...' : 'Ask about symptoms, medicines...'}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" ${chatLoading ? "disabled" : ""}></textarea>
         <button class="chat-send" id="chat-send" onclick="sendChat()" ${chatLoading ? "disabled" : ""}>➤</button>
       </div>
     </div>`;
@@ -253,6 +280,25 @@ function renderChat() {
   if (inputEl && !chatLoading) inputEl.focus();
 }
 
+function triggerChatFileUpload() {
+  if (!state.user) { openAuth("signup"); return; }
+  document.getElementById("chat-file-input").click();
+}
+
+function handleChatFiles(fileList) {
+  if (!state.user) { openAuth("signup"); return; }
+  for (const f of fileList) {
+    if (f.size > 10 * 1024 * 1024) { alert(`${f.name} is too large (max 10MB)`); continue; }
+    chatFiles.push(f);
+  }
+  renderChat();
+}
+
+function removeChatFile(idx) {
+  chatFiles.splice(idx, 1);
+  renderChat();
+}
+
 function escapeHtml(t) {
   return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
 }
@@ -260,17 +306,35 @@ function escapeHtml(t) {
 async function sendChat() {
   const input = document.getElementById("chat-input");
   const text = input.value.trim();
-  if (!text || chatLoading) return;
-  chatMsgs.push({ role: "user", content: text });
+  if ((!text && !chatFiles.length) || chatLoading) return;
+  const files = [...chatFiles];
+  chatFiles = [];
+  const userMsg = { role: "user", content: text || "(file attached)", files: files.length ? files.map(f => ({ name: f.name, type: f.type, size: f.size })) : undefined };
+  chatMsgs.push(userMsg);
   input.value = ""; chatLoading = true; renderChat();
   try {
     const history = chatMsgs.slice(-20).map(m => ({ role: m.role === "user" ? "user" : "assistant", content: m.content }));
-    const res = await fetch(`${API}/chat`, {
-      method: "POST", headers: { "Content-Type": "application/json", ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}) },
-      body: JSON.stringify({ message: text, history }),
-    });
-    const data = await res.json();
-    chatMsgs.push({ role: "bot", content: data.response || data.message || "I'm not sure how to respond." });
+    const body = { message: text || "I've attached a file for you to review.", history };
+    if (files.length) {
+      const formData = new FormData();
+      formData.append("message", body.message);
+      formData.append("history", JSON.stringify(body.history));
+      files.forEach(f => formData.append("files", f));
+      const res = await fetch(`${API}/chat/upload`, {
+        method: "POST",
+        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+        body: formData,
+      });
+      const data = await res.json();
+      chatMsgs.push({ role: "bot", content: data.response || data.message || "I'm not sure how to respond." });
+    } else {
+      const res = await fetch(`${API}/chat`, {
+        method: "POST", headers: { "Content-Type": "application/json", ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}) },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      chatMsgs.push({ role: "bot", content: data.response || data.message || "I'm not sure how to respond." });
+    }
   } catch { chatMsgs.push({ role: "bot", content: "Sorry, I'm having trouble connecting." }); }
   chatLoading = false; renderChat();
 }

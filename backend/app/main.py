@@ -5,7 +5,7 @@ import logging
 import datetime
 from typing import Optional, List
 
-from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi import FastAPI, HTTPException, Depends, Request, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -27,7 +27,7 @@ from .auth import (
     update_profile_route, change_password as change_pw, get_account_stats as get_stats,
     delete_account, get_activity_log, clear_activity_log,
     block_user, unblock_user,
-    get_current_user_profile, get_admin_user, _log_activity,
+    get_current_user_profile, get_optional_user_profile, get_admin_user, _log_activity,
 )
 
 logger = logging.getLogger("mendly")
@@ -180,22 +180,68 @@ async def unblock_user_endpoint(user_id: str, request: Request, admin_user: dict
 async def chat_endpoint(
     request: Request,
     payload: schemas.ChatRequest,
-    current_user: dict = Depends(get_current_user_profile),
+    current_user: dict = Depends(get_optional_user_profile),
 ):
     if not payload.message or not payload.message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty.")
     if len(payload.message) > 2000:
         raise HTTPException(status_code=400, detail="Message too long (max 2000 characters).")
 
-    recent = await get_recent_chat_messages(current_user["id"], 10)
-    history = [schemas.ConversationMessage(role=m["role"], content=m["content"]) for m in recent]
+    user_id = current_user["id"] if current_user else None
+    history = []
+    if user_id:
+        recent = await get_recent_chat_messages(user_id, 10)
+        history = [schemas.ConversationMessage(role=m["role"], content=m["content"]) for m in recent]
     if not history and payload.history:
         history = payload.history[-10:]
 
     reply = await chatbot.chatbot_response(payload.message, payload.location, history)
 
+    if user_id:
+        now = _now()
+        await insert_chat_message({"user_id": user_id, "role": "user", "content": payload.message[:2000], "created_at": now})
+        await insert_chat_message({"user_id": user_id, "role": "bot", "content": reply[:5000], "created_at": now})
+
+    return {"reply": reply, "response": reply}
+
+
+@app.post("/api/chat/upload")
+@limiter.limit("15/minute")
+async def chat_upload_endpoint(
+    request: Request,
+    message: str = Form(""),
+    history: str = Form("[]"),
+    files: List[UploadFile] = File(default=[]),
+    current_user: dict = Depends(get_current_user_profile),
+):
+    if not message.strip() and not files:
+        raise HTTPException(status_code=400, detail="Message or files required.")
+
+    file_descriptions = []
+    for f in files[:5]:
+        content = await f.read()
+        if len(content) > 10 * 1024 * 1024:
+            continue
+        desc = f"[Attached file: {f.filename} ({f.content_type}, {len(content)} bytes)]"
+        file_descriptions.append(desc)
+
+    full_message = message
+    if file_descriptions:
+        full_message = (message + "\n\n" + "\n".join(file_descriptions)).strip()
+
+    recent = await get_recent_chat_messages(current_user["id"], 10)
+    hist = [schemas.ConversationMessage(role=m["role"], content=m["content"]) for m in recent]
+    if not hist:
+        try:
+            import json
+            hist = [schemas.ConversationMessage(**m) for m in json.loads(history)]
+        except Exception:
+            pass
+
+    reply = await chatbot.chatbot_response(full_message, None, hist[-10:])
+
     now = _now()
-    await insert_chat_message({"user_id": current_user["id"], "role": "user", "content": payload.message[:2000], "created_at": now})
+    await insert_chat_message({"user_id": current_user["id"], "role": "user", "content": full_message[:2000], "created_at": now})
     await insert_chat_message({"user_id": current_user["id"], "role": "bot", "content": reply[:5000], "created_at": now})
 
     return {"reply": reply, "response": reply}
