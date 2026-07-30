@@ -14,10 +14,10 @@ function CheckIcon() { return (
 ); }
 
 const features = [
-  { icon: "robot", title: "AI Health Chat", desc: "Get instant answers to your health questions from our advanced AI assistant, Elix." },
-  { icon: "pills", title: "Medicine Guide", desc: "Search medications, check dosages, understand side effects and interactions." },
-  { icon: "hospital", title: "Nearby Care", desc: "Find hospitals, clinics, and pharmacies near you with real-time location data." },
-  { icon: "heart", title: "Health Tracking", desc: "Save conditions, track symptoms, and get personalized health insights." },
+  { icon: "M15.75 6v3.75m0 3v.75m-6-3.75H9m1.5-3h.75m0 0v3m0 0h-.75M12 3a9 9 0 00-9 9v2.25a9 9 0 0018 0V12a9 9 0 00-9-9z", title: "AI Health Chat", desc: "Get instant answers to your health questions from our advanced AI assistant, Elix." },
+  { icon: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z", title: "Medicine Guide", desc: "Search medications, check dosages, understand side effects and interactions." },
+  { icon: "M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m-9 0h18M3 6.75h18M4.5 3h15M6 3v3M18 3v3", title: "Nearby Care", desc: "Find hospitals, clinics, and pharmacies near you with real-time location data." },
+  { icon: "M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z", title: "Health Tracking", desc: "Save conditions, track symptoms, and get personalized health insights." },
 ];
 
 const steps = [
@@ -26,19 +26,20 @@ const steps = [
   { num: "03", title: "Stay Informed", desc: "Get health tips, track your conditions, and make smarter health decisions daily." },
 ];
 
-const FeatureIcon = ({ icon }: { icon: string }) => {
-  const p: Record<string, string> = {
-    robot: "M15.75 6v3.75m0 3v.75m-6-3.75H9m1.5-3h.75m0 0v3m0 0h-.75M12 3a9 9 0 00-9 9v2.25a9 9 0 0018 0V12a9 9 0 00-9-9z",
-    pills: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
-    hospital: "M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m-9 0h18M3 6.75h18M4.5 3h15M6 3v3M18 3v3",
-    heart: "M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z",
-  };
+function FeatureCard({ icon, title, desc, i }: { icon: string; title: string; desc: string; i: number }) {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d={p[icon] || p.pills} />
-    </svg>
+    <div className={`group relative p-8 rounded-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg glass-card animate-in-up stagger-${i + 1}`}>
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
+        style={{ background: "hsl(173 80% 36% / 0.1)", color: "hsl(var(--primary))" }}>
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d={icon} />
+        </svg>
+      </div>
+      <h3 className="font-semibold mb-2.5 text-foreground">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
+    </div>
   );
-};
+}
 
 export default function LandingPage({ oauthError = "" }: { oauthError?: string }) {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -66,7 +67,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               <span className="text-muted-foreground">Powered by Mendly AI</span>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.05] mb-6 tracking-tight">
+            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.08] mb-6 tracking-tight">
               Your <span className="gradient-text">AI Health</span>
               <br />
               Companion
@@ -110,11 +111,11 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       </section>
 
       {/* ── Features ── */}
-      <section id="features" className="px-6 py-20 md:py-28">
+      <section id="features" className="px-6 py-24 md:py-32">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16 animate-in-up">
+          <div className="text-center mb-20 animate-in-up">
             <span className="inline-block text-xs font-semibold tracking-widest uppercase mb-4 text-primary">Features</span>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight">
+            <h2 className="font-serif text-4xl sm:text-5xl font-semibold mb-5 tracking-tight">
               Everything you need for{" "}
               <span className="gradient-text">better health</span>
             </h2>
@@ -125,27 +126,18 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((f, i) => (
-              <div key={f.title}
-                className="group relative p-7 rounded-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg glass-card"
-                style={{ animation: `fade-in 0.5s ease ${i * 0.1}s both` }}>
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
-                  style={{ background: "hsl(173 80% 36% / 0.1)", color: "hsl(var(--primary))" }}>
-                  <FeatureIcon icon={f.icon} />
-                </div>
-                <h3 className="font-semibold mb-2 text-foreground">{f.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-              </div>
+              <FeatureCard key={f.title} icon={f.icon} title={f.title} desc={f.desc} i={i} />
             ))}
           </div>
         </div>
       </section>
 
       {/* ── How It Works ── */}
-      <section className="px-6 py-20 md:py-28 brand-dot-bg">
+      <section className="px-6 py-24 md:py-32 brand-dot-bg">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16 animate-in-up">
+          <div className="text-center mb-20 animate-in-up">
             <span className="inline-block text-xs font-semibold tracking-widest uppercase mb-4 text-primary">How It Works</span>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight text-foreground">
+            <h2 className="font-serif text-4xl sm:text-5xl font-semibold mb-5 tracking-tight text-foreground">
               Three simple steps
             </h2>
             <p className="text-lg text-muted-foreground max-w-md mx-auto">
@@ -158,19 +150,18 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               style={{ background: "linear-gradient(180deg, hsl(173 80% 36% / 0.4), hsl(173 80% 36% / 0.05))" }} />
             <div className="flex flex-col gap-8">
               {steps.map((step, i) => (
-                <div key={step.num} className="relative flex items-start gap-6 md:gap-8 animate-in-up"
-                  style={{ animationDelay: `${i * 0.15}s` }}>
-                  <div className="relative z-10 hidden md:flex w-16 h-16 rounded-2xl items-center justify-center font-bold text-lg text-white shrink-0 shadow-lg"
+                <div key={step.num} className={`relative flex items-start gap-6 md:gap-8 animate-in-up stagger-${i + 1}`}>
+                  <div className="relative z-10 hidden md:flex w-16 h-16 rounded-2xl items-center justify-center font-semibold text-lg text-white shrink-0 font-serif"
                     style={{
                       background: "var(--gradient-1)",
                       boxShadow: "0 0 0 4px hsl(173 80% 36% / 0.15), 0 8px 32px hsl(173 80% 36% / 0.2)",
                     }}>
                     {step.num}
                   </div>
-                  <div className="flex-1 p-7 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg glass-card">
-                    <span className="md:hidden inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold text-white mr-3 mb-3"
+                  <div className="flex-1 p-8 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg glass-card">
+                    <span className="md:hidden inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-semibold text-white mr-3 mb-3 font-serif"
                       style={{ background: "var(--gradient-1)" }}>{step.num}</span>
-                    <h3 className="text-lg font-semibold mb-1.5 text-foreground">{step.title}</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">{step.title}</h3>
                     <p className="text-base text-muted-foreground leading-relaxed">{step.desc}</p>
                   </div>
                 </div>
@@ -181,7 +172,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       </section>
 
       {/* ── CTA ── */}
-      <section className="px-6 py-20 md:py-28">
+      <section className="px-6 py-24 md:py-32">
         <div className="max-w-3xl mx-auto text-center animate-in-up">
           <div className="gradient-border p-0">
             <div className="p-12 md:p-16 rounded-2xl relative overflow-hidden"
@@ -191,7 +182,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full pointer-events-none"
                 style={{ background: "radial-gradient(circle, hsl(188 95% 43% / 0.08), transparent 70%)", filter: "blur(50px)" }} />
               <div className="relative z-10">
-                <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight text-foreground">
+                <h2 className="font-serif text-4xl sm:text-5xl font-semibold mb-4 tracking-tight text-foreground">
                   Ready to take control?
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-lg mx-auto mb-8">

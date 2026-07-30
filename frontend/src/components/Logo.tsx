@@ -7,7 +7,7 @@ const sizes = { sm: 28, md: 36, lg: 48 };
 
 export default function Logo({ size = "md", showText = true }: LogoProps) {
   const px = sizes[size];
-  const textSize = size === "lg" ? "text-xl" : size === "md" ? "text-base" : "text-sm";
+  const textSize = size === "lg" ? "text-2xl" : size === "md" ? "text-lg" : "text-sm";
 
   return (
     <div className="flex items-center gap-3 shrink-0">
@@ -29,7 +29,7 @@ export default function Logo({ size = "md", showText = true }: LogoProps) {
         <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
       </svg>
       {showText && (
-        <span className={`font-bold tracking-tight ${textSize}`} style={{ color: "hsl(var(--foreground))" }}>
+        <span className={`font-serif font-semibold tracking-tight ${textSize}`} style={{ color: "hsl(var(--foreground))" }}>
           Mendly
         </span>
       )}

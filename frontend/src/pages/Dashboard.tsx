@@ -12,116 +12,30 @@ interface Counts {
   messages: number;
 }
 
-function hexToBg(color: string, alpha: number) {
-  const map: Record<string, string> = {
-    "#14B8A6": "173 80% 36%",
-    "#EC4899": "330 80% 60%",
-    "#10B981": "160 84% 39%",
-    "#8B5CF6": "250 88% 66%",
-    "#F59E0B": "38 92% 50%",
-    "#EF4444": "0 84% 63%",
-  };
-  return `hsl(${map[color] ?? "0 0% 0%"} / ${alpha})`;
-}
+const COLORS: Record<string, string> = {
+  "#14B8A6": "173 80% 36%",
+  "#EC4899": "330 80% 60%",
+  "#10B981": "160 84% 39%",
+  "#8B5CF6": "250 88% 66%",
+  "#F59E0B": "38 92% 50%",
+  "#EF4444": "0 84% 63%",
+};
 
-function SvgIcon({ name, className = "w-5 h-5", style }: { name: string; className?: string; style?: React.CSSProperties }) {
-  switch (name) {
-    case "pills":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="4" y="3" width="7" height="18" rx="3.5" />
-          <rect x="13" y="3" width="7" height="18" rx="3.5" />
-        </svg>
-      );
-    case "heart-pulse":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-        </svg>
-      );
-    case "hospital":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 21h18" />
-          <path d="M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16" />
-          <path d="M9 7h1" /><path d="M9 10h1" /><path d="M9 13h1" />
-          <path d="M14 7h1" /><path d="M14 10h1" /><path d="M14 13h1" />
-          <path d="M10 21v-4a2 2 0 014 0v4" />
-        </svg>
-      );
-    case "prescription":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="6" y="3" width="12" height="18" rx="1" />
-          <path d="M9 3v3h6V3" /><path d="M9 10h6" /><path d="M12 7v6" /><path d="M9 16h6" />
-        </svg>
-      );
-    case "chat":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-        </svg>
-      );
-    case "search":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
-        </svg>
-      );
-    case "robot":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="6" y="8" width="12" height="12" rx="2" />
-          <circle cx="10" cy="12" r="1.5" /><circle cx="14" cy="12" r="1.5" />
-          <path d="M10 16h4" /><path d="M12 4v4" /><path d="M8 4h8" />
-        </svg>
-      );
-    case "location":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-        </svg>
-      );
-    case "ambulance":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M2 7h20v10H2z" /><path d="M9 12V9" /><path d="M7.5 10.5h3" /><path d="M15 10h2" />
-          <circle cx="6" cy="17" r="2" /><circle cx="18" cy="17" r="2" /><path d="M22 12h-2l-3-5H8" />
-        </svg>
-      );
-    case "notes":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 4h16v16H4z" /><path d="M8 8h8" /><path d="M8 12h8" /><path d="M8 16h5" />
-        </svg>
-      );
-    case "lightbulb":
-      return (
-        <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18h6" /><path d="M10 22h4" />
-          <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 008.91 14" />
-        </svg>
-      );
-    default:
-      return null;
-  }
-}
-
-const STAT_CARDS: { key: keyof Counts; label: string; icon: string; color: string }[] = [
-  { key: "medicines", label: "Medicines", icon: "pills", color: "#14B8A6" },
-  { key: "conditions", label: "Conditions", icon: "heart-pulse", color: "#EC4899" },
-  { key: "hospitals", label: "Hospitals", icon: "hospital", color: "#10B981" },
-  { key: "pharmacies", label: "Pharmacies", icon: "prescription", color: "#8B5CF6" },
-  { key: "messages", label: "Messages", icon: "chat", color: "#F59E0B" },
+const STAT_CARDS: { key: keyof Counts; label: string; color: string; icon: string }[] = [
+  { key: "medicines", label: "Medicines", color: "#14B8A6", icon: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" },
+  { key: "conditions", label: "Conditions", color: "#EC4899", icon: "M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" },
+  { key: "hospitals", label: "Hospitals", color: "#10B981", icon: "M3 21h18M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16M9 7h1M9 10h1M9 13h1M14 7h1M14 10h1M14 13h1M10 21v-4a2 2 0 014 0v4" },
+  { key: "pharmacies", label: "Pharmacies", color: "#8B5CF6", icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19 14.5M3 21h18" },
+  { key: "messages", label: "Messages", color: "#F59E0B", icon: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" },
 ];
 
 const QUICK_ACTIONS = [
-  { label: "Search Medicines", href: "/medicines", icon: "search", color: "#14B8A6" },
-  { label: "AI Chat (Elix)", href: "/chatbot", icon: "robot", color: "#8B5CF6" },
-  { label: "Hospitals", href: "/hospitals", icon: "location", color: "#10B981" },
-  { label: "Pharmacies", href: "/pharmacies", icon: "prescription", color: "#8B5CF6" },
-  { label: "Emergency Help", href: "/emergency", icon: "ambulance", color: "#EF4444" },
-  { label: "My Conditions", href: "/conditions", icon: "notes", color: "#F59E0B" },
+  { label: "Search Medicines", href: "/medicines", color: "#14B8A6", icon: "M21 21l-4.35-4.35M11 11a8 8 0 100-16 8 8 0 000 16z" },
+  { label: "AI Chat (Elix)", href: "/chatbot", color: "#8B5CF6", icon: "M15.75 6v3.75m0 3v.75m-6-3.75H9m1.5-3h.75m0 0v3m0 0h-.75M12 3a9 9 0 00-9 9v2.25a9 9 0 0018 0V12a9 9 0 00-9-9z" },
+  { label: "Hospitals", href: "/hospitals", color: "#10B981", icon: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" },
+  { label: "Pharmacies", href: "/pharmacies", color: "#8B5CF6", icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19 14.5M3 21h18" },
+  { label: "Emergency", href: "/emergency", color: "#EF4444", icon: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" },
+  { label: "My Conditions", href: "/conditions", color: "#F59E0B", icon: "M4 4h16v16H4zM8 8h8M8 12h8M8 16h5" },
 ];
 
 const NAV_LINKS = [
@@ -131,22 +45,25 @@ const NAV_LINKS = [
   { label: "Emergency", href: "/emergency" },
 ];
 
-const FALLBACK_TIP =
-  "Stay hydrated! Drinking enough water daily helps your body function properly and supports overall health.";
+const FALLBACK_TIP = "Stay hydrated! Drinking enough water daily helps your body function properly and supports overall health.";
+
+function SvgIcon({ path, className = "w-5 h-5", style }: { path: string; className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d={path} />
+    </svg>
+  );
+}
 
 export default function DashboardPage() {
   const { user, authFetch } = useAuth();
   const [tip, setTip] = useState(FALLBACK_TIP);
-  const [counts, setCounts] = useState<Counts>({
-    medicines: 0, conditions: 0, hospitals: 0, pharmacies: 0, messages: 0,
-  });
+  const [counts, setCounts] = useState<Counts>({ medicines: 0, conditions: 0, hospitals: 0, pharmacies: 0, messages: 0 });
   const [countsLoading, setCountsLoading] = useState(true);
 
   const firstName = user?.name?.split(" ")[0] || "there";
-
-  const greetingHour = new Date().getHours();
-  const greeting =
-    greetingHour < 12 ? "Good morning" : greetingHour < 18 ? "Good afternoon" : "Good evening";
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   useEffect(() => {
     authFetch(`${API_BASE}/health/tips/random`)
@@ -163,7 +80,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let cancelled = false;
-
     async function fetchCounts() {
       setCountsLoading(true);
       try {
@@ -174,13 +90,9 @@ export default function DashboardPage() {
           ["pharmacies", "/pharmacies/search"],
           ["messages", "/messages"],
         ];
-
         const results = await Promise.allSettled(
-          endpoints.map(([, path]) =>
-            authFetch(`${API_BASE}${path}`).then((r) => (r.ok ? r.json() : null))
-          )
+          endpoints.map(([, path]) => authFetch(`${API_BASE}${path}`).then((r) => (r.ok ? r.json() : null)))
         );
-
         const next: Counts = { medicines: 0, conditions: 0, hospitals: 0, pharmacies: 0, messages: 0 };
         results.forEach((result, i) => {
           const key = endpoints[i][0];
@@ -190,73 +102,56 @@ export default function DashboardPage() {
             else if (typeof d === "object") next[key] = d.count ?? d.total ?? d.results?.length ?? 0;
           }
         });
-
         if (!cancelled) setCounts(next);
-      } catch { /* keep defaults */ }
+      } catch {}
       if (!cancelled) setCountsLoading(false);
     }
-
     fetchCounts();
     return () => { cancelled = true; };
   }, [authFetch]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground" style={{ backgroundImage: "var(--bg-gradient)" }}>
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-5 lg:px-8 py-10 space-y-10 flex-1">
 
-        {/* ── Greeting Card ── */}
         <section className="relative rounded-2xl overflow-hidden p-8 sm:p-10 bg-card border-border brand-stripe">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 right-0 w-[400px] h-[400px]"
-              style={{
-                background: "radial-gradient(circle, hsl(173 80% 36% / 0.08), transparent 70%)",
-                filter: "blur(60px)",
-              }} />
+              style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.08), transparent 70%)", filter: "blur(60px)" }} />
           </div>
           <div className="relative z-10 pl-2">
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-              {greeting}, {firstName} 👋
+            <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-foreground">
+              {greeting}, {firstName}
             </h1>
             <p className="mt-2 text-base text-muted-foreground">
               Welcome back to your health dashboard.
             </p>
-
             <div className="mt-6 rounded-xl px-5 py-4 flex items-start gap-3"
-              style={{
-                background: "hsl(173 80% 36% / 0.06)",
-                border: "1px solid hsl(173 80% 36% / 0.12)",
-              }}>
-              <SvgIcon name="lightbulb" className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#14B8A6" }} />
+              style={{ background: "hsl(173 80% 36% / 0.06)", border: "1px solid hsl(173 80% 36% / 0.12)" }}>
+              <SvgIcon path="M9 18h6M10 22h4M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 008.91 14"
+                className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#14B8A6" }} />
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#14B8A6" }}>
                   Health Tip
                 </span>
-                <p className="text-sm mt-1.5 leading-relaxed text-muted-foreground">
-                  {tip}
-                </p>
+                <p className="text-sm mt-1.5 leading-relaxed text-muted-foreground">{tip}</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── Stat Cards ── */}
         <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
           {STAT_CARDS.map((stat) => (
-            <div
-              key={stat.key}
-              className="rounded-xl p-5 sm:p-6 flex flex-col gap-3 cursor-default card-hover glass-card"
-            >
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center"
-                style={{ background: hexToBg(stat.color, 0.09) }}
-              >
-                <SvgIcon name={stat.icon} style={{ color: stat.color }} />
+            <div key={stat.key} className="rounded-xl p-5 sm:p-6 flex flex-col gap-3 cursor-default card-hover glass-card">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center"
+                style={{ background: `hsl(${COLORS[stat.color] ?? "0 0% 0%"} / 0.09)` }}>
+                <SvgIcon path={stat.icon} style={{ color: stat.color }} />
               </div>
               <div>
                 {countsLoading ? (
                   <div className="h-8 w-14 rounded-md animate-pulse" style={{ background: "hsl(var(--muted))" }} />
                 ) : (
-                  <span className="text-3xl font-bold text-foreground">{counts[stat.key]}</span>
+                  <span className="font-serif text-3xl font-semibold text-foreground">{counts[stat.key]}</span>
                 )}
                 <p className="text-sm mt-1 text-muted-foreground/60">{stat.label}</p>
               </div>
@@ -264,32 +159,23 @@ export default function DashboardPage() {
           ))}
         </section>
 
-        {/* ── Quick Actions ── */}
         <section>
-          <h2 className="text-xl font-semibold mb-5 text-foreground">Quick Actions</h2>
+          <h2 className="font-serif text-xl font-semibold mb-5 text-foreground">Quick Actions</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {QUICK_ACTIONS.map((action) => (
-              <Link
-                key={action.href}
-                to={action.href}
-                className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:-translate-y-1 hover:shadow-lg glass-card"
-              >
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
-                  style={{ background: hexToBg(action.color, 0.08) }}
-                >
-                  <SvgIcon name={action.icon} className="w-5 h-5" style={{ color: action.color }} />
+              <Link key={action.href} to={action.href}
+                className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:-translate-y-1 hover:shadow-lg glass-card">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
+                  style={{ background: `hsl(${COLORS[action.color] ?? "0 0% 0%"} / 0.08)` }}>
+                  <SvgIcon path={action.icon} className="w-5 h-5" style={{ color: action.color }} />
                 </div>
-                <span className="text-sm font-medium leading-tight text-muted-foreground">
-                  {action.label}
-                </span>
+                <span className="text-sm font-medium leading-tight text-muted-foreground">{action.label}</span>
               </Link>
             ))}
           </div>
         </section>
       </div>
 
-      {/* ── Footer ── */}
       <footer className="mt-auto border-t border-border bg-card/50">
         <div className="max-w-7xl mx-auto px-5 lg:px-8 py-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -304,9 +190,7 @@ export default function DashboardPage() {
               <ul className="space-y-3">
                 {NAV_LINKS.map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-sm transition-colors hover:text-teal-400 text-muted-foreground">
-                      {link.label}
-                    </Link>
+                    <Link to={link.href} className="text-sm transition-colors hover:text-teal-400 text-muted-foreground">{link.label}</Link>
                   </li>
                 ))}
               </ul>
@@ -314,16 +198,9 @@ export default function DashboardPage() {
             <div>
               <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-foreground">Resources</h3>
               <ul className="space-y-3">
-                {[
-                  { label: "AI Chat (Elix)", href: "/chatbot" },
-                  { label: "Pharmacies", href: "/pharmacies" },
-                  { label: "Account", href: "/account" },
-                  { label: "Saved Items", href: "/saved" },
-                ].map((link) => (
+                {[{ label: "AI Chat (Elix)", href: "/chatbot" }, { label: "Pharmacies", href: "/pharmacies" }, { label: "Account", href: "/account" }, { label: "Saved Items", href: "/saved" }].map((link) => (
                   <li key={link.href}>
-                    <Link to={link.href} className="text-sm transition-colors hover:text-teal-400 text-muted-foreground">
-                      {link.label}
-                    </Link>
+                    <Link to={link.href} className="text-sm transition-colors hover:text-teal-400 text-muted-foreground">{link.label}</Link>
                   </li>
                 ))}
               </ul>
@@ -331,7 +208,7 @@ export default function DashboardPage() {
             <div>
               <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-foreground">Medical Disclaimer</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Mendly provides health information for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider.
+                Mendly provides health information for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
               </p>
             </div>
           </div>

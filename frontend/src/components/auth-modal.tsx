@@ -147,9 +147,10 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
           maxWidth: "960px",
           minHeight: "600px",
           height: "min(600px, 90vh)",
-          background: "hsl(var(--card))",
+          background: "hsl(var(--card) / 0.65)",
+          backdropFilter: "blur(24px)",
           border: "1px solid hsl(var(--border))",
-          boxShadow: "0 40px 80px -20px hsl(0 0% 0% / 0.5), 0 0 160px -60px hsl(173 80% 36% / 0.08)",
+          boxShadow: "var(--shadow-xl)",
           transform: mounted ? (shake ? "translateX(-6px)" : "translateY(0) scale(1)") : "translateY(24px) scale(0.95)",
           opacity: mounted ? 1 : 0,
           transition: shake
@@ -184,7 +185,7 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
             <div className="inline-flex items-center justify-center mb-8">
               <Logo size="lg" showText={false} />
             </div>
-            <h2 className="text-3xl font-bold mb-3 gradient-text">
+            <h2 className="font-serif text-3xl font-semibold mb-3 gradient-text">
               Mendly
             </h2>
             <p className="text-base leading-relaxed mb-8" style={{ color: "hsl(var(--muted-foreground))" }}>
