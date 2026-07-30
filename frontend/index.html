@@ -7,181 +7,458 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Mendly — Your AI Health Companion. Chat with Elix, search medicines, find nearby hospitals." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%231a8a7d'/><stop offset='1' stop-color='%230ea5e9'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='white'>M</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%231a8a7d'/><stop offset='1' stop-color='%230ea5e9'/></linearGradient></defs><rect width='40' height='40' rx='10' fill='url(%23g)'/><path d='M20 10 L20 30 M10 20 L30 20' stroke='white' stroke-width='4' stroke-linecap='round'/></svg>" />
   <title>Mendly — AI Medical Companion</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <!-- Header -->
   <header id="header" class="header"></header>
+  <!-- Sidebar (logged-in) -->
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-  <!-- Landing -->
+  <!-- ═══════════════════════════════════════════
+       LANDING PAGE
+  ════════════════════════════════════════════ -->
   <div id="view-landing" class="view">
+
+    <!-- HERO -->
     <section class="hero">
       <div class="hero-bg">
-        <div class="hero-blob"></div>
-        <div class="hero-blob"></div>
-        <div class="hero-dots"></div>
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-grid"></div>
       </div>
-      <div class="hero-content">
-        <div class="hero-badge">
-          <div class="logo-icon"><svg viewBox="0 0 32 32" fill="none"><defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#1a8a7d"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#lg)"/><text x="16" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="700" fill="white">M</text></svg></div>
-          <span>Free to use — No credit card required</span>
-        </div>
-        <h1 class="hero-title">Your <span class="highlight">AI Health</span><br />Companion</h1>
-        <p class="hero-sub">Chat with our AI, search medicines, find nearby care, and manage your health — all for free. Sign up to save your data and upload files.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" onclick="navigate('chat')">Try Now — It's Free</button>
-          <button class="btn btn-secondary" onclick="openAuth('signup')">Create Account</button>
-        </div>
-        <div class="hero-checks">
-          <span><span class="check">✓</span> Free AI chat</span>
-          <span><span class="check">✓</span> No signup needed</span>
-          <span><span class="check">✓</span> Save data with account</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="features">
-      <div class="section-header">
-        <span class="section-label">Features</span>
-        <h2 class="section-title">Everything you need for <span class="highlight">better health</span></h2>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card"><div class="feature-icon">🤖</div><h3>AI Health Chat</h3><p>Get instant answers from our advanced AI assistant, Elix.</p></div>
-        <div class="feature-card"><div class="feature-icon">💊</div><h3>Medicine Guide</h3><p>Search medications, check dosages and side effects.</p></div>
-        <div class="feature-card"><div class="feature-icon">🏥</div><h3>Nearby Care</h3><p>Find hospitals and pharmacies near you.</p></div>
-        <div class="feature-card"><div class="feature-icon">❤️</div><h3>Health Tracking</h3><p>Save conditions and track symptoms.</p></div>
-      </div>
-    </section>
-
-    <section class="section" id="about">
-      <div class="section-header">
-        <span class="section-label">About Mendly</span>
-        <h2 class="section-title">Bridging health info & <span class="highlight">understanding</span></h2>
-        <p class="section-sub" style="max-width:640px;margin:12px auto 0;color:var(--muted)">Mendly combines conversational AI, official FDA drug databases, location-based care discovery, and safety guardrails into one seamless healthcare companion.</p>
-      </div>
-      <div class="about-grid">
-        <div class="about-card">
-          <div class="about-icon">🧠</div>
-          <h3>AI Intelligence</h3>
-          <p>Powered by high-performance models and curated medical datasets to give accurate, context-aware health answers 24/7.</p>
-        </div>
-        <div class="about-card">
-          <div class="about-icon">🛡️</div>
-          <h3>Safety First</h3>
-          <p>Built with crisis detection and medical disclaimers to ensure safe health exploration and encourage professional care.</p>
-        </div>
-        <div class="about-card">
-          <div class="about-icon">🌐</div>
-          <h3>Global & Local</h3>
-          <p>Access country-specific emergency hotlines and pinpoint nearby hospitals and pharmacies using GPS.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="faq" style="background:var(--primary-light)">
-      <div class="section-header">
-        <span class="section-label">FAQ</span>
-        <h2 class="section-title">Frequently Asked <span class="highlight">Questions</span></h2>
-      </div>
-      <div class="faq-grid">
-        <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
-            <span>Is Mendly free to use?</span>
-            <span class="faq-icon">▼</span>
-          </button>
-          <div class="faq-answer">
-            Yes! Mendly is 100% free for AI health chat, medicine lookup, drug interaction checks, and emergency contact access. Creating a free account lets you save history and upload medical documents.
+      <div class="hero-inner">
+        <div class="hero-text">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            AI-Powered Healthcare Companion
+          </div>
+          <h1 class="hero-title">
+            Healthcare,<br />
+            finally made <span class="gradient-text">simple.</span>
+          </h1>
+          <p class="hero-subtitle">
+            Mendly is your all-in-one AI health companion. Get trusted health information, understand your medicines, find nearby care, and track your health — all in one place.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" onclick="navigate('chat')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8l4 4-4 4"/></svg>
+              Try Elix Free
+            </button>
+            <button class="btn btn-ghost btn-lg" onclick="navigate('features')">Explore Mendly</button>
+          </div>
+          <div class="hero-trust">
+            <div class="trust-item"><span class="trust-icon">🤖</span> AI-Powered</div>
+            <div class="trust-item"><span class="trust-icon">🔒</span> Secure &amp; Private</div>
+            <div class="trust-item"><span class="trust-icon">✅</span> Trusted Information</div>
+            <div class="trust-item"><span class="trust-icon">💚</span> Free to Use</div>
           </div>
         </div>
-        <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
-            <span>Can Elix AI replace my doctor?</span>
-            <span class="faq-icon">▼</span>
-          </button>
-          <div class="faq-answer">
-            No. Elix is an educational AI designed to clarify medical terms, explain drug usage, and guide symptom research. It does not provide medical diagnoses. Always consult a licensed physician for medical advice.
-          </div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
-            <span>How does the Drug Interaction Checker work?</span>
-            <span class="faq-icon">▼</span>
-          </button>
-          <div class="faq-answer">
-            Our interaction checker cross-analyzes real-time OpenFDA drug labels with clinical interaction datasets to alert you to potential contraindications and severe reactions.
-          </div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
-            <span>Is my personal health data safe?</span>
-            <span class="faq-icon">▼</span>
-          </button>
-          <div class="faq-answer">
-            Yes. We enforce SSL encryption, strict rate limiting, JWT token security, and CORS policies to keep your information secure and private.
+        <div class="hero-visual">
+          <div class="hero-robot-card">
+            <div class="robot-bubble">
+              <div class="robot-avatar">
+                <div class="robot-face">
+                  <div class="robot-eyes"><span></span><span></span></div>
+                  <div class="robot-smile"></div>
+                </div>
+              </div>
+              <div class="robot-chat">
+                <span class="robot-name">Hi, I'm Elix</span>
+                <span class="robot-msg">How can I help you today?</span>
+              </div>
+            </div>
+            <div class="hero-feature-pill pill-top-right">
+              <span class="pill-icon">💊</span>
+              <div>
+                <div class="pill-title">Medicine Guide</div>
+                <div class="pill-sub">Explore medicines and their uses</div>
+              </div>
+            </div>
+            <div class="hero-feature-pill pill-mid-right">
+              <span class="pill-icon">📍</span>
+              <div>
+                <div class="pill-title">Nearby Care</div>
+                <div class="pill-sub">Hospitals, clinics &amp; pharmacies</div>
+              </div>
+            </div>
+            <div class="hero-feature-pill pill-bot-right">
+              <span class="pill-icon">❤️</span>
+              <div>
+                <div class="pill-title">Health Tracking</div>
+                <div class="pill-sub">Track your health and improve</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="cta-card">
-        <div class="cta-inner">
-          <h2>Start chatting for free</h2>
-          <p>No account needed. Ask health questions, search medicines, and find hospitals — upgrade to save your data.</p>
-          <button class="btn btn-primary" onclick="navigate('chat')">Try Elix Now</button>
+    <!-- FEATURES OVERVIEW -->
+    <section class="section features-overview" id="features">
+      <div class="container">
+        <div class="section-head centered">
+          <h2 class="section-title">One place for all your <span class="gradient-text">health needs</span></h2>
+        </div>
+        <div class="features-grid-4">
+          <div class="feature-tile" onclick="navigate('chat')">
+            <div class="feature-tile-img feature-tile-chat">
+              <div class="ft-icon-wrap">💬</div>
+            </div>
+            <div class="feature-tile-body">
+              <h3>AI Health Chat</h3>
+              <p>Ask anything about your symptoms, conditions, treatments and more.</p>
+              <span class="tile-arrow">→</span>
+            </div>
+          </div>
+          <div class="feature-tile" onclick="navigate('medicines')">
+            <div class="feature-tile-img feature-tile-meds">
+              <div class="ft-icon-wrap">💊</div>
+            </div>
+            <div class="feature-tile-body">
+              <h3>Medicine Guide</h3>
+              <p>Know your medicines better with uses, dosage, side effects &amp; more.</p>
+              <span class="tile-arrow">→</span>
+            </div>
+          </div>
+          <div class="feature-tile" onclick="navigate('hospitals')">
+            <div class="feature-tile-img feature-tile-nearby">
+              <div class="ft-icon-wrap">📍</div>
+            </div>
+            <div class="feature-tile-body">
+              <h3>Nearby Care</h3>
+              <p>Find hospitals, clinics and pharmacies near you with ease.</p>
+              <span class="tile-arrow">→</span>
+            </div>
+          </div>
+          <div class="feature-tile" onclick="openAuth('signup')">
+            <div class="feature-tile-img feature-tile-track">
+              <div class="ft-icon-wrap">📈</div>
+            </div>
+            <div class="feature-tile-body">
+              <h3>Health Tracking</h3>
+              <p>Track your vital signs and health progress over time.</p>
+              <span class="tile-arrow">→</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
+    <!-- AI COMPANION SECTION -->
+    <section class="section ai-companion" id="about">
+      <div class="container ai-companion-inner">
+        <div class="ai-companion-left">
+          <div class="section-label-pill">Meet Elix</div>
+          <h2 class="section-title">Your AI Health<br /><span class="gradient-text">Companion</span></h2>
+          <p class="section-sub">Elix understands your health questions and provides easy-to-understand information. It's like having a health expert in your pocket.</p>
+          <ul class="ai-benefits">
+            <li><span class="benefit-check">✓</span> Instant, accurate answers</li>
+            <li><span class="benefit-check">✓</span> Understand symptoms clearly</li>
+            <li><span class="benefit-check">✓</span> Drug interaction warnings</li>
+            <li><span class="benefit-check">✓</span> Health guidance you can trust</li>
+          </ul>
+        </div>
+        <div class="ai-companion-right">
+          <div class="ai-chat-demo">
+            <div class="ai-chat-header">
+              <div class="ai-avatar-sm">
+                <div class="robot-face sm">
+                  <div class="robot-eyes sm"><span></span><span></span></div>
+                  <div class="robot-smile sm"></div>
+                </div>
+              </div>
+              <div>
+                <div class="ai-name">Elix</div>
+                <div class="ai-role">AI Health Companion</div>
+              </div>
+              <button class="ai-close">✕</button>
+            </div>
+            <div class="ai-chat-body">
+              <div class="ai-question-chip">What causes a headache?</div>
+              <div class="ai-msg ai-bot">
+                Headaches can be caused by stress, dehydration, lack of sleep, eye strain, or certain medical conditions.
+                <br /><br />Would you like tips to feel better?
+              </div>
+              <div class="ai-action-row">
+                <button class="ai-yes-btn" onclick="navigate('chat')">Yes, please</button>
+              </div>
+            </div>
+            <div class="ai-chat-input-row">
+              <input placeholder="Ask Elix a health question..." />
+              <button onclick="navigate('chat')">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE DETAILS 3-COL -->
+    <section class="section feature-details">
+      <div class="container">
+        <div class="feature-details-grid">
+          <div class="fd-card">
+            <div class="fd-label">Understand Better</div>
+            <h3>Medicine Guide</h3>
+            <p>Search medicines and get clear information about dosage, uses, side effects and more.</p>
+            <button class="fd-btn" onclick="navigate('medicines')">Explore Medicines →</button>
+            <div class="fd-visual meds-visual">
+              <div class="pill-card">
+                <span class="pill-name">Paracetamol 500mg</span>
+                <div class="pill-info-row"><span>Dosage</span><span>Side Effects</span></div>
+                <div class="pill-info-row small"><span>Interactions</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="fd-card">
+            <div class="fd-label">Care Near You</div>
+            <h3>Nearby Care</h3>
+            <p>Locate hospitals, clinics and pharmacies near you instantly.</p>
+            <button class="fd-btn" onclick="navigate('hospitals')">Find Nearby →</button>
+            <div class="fd-visual map-visual">
+              <div class="map-pin-card">
+                <div class="map-pin">📍</div>
+                <div class="map-label">City Hospital <span>2 miles</span></div>
+              </div>
+              <div class="map-pin-card small">
+                <div class="map-pin">🏥</div>
+                <div class="map-label">MedPlus Pharmacy</div>
+              </div>
+            </div>
+          </div>
+          <div class="fd-card">
+            <div class="fd-label">Track &amp; Improve</div>
+            <h3>Health Tracking</h3>
+            <p>Monitor your vital signs and health metrics with insightful analytics.</p>
+            <button class="fd-btn" onclick="openAuth('signup')">Track Now →</button>
+            <div class="fd-visual track-visual">
+              <div class="vitals-card">
+                <span class="vitals-label">Heart Rate</span>
+                <span class="vitals-value">72 bpm</span>
+              </div>
+              <div class="vitals-card">
+                <span class="vitals-label">Blood Pressure</span>
+                <span class="vitals-value">120/80</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section how-it-works" id="how">
+      <div class="container">
+        <div class="section-head centered">
+          <h2 class="section-title">How <span class="gradient-text">Mendly</span> Works</h2>
+        </div>
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="how-step-num">01</div>
+            <div class="how-step-icon">💬</div>
+            <h3>Ask</h3>
+            <p>Ask Elix anything about your health or search what you need.</p>
+          </div>
+          <div class="how-step-line"></div>
+          <div class="how-step">
+            <div class="how-step-num">02</div>
+            <div class="how-step-icon">🔍</div>
+            <h3>Understand</h3>
+            <p>Get simple, reliable and easy to understand information.</p>
+          </div>
+          <div class="how-step-line"></div>
+          <div class="how-step">
+            <div class="how-step-num">03</div>
+            <div class="how-step-icon">🎯</div>
+            <h3>Take Action</h3>
+            <p>Find medicines, nearby care and track your health.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAFETY -->
+    <section class="section safety-section">
+      <div class="container">
+        <div class="safety-card">
+          <div class="safety-icon-wrap">
+            <div class="safety-shield">🛡️</div>
+          </div>
+          <div class="safety-content">
+            <h2>Safety First, <span class="gradient-text">Always</span></h2>
+            <p>Elix provides information, not diagnoses. We encourage you to consult a medical professional for medical advice.</p>
+          </div>
+          <div class="safety-grid">
+            <div class="safety-item">
+              <div class="safety-item-icon">🩺</div>
+              <div class="safety-item-title">Not a Diagnosis</div>
+              <div class="safety-item-text">Elix does not diagnose or replace professional medical advice.</div>
+            </div>
+            <div class="safety-item">
+              <div class="safety-item-icon">🆘</div>
+              <div class="safety-item-title">Crisis Support</div>
+              <div class="safety-item-text">Get help in critical situations with crisis hotlines.</div>
+            </div>
+            <div class="safety-item">
+              <div class="safety-item-icon">📋</div>
+              <div class="safety-item-title">Trusted Sources</div>
+              <div class="safety-item-text">Information is curated from trusted medical sources.</div>
+            </div>
+            <div class="safety-item">
+              <div class="safety-item-icon">🔐</div>
+              <div class="safety-item-title">Your Privacy</div>
+              <div class="safety-item-text">Your data is encrypted and always kept confidential.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head centered">
+          <div class="section-label-pill">FAQ</div>
+          <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Is Mendly free to use?</span><span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">Yes! Mendly is 100% free for AI health chat, medicine lookup, drug interaction checks, and emergency contact access. Creating a free account lets you save history and upload medical documents.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can Elix AI replace my doctor?</span><span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">No. Elix is an educational AI designed to clarify medical terms, explain drug usage, and guide symptom research. It does not provide medical diagnoses. Always consult a licensed physician for medical advice.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How does the Drug Interaction Checker work?</span><span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">Our interaction checker cross-analyzes real-time OpenFDA drug labels with clinical interaction datasets to alert you to potential contraindications and severe reactions.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Is my personal health data safe?</span><span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">Yes. We enforce SSL encryption, strict rate limiting, JWT token security, and CORS policies to keep your information secure and private.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <section class="section cta-section">
+      <div class="container">
+        <div class="cta-banner">
+          <div class="cta-banner-left">
+            <div class="cta-logo">
+              <div class="logo-icon-wrap">${''/* injected by JS */}</div>
+              <span>Mendly</span>
+            </div>
+            <h2>Take control of your health<br />with Mendly</h2>
+            <p>Better information. Smarter tools. One companion.</p>
+          </div>
+          <button class="btn btn-primary btn-lg cta-btn" onclick="openAuth('signup')">
+            Try Mendly Free →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
     <footer class="footer">
-      <div class="footer-inner">
+      <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <div class="logo"><div class="logo-icon"><svg viewBox="0 0 32 32" fill="none"><defs><linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#1a8a7d"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#lg2)"/><text x="16" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="700" fill="white">M</text></svg></div>Mendly</div>
-            <p>Empowering health decisions through AI — where information meets compassion.</p>
+            <div class="footer-logo">
+              <div class="logo-icon-wrap sm" id="footer-logo-icon"></div>
+              <span>Mendly</span>
+            </div>
+            <p>Your AI-powered health companion for a healthier, happier you.</p>
+            <div class="footer-socials">
+              <a href="#" aria-label="Twitter">𝕏</a>
+              <a href="#" aria-label="Facebook">f</a>
+              <a href="#" aria-label="Instagram">📷</a>
+            </div>
           </div>
-          <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#about">About</a><a href="#faq">FAQ</a></div>
-          <div class="footer-col"><h4>Support</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Contact</a></div>
+          <div class="footer-col">
+            <h4>Product</h4>
+            <a href="#features">AI Health Chat</a>
+            <a href="#features">Medicine Guide</a>
+            <a href="#features">Nearby Care</a>
+            <a href="#features">Health Tracking</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="#about">About Us</a>
+            <a href="#">Careers</a>
+            <a href="#">Blog</a>
+            <a href="#">Press</a>
+            <a href="#">Contact</a>
+          </div>
+          <div class="footer-col">
+            <h4>Support</h4>
+            <a href="#">Help Center</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Safety Center</a>
+            <a href="#">Contact Support</a>
+          </div>
+          <div class="footer-col">
+            <h4>Legal</h4>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Data Policy</a>
+            <a href="#">Disclaimer</a>
+          </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2026 Mendly. All rights reserved.</p>
-          <p>Not a substitute for professional medical advice.</p>
+          <span>© 2026 Mendly. All rights reserved.</span>
+          <span>Not a substitute for professional medical advice.</span>
         </div>
       </div>
     </footer>
   </div>
 
-  <!-- Dashboard -->
+  <!-- ═══════════════════════════════════════════
+       APP VIEWS (rendered by JS)
+  ════════════════════════════════════════════ -->
   <div id="view-dashboard" class="view"></div>
-
-  <!-- Chat -->
   <div id="view-chat" class="view"></div>
-
-  <!-- Medicines -->
   <div id="view-medicines" class="view"></div>
 
-  <!-- Hospitals -->
+  <!-- Hospitals view -->
   <div id="view-hospitals" class="view">
     <div class="page">
-      <h2 style="font-size:22px;font-weight:700;margin-bottom:4px">🏥 Nearby Hospitals</h2>
-      <p class="text-muted" style="margin-bottom:20px">Search by city or use your location.</p>
+      <div class="page-header">
+        <h2 class="page-title"><span class="page-title-icon">🏥</span> Nearby Hospitals</h2>
+        <p class="page-sub">Search by city or use your location.</p>
+      </div>
       <div class="search-row">
         <input id="hosp-search" class="search-input" placeholder="Search city or hospital..." onkeydown="if(event.key==='Enter')searchHospitals()" />
         <button class="btn btn-primary" onclick="searchHospitals()">Search</button>
-        <button class="btn btn-secondary" onclick="clearHospSearch()">Clear</button>
+        <button class="btn btn-ghost" onclick="clearHospSearch()">Clear</button>
       </div>
-      <div id="hosp-results" class="search-results"><div class="empty">🔍 Search for hospitals in your area</div></div>
+      <div id="hosp-results" class="search-results">
+        <div class="empty-state"><div class="empty-icon">🔍</div><p>Search for hospitals in your area</p></div>
+      </div>
     </div>
   </div>
 
-  <!-- More (Emergency) -->
   <div id="view-more" class="view"></div>
-
-  <!-- Account -->
   <div id="view-account" class="view"></div>
 
-  <!-- Auth Modal Container -->
+  <!-- Auth Modal -->
   <div id="auth-modal"></div>
 
   <!-- Mobile Bottom Nav -->
