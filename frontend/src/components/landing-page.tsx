@@ -44,11 +44,55 @@ function FeatureCard({ icon, title, desc, i }: { icon: string; title: string; de
 export default function LandingPage({ oauthError = "" }: { oauthError?: string }) {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="bg-background text-foreground overflow-x-hidden">
+      {/* ── Header ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border glass" style={{ borderRadius: 0 }}>
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-teal-400/60 to-transparent" />
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-5 lg:px-8">
+          <Logo />
+          <nav className="hidden md:flex items-center gap-1">
+            <a href="#features" className="nav-link" style={{ color: "hsl(var(--muted-foreground))" }}>Features</a>
+            <a href="#how-it-works" className="nav-link" style={{ color: "hsl(var(--muted-foreground))" }}>How It Works</a>
+          </nav>
+          <div className="flex items-center gap-3">
+            <button onClick={() => { setAuthMode("login"); setAuthModalOpen(true); }}
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97] bg-card border-border"
+              style={{ color: "hsl(var(--foreground))" }}>
+              Sign In
+            </button>
+            <button onClick={() => { setAuthMode("signup"); setAuthModalOpen(true); }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97]"
+              style={{ background: "var(--gradient-1)" }}>
+              Get Started
+            </button>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl"
+              style={{ color: "hsl(var(--foreground))" }}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                {mobileMenuOpen
+                  ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  : <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                }
+              </svg>
+            </button>
+          </div>
+        </div>
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border px-5 py-4 animate-in" style={{ background: "hsl(var(--card))" }}>
+            <div className="flex flex-col gap-2">
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="nav-link" style={{ color: "hsl(var(--muted-foreground))" }}>Features</a>
+              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="nav-link" style={{ color: "hsl(var(--muted-foreground))" }}>How It Works</a>
+              <button onClick={() => { setAuthMode("login"); setAuthModalOpen(true); setMobileMenuOpen(false); }}
+                className="nav-link" style={{ color: "hsl(var(--muted-foreground))" }}>Sign In</button>
+            </div>
+          </div>
+        )}
+      </header>
+
       {/* ── Hero ── */}
-      <section className="relative min-h-[90vh] flex items-center px-6 pt-24 pb-20 md:pt-32 md:pb-28 brand-dot-bg">
+      <section className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 md:pt-36 md:pb-28 brand-dot-bg">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-1/3 -left-1/4 w-[900px] h-[900px] rounded-full animate-float"
             style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.1), transparent 70%)", filter: "blur(120px)" }} />
@@ -60,8 +104,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             style={{ backgroundImage: "radial-gradient(circle, hsl(173 80% 36%) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto w-full">
-          <div className="max-w-3xl animate-in-up">
+        <div className="relative z-10 max-w-5xl mx-auto w-full text-center">
+          <div className="max-w-3xl mx-auto animate-in-up">
             <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-sm mb-8 border border-border glass-subtle">
               <Logo size="sm" showText={false} />
               <span className="text-muted-foreground">Powered by Mendly AI</span>
@@ -73,13 +117,13 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               Companion
             </h1>
 
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
               Ask health questions, check drug interactions, find nearby care, and
               manage your medications — all in one place.
             </p>
 
             {oauthError && (
-              <div className="max-w-md mb-6 px-4 py-3 rounded-xl text-sm flex items-center gap-2.5"
+              <div className="max-w-md mx-auto mb-6 px-4 py-3 rounded-xl text-sm flex items-center gap-2.5"
                 style={{ background: "hsl(0 84% 60% / 0.08)", border: "1px solid hsl(0 84% 60% / 0.15)", color: "hsl(0 84% 70%)" }}>
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
@@ -88,7 +132,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <button onClick={() => { setAuthMode("signup"); setAuthModalOpen(true); }}
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97] animate-pulse-glow"
                 style={{ background: "var(--gradient-1)" }}>
@@ -101,7 +145,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
               </button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 mt-10 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-center gap-6 mt-10 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5"><CheckIcon /> Free to start</span>
               <span className="flex items-center gap-1.5"><CheckIcon /> No credit card</span>
               <span className="flex items-center gap-1.5"><CheckIcon /> HIPAA compliant</span>
@@ -133,7 +177,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       </section>
 
       {/* ── How It Works ── */}
-      <section className="px-6 py-24 md:py-32 brand-dot-bg">
+      <section id="how-it-works" className="px-6 py-24 md:py-32 brand-dot-bg">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-20 animate-in-up">
             <span className="inline-block text-xs font-semibold tracking-widest uppercase mb-4 text-primary">How It Works</span>
@@ -201,13 +245,28 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
 
       {/* ── Footer ── */}
       <footer className="border-t border-border px-6 py-12">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
-            <Logo size="md" />
-            <div className="flex items-center gap-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Support</a>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+            <div>
+              <Logo size="md" />
+              <p className="text-sm text-muted-foreground mt-4 max-w-xs leading-relaxed">
+                Empowering health decisions through AI — where information meets compassion.
+              </p>
+            </div>
+            <div className="md:text-center">
+              <h4 className="text-sm font-semibold mb-4 text-foreground">Product</h4>
+              <div className="flex flex-col gap-2.5">
+                <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
+                <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
+              </div>
+            </div>
+            <div className="md:text-right">
+              <h4 className="text-sm font-semibold mb-4 text-foreground">Support</h4>
+              <div className="flex flex-col gap-2.5">
+                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>
+                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a>
+                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+              </div>
             </div>
           </div>
           <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
