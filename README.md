@@ -66,7 +66,7 @@ Most health apps either dump raw data on you or lock you into a single feature. 
 
 | Service | URL |
 |:--------|:----|
-| 🌐 **Frontend** | [mendlyapp.web.app](https://mendlyapp.web.app) |
+| 📱 **Frontend** | Open on device via Expo Go or EAS build |
 | ⚙️ **Backend API** | [mendly-backend-0vyg.onrender.com](https://mendly-backend-0vyg.onrender.com) |
 | 📖 **API Docs** | [mendly-backend-0vyg.onrender.com/docs](https://mendly-backend-0vyg.onrender.com/docs) |
 
@@ -93,9 +93,9 @@ Most health apps either dump raw data on you or lock you into a single feature. 
 
 ```mermaid
 graph TB
-    subgraph Client["🌐 Client Layer"]
+    subgraph Client["📱 Client Layer"]
         User([👤 User])
-        FE["React + Vite SPA<br/>(Firebase Hosting)"]
+        RN["React Native App<br/>(Expo — iOS & Android)"]
     end
 
     subgraph API["⚙️ API Layer"]
@@ -115,8 +115,8 @@ graph TB
         DB[(MongoDB Atlas)]
     end
 
-    User -->|HTTPS| FE
-    FE -->|API Calls| BE
+    User -->|API Calls| RN
+    RN --> BE
     BE --> Auth
     BE --> Chat
     BE --> FDA
@@ -128,7 +128,7 @@ graph TB
     KB --> DB
     FDA -->|REST| OpenFDA[🏛️ openFDA]
 
-    style FE fill:#0d2137,color:#fff
+    style RN fill:#0d2137,color:#fff
     style BE fill:#0d2137,color:#fff
     style Mem fill:#00bcd4,color:#fff
     style DB fill:#0d2137,color:#fff
@@ -287,31 +287,28 @@ gantt
 
 ```
 mediguide/
-├── frontend/                          # React + Vite SPA
-│   ├── src/
-│   │   ├── components/                # Reusable UI components
-│   │   │   ├── auth-modal.tsx         # Login / signup modal
-│   │   │   ├── landing-page.tsx       # Marketing landing
-│   │   │   └── ...
-│   │   ├── pages/                     # Route pages
-│   │   │   ├── Home.tsx               # Landing
-│   │   │   ├── Dashboard.tsx          # User dashboard
-│   │   │   ├── Chatbot.tsx            # AI chat
-│   │   │   ├── Medicines.tsx          # Medicine search
-│   │   │   ├── Conditions.tsx         # Disease browser
-│   │   │   ├── Hospitals.tsx          # Nearby hospitals
-│   │   │   ├── Pharmacies.tsx         # Nearby pharmacies
-│   │   │   ├── Emergency.tsx          # Emergency contacts
-│   │   │   ├── Saved.tsx              # Bookmarks
-│   │   │   └── Account.tsx            # Profile management
-│   │   └── lib/
-│   │       ├── config.ts              # API base URL
-│   │       ├── api.ts                 # Fetch helpers
-│   │       └── auth-context.tsx       # Auth state
-│   ├── public/
-│   ├── dist/                          # → Firebase Hosting
-│   ├── firebase.json
-│   ├── .firebaserc
+├── frontend/                          # Expo React Native app
+│   ├── app/                           # Expo Router pages
+│   │   ├── _layout.tsx                # Root layout (providers)
+│   │   ├── index.tsx                  # Landing & auth
+│   │   └── (tabs)/                    # Main tab navigation
+│   │       ├── _layout.tsx            # Tab navigator layout
+│   │       ├── index.tsx              # Dashboard
+│   │       ├── chatbot.tsx            # AI chat
+│   │       ├── medicines.tsx          # Medicine search
+│   │       ├── hospitals.tsx          # Nearby hospitals
+│   │       ├── more.tsx               # More (emergency, etc.)
+│   │       └── account.tsx            # Profile & settings
+│   ├── components/                    # Shared components
+│   │   ├── Logo.tsx
+│   │   └── ThemeProvider.tsx
+│   ├── lib/
+│   │   ├── config.ts                  # API base URL
+│   │   ├── api.ts                     # Fetch helpers
+│   │   └── AuthContext.tsx             # Auth state
+│   ├── constants/theme.ts             # Colors, spacing, fonts
+│   ├── app.json
+│   ├── babel.config.js
 │   └── package.json
 │
 ├── backend/                           # FastAPI backend
@@ -365,11 +362,11 @@ uvicorn app.main:app --reload --port 8002
 # 3. Frontend
 cd ../frontend
 npm install
-npm run dev
+npx expo start
 ```
 
 > 📖 API docs at `http://localhost:8002/docs`  
-> 🌐 App at `http://localhost:3000`
+> 📱 Scan QR code with Expo Go to open the app
 
 ---
 
@@ -399,12 +396,13 @@ flowchart LR
 
 ## 📦 Deployment
 
-### Frontend → Firebase Hosting
+### Frontend → Expo / EAS
 
 ```bash
 cd frontend
-npm run build
-firebase deploy --only hosting
+npx eas build --platform ios    # iOS build
+npx eas build --platform android # Android build
+npx eas submit                  # Submit to app stores
 ```
 
 ### Backend → Render
@@ -415,7 +413,7 @@ firebase deploy --only hosting
 4. Set required env vars in Render Dashboard
 5. Deploy
 
-> 🔗 Live at **mendlyapp.web.app** + **mendly-backend-0vyg.onrender.com**
+> 🔗 API live at **mendly-backend-0vyg.onrender.com**
 
 ---
 
@@ -423,15 +421,15 @@ firebase deploy --only hosting
 
 | Command | What It Does |
 |:--------|:-------------|
-| `npm run dev` | 🔥 Start Vite dev server (port 3000) |
-| `npm run build` | 📦 Production build → `frontend/dist/` |
-| `npm run preview` | 👁️ Preview production build locally |
+| `npx expo start` | 🔥 Start Expo dev server (QR code) |
+| `npx expo start --tunnel` | 🌐 Start with tunnel for physical devices |
+| `npx eas build --platform all` | 📦 Build for app stores |
 
 ### Conventions
 
 | Area | Convention |
 |:-----|:-----------|
-| **Frontend** | TypeScript, React functional components, Tailwind |
+| **Frontend** | TypeScript, React Native, Expo Router |
 | **Backend** | Python FastAPI, async/await, Pydantic validation |
 | **HTTP** | Native `fetch()` — no Axios |
 | **Auth** | JWT in `Authorization: Bearer <token>` header |

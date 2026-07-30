@@ -1,20 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%2314B8A6'/%3E%3Cpath d='M18 16h12v4h-4v12h-4V20h-4v-4z' fill='white'/%3E%3C/svg%3E" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="AI-powered medicine companion. Search medicines, check interactions, find nearby hospitals & pharmacies." />
-    <meta property="og:title" content="Mendly — AI Medical Companion" />
-    <meta property="og:description" content="Your AI-powered health companion. Search medicines, check drug interactions, find nearby care." />
-    <meta property="og:type" content="website" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <title>Mendly — AI Medical Companion</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a8a7d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Mendly — Your AI Health Companion. Chat with Elix, search medicines, find nearby hospitals." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%231a8a7d'/><stop offset='1' stop-color='%230ea5e9'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='white'>M</text></svg>" />
+  <title>Mendly — AI Medical Companion</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header id="header" class="header"></header>
+
+  <!-- Landing -->
+  <div id="view-landing" class="view">
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="hero-blob"></div>
+        <div class="hero-blob"></div>
+        <div class="hero-dots"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <div class="logo-icon" style="width:24px;height:24px"><div class="logo-mark"></div></div>
+          <span>Powered by Mendly AI</span>
+        </div>
+        <h1 class="hero-title">Your <span class="highlight">AI Health</span><br />Companion</h1>
+        <p class="hero-sub">Ask health questions, check drug interactions, find nearby care, and manage your medications — all in one place.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="openAuth('signup')">Get Started Free</button>
+          <button class="btn btn-secondary" onclick="openAuth('login')">Sign In</button>
+        </div>
+        <div class="hero-checks">
+          <span><span class="check">✓</span> Free to start</span>
+          <span><span class="check">✓</span> No credit card</span>
+          <span><span class="check">✓</span> HIPAA compliant</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="section-header">
+        <span class="section-label">Features</span>
+        <h2 class="section-title">Everything you need for <span class="highlight">better health</span></h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">🤖</div><h3>AI Health Chat</h3><p>Get instant answers from our advanced AI assistant, Elix.</p></div>
+        <div class="feature-card"><div class="feature-icon">💊</div><h3>Medicine Guide</h3><p>Search medications, check dosages and side effects.</p></div>
+        <div class="feature-card"><div class="feature-icon">🏥</div><h3>Nearby Care</h3><p>Find hospitals and pharmacies near you.</p></div>
+        <div class="feature-card"><div class="feature-icon">❤️</div><h3>Health Tracking</h3><p>Save conditions and track symptoms.</p></div>
+      </div>
+    </section>
+
+    <section class="section" style="background:var(--primary-light)">
+      <div class="section-header">
+        <span class="section-label">How It Works</span>
+        <h2 class="section-title">Three simple steps</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">01</div><div class="step-body"><h3>Create Account</h3><p>Sign up free in seconds with email. No credit card needed.</p></div></div>
+        <div class="step"><div class="step-num">02</div><div class="step-body"><h3>Explore Tools</h3><p>Chat with Elix, search medicines, check interactions, and find nearby care.</p></div></div>
+        <div class="step"><div class="step-num">03</div><div class="step-body"><h3>Stay Informed</h3><p>Get health tips, track your conditions, and make smarter health decisions daily.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="cta-card">
+        <div class="cta-inner">
+          <h2>Ready to take control?</h2>
+          <p>Join Mendly today and start making smarter health decisions with AI-powered guidance.</p>
+          <button class="btn btn-primary" onclick="openAuth('signup')">Get Started Free</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <div class="logo"><div class="logo-icon"><div class="logo-mark"></div></div>Mendly</div>
+            <p>Empowering health decisions through AI — where information meets compassion.</p>
+          </div>
+          <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#">How It Works</a></div>
+          <div class="footer-col"><h4>Support</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Contact</a></div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Mendly. All rights reserved.</p>
+          <p>Not a substitute for professional medical advice.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="view-dashboard" class="view"></div>
+
+  <!-- Chat -->
+  <div id="view-chat" class="view"></div>
+
+  <!-- Medicines -->
+  <div id="view-medicines" class="view"></div>
+
+  <!-- Hospitals -->
+  <div id="view-hospitals" class="view">
+    <div class="page">
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:4px">🏥 Nearby Hospitals</h2>
+      <p class="text-muted" style="margin-bottom:20px">Search by city or use your location.</p>
+      <div class="search-row">
+        <input id="hosp-search" class="search-input" placeholder="Search city or hospital..." onkeydown="if(event.key==='Enter')searchHospitals()" />
+        <button class="btn btn-primary" onclick="searchHospitals()">Search</button>
+        <button class="btn btn-secondary" onclick="clearHospSearch()">Clear</button>
+      </div>
+      <div id="hosp-results" class="search-results"><div class="empty">🔍 Search for hospitals in your area</div></div>
+    </div>
+  </div>
+
+  <!-- More (Emergency) -->
+  <div id="view-more" class="view"></div>
+
+  <!-- Account -->
+  <div id="view-account" class="view"></div>
+
+  <!-- Auth Modal Container -->
+  <div id="auth-modal"></div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav id="mobile-nav" class="mobile-nav"></nav>
+
+  <script src="js/app.js"></script>
+</body>
 </html>
