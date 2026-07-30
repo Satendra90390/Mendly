@@ -10,7 +10,7 @@ AI-powered health information platform with medicine search, drug interactions, 
 - **Drug Interaction Checker** — check two medicines for conflicts
 - **Nearby Hospitals & Pharmacies** — find healthcare facilities by search or current geolocation with directions
 - **Emergency Contacts** — country-wise emergency numbers with tap-to-call
-- **User Accounts** — email/password and Google OAuth sign-in with profile management
+- **User Accounts** — email/password sign-in with profile management
 - **Bookmarks (Saved Items)** — save medicines and conditions for quick reference
 - **Dark/Light Theme** — toggle between dark and light mode with persistant preference
 
@@ -18,66 +18,65 @@ AI-powered health information platform with medicine search, drug interactions, 
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | **Next.js 16** (App Router), **React 19**, **TypeScript**, **Tailwind CSS v4** |
-| Backend | FastAPI, SQLAlchemy, SQLite (Postgres for production) |
-| Auth | JWT + bcrypt, Google OAuth, email/OTP |
-| AI | NVIDIA NIM (Llama 3.1 70B) or Google Gemini |
+| Frontend | **React 19**, **Vite**, **TypeScript**, **Tailwind CSS v4** |
+| Backend | **FastAPI**, **Python**, **MongoDB** (Motor) |
+| Auth | JWT + bcrypt |
+| AI | NVIDIA NIM |
 | Data | openFDA Drug Label API |
-| Icons | Font Awesome 6.7.2 |
-| Deployment | Frontend → Vercel, Backend → Render |
+| Deployment | Frontend → **Firebase Hosting**, Backend → **Render** |
 
 ## Project Structure
 
 ```
 mediguide/
-├── frontend/                    # Next.js app
+├── frontend/                    # React + Vite SPA
 │   ├── src/
-│   │   ├── app/
-│   │   │   ├── globals.css      # Theme variables, utility classes, animations
-│   │   │   ├── layout.tsx       # Root layout (fonts, providers)
-│   │   │   ├── page.tsx         # Landing page + OAuth handler
-│   │   │   └── (app)/           # Authenticated routes
-│   │   │       ├── layout.tsx   # App shell (navbar, dropdown, mobile nav)
-│   │   │       ├── dashboard/   # Dashboard with stats and quick actions
-│   │   │       ├── chatbot/     # AI chat interface (streaming SSE)
-│   │   │       ├── medicines/   # Medicine search + detail modal
-│   │   │       ├── conditions/  # Medical conditions browser
-│   │   │       ├── hospitals/   # Nearby hospitals finder
-│   │   │       ├── pharmacies/  # Nearby pharmacies finder
-│   │   │       ├── emergency/   # Emergency contacts by country
-│   │   │       ├── saved/       # Bookmarked items
-│   │   │       └── account/     # Profile management + delete account
 │   │   ├── components/
-│   │   │   ├── providers.tsx    # Composes Theme + Auth providers
-│   │   │   ├── theme-provider.tsx
-│   │   │   ├── auth-context.tsx
-│   │   │   ├── auth-modal.tsx   # Login/signup modal with Google OAuth
+│   │   │   ├── auth-modal.tsx   # Login/signup modal
 │   │   │   ├── landing-page.tsx # Marketing landing page
-│   │   │   └── mobile-nav.tsx   # Mobile bottom navigation
+│   │   │   └── ...
+│   │   ├── pages/               # Route pages
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Chatbot.tsx
+│   │   │   ├── Medicines.tsx
+│   │   │   ├── Hospitals.tsx
+│   │   │   ├── Pharmacies.tsx
+│   │   │   ├── Emergency.tsx
+│   │   │   ├── Saved.tsx
+│   │   │   ├── Account.tsx
+│   │   │   └── ...
 │   │   └── lib/
 │   │       ├── config.ts        # API base URL (auto-detects localhost vs production)
 │   │       ├── api.ts           # Fetch helpers
 │   │       └── auth-context.tsx  # Auth state management
-│   ├── package.json
-│   ├── next.config.ts
-│   └── postcss.config.mjs
+│   ├── dist/                    # Built output (deployed to Firebase)
+│   ├── firebase.json
+│   ├── .firebaserc
+│   ├── vite.config.ts
+│   └── package.json
 ├── backend/                     # FastAPI backend
 │   ├── app/
 │   │   ├── main.py              # Routes & middleware
 │   │   ├── auth.py              # JWT + password hashing
-│   │   ├── models.py            # SQLAlchemy models
 │   │   ├── schemas.py           # Pydantic schemas
-│   │   ├── database.py          # DB engine/session
+│   │   ├── database.py          # MongoDB connection (Motor)
 │   │   ├── chatbot.py           # AI chatbot engine
 │   │   ├── knowledge_base.py    # Curated disease/drug data
 │   │   ├── openfda_client.py    # openFDA API client
-│   │   ├── email_service.py     # SMTP email sender
-│   │   └── otp_store.py         # In-memory OTP store
-│   ├── requirements.txt
+│   │   └── ...
+│   ├── Dockerfile               # For Cloud Run deployment
 │   ├── render.yaml
-│   └── .env.example
+│   └── requirements.txt
 └── README.md
 ```
+
+## Live URLs
+
+| Service | URL |
+|---------|-----|
+| Frontend | https://mendlyapp.web.app |
+| Backend  | https://mendly-backend-0vyg.onrender.com |
+| API Docs | https://mendly-backend-0vyg.onrender.com/docs |
 
 ## Local Development
 
@@ -109,30 +108,30 @@ Open `http://localhost:3000`. The frontend auto-detects localhost and connects t
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start Next.js development server |
-| `npm run build` | Production build |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
+| `npm run dev` | Start Vite dev server (port 3000) |
+| `npm run build` | Production build → `dist/` |
+| `npm run preview` | Preview production build |
 
 ## Deployment
+
+### Frontend (Firebase Hosting)
+
+```bash
+cd frontend
+npm run build
+firebase deploy --only hosting
+```
 
 ### Backend (Render)
 
 1. Push repo to GitHub
 2. On Render: **New > Web Service**, select repo, root directory `backend`
-3. Set environment variables:
+3. Set environment variables in Render Dashboard:
    - `JWT_SECRET` — `python -c "import secrets; print(secrets.token_hex(32))"`
-   - `FRONTEND_ORIGINS` — your Vercel URL
-   - `FRONTEND_URL` — same as above (for OAuth redirects)
-   - `DATABASE_URL` — use Render Postgres for production
+   - `MONGODB_URI` — your MongoDB connection string
+   - `FRONTEND_ORIGINS` — `https://mendlyapp.web.app,https://mendlyapp.firebaseapp.com`
+   - `FRONTEND_URL` — `https://mendlyapp.web.app`
    - `NVIDIA_API_KEY` — get from [build.nvidia.com](https://build.nvidia.com)
-
-### Frontend (Vercel)
-
-1. On Vercel: **New Project**, select repo, root directory `frontend`
-2. Framework: **Next.js**
-3. Environment variable: `NEXT_PUBLIC_API_URL` — set to your Render backend URL
-4. Deploy
 
 ## Theme
 
