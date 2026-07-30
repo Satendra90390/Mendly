@@ -42,7 +42,8 @@ function toggleTheme() {
 
 /* ── Router ── */
 const AUTH_REQUIRED = new Set(["dashboard", "account"]);
-const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "more"]);
+const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "more", "features", "about", "faq"]);
+const SECTION_ROUTES = new Set(["features", "about", "faq"]);
 
 function navigate(hash) {
   const target = hash || location.hash.slice(1) || (state.user ? "dashboard" : "landing");
@@ -54,6 +55,11 @@ function navigate(hash) {
 window.addEventListener("hashchange", render);
 window.addEventListener("popstate", render);
 
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  if (item) item.classList.toggle('open');
+}
+
 /* ── Render ── */
 function render() {
   applyTheme();
@@ -62,14 +68,20 @@ function render() {
 
   if (AUTH_REQUIRED.has(route) && !state.user) { openAuth("signup"); return; }
   if (!GUEST_ALLOWED.has(route) && !state.user) { navigate("landing"); return; }
-  if (state.user && route === "landing") { navigate("dashboard"); return; }
+
+  let targetView = route;
+  if (SECTION_ROUTES.has(route)) {
+    targetView = state.user ? "dashboard" : "landing";
+  } else if (state.user && route === "landing") {
+    navigate("dashboard"); return;
+  }
 
   renderHeader();
-  const el = document.getElementById(`view-${route}`);
+  const el = document.getElementById(`view-${targetView}`);
   if (el) el.classList.add("active");
   renderMobileNav(route);
 
-  switch (route) {
+  switch (targetView) {
     case "landing": break;
     case "dashboard": renderDashboard(); break;
     case "chat": renderChat(); break;
@@ -77,6 +89,13 @@ function render() {
     case "hospitals": break;
     case "more": renderMore(); break;
     case "account": renderAccount(); break;
+  }
+
+  if (SECTION_ROUTES.has(route)) {
+    setTimeout(() => {
+      const sec = document.getElementById(route);
+      if (sec) sec.scrollIntoView({ behavior: "smooth" });
+    }, 60);
   }
 }
 
@@ -87,10 +106,18 @@ function logoSvg() {
 /* ── Header ── */
 function renderHeader() {
   const h = document.getElementById("header");
-  if (!state.user) { h.innerHTML = `
+  const currentRoute = location.hash.slice(1) || (state.user ? "dashboard" : "landing");
+  if (!state.user) {
+    const guestLinks = [
+      { h: "#landing", l: "Home" },
+      { h: "#features", l: "Features" },
+      { h: "#about", l: "About" },
+      { h: "#faq", l: "FAQ" }
+    ];
+    h.innerHTML = `
     <div class="header-top"><div class="header-inner">
       <a href="#landing" class="logo"><div class="logo-icon">${logoSvg()}</div>Mendly</a>
-      <div class="header-links"><a href="#landing">Home</a></div>
+      <div class="header-links">${guestLinks.map(l => `<a href="${l.h}" class="${currentRoute === l.h.slice(1) ? 'active' : ''}">${l.l}</a>`).join("")}</div>
       <div class="header-actions">
         <button class="theme-btn" onclick="toggleTheme()">${state.theme === "dark" ? "☀️" : "🌙"}</button>
         <button class="btn btn-secondary btn-sm" onclick="openAuth('login')">Sign In</button>
@@ -100,15 +127,19 @@ function renderHeader() {
   }
   const init = (state.user.name || state.user.email || "U").charAt(0).toUpperCase();
   const links = [
-    { h: "#dashboard", l: "Dashboard" }, { h: "#chat", l: "Elix" },
-    { h: "#medicines", l: "Medicines" }, { h: "#hospitals", l: "Hospitals" },
+    { h: "#dashboard", l: "Dashboard" },
+    { h: "#chat", l: "Elix" },
+    { h: "#medicines", l: "Medicines" },
+    { h: "#hospitals", l: "Hospitals" },
+    { h: "#features", l: "Features" },
+    { h: "#about", l: "About" },
+    { h: "#faq", l: "FAQ" },
     { h: "#more", l: "More" },
   ];
-  const route = location.hash.slice(1) || "dashboard";
   h.innerHTML = `
     <div class="header-top"><div class="header-inner">
       <a href="#dashboard" class="logo"><div class="logo-icon">${logoSvg()}</div>Mendly</a>
-      <div class="header-links">${links.map(l => `<a href="${l.h}" class="${route === l.h.slice(1) ? 'active' : ''}">${l.l}</a>`).join("")}</div>
+      <div class="header-links">${links.map(l => `<a href="${l.h}" class="${currentRoute === l.h.slice(1) ? 'active' : ''}">${l.l}</a>`).join("")}</div>
       <div class="header-actions">
         <button class="theme-btn" onclick="toggleTheme()">${state.theme === "dark" ? "☀️" : "🌙"}</button>
         <div class="avatar" onclick="navigate('account')" style="cursor:pointer">${init}</div>

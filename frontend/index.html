@@ -54,15 +54,73 @@
       </div>
     </section>
 
-    <section class="section" style="background:var(--primary-light)">
+    <section class="section" id="about">
       <div class="section-header">
-        <span class="section-label">How It Works</span>
-        <h2 class="section-title">Three simple steps</h2>
+        <span class="section-label">About Mendly</span>
+        <h2 class="section-title">Bridging health info & <span class="highlight">understanding</span></h2>
+        <p class="section-sub" style="max-width:640px;margin:12px auto 0;color:var(--muted)">Mendly combines conversational AI, official FDA drug databases, location-based care discovery, and safety guardrails into one seamless healthcare companion.</p>
       </div>
-      <div class="steps">
-        <div class="step"><div class="step-num">01</div><div class="step-body"><h3>Create Account</h3><p>Sign up free in seconds with email. No credit card needed.</p></div></div>
-        <div class="step"><div class="step-num">02</div><div class="step-body"><h3>Explore Tools</h3><p>Chat with Elix, search medicines, check interactions, and find nearby care.</p></div></div>
-        <div class="step"><div class="step-num">03</div><div class="step-body"><h3>Stay Informed</h3><p>Get health tips, track your conditions, and make smarter health decisions daily.</p></div></div>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-icon">🧠</div>
+          <h3>AI Intelligence</h3>
+          <p>Powered by high-performance models and curated medical datasets to give accurate, context-aware health answers 24/7.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon">🛡️</div>
+          <h3>Safety First</h3>
+          <p>Built with crisis detection and medical disclaimers to ensure safe health exploration and encourage professional care.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon">🌐</div>
+          <h3>Global & Local</h3>
+          <p>Access country-specific emergency hotlines and pinpoint nearby hospitals and pharmacies using GPS.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" style="background:var(--primary-light)">
+      <div class="section-header">
+        <span class="section-label">FAQ</span>
+        <h2 class="section-title">Frequently Asked <span class="highlight">Questions</span></h2>
+      </div>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Is Mendly free to use?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            Yes! Mendly is 100% free for AI health chat, medicine lookup, drug interaction checks, and emergency contact access. Creating a free account lets you save history and upload medical documents.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Can Elix AI replace my doctor?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            No. Elix is an educational AI designed to clarify medical terms, explain drug usage, and guide symptom research. It does not provide medical diagnoses. Always consult a licensed physician for medical advice.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>How does the Drug Interaction Checker work?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            Our interaction checker cross-analyzes real-time OpenFDA drug labels with clinical interaction datasets to alert you to potential contraindications and severe reactions.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Is my personal health data safe?</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            Yes. We enforce SSL encryption, strict rate limiting, JWT token security, and CORS policies to keep your information secure and private.
+          </div>
+        </div>
       </div>
     </section>
 
@@ -83,7 +141,7 @@
             <div class="logo"><div class="logo-icon"><svg viewBox="0 0 32 32" fill="none"><defs><linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#1a8a7d"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#lg2)"/><text x="16" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="700" fill="white">M</text></svg></div>Mendly</div>
             <p>Empowering health decisions through AI — where information meets compassion.</p>
           </div>
-          <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#">How It Works</a></div>
+          <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#about">About</a><a href="#faq">FAQ</a></div>
           <div class="footer-col"><h4>Support</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Contact</a></div>
         </div>
         <div class="footer-bottom">
