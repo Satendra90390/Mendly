@@ -64,6 +64,41 @@ Mendly reimagines how people interact with health information. Most health apps 
 
 ---
 
+## Architecture Flow
+
+```mermaid
+graph TD
+    User([👤 User]) --> FE[🌐 Frontend - React + Vite]
+    FE --> BE[⚙️ Backend API - FastAPI]
+    
+    subgraph Backend
+        BE --> Auth[🔐 Auth - JWT]
+        BE --> Chat[🤖 AI Chatbot]
+        BE --> FDA[📡 openFDA Client]
+        BE --> KB[📚 Knowledge Base]
+    end
+    
+    Auth --> DB[(🗄️ MongoDB)]
+    Chat --> DB
+    KB --> DB
+    
+    Chat --> NIM[🧠 NVIDIA NIM API]
+    FDA --> OpenFDA([🏛️ openFDA API])
+    
+    FE --> FH[☁️ Firebase Hosting]
+    BE --> Render[🚀 Render]
+    DB --> Atlas[🗄️ MongoDB Atlas]
+```
+
+**How data flows:**
+1. User visits **Mendlyapp** (Firebase Hosting)
+2. Frontend calls **FastAPI backend** (Render)
+3. Backend routes to: **Auth**, **Chatbot**, **openFDA**, or **Knowledge Base**
+4. Chatbot queries **NVIDIA NIM** for AI responses
+5. Data persists in **MongoDB Atlas**
+
+---
+
 ## Technology Stack
 
 ### Frontend
