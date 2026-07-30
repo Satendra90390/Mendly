@@ -137,18 +137,19 @@ function render() {
   if (!GUEST_ALLOWED.has(route) && !state.user) { navigate("landing"); return; }
   if (state.user && (LANDING_SECTIONS.has(route) || route === "landing")) { navigate("dashboard"); return; }
 
-  /* sidebar body class */
-  if (state.user) {
+  const targetView = LANDING_SECTIONS.has(route) ? "landing" : route;
+
+  /* sidebar body class —
+     dashboard has its own built-in icon sidebar, so aside sidebar only shows on
+     other logged-in pages (chat, medicines, hospitals, more, account) */
+  if (state.user && targetView !== "dashboard" && targetView !== "landing") {
     document.body.classList.add("has-sidebar");
   } else {
     document.body.classList.remove("has-sidebar");
   }
 
-  const targetView = LANDING_SECTIONS.has(route) ? "landing" : route;
-
   renderHeader();
   renderSidebar(targetView);
-
   const el = document.getElementById(`view-${targetView}`);
   if (el) el.classList.add("active");
 
