@@ -455,7 +455,6 @@ mediguide/
 │   │   ├── schemas.py                 # Pydantic models
 │   │   ├── database.py                # MongoDB (Motor)
 │   │   ├── chatbot.py                 # AI engine
-│   │   ├── memory.py                  # Memory manager
 │   │   ├── knowledge_base.py          # Curated data
 │   │   └── openfda_client.py          # FDA API client
 │   ├── Dockerfile
