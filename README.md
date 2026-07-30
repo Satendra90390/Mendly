@@ -1,6 +1,5 @@
 <div align="center">
 
-```svg
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 280" width="100%" height="auto">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -32,10 +31,8 @@
     </filter>
   </defs>
 
-  <!-- Background -->
   <rect width="900" height="280" fill="url(#bgGrad)" rx="16"/>
 
-  <!-- Wave 1 - deep slow wave -->
   <path d="M-100,220 Q-20,180 60,220 T220,220 T380,220 T540,220 T700,220 T860,220 T1020,220 L1020,280 L-100,280 Z"
         fill="url(#wave1g)" opacity="0.5">
     <animateTransform attributeName="transform" type="translate"
@@ -43,7 +40,6 @@
       dur="12s" repeatCount="indefinite"/>
   </path>
 
-  <!-- Wave 2 - medium wave -->
   <path d="M-100,230 Q30,195 160,230 T420,230 T680,230 T940,230 L940,280 L-100,280 Z"
         fill="url(#wave2g)" opacity="0.4">
     <animateTransform attributeName="transform" type="translate"
@@ -51,7 +47,6 @@
       dur="10s" repeatCount="indefinite"/>
   </path>
 
-  <!-- Wave 3 - fast shallow wave -->
   <path d="M-100,240 Q10,218 120,240 T340,240 T560,240 T780,240 T1000,240 L1000,280 L-100,280 Z"
         fill="url(#wave3g)" opacity="0.6">
     <animateTransform attributeName="transform" type="translate"
@@ -59,7 +54,6 @@
       dur="7s" repeatCount="indefinite"/>
   </path>
 
-  <!-- Wave 4 - accent ripple -->
   <path d="M-100,255 Q40,238 180,255 T500,255 T820,255 T1140,255 L1140,280 L-100,280 Z"
         fill="rgba(0,188,212,0.15)">
     <animateTransform attributeName="transform" type="translate"
@@ -67,7 +61,6 @@
       dur="15s" repeatCount="indefinite"/>
   </path>
 
-  <!-- Particles / bubbles -->
   <circle cx="150" cy="160" r="2" fill="rgba(0,188,212,0.6)">
     <animate attributeName="cy" values="160;140;160" dur="4s" repeatCount="indefinite"/>
     <animate attributeName="opacity" values="0.6;0.2;0.6" dur="4s" repeatCount="indefinite"/>
@@ -91,26 +84,21 @@
     <animate attributeName="cy" values="165;148;165" dur="3.8s" repeatCount="indefinite"/>
   </circle>
 
-  <!-- Logo icon -->
   <text x="450" y="100" font-family="Arial, sans-serif" font-size="32" fill="rgba(0,188,212,0.3)" text-anchor="middle" dominant-baseline="middle">✦</text>
 
-  <!-- Title -->
   <text x="450" y="115" font-family="'Segoe UI', Arial, sans-serif" font-size="58" font-weight="800" fill="#ffffff" text-anchor="middle" dominant-baseline="middle" filter="url(#glow)" letter-spacing="2">
     Mendly
     <animate attributeName="opacity" values="1;0.85;1" dur="3s" repeatCount="indefinite"/>
   </text>
 
-  <!-- Tagline -->
   <text x="450" y="160" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="rgba(255,255,255,0.7)" text-anchor="middle" dominant-baseline="middle" letter-spacing="4">
     AI · Medical · Companion
   </text>
 
-  <!-- Accent line -->
   <line x1="350" y1="178" x2="550" y2="178" stroke="rgba(0,188,212,0.5)" stroke-width="1">
     <animate attributeName="opacity" values="0.5;0.2;0.5" dur="2s" repeatCount="indefinite"/>
   </line>
 
-  <!-- Badge strip -->
   <rect x="200" y="200" width="500" height="50" rx="25" fill="rgba(0,0,0,0.3)" stroke="rgba(0,188,212,0.2)" stroke-width="1"/>
   <text x="240" y="228" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.8)" text-anchor="middle">⚕️</text>
   <text x="300" y="228" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.8)" text-anchor="middle">💊</text>
@@ -122,7 +110,6 @@
   <text x="570" y="228" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.8)" text-anchor="middle">🔖</text>
   <text x="660" y="228" font-family="Arial, sans-serif" font-size="11" fill="rgba(0,188,212,0.6)" text-anchor="middle">v1.0</text>
 
-  <!-- Badge labels -->
   <text x="240" y="242" font-family="Arial, sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" text-anchor="middle">AI Chat</text>
   <text x="300" y="242" font-family="Arial, sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" text-anchor="middle">Medicines</text>
   <text x="345" y="242" font-family="Arial, sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" text-anchor="middle">Conditions</text>
@@ -132,7 +119,6 @@
   <text x="525" y="242" font-family="Arial, sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" text-anchor="middle">Themes</text>
   <text x="570" y="242" font-family="Arial, sans-serif" font-size="7" fill="rgba(255,255,255,0.4)" text-anchor="middle">Bookmarks</text>
 </svg>
-```
 
 </div>
 
