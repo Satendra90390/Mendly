@@ -300,7 +300,7 @@ function removeChatFile(idx) {
 }
 
 function escapeHtml(t) {
-  return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+  return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;").replace(/\n/g,"<br>");
 }
 
 async function sendChat() {
@@ -316,6 +316,7 @@ async function sendChat() {
     const history = chatMsgs.slice(-20).map(m => ({ role: m.role === "user" ? "user" : "assistant", content: m.content }));
     const body = { message: text || "I've attached a file for you to review.", history };
     if (files.length) {
+      if (!state.user) { openAuth("signup"); chatLoading = false; chatFiles = files; renderChat(); return; }
       const formData = new FormData();
       formData.append("message", body.message);
       formData.append("history", JSON.stringify(body.history));
@@ -325,8 +326,13 @@ async function sendChat() {
         headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
         body: formData,
       });
-      const data = await res.json();
-      chatMsgs.push({ role: "bot", content: data.response || data.message || "I'm not sure how to respond." });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        chatMsgs.push({ role: "bot", content: err.detail || "Upload failed. Please try again." });
+      } else {
+        const data = await res.json();
+        chatMsgs.push({ role: "bot", content: data.response || data.message || "I'm not sure how to respond." });
+      }
     } else {
       const res = await fetch(`${API}/chat`, {
         method: "POST", headers: { "Content-Type": "application/json", ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}) },
