@@ -47,19 +47,21 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
   return (
     <div className="bg-background text-foreground overflow-x-hidden">
       {/* ── Hero ── */}
-      <section className="relative px-6 pt-28 pb-20 md:pt-36 md:pb-28 brand-dot-bg">
+      <section className="relative min-h-[90vh] flex items-center px-6 pt-24 pb-20 md:pt-32 md:pb-28 brand-dot-bg">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] rounded-full"
-            style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.08), transparent 70%)", filter: "blur(100px)" }} />
-          <div className="absolute -bottom-1/4 -right-1/4 w-[600px] h-[600px] rounded-full"
-            style={{ background: "radial-gradient(circle, hsl(188 95% 43% / 0.06), transparent 70%)", filter: "blur(80px)" }} />
+          <div className="absolute -top-1/3 -left-1/4 w-[900px] h-[900px] rounded-full animate-float"
+            style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.1), transparent 70%)", filter: "blur(120px)" }} />
+          <div className="absolute -bottom-1/3 -right-1/4 w-[700px] h-[700px] rounded-full animate-float"
+            style={{ background: "radial-gradient(circle, hsl(188 95% 43% / 0.08), transparent 70%)", filter: "blur(100px)", animationDelay: "2s" }} />
+          <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] rounded-full animate-float"
+            style={{ background: "radial-gradient(circle, hsl(250 95% 66% / 0.06), transparent 70%)", filter: "blur(80px)", animationDelay: "4s" }} />
           <div className="absolute inset-0 opacity-[0.015]"
-            style={{ backgroundImage: "radial-gradient(circle, hsl(173 80% 36%) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+            style={{ backgroundImage: "radial-gradient(circle, hsl(173 80% 36%) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-sm mb-6 border border-border bg-card/60">
+        <div className="relative z-10 max-w-5xl mx-auto w-full">
+          <div className="max-w-3xl animate-in-up">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-sm mb-8 border border-border glass-subtle">
               <Logo size="sm" showText={false} />
               <span className="text-muted-foreground">Powered by Mendly AI</span>
             </div>
@@ -87,13 +89,13 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
 
             <div className="flex flex-wrap items-center gap-4">
               <button onClick={() => { setAuthMode("signup"); setAuthModalOpen(true); }}
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-base font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97]"
-                style={{ background: "var(--gradient-1)", boxShadow: "0 4px 24px hsl(173 80% 36% / 0.3)" }}>
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97] animate-pulse-glow"
+                style={{ background: "var(--gradient-1)" }}>
                 Get Started Free <ArrowRight />
               </button>
               <button onClick={() => { setAuthMode("login"); setAuthModalOpen(true); }}
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }}>
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97] bg-card border-border"
+                style={{ color: "hsl(var(--foreground))" }}>
                 Sign In
               </button>
             </div>
@@ -110,7 +112,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       {/* ── Features ── */}
       <section id="features" className="px-6 py-20 md:py-28">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-in-up">
             <span className="inline-block text-xs font-semibold tracking-widest uppercase mb-4 text-primary">Features</span>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight">
               Everything you need for{" "}
@@ -121,12 +123,12 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {features.map((f) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((f, i) => (
               <div key={f.title}
-                className="group relative p-6 rounded-2xl border border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/25"
-                style={{ background: "hsl(var(--card) / 0.5)" }}>
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                className="group relative p-7 rounded-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg glass-card"
+                style={{ animation: `fade-in 0.5s ease ${i * 0.1}s both` }}>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
                   style={{ background: "hsl(173 80% 36% / 0.1)", color: "hsl(var(--primary))" }}>
                   <FeatureIcon icon={f.icon} />
                 </div>
@@ -139,9 +141,9 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       </section>
 
       {/* ── How It Works ── */}
-      <section className="px-6 py-20 md:py-28">
+      <section className="px-6 py-20 md:py-28 brand-dot-bg">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-in-up">
             <span className="inline-block text-xs font-semibold tracking-widest uppercase mb-4 text-primary">How It Works</span>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight text-foreground">
               Three simple steps
@@ -152,16 +154,20 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
           </div>
 
           <div className="relative">
-            <div className="absolute left-8 top-0 bottom-0 w-px hidden md:block" style={{ background: "hsl(var(--border))" }} />
+            <div className="absolute left-8 top-0 bottom-0 w-0.5 hidden md:block"
+              style={{ background: "linear-gradient(180deg, hsl(173 80% 36% / 0.4), hsl(173 80% 36% / 0.05))" }} />
             <div className="flex flex-col gap-8">
               {steps.map((step, i) => (
-                <div key={step.num} className="relative flex items-start gap-6 md:gap-8">
-                  <div className="relative z-10 hidden md:flex w-16 h-16 rounded-2xl items-center justify-center font-bold text-lg text-white shrink-0"
-                    style={{ background: "var(--gradient-1)", boxShadow: i === 0 ? "0 0 0 4px hsl(173 80% 36% / 0.2)" : undefined }}>
+                <div key={step.num} className="relative flex items-start gap-6 md:gap-8 animate-in-up"
+                  style={{ animationDelay: `${i * 0.15}s` }}>
+                  <div className="relative z-10 hidden md:flex w-16 h-16 rounded-2xl items-center justify-center font-bold text-lg text-white shrink-0 shadow-lg"
+                    style={{
+                      background: "var(--gradient-1)",
+                      boxShadow: "0 0 0 4px hsl(173 80% 36% / 0.15), 0 8px 32px hsl(173 80% 36% / 0.2)",
+                    }}>
                     {step.num}
                   </div>
-                  <div className="flex-1 p-6 rounded-2xl border border-border transition-all duration-300"
-                    style={{ background: "hsl(var(--card) / 0.5)" }}>
+                  <div className="flex-1 p-7 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg glass-card">
                     <span className="md:hidden inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold text-white mr-3 mb-3"
                       style={{ background: "var(--gradient-1)" }}>{step.num}</span>
                     <h3 className="text-lg font-semibold mb-1.5 text-foreground">{step.title}</h3>
@@ -176,23 +182,27 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
 
       {/* ── CTA ── */}
       <section className="px-6 py-20 md:py-28">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="p-10 md:p-14 rounded-3xl border border-border relative overflow-hidden"
-            style={{ background: "hsl(var(--card) / 0.6)" }}>
-            <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.1), transparent 70%)", filter: "blur(50px)" }} />
-            <div className="relative z-10">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight text-foreground">
-                Ready to take control?
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-lg mx-auto mb-8">
-                Join Mendly today and start making smarter health decisions with AI-powered guidance.
-              </p>
-              <button onClick={() => { setAuthMode("signup"); setAuthModalOpen(true); }}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97]"
-                style={{ background: "var(--gradient-1)", boxShadow: "0 4px 24px hsl(173 80% 36% / 0.3)" }}>
-                Get Started Free <ArrowRight />
-              </button>
+        <div className="max-w-3xl mx-auto text-center animate-in-up">
+          <div className="gradient-border p-0">
+            <div className="p-12 md:p-16 rounded-2xl relative overflow-hidden"
+              style={{ background: "hsl(var(--card) / 0.6)" }}>
+              <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.1), transparent 70%)", filter: "blur(50px)" }} />
+              <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, hsl(188 95% 43% / 0.08), transparent 70%)", filter: "blur(50px)" }} />
+              <div className="relative z-10">
+                <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight text-foreground">
+                  Ready to take control?
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-lg mx-auto mb-8">
+                  Join Mendly today and start making smarter health decisions with AI-powered guidance.
+                </p>
+                <button onClick={() => { setAuthMode("signup"); setAuthModalOpen(true); }}
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.97] animate-pulse-glow"
+                  style={{ background: "var(--gradient-1)" }}>
+                  Get Started Free <ArrowRight />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -201,8 +211,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       {/* ── Footer ── */}
       <footer className="border-t border-border px-6 py-12">
         <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
-              <Logo size="md" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
+            <Logo size="md" />
             <div className="flex items-center gap-6 text-sm">
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Terms</a>

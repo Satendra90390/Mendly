@@ -44,12 +44,8 @@ function SvgIcon({ name, className = "w-5 h-5", style }: { name: string; classNa
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 21h18" />
           <path d="M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16" />
-          <path d="M9 7h1" />
-          <path d="M9 10h1" />
-          <path d="M9 13h1" />
-          <path d="M14 7h1" />
-          <path d="M14 10h1" />
-          <path d="M14 13h1" />
+          <path d="M9 7h1" /><path d="M9 10h1" /><path d="M9 13h1" />
+          <path d="M14 7h1" /><path d="M14 10h1" /><path d="M14 13h1" />
           <path d="M10 21v-4a2 2 0 014 0v4" />
         </svg>
       );
@@ -57,10 +53,7 @@ function SvgIcon({ name, className = "w-5 h-5", style }: { name: string; classNa
       return (
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="6" y="3" width="12" height="18" rx="1" />
-          <path d="M9 3v3h6V3" />
-          <path d="M9 10h6" />
-          <path d="M12 7v6" />
-          <path d="M9 16h6" />
+          <path d="M9 3v3h6V3" /><path d="M9 10h6" /><path d="M12 7v6" /><path d="M9 16h6" />
         </svg>
       );
     case "chat":
@@ -72,54 +65,40 @@ function SvgIcon({ name, className = "w-5 h-5", style }: { name: string; classNa
     case "search":
       return (
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
+          <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
         </svg>
       );
     case "robot":
       return (
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="6" y="8" width="12" height="12" rx="2" />
-          <circle cx="10" cy="12" r="1.5" />
-          <circle cx="14" cy="12" r="1.5" />
-          <path d="M10 16h4" />
-          <path d="M12 4v4" />
-          <path d="M8 4h8" />
+          <circle cx="10" cy="12" r="1.5" /><circle cx="14" cy="12" r="1.5" />
+          <path d="M10 16h4" /><path d="M12 4v4" /><path d="M8 4h8" />
         </svg>
       );
     case "location":
       return (
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-          <circle cx="12" cy="10" r="3" />
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
         </svg>
       );
     case "ambulance":
       return (
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M2 7h20v10H2z" />
-          <path d="M9 12V9" />
-          <path d="M7.5 10.5h3" />
-          <path d="M15 10h2" />
-          <circle cx="6" cy="17" r="2" />
-          <circle cx="18" cy="17" r="2" />
-          <path d="M22 12h-2l-3-5H8" />
+          <path d="M2 7h20v10H2z" /><path d="M9 12V9" /><path d="M7.5 10.5h3" /><path d="M15 10h2" />
+          <circle cx="6" cy="17" r="2" /><circle cx="18" cy="17" r="2" /><path d="M22 12h-2l-3-5H8" />
         </svg>
       );
     case "notes":
       return (
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 4h16v16H4z" />
-          <path d="M8 8h8" />
-          <path d="M8 12h8" />
-          <path d="M8 16h5" />
+          <path d="M4 4h16v16H4z" /><path d="M8 8h8" /><path d="M8 12h8" /><path d="M8 16h5" />
         </svg>
       );
     case "lightbulb":
       return (
         <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18h6" />
-          <path d="M10 22h4" />
+          <path d="M9 18h6" /><path d="M10 22h4" />
           <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 008.91 14" />
         </svg>
       );
@@ -159,11 +138,7 @@ export default function DashboardPage() {
   const { user, authFetch } = useAuth();
   const [tip, setTip] = useState(FALLBACK_TIP);
   const [counts, setCounts] = useState<Counts>({
-    medicines: 0,
-    conditions: 0,
-    hospitals: 0,
-    pharmacies: 0,
-    messages: 0,
+    medicines: 0, conditions: 0, hospitals: 0, pharmacies: 0, messages: 0,
   });
   const [countsLoading, setCountsLoading] = useState(true);
 
@@ -211,18 +186,13 @@ export default function DashboardPage() {
           const key = endpoints[i][0];
           if (result.status === "fulfilled" && result.value) {
             const d = result.value;
-            if (Array.isArray(d)) {
-              next[key] = d.length;
-            } else if (typeof d === "object") {
-              next[key] = d.count ?? d.total ?? d.results?.length ?? 0;
-            }
+            if (Array.isArray(d)) next[key] = d.length;
+            else if (typeof d === "object") next[key] = d.count ?? d.total ?? d.results?.length ?? 0;
           }
         });
 
         if (!cancelled) setCounts(next);
-      } catch {
-        // keep defaults
-      }
+      } catch { /* keep defaults */ }
       if (!cancelled) setCountsLoading(false);
     }
 
@@ -235,17 +205,15 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-5 lg:px-8 py-10 space-y-10 flex-1">
 
         {/* ── Greeting Card ── */}
-        <section className="relative rounded-2xl overflow-hidden p-8 sm:p-10 bg-card border-border">
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              opacity: 0.25,
-              background:
-                "radial-gradient(ellipse at 20% 50%, hsl(173 80% 36% / 0.18) 0%, transparent 50%)," +
-                "radial-gradient(ellipse at 80% 20%, hsl(250 88% 66% / 0.12) 0%, transparent 50%)",
-            }}
-          />
-          <div className="relative z-10">
+        <section className="relative rounded-2xl overflow-hidden p-8 sm:p-10 bg-card border-border brand-stripe">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 right-0 w-[400px] h-[400px]"
+              style={{
+                background: "radial-gradient(circle, hsl(173 80% 36% / 0.08), transparent 70%)",
+                filter: "blur(60px)",
+              }} />
+          </div>
+          <div className="relative z-10 pl-2">
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
               {greeting}, {firstName} 👋
             </h1>
@@ -253,20 +221,14 @@ export default function DashboardPage() {
               Welcome back to your health dashboard.
             </p>
 
-            {/* Health Tip */}
-            <div
-              className="mt-6 rounded-xl px-5 py-4 flex items-start gap-3"
+            <div className="mt-6 rounded-xl px-5 py-4 flex items-start gap-3"
               style={{
-                background: "hsl(173 80% 36% / 0.08)",
-                border: "1px solid hsl(173 80% 36% / 0.15)",
-              }}
-            >
+                background: "hsl(173 80% 36% / 0.06)",
+                border: "1px solid hsl(173 80% 36% / 0.12)",
+              }}>
               <SvgIcon name="lightbulb" className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#14B8A6" }} />
               <div>
-                <span
-                  className="text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: "#14B8A6" }}
-                >
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#14B8A6" }}>
                   Health Tip
                 </span>
                 <p className="text-sm mt-1.5 leading-relaxed text-muted-foreground">
@@ -282,7 +244,7 @@ export default function DashboardPage() {
           {STAT_CARDS.map((stat) => (
             <div
               key={stat.key}
-              className="rounded-xl p-5 sm:p-6 flex flex-col gap-3 cursor-default bg-card border-border card-hover"
+              className="rounded-xl p-5 sm:p-6 flex flex-col gap-3 cursor-default card-hover glass-card"
             >
               <div
                 className="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -292,18 +254,11 @@ export default function DashboardPage() {
               </div>
               <div>
                 {countsLoading ? (
-                  <div
-                    className="h-8 w-14 rounded-md animate-pulse"
-                    style={{ background: "hsl(var(--muted))" }}
-                  />
+                  <div className="h-8 w-14 rounded-md animate-pulse" style={{ background: "hsl(var(--muted))" }} />
                 ) : (
-                  <span className="text-3xl font-bold text-foreground">
-                    {counts[stat.key]}
-                  </span>
+                  <span className="text-3xl font-bold text-foreground">{counts[stat.key]}</span>
                 )}
-                <p className="text-sm mt-1 text-muted-foreground/60">
-                  {stat.label}
-                </p>
+                <p className="text-sm mt-1 text-muted-foreground/60">{stat.label}</p>
               </div>
             </div>
           ))}
@@ -311,15 +266,13 @@ export default function DashboardPage() {
 
         {/* ── Quick Actions ── */}
         <section>
-          <h2 className="text-xl font-semibold mb-5 text-foreground">
-            Quick Actions
-          </h2>
+          <h2 className="text-xl font-semibold mb-5 text-foreground">Quick Actions</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {QUICK_ACTIONS.map((action) => (
               <Link
                 key={action.href}
                 to={action.href}
-                className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:scale-[1.03] hover:shadow-lg group bg-card border-border"
+                className="flex flex-col items-center gap-4 rounded-xl px-4 py-6 text-center transition-all duration-200 hover:-translate-y-1 hover:shadow-lg glass-card"
               >
                 <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
@@ -337,44 +290,30 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="mt-auto pb-24 lg:pb-0 bg-card border-t border-border">
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-
-            {/* Brand */}
+      <footer className="mt-auto border-t border-border bg-card/50">
+        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             <div>
               <Link to="/dashboard"><Logo /></Link>
-              <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                Your AI-powered medical assistant for medicines, drug interactions, and nearby
-                healthcare facilities.
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                Your AI-powered medical assistant for medicines, drug interactions, and nearby healthcare facilities.
               </p>
             </div>
-
-            {/* Quick Links */}
             <div>
-              <h3 className="text-sm font-semibold mb-5 uppercase tracking-wider text-foreground">
-                Quick Links
-              </h3>
-              <ul className="space-y-3.5">
+              <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-foreground">Quick Links</h3>
+              <ul className="space-y-3">
                 {NAV_LINKS.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm transition-colors hover:text-teal-400 text-muted-foreground"
-                    >
+                    <Link to={link.href} className="text-sm transition-colors hover:text-teal-400 text-muted-foreground">
                       {link.label}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
-
-            {/* Resources */}
             <div>
-              <h3 className="text-sm font-semibold mb-5 uppercase tracking-wider text-foreground">
-                Resources
-              </h3>
-              <ul className="space-y-3.5">
+              <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-foreground">Resources</h3>
+              <ul className="space-y-3">
                 {[
                   { label: "AI Chat (Elix)", href: "/chatbot" },
                   { label: "Pharmacies", href: "/pharmacies" },
@@ -382,56 +321,26 @@ export default function DashboardPage() {
                   { label: "Saved Items", href: "/saved" },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm transition-colors hover:text-teal-400 text-muted-foreground"
-                    >
+                    <Link to={link.href} className="text-sm transition-colors hover:text-teal-400 text-muted-foreground">
                       {link.label}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
-
-            {/* Disclaimer */}
             <div>
-              <h3 className="text-sm font-semibold mb-5 uppercase tracking-wider text-foreground">
-                Medical Disclaimer
-              </h3>
+              <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-foreground">Medical Disclaimer</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Mendly provides health information for educational purposes only and is not a
-                substitute for professional medical advice, diagnosis, or treatment. Always consult a
-                qualified healthcare provider.
+                Mendly provides health information for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider.
               </p>
             </div>
           </div>
-
-          {/* Copyright */}
-          <div
-            className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border"
-          >
-            <p className="text-sm text-muted-foreground/60">
-              &copy; {new Date().getFullYear()} Mendly. All rights reserved.
-            </p>
+          <div className="mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border">
+            <p className="text-sm text-muted-foreground/60">&copy; {new Date().getFullYear()} Mendly. All rights reserved.</p>
             <div className="flex items-center gap-6">
-              <Link
-                to="/account"
-                className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60"
-              >
-                Account
-              </Link>
-              <Link
-                to="/saved"
-                className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60"
-              >
-                Saved Items
-              </Link>
-              <Link
-                to="/pharmacies"
-                className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60"
-              >
-                Pharmacies
-              </Link>
+              <Link to="/account" className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60">Account</Link>
+              <Link to="/saved" className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60">Saved Items</Link>
+              <Link to="/pharmacies" className="text-sm transition-colors hover:text-teal-400 text-muted-foreground/60">Pharmacies</Link>
             </div>
           </div>
         </div>

@@ -47,7 +47,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-2xl border-b border-border">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border glass" style={{ borderRadius: 0 }}>
         <div className="relative">
           <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-teal-400/60 to-transparent" />
           <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-5 lg:px-8">

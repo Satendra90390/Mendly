@@ -165,25 +165,31 @@ export default function ChatbotPage() {
 
   return (
     <div className="flex flex-col h-[100dvh] bg-background text-foreground">
-      <header className="flex items-center justify-between px-4 py-3 shrink-0 glass border-b border-border">
+      <header className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-border"
+        style={{ background: "hsl(var(--card) / 0.6)", backdropFilter: "blur(20px)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "var(--gradient-1)", boxShadow: "0 0 18px hsl(173 80% 36% / 0.3)" }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ background: "var(--gradient-1)", boxShadow: "0 0 18px hsl(173 80% 36% / 0.3)" }}>
             <RobotIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-base font-semibold tracking-tight text-foreground">Elix AI</h1>
-            <p className="text-xs flex items-center gap-1" style={{ color: "hsl(173 80% 60%)" }}>
-              <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse" style={{ background: "#34D399" }} />
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-semibold tracking-tight text-foreground">Elix AI</h1>
+              <span className="px-2 py-0.5 text-[10px] font-medium rounded-full"
+                style={{ background: "hsl(173 80% 36% / 0.1)", color: "hsl(173 80% 50%)" }}>
+                Beta
+              </span>
+            </div>
+            <p className="text-xs flex items-center gap-1.5" style={{ color: "hsl(173 80% 60%)" }}>
+              <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: "#34D399" }} />
               Online
             </p>
           </div>
         </div>
         {messages.length > 0 && (
-          <button
-            onClick={clearChat}
-            className="p-2 rounded-lg transition-all hover:bg-muted hover:text-foreground"
-            style={{ color: "hsl(var(--muted-foreground))" }}
-          >
+          <button onClick={clearChat}
+            className="p-2 rounded-lg transition-all hover:bg-muted"
+            style={{ color: "hsl(var(--muted-foreground))" }}>
             <TrashIcon className="w-4 h-4" />
           </button>
         )}
@@ -192,8 +198,9 @@ export default function ChatbotPage() {
       <div className="flex-1 overflow-y-auto chat-scrollbar px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-5">
           {messages.length === 0 && !isStreaming && (
-            <div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6 text-center">
-              <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: "var(--gradient-1)", boxShadow: "0 0 40px hsl(173 80% 36% / 0.25)" }}>
+            <div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6 text-center animate-in">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center"
+                style={{ background: "var(--gradient-1)", boxShadow: "0 0 40px hsl(173 80% 36% / 0.2)" }}>
                 <StethoscopeIcon className="w-10 h-10 text-white" />
               </div>
               <div>
@@ -202,11 +209,8 @@ export default function ChatbotPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg mt-2">
                 {QUICK_SUGGESTIONS.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    onClick={() => sendMessage(suggestion)}
-                    className="text-left text-sm px-4 py-3 rounded-xl transition-all bg-card border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-muted"
-                  >
+                  <button key={suggestion} onClick={() => sendMessage(suggestion)}
+                    className="text-left text-sm px-4 py-3 rounded-xl transition-all glass-card text-muted-foreground hover:text-foreground">
                     <BoltIcon className="w-3.5 h-3.5 inline mr-2" style={{ color: "hsl(173 80% 60%)" }} />
                     {suggestion}
                   </button>
@@ -216,41 +220,40 @@ export default function ChatbotPage() {
           )}
 
           {messages.map((msg) => (
-            <div key={msg.id} className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+            <div key={msg.id} className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"} animate-in`}>
               {msg.role === "assistant" && (
-                <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center mt-1" style={{ background: "var(--gradient-1)", boxShadow: "0 0 14px hsl(173 80% 36% / 0.25)" }}>
+                <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center mt-1"
+                  style={{ background: "var(--gradient-1)", boxShadow: "0 0 14px hsl(173 80% 36% / 0.2)" }}>
                   <ChatIcon className="w-4 h-4 text-white" />
                 </div>
               )}
               <div className={`max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"} flex flex-col`}>
-                <div
-                  className={`px-4 py-3 text-sm leading-relaxed ${
-                    msg.role === "user"
-                      ? "text-white rounded-2xl rounded-tr-md"
-                      : "rounded-2xl rounded-tl-md"
-                  }`}
+                <div className={`px-4 py-3 text-sm leading-relaxed ${
+                  msg.role === "user"
+                    ? "text-white rounded-2xl rounded-tr-md"
+                    : "rounded-2xl rounded-tl-md"
+                }`}
                   style={msg.role === "user"
-                    ? { background: "var(--gradient-1)" }
+                    ? { background: "var(--gradient-1)", boxShadow: "0 4px 16px hsl(173 80% 36% / 0.2)" }
                     : { background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }
-                  }
-                >
+                  }>
                   {msg.role === "assistant" ? (
                     <div className="bot-msg" dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
-                  ) : (
-                    msg.content
-                  )}
+                  ) : msg.content}
                 </div>
-                <span className="text-[10px] mt-1 px-1" style={{ color: "hsl(var(--muted-foreground) / 0.6)" }}>{formatTime(msg.timestamp)}</span>
+                <span className="text-[10px] mt-1 px-1 text-muted-foreground/40">{formatTime(msg.timestamp)}</span>
               </div>
             </div>
           ))}
 
           {isStreaming && !streamingContent && (
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center" style={{ background: "var(--gradient-1)", boxShadow: "0 0 14px hsl(173 80% 36% / 0.25)" }}>
+            <div className="flex gap-3 animate-in">
+              <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center"
+                style={{ background: "var(--gradient-1)", boxShadow: "0 0 14px hsl(173 80% 36% / 0.2)" }}>
                 <ChatIcon className="w-4 h-4 text-white" />
               </div>
-              <div className="px-4 py-3 rounded-2xl rounded-tl-md flex items-center gap-1.5 h-10" style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
+              <div className="px-4 py-3 rounded-2xl rounded-tl-md flex items-center gap-1.5 h-10"
+                style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
                 <span className="typing-dot w-2 h-2 rounded-full inline-block" style={{ background: "hsl(173 80% 50%)" }} />
                 <span className="typing-dot w-2 h-2 rounded-full inline-block" style={{ background: "hsl(173 80% 50%)" }} />
                 <span className="typing-dot w-2 h-2 rounded-full inline-block" style={{ background: "hsl(173 80% 50%)" }} />
@@ -259,11 +262,13 @@ export default function ChatbotPage() {
           )}
 
           {isStreaming && streamingContent && (
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center" style={{ background: "var(--gradient-1)", boxShadow: "0 0 14px hsl(173 80% 36% / 0.25)" }}>
+            <div className="flex gap-3 animate-in">
+              <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center"
+                style={{ background: "var(--gradient-1)", boxShadow: "0 0 14px hsl(173 80% 36% / 0.2)" }}>
                 <ChatIcon className="w-4 h-4 text-white" />
               </div>
-              <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tl-md text-sm leading-relaxed" style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }}>
+              <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tl-md text-sm leading-relaxed"
+                style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }}>
                 <div className="bot-msg" dangerouslySetInnerHTML={{ __html: renderMarkdown(streamingContent) }} />
                 <span className="inline-block w-0.5 h-4 ml-0.5 animate-pulse align-text-bottom" style={{ background: "hsl(var(--primary))" }} />
               </div>
@@ -274,38 +279,33 @@ export default function ChatbotPage() {
         </div>
       </div>
 
-      <div className="shrink-0 px-4 py-3 glass border-t border-border">
+      <div className="shrink-0 px-4 py-3 border-t border-border"
+        style={{ background: "hsl(var(--card) / 0.6)", backdropFilter: "blur(20px)" }}>
         <div className="max-w-3xl mx-auto">
           {messages.length === 0 && (
             <div className="flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
               {QUICK_SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => sendMessage(s)}
-                  className="whitespace-nowrap text-xs px-3 py-1.5 rounded-full transition-all shrink-0 bg-card border border-border text-muted-foreground hover:border-primary/25 hover:text-foreground hover:bg-muted"
-                >
+                <button key={s} onClick={() => sendMessage(s)}
+                  className="whitespace-nowrap text-xs px-3 py-1.5 rounded-full transition-all shrink-0 glass-card text-muted-foreground hover:text-foreground">
                   {s}
                 </button>
               ))}
             </div>
           )}
           <div className="flex items-end gap-2">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask Elix AI anything..."
-              rows={1}
-              className="flex-1 rounded-xl px-4 py-3 text-sm outline-none resize-none max-h-40 transition-colors bg-card border-border text-foreground focus:border-ring focus:shadow-[0_0_0_3px_hsl(173_80%_36%/0.15)]"
-              style={{ border: "1px solid hsl(var(--input))" }}
-            />
-            <button
-              onClick={() => sendMessage()}
+            <textarea ref={textareaRef} value={input}
+              onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
+              placeholder="Ask Elix AI anything..." rows={1}
+              className="flex-1 rounded-xl px-4 py-3 text-sm outline-none resize-none max-h-40 transition-all"
+              style={{
+                background: "hsl(var(--card))",
+                border: "1px solid hsl(var(--input))",
+                color: "hsl(var(--foreground))",
+              }} />
+            <button onClick={() => sendMessage()}
               disabled={!input.trim() || isStreaming}
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 hover:shadow-[0_0_18px_hsl(173_80%_36%/0.35)]"
-              style={{ background: "var(--gradient-1)" }}
-            >
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
+              style={{ background: "var(--gradient-1)", boxShadow: "0 4px 16px hsl(173 80% 36% / 0.25)" }}>
               <SendIcon className="w-4 h-4 text-white" />
             </button>
           </div>

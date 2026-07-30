@@ -12,37 +12,20 @@ export default function MobileNav() {
   const pathname = useLocation().pathname;
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)] border-t border-border"
-      style={{
-        background: "hsl(var(--card) / 0.7)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-      }}
-    >
+    <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom)] border-t border-border glass"
+      style={{ borderRadius: 0 }}>
       <div className="flex items-center justify-around h-18 max-w-lg mx-auto">
         {TABS.map((tab) => {
           const active = pathname.startsWith(tab.href);
           return (
-            <Link
-              key={tab.href}
-              to={tab.href}
+            <Link key={tab.href} to={tab.href}
               className="flex flex-col items-center gap-1.5 min-w-[60px] py-2.5 rounded-xl transition-all duration-200"
-              style={{
-                color: active ? "hsl(var(--primary))" : "hsl(var(--muted-foreground) / 0.6)",
-              }}
-            >
-              <div
-                className="relative w-11 h-9 flex items-center justify-center rounded-xl transition-all duration-200"
-                style={{
-                  background: active ? "hsl(173 80% 36% / 0.12)" : "transparent",
-                }}
-              >
+              style={{ color: active ? "hsl(var(--primary))" : "hsl(var(--muted-foreground) / 0.6)" }}>
+              <div className="relative w-11 h-9 flex items-center justify-center rounded-xl transition-all duration-200"
+                style={{ background: active ? "hsl(173 80% 36% / 0.12)" : "transparent" }}>
                 {active && (
-                  <div
-                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full"
-                    style={{ background: "linear-gradient(135deg, hsl(173 80% 36%), hsl(188 95% 43%))" }}
-                  />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full"
+                    style={{ background: "var(--gradient-brand)" }} />
                 )}
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={active ? 2 : 1.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
