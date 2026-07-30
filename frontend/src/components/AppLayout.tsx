@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Outlet, useNavigate, Link } from "react-router-dom";
+import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/components/theme-provider";
 import MobileNav from "@/components/mobile-nav";
+import Logo from "@/components/Logo";
 
 function ChartIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>; }
 function RobotIcon() { return <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6v3.75m0 3v.75m-6-3.75H9m1.5-3h.75m0 0v3m0 0h-.75M12 3a9 9 0 00-9 9v2.25a9 9 0 0018 0V12a9 9 0 00-9-9z" /></svg>; }
@@ -27,6 +28,7 @@ export default function AppLayout() {
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -45,80 +47,79 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="fixed top-0 left-0 right-0 z-50 px-5 lg:px-8 glass border-b border-border">
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-16">
-          <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ background: "var(--gradient-1)" }}>M</div>
-            <span className="text-xl font-bold hidden sm:block text-foreground">Mendly</span>
-          </Link>
-
-          <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
-              const Icon = link.icon;
-              return (
-                <Link key={link.href} to={link.href}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-muted hover:text-foreground"
-                  style={{ color: "hsl(var(--muted-foreground))" }}>
-                  <Icon /> {link.label}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button onClick={toggle} className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-muted" style={{ color: "hsl(var(--muted-foreground))" }}>
-              {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-            </button>
-
-            <div className="relative" ref={dropdownRef}>
-              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 p-1.5 rounded-full transition-colors hover:bg-muted">
-                {user.profile_photo ? (
-                  <img src={user.profile_photo} alt="" className="w-9 h-9 rounded-full object-cover" />
-                ) : (
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: avatarBg }}>{userInitial}</div>
-                )}
-                <svg className="w-4 h-4 hidden sm:block transition-transform" style={{ color: "hsl(var(--muted-foreground))", transform: dropdownOpen ? "rotate(180deg)" : undefined }}
-                  fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                </svg>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-2xl border-b border-border">
+        <div className="relative">
+          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-teal-400/60 to-transparent" />
+          <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-5 lg:px-8">
+            <Link to="/dashboard">
+              <Logo />
+            </Link>
+            <div className="hidden lg:flex items-center gap-1">
+              {NAV_LINKS.map((link) => {
+                const Icon = link.icon;
+                const isActive = location.pathname.startsWith(link.href);
+                return (
+                  <Link key={link.href} to={link.href}
+                    className={`nav-link ${isActive ? "active" : ""}`}
+                    style={{ color: isActive ? undefined : "hsl(var(--muted-foreground))" }}>
+                    <Icon /> {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={toggle} className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-muted" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
               </button>
-
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-xl overflow-hidden py-1 animate-in shadow-lg" style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
-                  <div className="px-5 py-4 border-b border-border">
-                    <p className="text-sm font-semibold truncate text-foreground">{user.name}</p>
-                    <p className="text-xs truncate mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>{user.email}</p>
+              <div className="relative" ref={dropdownRef}>
+                <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 p-1.5 rounded-full transition-colors hover:bg-muted">
+                  {user.profile_photo ? (
+                    <img src={user.profile_photo} alt="" className="w-9 h-9 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: avatarBg }}>{userInitial}</div>
+                  )}
+                  <svg className="w-4 h-4 hidden sm:block transition-transform" style={{ color: "hsl(var(--muted-foreground))", transform: dropdownOpen ? "rotate(180deg)" : undefined }}
+                    fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-xl overflow-hidden py-1 animate-in shadow-lg border border-border" style={{ background: "hsl(var(--card))" }}>
+                    <div className="px-5 py-4 border-b border-border">
+                      <p className="text-sm font-semibold truncate text-foreground">{user.name}</p>
+                      <p className="text-xs truncate mt-0.5 text-muted">{user.email}</p>
+                    </div>
+                    <div className="py-1.5">
+                      {[
+                        { label: "Account", href: "/account", icon: "M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" },
+                        { label: "Saved Items", href: "/saved", icon: "M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" },
+                        { label: "Conditions", href: "/conditions", icon: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" },
+                      ].map((item) => (
+                        <Link key={item.href} to={item.href} onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-3 px-5 py-3 text-sm transition-colors hover:bg-muted hover:text-foreground"
+                          style={{ color: "hsl(var(--muted-foreground))" }}>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="border-t border-border py-1.5">
+                      <button onClick={() => { setDropdownOpen(false); logout(); navigate("/"); }}
+                        className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors hover:bg-destructive/10"
+                        style={{ color: "hsl(var(--destructive))" }}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                        Log out
+                      </button>
+                    </div>
                   </div>
-                  <div className="py-1.5">
-                    {[
-                      { label: "Account", href: "/account", icon: "M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" },
-                      { label: "Saved Items", href: "/saved", icon: "M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" },
-                      { label: "Conditions", href: "/conditions", icon: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" },
-                    ].map((item) => (
-                      <Link key={item.href} to={item.href} onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-5 py-3 text-sm transition-colors hover:bg-muted hover:text-foreground"
-                        style={{ color: "hsl(var(--muted-foreground))" }}>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="border-t border-border py-1.5">
-                    <button onClick={() => { setDropdownOpen(false); logout(); navigate("/"); }}
-                      className="flex items-center gap-3 w-full px-5 py-3 text-sm transition-colors hover:bg-[hsl(0_84%_60%/0.08)]"
-                      style={{ color: "hsl(var(--destructive))" }}>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
-                      Log out
-                    </button>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
       </nav>
 
-      <main className="pt-20 pb-24 lg:pb-0">
+      <main className="pt-20 pb-24 lg:pb-0 min-h-screen">
         <Outlet />
       </main>
 

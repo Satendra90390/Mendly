@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/config";
+import Logo from "@/components/Logo";
 
 interface AuthModalProps {
   mode: "login" | "signup";
@@ -180,13 +181,8 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
           }} />
 
           <div className="relative z-10 text-center px-8">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-8"
-              style={{
-                background: "hsl(173 80% 36% / 0.15)",
-                border: "1px solid hsl(173 80% 36% / 0.2)",
-                boxShadow: "0 8px 40px hsl(173 80% 36% / 0.12)",
-              }}>
-              <span className="text-5xl">💊</span>
+            <div className="inline-flex items-center justify-center mb-8">
+              <Logo size="lg" showText={false} />
             </div>
             <h2 className="text-3xl font-bold mb-3 gradient-text">
               Mendly
@@ -226,9 +222,8 @@ export default function AuthModal({ mode, onClose, onSwitch }: AuthModalProps) {
 
           <div className="flex-1 flex flex-col justify-center px-8 sm:px-12 py-10">
             <div className="lg:hidden text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-                style={{ background: "hsl(173 80% 36% / 0.15)", border: "1px solid hsl(173 80% 36% / 0.15)" }}>
-                <span className="text-3xl">💊</span>
+              <div className="inline-flex items-center justify-center mb-4">
+                <Logo size="md" showText={false} />
               </div>
             </div>
 

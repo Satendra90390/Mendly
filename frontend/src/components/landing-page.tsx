@@ -1,11 +1,7 @@
 import { useState } from "react";
 import AuthModal from "@/components/auth-modal";
+import Logo from "@/components/Logo";
 
-function Sparkles() { return (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-  </svg>
-); }
 function ArrowRight() { return (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -51,7 +47,7 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
   return (
     <div className="bg-background text-foreground overflow-x-hidden">
       {/* ── Hero ── */}
-      <section className="relative px-6 pt-28 pb-20 md:pt-36 md:pb-28">
+      <section className="relative px-6 pt-28 pb-20 md:pt-36 md:pb-28 brand-dot-bg">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] rounded-full"
             style={{ background: "radial-gradient(circle, hsl(173 80% 36% / 0.08), transparent 70%)", filter: "blur(100px)" }} />
@@ -63,10 +59,9 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
 
         <div className="relative z-10 max-w-5xl mx-auto">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm mb-6 border border-border"
-              style={{ background: "hsl(var(--card) / 0.6)" }}>
-              <Sparkles />
-              <span className="text-muted-foreground">Powered by Advanced AI</span>
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-sm mb-6 border border-border bg-card/60">
+              <Logo size="sm" showText={false} />
+              <span className="text-muted-foreground">Powered by Mendly AI</span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.05] mb-6 tracking-tight">
@@ -206,12 +201,8 @@ export default function LandingPage({ oauthError = "" }: { oauthError?: string }
       {/* ── Footer ── */}
       <footer className="border-t border-border px-6 py-12">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-                style={{ background: "var(--gradient-1)" }}>M</div>
-              <span className="text-lg font-bold text-foreground">Mendly</span>
-            </div>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
+              <Logo size="md" />
             <div className="flex items-center gap-6 text-sm">
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Terms</a>

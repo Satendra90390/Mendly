@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE } from "@/lib/config";
+import Logo from "@/components/Logo";
 
 interface Counts {
   medicines: number;
@@ -342,17 +343,7 @@ export default function DashboardPage() {
 
             {/* Brand */}
             <div>
-              <Link to="/dashboard" className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base"
-                  style={{ background: "var(--gradient-1)" }}
-                >
-                  M
-                </div>
-                <span className="text-xl font-bold text-foreground">
-                  Mendly
-                </span>
-              </Link>
+              <Link to="/dashboard"><Logo /></Link>
               <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
                 Your AI-powered medical assistant for medicines, drug interactions, and nearby
                 healthcare facilities.
