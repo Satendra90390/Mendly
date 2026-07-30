@@ -143,7 +143,7 @@ async function submitAuth() {
   const email = document.getElementById("auth-email").value;
   const pass = document.getElementById("auth-pass").value;
   const name = document.getElementById("auth-name")?.value;
-  if (!email || !pass) { document.getElementById("auth-error").textContent = "Please fill in all fields"; return; }
+  if (!email || !pass) { const e = document.getElementById("auth-error"); e.textContent = "Please fill in all fields"; e.classList.remove("hidden"); return; }
   document.getElementById("auth-error").textContent = "";
   const btn = document.getElementById("auth-submit"); btn.disabled = true; btn.textContent = "Loading...";
   try {
@@ -152,9 +152,9 @@ async function submitAuth() {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (!res.ok) { document.getElementById("auth-error").textContent = data.detail || "Something went wrong"; return; }
+    if (!res.ok) { const e = document.getElementById("auth-error"); e.textContent = data.detail || "Something went wrong"; e.classList.remove("hidden"); return; }
     login(data.access_token, data.user); closeAuth(); navigate("dashboard");
-  } catch { document.getElementById("auth-error").textContent = "Network error. Try again."; }
+  } catch { const e = document.getElementById("auth-error"); e.textContent = "Network error. Try again."; e.classList.remove("hidden"); }
   finally { btn.disabled = false; btn.textContent = authMode === "login" ? "Sign In" : "Create Account"; }
 }
 
@@ -253,8 +253,8 @@ function renderChat() {
     ? '<div class="chat-msg chat-bot"><div class="typing-dots"><span></span><span></span><span></span></div></div>'
     : "";
   const promptsHtml = chatMsgs.length <= 1 && !chatLoading
-    ? `<div class="chat-prompts">${CHAT_PROMPTS.map(p =>
-        `<button class="chat-prompt" onclick="document.getElementById('chat-input').value='${p}';sendChat()">${escapeHtml(p)}</button>`
+    ? `<div class="chat-prompts">${CHAT_PROMPTS.map((p, i) =>
+        `<button class="chat-prompt" onclick="setChatPrompt(${i})">${escapeHtml(p)}</button>`
       ).join("")}</div>`
     : "";
   const filePreview = chatFiles.length
@@ -270,7 +270,7 @@ function renderChat() {
       <div class="chat-input-wrap">
         <button class="chat-attach" onclick="triggerChatFileUpload()" title="Attach file" ${isGuest ? 'disabled' : ''}>📎</button>
         <input type="file" id="chat-file-input" multiple accept="image/*,.pdf,.txt,.doc,.docx" style="display:none" onchange="handleChatFiles(this.files)" />
-        <textarea id="chat-input" class="chat-input" rows="1" placeholder="${isGuest ? 'Sign up to upload files...' : 'Ask about symptoms, medicines...'}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" ${chatLoading ? "disabled" : ""}></textarea>
+        <textarea id="chat-input" class="chat-input" rows="1" placeholder="${isGuest ? 'Sign up to upload files...' : 'Ask about symptoms, medicines...'}" oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" ${chatLoading ? "disabled" : ""}></textarea>
         <button class="chat-send" id="chat-send" onclick="sendChat()" ${chatLoading ? "disabled" : ""}>➤</button>
       </div>
     </div>`;
@@ -291,6 +291,7 @@ function handleChatFiles(fileList) {
     if (f.size > 10 * 1024 * 1024) { alert(`${f.name} is too large (max 10MB)`); continue; }
     chatFiles.push(f);
   }
+  document.getElementById("chat-file-input").value = "";
   renderChat();
 }
 
@@ -300,7 +301,18 @@ function removeChatFile(idx) {
 }
 
 function escapeHtml(t) {
-  return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;").replace(/\n/g,"<br>");
+  if (t == null) return "";
+  return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;").replace(/\n/g,"<br>");
+}
+
+function setChatPrompt(idx) {
+  const input = document.getElementById("chat-input");
+  if (input) { input.value = CHAT_PROMPTS[idx] || ""; input.focus(); autoResize(input); }
+}
+
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 120) + "px";
 }
 
 async function sendChat() {
@@ -312,11 +324,12 @@ async function sendChat() {
   const userMsg = { role: "user", content: text || "(file attached)", files: files.length ? files.map(f => ({ name: f.name, type: f.type, size: f.size })) : undefined };
   chatMsgs.push(userMsg);
   input.value = ""; chatLoading = true; renderChat();
+  const safetyTimer = setTimeout(() => { if (chatLoading) { chatLoading = false; renderChat(); } }, 60000);
   try {
     const history = chatMsgs.slice(-20).map(m => ({ role: m.role === "user" ? "user" : "assistant", content: m.content }));
     const body = { message: text || "I've attached a file for you to review.", history };
     if (files.length) {
-      if (!state.user) { openAuth("signup"); chatLoading = false; chatFiles = files; renderChat(); return; }
+      if (!state.user) { openAuth("signup"); chatLoading = false; chatFiles = files; renderChat(); clearTimeout(safetyTimer); return; }
       const formData = new FormData();
       formData.append("message", body.message);
       formData.append("history", JSON.stringify(body.history));
@@ -331,17 +344,23 @@ async function sendChat() {
         chatMsgs.push({ role: "bot", content: err.detail || "Upload failed. Please try again." });
       } else {
         const data = await res.json();
-        chatMsgs.push({ role: "bot", content: data.response || data.message || "I'm not sure how to respond." });
+        chatMsgs.push({ role: "bot", content: data.response || data.reply || "I'm not sure how to respond." });
       }
     } else {
       const res = await fetch(`${API}/chat`, {
         method: "POST", headers: { "Content-Type": "application/json", ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}) },
         body: JSON.stringify(body),
       });
-      const data = await res.json();
-      chatMsgs.push({ role: "bot", content: data.response || data.message || "I'm not sure how to respond." });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        chatMsgs.push({ role: "bot", content: err.detail || "Failed to get response. Please try again." });
+      } else {
+        const data = await res.json();
+        chatMsgs.push({ role: "bot", content: data.response || data.reply || "I'm not sure how to respond." });
+      }
     }
   } catch { chatMsgs.push({ role: "bot", content: "Sorry, I'm having trouble connecting." }); }
+  clearTimeout(safetyTimer);
   chatLoading = false; renderChat();
 }
 
@@ -528,8 +547,8 @@ async function changePassword() {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ current_password: cur, new_password: nw }),
     });
-    if (!res.ok) { errEl.textContent = res.detail || "Failed to update password"; errEl.classList.remove("hidden"); return; }
-    alert("Password updated successfully");
+    if (res.status === "error" || res.detail) { errEl.textContent = res.detail || "Failed to update password"; errEl.classList.remove("hidden"); return; }
+    alert(res.message || "Password updated successfully");
     document.getElementById("pw-change-area").innerHTML = "";
   } catch { errEl.textContent = "Network error"; errEl.classList.remove("hidden"); }
 }
