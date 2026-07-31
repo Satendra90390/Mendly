@@ -534,17 +534,17 @@ async def delete_saved_search_route(item_id: str, current_user: dict = Depends(g
 # ============================================================
 
 demo_hospitals = [
-    {"name": "City General Hospital", "address": "123 Health Avenue, Downtown", "phone": "+91 9876543210", "distance": 1.2, "types": ["Hospital"], "available": True},
-    {"name": "Apollo Medical Center", "address": "456 Wellness Road, Medical District", "phone": "+91 9876543211", "distance": 2.5, "types": ["Hospital"], "available": True},
-    {"name": "MediHeal Clinic", "address": "789 Care Street, Central", "phone": "+91 9876543212", "distance": 1.8, "types": ["Clinic"], "available": True},
-    {"name": "National Institute of Health", "address": "321 Research Boulevard, West End", "phone": "+91 9876543213", "distance": 3.0, "types": ["Hospital"], "available": True},
+    {"name": "City General Hospital", "address": "123 Health Avenue, Downtown", "phone": "+91 9876543210", "distance": 1.2, "types": ["Hospital"], "available": True, "lat": 40.7580, "lng": -73.9855},
+    {"name": "Apollo Medical Center", "address": "456 Wellness Road, Medical District", "phone": "+91 9876543211", "distance": 2.5, "types": ["Hospital"], "available": True, "lat": 40.7505, "lng": -73.9934},
+    {"name": "MediHeal Clinic", "address": "789 Care Street, Central", "phone": "+91 9876543212", "distance": 1.8, "types": ["Clinic"], "available": True, "lat": 40.7614, "lng": -73.9776},
+    {"name": "National Institute of Health", "address": "321 Research Boulevard, West End", "phone": "+91 9876543213", "distance": 3.0, "types": ["Hospital"], "available": True, "lat": 40.7549, "lng": -73.9840},
 ]
 
 demo_pharmacies = [
-    {"name": "MediPharm Pharmacy", "address": "123 Health Avenue, Downtown", "phone": "+91 9876543220", "distance": 0.5, "services": ["Home Delivery"]},
-    {"name": "Wellness Drug Store", "address": "456 Wellness Road, Medical District", "phone": "+91 9876543221", "distance": 1.0, "services": ["Home Delivery"]},
-    {"name": "24-Hour Health Plus", "address": "789 Care Street, Central", "phone": "+91 9876543222", "distance": 1.5, "services": ["24/7 Service", "Home Delivery"]},
-    {"name": "GoodLife Medical Supplies", "address": "321 Research Boulevard, West End", "phone": "+91 9876543223", "distance": 2.0, "services": ["Medical Equipment"]},
+    {"name": "MediPharm Pharmacy", "address": "123 Health Avenue, Downtown", "phone": "+91 9876543220", "distance": 0.5, "services": ["Home Delivery"], "lat": 40.7580, "lng": -73.9855},
+    {"name": "Wellness Drug Store", "address": "456 Wellness Road, Medical District", "phone": "+91 9876543221", "distance": 1.0, "services": ["Home Delivery"], "lat": 40.7505, "lng": -73.9934},
+    {"name": "24-Hour Health Plus", "address": "789 Care Street, Central", "phone": "+91 9876543222", "distance": 1.5, "services": ["24/7 Service", "Home Delivery"], "lat": 40.7614, "lng": -73.9776},
+    {"name": "GoodLife Medical Supplies", "address": "321 Research Boulevard, West End", "phone": "+91 9876543223", "distance": 2.0, "services": ["Medical Equipment"], "lat": 40.7549, "lng": -73.9840},
 ]
 
 
@@ -731,6 +731,8 @@ async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int
                 "address": address, "phone": "N/A", "distance": round(distance, 1),
                 "types": [facility_type], "available": True, "services": ["Near you"],
                 "osm_value": osm_val,
+                "lat": float(item.get("lat", lat)),
+                "lng": float(item.get("lon", lng)),
             })
         places.sort(key=lambda x: x["distance"])
         return places[:25]

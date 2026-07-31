@@ -37,7 +37,7 @@ function loadState() {
   try { state.user = JSON.parse(localStorage.getItem("mendly_user")); } catch { state.user = null; }
   state.theme = localStorage.getItem("mendly_theme") || "light";
 }
-function login(token, user) { state.token = token; state.user = user; saveState(); }
+function login(token, user) { state.token = token; state.user = user; saveState(); resetChat(); }
 function logout() { state.token = null; state.user = null; saveState(); history.replaceState(null, "", "/"); render(); }
 
 /* ── Theme ── */
@@ -648,6 +648,12 @@ let chatMsgs = [{ role: "bot", content: "Hi! I'm Elix, your AI health companion.
 let chatLoading = false;
 let chatFiles = [];
 
+function resetChat() {
+  chatMsgs = [{ role: "bot", content: "Hello! I'm Elix, your AI health companion. How can I assist you today?" }];
+  chatFiles = [];
+  chatLoading = false;
+}
+
 const CHAT_PROMPTS = [
   "What are the side effects of lisinopril?",
   "Find a pharmacy near downtown",
@@ -867,18 +873,19 @@ async function fetchMedicalPlaces(body, el, context) {
       return;
     }
     el.innerHTML = `<div class="search-count">${items.length} result${items.length !== 1 ? "s" : ""} found</div>` +
-      items.map(i => `
-        <div class="result-card">
-          <div class="result-card-header">
-            <h3>${escapeHtml(i.name)}</h3>
-            ${i.distance !== null && i.distance !== undefined
-              ? `<span class="result-distance">${i.distance} km</span>`
-              : ""}
-          </div>
-          ${i.types?.length ? `<div class="result-types">${i.types.map(t => `<span class="result-type-badge">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
-          ${i.address ? `<p>📍 ${escapeHtml(i.address)}</p>` : ""}
-          ${i.phone   ? `<p>📞 <a href="tel:${i.phone}" style="color:var(--primary);font-weight:600">${escapeHtml(i.phone)}</a></p>` : ""}
-        </div>`).join("");
+       items.map(i => `
+         <div class="result-card">
+           <div class="result-card-header">
+             <h3>${escapeHtml(i.name)}</h3>
+             ${i.distance !== null && i.distance !== undefined
+               ? `<span class="result-distance">${i.distance} km</span>`
+               : ""}
+           </div>
+           ${i.types?.length ? `<div class="result-types">${i.types.map(t => `<span class="result-type-badge">${escapeHtml(t)}</span>').join("")}</div>` : ""}
+           ${i.address ? `<p>📍 ${escapeHtml(i.address)}</p>` : ""}
+           ${i.phone   ? `<p>📞 <a href="tel:${i.phone}" style="color:var(--primary);font-weight:600">${escapeHtml(i.phone)}</a></p>` : ""}
+           ${(i.lat && i.lng) ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${i.lat},${i.lng}" target="_blank" class="result-directions">🗺️ Get Directions</a>` : ""}
+         </div>`).join("");
   } catch { el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Error fetching results. Please check your connection.</p></div>'; }
 }
 
