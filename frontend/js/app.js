@@ -330,7 +330,7 @@ function renderAuthModal() {
         <div id="auth-error" class="form-error hidden"></div>
         ${authMode === "signup" ? `<div class="form-group"><input id="auth-name" class="form-input" placeholder="Full Name" autocomplete="name" /></div>` : ""}
         <div class="form-group"><input id="auth-email" class="form-input" type="email" placeholder="Email address" autocomplete="email" /></div>
-        <div class="form-group"><input id="auth-pass" class="form-input" type="password" placeholder="Password" autocomplete="${authMode==="login"?"current":"new"}-password" /></div>
+        <div class="form-group"><input id="auth-pass" class="form-input" type="password" placeholder="Password (min 6 characters)" minlength="6" autocomplete="${authMode==="login"?"current":"new"}-password" /></div>
         <button id="auth-submit" class="form-submit" onclick="submitAuth()">
           ${authMode === "login" ? "Sign In" : "Create Account"}
         </button>
@@ -354,6 +354,7 @@ async function submitAuth() {
   const errEl = document.getElementById("auth-error");
   errEl.classList.add("hidden"); errEl.textContent = "";
   if (!email || !pass) { errEl.textContent = "Please fill in all fields."; errEl.classList.remove("hidden"); return; }
+  if (authMode === "signup" && pass.length < 6) { errEl.textContent = "Password must be at least 6 characters."; errEl.classList.remove("hidden"); return; }
   const btn = document.getElementById("auth-submit");
   btn.disabled = true; btn.textContent = "Loading...";
   try {
@@ -364,7 +365,13 @@ async function submitAuth() {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (!res.ok) { errEl.textContent = data.detail || "Something went wrong."; errEl.classList.remove("hidden"); return; }
+    if (!res.ok) {
+      let msg = data.detail || "Something went wrong.";
+      if (Array.isArray(msg)) msg = msg.map(e => e.msg || e.loc?.join(" ") || "Invalid input").join(". ");
+      errEl.textContent = msg;
+      errEl.classList.remove("hidden");
+      return;
+    }
     login(data.access_token, data.user); closeAuth(); navigate("dashboard");
   } catch {
     errEl.textContent = "Network error. Please try again."; errEl.classList.remove("hidden");
