@@ -593,7 +593,8 @@ async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: 
                             props.get("state", ""),
                             props.get("country", "")
                         ])),
-                        "address": props
+                        "address": props,
+                        "osm_value": props.get("osm_value", props.get("type", "")),
                     })
                 return results
     except Exception as e:
@@ -610,8 +611,9 @@ async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: 
 async def _search_osm_by_name(query: str, place_type: str):
     headers = {"User-Agent": "MendlyHealthPlatform/1.0 (contact@mendlyhealth.com)", "Accept-Language": "en"}
     search_variants = {
-        "hospital": [f"{query} hospital", f"{query} clinic", f"{query} healthcare"],
-        "pharmacy": [f"{query} pharmacy", f"{query} chemist", f"{query} drugstore", f"{query} medical store"]
+        "hospital": [f"{query} hospital", f"{query} clinic", f"{query} healthcare", f"{query} medical center", f"{query} medical store", f"{query} pharmacy"],
+        "pharmacy": [f"{query} pharmacy", f"{query} chemist", f"{query} drugstore", f"{query} medical store", f"{query} hospital", f"{query} medical centre"],
+        "all": [f"{query} hospital", f"{query} clinic", f"{query} pharmacy", f"{query} chemist", f"{query} medical store", f"{query} drugstore", f"{query} healthcare", f"{query} medical center"],
     }
     queries = search_variants.get(place_type, [f"{query} {place_type}"])
     
@@ -689,11 +691,12 @@ async def _search_osm_by_name(query: str, place_type: str):
     return []
 
 
-async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int = 10):
-    type_query = "hospital" if place_type == "hospital" else "pharmacy"
+async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int = 50):
+    type_query = "hospital" if place_type == "hospital" else ("pharmacy" if place_type == "pharmacy" else "all")
     search_terms = {
-        "hospital": ["hospital", "clinic", "healthcare", "medical center", "health centre"],
-        "pharmacy": ["pharmacy", "chemist", "drugstore", "medical store", "pharmacy centre"]
+        "hospital": ["hospital", "clinic", "healthcare", "medical center", "health centre", "medical store", "pharmacy", "drugstore", "chemist"],
+        "pharmacy": ["pharmacy", "chemist", "drugstore", "medical store", "pharmacy centre", "hospital", "clinic", "medical centre"],
+        "all": ["hospital", "clinic", "healthcare", "medical center", "health centre", "pharmacy", "chemist", "drugstore", "medical store", "pharmacy centre", "medical centre"],
     }
     terms = search_terms.get(type_query, [type_query])
     try:
@@ -713,10 +716,21 @@ async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int
             distance = _haversine_distance(lat, lng, float(item.get("lat", lat)), float(item.get("lon", lng)))
             raw_address = item.get("display_name", "")
             address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
+            osm_val = str(item.get("osm_value", "")).lower()
+            if place_type == "all":
+                if any(k in osm_val for k in ("pharmacy", "chemist", "drugstore", "medical_shop", "pharmacy_centre")):
+                    facility_type = "Pharmacy"
+                elif any(k in osm_val for k in ("hospital", "clinic", "healthcare", "medical_centre", "medical_center", "health_centre")):
+                    facility_type = "Hospital"
+                else:
+                    facility_type = "Medical"
+            else:
+                facility_type = place_type.capitalize()
             places.append({
                 "name": item.get("display_name", type_query).split(",")[0],
                 "address": address, "phone": "N/A", "distance": round(distance, 1),
-                "types": [place_type.capitalize()], "available": True, "services": ["Near you"],
+                "types": [facility_type], "available": True, "services": ["Near you"],
+                "osm_value": osm_val,
             })
         places.sort(key=lambda x: x["distance"])
         return places[:25]
@@ -736,8 +750,9 @@ async def get_emergency_contacts(country: Optional[str] = None):
 
 @app.post("/api/emergency/hospitals/nearby")
 async def get_nearby_hospitals(location: schemas.LocationRequest):
+    radius = location.radius or 50
     if location.lat != 0 and location.lng != 0:
-        hospitals = await get_nearby_places(location.lat, location.lng, "hospital")
+        hospitals = await get_nearby_places(location.lat, location.lng, "hospital", radius)
         if hospitals:
             return {"hospitals": hospitals, "count": len(hospitals)}
     return {"hospitals": demo_hospitals, "count": len(demo_hospitals)}
@@ -751,9 +766,10 @@ async def get_hospitals():
 @app.post("/api/emergency/hospitals/search")
 async def search_hospitals(request: schemas.LocationRequest):
     q = request.query.lower() if request.query else ""
+    radius = request.radius or 50
     hospitals = []
     if request.lat != 0 and request.lng != 0:
-        hospitals = await get_nearby_places(request.lat, request.lng, "hospital")
+        hospitals = await get_nearby_places(request.lat, request.lng, "hospital", radius)
     if q:
         name_results = await _search_osm_by_name(request.query, "hospital")
         existing_names = {h["name"].lower() for h in hospitals}
@@ -768,8 +784,9 @@ async def search_hospitals(request: schemas.LocationRequest):
 
 @app.post("/api/emergency/pharmacies/nearby")
 async def get_nearby_pharmacies(location: schemas.LocationRequest):
+    radius = location.radius or 50
     if location.lat != 0 and location.lng != 0:
-        pharmacies = await get_nearby_places(location.lat, location.lng, "pharmacy")
+        pharmacies = await get_nearby_places(location.lat, location.lng, "pharmacy", radius)
         if pharmacies:
             return {"pharmacies": pharmacies, "count": len(pharmacies)}
     return {"pharmacies": demo_pharmacies, "count": len(demo_pharmacies)}
@@ -783,9 +800,10 @@ async def get_pharmacies():
 @app.post("/api/emergency/pharmacies/search")
 async def search_pharmacies(request: schemas.LocationRequest):
     q = request.query.lower() if request.query else ""
+    radius = request.radius or 50
     pharmacies = []
     if request.lat != 0 and request.lng != 0:
-        pharmacies = await get_nearby_places(request.lat, request.lng, "pharmacy")
+        pharmacies = await get_nearby_places(request.lat, request.lng, "pharmacy", radius)
     if q:
         name_results = await _search_osm_by_name(request.query, "pharmacy")
         existing_names = {p["name"].lower() for p in pharmacies}
@@ -796,6 +814,35 @@ async def search_pharmacies(request: schemas.LocationRequest):
     elif not pharmacies:
         pharmacies = demo_pharmacies
     return {"pharmacies": pharmacies, "count": len(pharmacies)}
+
+
+@app.post("/api/emergency/nearby")
+async def get_nearby_medical(location: schemas.LocationRequest):
+    radius = location.radius or 50
+    if location.lat != 0 and location.lng != 0:
+        places = await get_nearby_places(location.lat, location.lng, "all", radius)
+        if places:
+            return {"places": places, "count": len(places)}
+    return {"places": demo_hospitals + demo_pharmacies, "count": len(demo_hospitals) + len(demo_pharmacies)}
+
+
+@app.post("/api/emergency/search")
+async def search_medical(request: schemas.LocationRequest):
+    q = request.query.lower() if request.query else ""
+    radius = request.radius or 50
+    places = []
+    if request.lat != 0 and request.lng != 0:
+        places = await get_nearby_places(request.lat, request.lng, "all", radius)
+    if q:
+        name_results = await _search_osm_by_name(request.query, "all")
+        existing_names = {p["name"].lower() for p in places}
+        for nr in name_results:
+            if nr["name"].lower() not in existing_names:
+                places.append(nr)
+        places = [p for p in places if q in p["name"].lower() or q in p["address"].lower()]
+    elif not places:
+        places = demo_hospitals + demo_pharmacies
+    return {"places": places, "count": len(places)}
 
 
 @app.get("/api/health")

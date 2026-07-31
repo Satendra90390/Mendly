@@ -38,7 +38,7 @@ function loadState() {
   state.theme = localStorage.getItem("mendly_theme") || "light";
 }
 function login(token, user) { state.token = token; state.user = user; saveState(); }
-function logout() { state.token = null; state.user = null; saveState(); navigate("landing"); }
+function logout() { state.token = null; state.user = null; saveState(); history.replaceState(null, "", "/"); render(); }
 
 /* ── Theme ── */
 function applyTheme() { document.documentElement.classList.toggle("dark", state.theme === "dark"); }
@@ -95,7 +95,7 @@ function injectStaticLogos() {
    ROUTER
 ════════════════════════════════════════════════════ */
 const AUTH_REQUIRED = new Set(["dashboard", "account"]);
-const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "more", "features", "about", "faq", "how"]);
+const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "pharmacies", "more", "features", "about", "faq", "how"]);
 const LANDING_SECTIONS = new Set(["features", "about", "faq", "how"]);
 
 function navigate(hash) {
@@ -129,6 +129,7 @@ function openSidebar() {
 /* ── Render ── */
 function render() {
   applyTheme();
+  document.body.classList.toggle("logged-in", !!state.user);
   const route = location.hash.slice(1) || (state.user ? "dashboard" : "landing");
 
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
@@ -161,6 +162,7 @@ function render() {
     case "chat":      renderChat(); break;
     case "medicines": renderMedicines(); break;
     case "hospitals": break;
+    case "pharmacies": break;
     case "more":      renderMore(); break;
     case "account":   renderAccount(); break;
   }
@@ -204,8 +206,10 @@ function renderHeader() {
       <div id="mobile-drawer" class="mobile-drawer hidden">
         ${guestLinks.map(l => `<a href="#${l.h}" class="${route===l.h ? 'active' : ''}" onclick="closeMobileDrawer()">${l.l}</a>`).join("")}
         <div class="drawer-divider"></div>
-        <a onclick="openAuth('login');closeMobileDrawer()">Log In</a>
-        <a onclick="openAuth('signup');closeMobileDrawer()" style="color:var(--primary);font-weight:700">Get Started Free</a>
+        <div class="drawer-btn-row">
+          <button class="btn btn-ghost" onclick="openAuth('login');closeMobileDrawer()">Log In</button>
+          <button class="btn btn-primary" onclick="openAuth('signup');closeMobileDrawer()">Get Started Free</button>
+        </div>
       </div>`;
     return;
   }
@@ -215,6 +219,7 @@ function renderHeader() {
     { h: "chat",      l: "Elix AI" },
     { h: "medicines", l: "Medicines" },
     { h: "hospitals", l: "Hospitals" },
+    { h: "pharmacies",l: "Pharmacies" },
     { h: "more",      l: "Emergency" },
   ];
   const init = (state.user.name || state.user.email || "U").charAt(0).toUpperCase();
@@ -262,6 +267,7 @@ function renderSidebar(route) {
     { h: "chat",      icon: "🤖", l: "Elix AI" },
     { h: "medicines", icon: "💊", l: "Medicines" },
     { h: "hospitals", icon: "🏥", l: "Hospitals" },
+    { h: "pharmacies",icon: "🏪", l: "Pharmacies" },
     { h: "more",      icon: "🆘", l: "Emergency" },
   ];
   const bottomItems = [
@@ -296,8 +302,9 @@ function renderMobileNav(route) {
     { h: "dashboard", l: "Home",      i: "🏠" },
     { h: "chat",      l: "Activity",  i: "🤖" },
     { h: "medicines", l: "Vitals",    i: "💊" },
-    { h: "account",   l: "Profile",   i: "👤" },
-    { h: "more",      l: "Settings",  i: "⚙️" },
+    { h: "hospitals", l: "Hospitals", i: "🏥" },
+    { h: "pharmacies",l: "Pharmacy",  i: "🏪" },
+    { h: "more",      l: "Emergency", i: "🆘" },
   ];
   m.innerHTML = tabs.map(t => `
     <a href="#${t.h}" class="${route===t.h ? 'active' : ''}">
@@ -642,10 +649,12 @@ let chatLoading = false;
 let chatFiles = [];
 
 const CHAT_PROMPTS = [
-  "What are the side effects of ibuprofen?",
-  "Find hospitals near me",
-  "What is paracetamol used for?",
-  "Check drug interactions",
+  "What are the side effects of lisinopril?",
+  "Find a pharmacy near downtown",
+  "What is the difference between ibuprofen and naproxen?",
+  "Drug interactions with metformin and alcohol",
+  "How should I store my blood pressure medication?",
+  "What are the warning signs of dehydration?",
 ];
 
 function renderChat() {
@@ -665,7 +674,7 @@ function renderChat() {
     </div>`).join("");
 
   const typing = chatLoading
-    ? '<div class="chat-msg chat-bot"><div class="chat-bot-label">Elix AI</div><div class="typing-dots"><span></span><span></span><span></span></div></div>'
+    ? '<div class="chat-msg chat-bot"><div class="chat-bot-label">Elix AI</div><div class="typing-dots"><span></span><span></span><span></span></div><div class="thinking-text">Analyzing your question...</div></div>'
     : "";
 
   const prompts = chatMsgs.length <= 1 && !chatLoading
@@ -689,7 +698,7 @@ function renderChat() {
         <button class="chat-attach" onclick="triggerChatUpload()" title="Attach file" ${isGuest ? "disabled" : ""}>📎</button>
         <input type="file" id="chat-file-input" multiple accept="image/*,.pdf,.txt,.doc,.docx" style="display:none" onchange="handleChatFiles(this.files)" />
         <textarea id="chat-input" class="chat-textarea" rows="1"
-          placeholder="${isGuest ? "Ask a health question..." : "Ask about symptoms, medicines..."}"
+          placeholder="${isGuest ? "Ask Elix about your health, symptoms, or medications..." : "Ask about symptoms, medicines, drug interactions, and more..."}"
           oninput="autoResize(this)"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
           ${chatLoading ? "disabled" : ""}></textarea>
@@ -746,7 +755,7 @@ async function sendChat() {
         body: fd,
       });
       const data = await res.json().catch(() => ({}));
-      chatMsgs.push({ role: "bot", content: res.ok ? (data.response || data.reply || "Done!") : (data.detail || "Upload failed.") });
+      chatMsgs.push({ role: "bot", content: res.ok ? (data.response || data.reply || "I've processed your file. Here's what I found.") : (data.detail || "The file could not be processed. Please try a different format.") });
     } else {
       const res = await fetch(`${API}/chat`, {
         method: "POST",
@@ -754,9 +763,9 @@ async function sendChat() {
         body: JSON.stringify({ message: text, history }),
       });
       const data = await res.json().catch(() => ({}));
-      chatMsgs.push({ role: "bot", content: res.ok ? (data.response || data.reply || "I'm not sure.") : (data.detail || "Failed. Please try again.") });
+      chatMsgs.push({ role: "bot", content: res.ok ? (data.response || data.reply || "I'd like to help with that. Could you provide a bit more detail about what you're looking for?") : (data.detail || "I'm experiencing a brief service interruption. Please try once more.") });
     }
-  } catch { chatMsgs.push({ role: "bot", content: "Sorry, I'm having trouble connecting." }); }
+  } catch { chatMsgs.push({ role: "bot", content: "I'm having trouble connecting to my servers. Please check your connection and try again in a moment." }); }
   clearTimeout(safetyTimer);
   chatLoading = false; renderChat();
 }
@@ -769,7 +778,7 @@ function renderMedicines() {
     <div class="page">
       <div class="page-header">
         <h2 class="page-title"><span class="page-title-icon">💊</span> Medicine Search</h2>
-        <p class="page-sub">Search medications by name, ingredient, or use.</p>
+        <p class="page-sub">Search medications by name, active ingredient, or therapeutic use.</p>
       </div>
       <div class="search-row">
         <input id="med-search" class="search-input" placeholder="e.g. paracetamol, painkiller..." onkeydown="if(event.key==='Enter')searchMedicines()" />
@@ -813,69 +822,103 @@ async function searchMedicines() {
 /* ── Hospitals ── */
 function clearHospSearch() {
   const el = document.getElementById("hosp-search"); if (el) el.value = "";
-  document.getElementById("hosp-results").innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>Search for hospitals in your area</p></div>';
+  document.getElementById("hosp-results").innerHTML = '<div class="empty-state"><div class="empty-icon">🏥</div><p>Search for hospitals, clinics, or medical centers near you</p></div>';
 }
 
 async function searchHospitals() {
   const q = document.getElementById("hosp-search")?.value.trim() || "";
   const el = document.getElementById("hosp-results"); el.innerHTML = '<div class="spinner"></div>';
-  const body = { lat: 0, lng: 0, query: q || null };
+  const body = { lat: 0, lng: 0, query: q || null, radius: 50 };
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      pos => { body.lat = pos.coords.latitude; body.lng = pos.coords.longitude; fetchHospitals(body, el); },
-      ()  => fetchHospitals(body, el), { timeout: 5000 }
+      pos => { body.lat = pos.coords.latitude; body.lng = pos.coords.longitude; fetchMedicalPlaces(body, el, "hospital"); },
+      ()  => fetchMedicalPlaces(body, el, "hospital"), { timeout: 5000 }
     );
-  } else { fetchHospitals(body, el); }
+  } else { fetchMedicalPlaces(body, el, "hospital"); }
 }
 
-async function fetchHospitals(body, el) {
+/* ── Pharmacies ── */
+function clearPharmSearch() {
+  const el = document.getElementById("pharm-search"); if (el) el.value = "";
+  document.getElementById("pharm-results").innerHTML = '<div class="empty-state"><div class="empty-icon">🏪</div><p>Search for pharmacies, drugstores, or medical shops near you</p></div>';
+}
+
+async function searchPharmacies() {
+  const q = document.getElementById("pharm-search")?.value.trim() || "";
+  const el = document.getElementById("pharm-results"); el.innerHTML = '<div class="spinner"></div>';
+  const body = { lat: 0, lng: 0, query: q || null, radius: 50 };
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => { body.lat = pos.coords.latitude; body.lng = pos.coords.longitude; fetchMedicalPlaces(body, el, "pharmacy"); },
+      ()  => fetchMedicalPlaces(body, el, "pharmacy"), { timeout: 5000 }
+    );
+  } else { fetchMedicalPlaces(body, el, "pharmacy"); }
+}
+
+async function fetchMedicalPlaces(body, el, context) {
   try {
-    const res = await fetch(`${API}/emergency/hospitals/search`, {
+    const res = await fetch(`${API}/emergency/search`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
     });
     const data = await res.json();
-    const items = data.results || data.hospitals || [];
-    if (!items.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🏥</div><p>No hospitals found</p></div>'; return; }
-    el.innerHTML = `<div class="search-count">${items.length} hospital${items.length !== 1 ? "s" : ""} found</div>` +
+    const items = data.results || data.places || data.hospitals || [];
+    if (!items.length) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>No medical facilities found matching your search</p></div>'
+      return;
+    }
+    el.innerHTML = `<div class="search-count">${items.length} result${items.length !== 1 ? "s" : ""} found</div>` +
       items.map(i => `
         <div class="result-card">
-          <h3>${escapeHtml(i.name)}</h3>
+          <div class="result-card-header">
+            <h3>${escapeHtml(i.name)}</h3>
+            ${i.distance !== null && i.distance !== undefined
+              ? `<span class="result-distance">${i.distance} km</span>`
+              : ""}
+          </div>
+          ${i.types?.length ? `<div class="result-types">${i.types.map(t => `<span class="result-type-badge">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
           ${i.address ? `<p>📍 ${escapeHtml(i.address)}</p>` : ""}
           ${i.phone   ? `<p>📞 <a href="tel:${i.phone}" style="color:var(--primary);font-weight:600">${escapeHtml(i.phone)}</a></p>` : ""}
-          ${i.rating  ? `<p>⭐ ${i.rating}/5</p>` : ""}
         </div>`).join("");
-  } catch { el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Error fetching results</p></div>'; }
+  } catch { el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Error fetching results. Please check your connection.</p></div>'; }
 }
 
 /* ── Emergency ── */
 function renderMore() {
   const list = [
-    { country: "India",     number: "112", label: "All Emergencies" },
-    { country: "USA",       number: "911", label: "All Emergencies" },
-    { country: "UK",        number: "999", label: "All Emergencies" },
-    { country: "Australia", number: "000", label: "All Emergencies" },
-    { country: "Canada",    number: "911", label: "All Emergencies" },
-    { country: "Germany",   number: "112", label: "All Emergencies" },
-    { country: "Japan",     number: "110", label: "Police" },
-    { country: "Japan",     number: "119", label: "Fire / Ambulance" },
+    { country: "🇮🇳 India",     number: "112", label: "All Emergencies" },
+    { country: "🇺🇸 USA",       number: "911", label: "All Emergencies" },
+    { country: "🇬🇧 UK",        number: "999", label: "All Emergencies" },
+    { country: "🇦🇺 Australia", number: "000", label: "All Emergencies" },
+    { country: "🇨🇦 Canada",    number: "911", label: "All Emergencies" },
+    { country: "🇩🇪 Germany",  number: "112", label: "All Emergencies" },
+    { country: "🇯🇵 Japan",     number: "110", label: "Police" },
+    { country: "🇯🇵 Japan",     number: "119", label: "Fire / Ambulance" },
   ];
-  document.getElementById("view-more").innerHTML = `
-    <div class="page">
-      <div class="page-header">
-        <h2 class="page-title"><span class="page-title-icon">🚨</span> Emergency Contacts</h2>
-        <p class="page-sub">Tap a number to call directly.</p>
-      </div>
-      <div class="emergency-list">${list.map(e => `
-        <a class="emergency-card" href="tel:${e.number}">
-          <div>
-            <div class="emergency-country">${e.country}</div>
-            <div class="emergency-label">${e.label}</div>
-          </div>
-          <div class="emergency-num">${e.number}</div>
-        </a>`).join("")}
-      </div>
-    </div>`;
-}
+   document.getElementById("view-more").innerHTML = `
+     <div class="page">
+       <div class="page-header">
+         <h2 class="page-title"><span class="page-title-icon">🚨</span> Emergency Contacts</h2>
+         <p class="page-sub">Quick-dial emergency numbers organized by country. Save these in your phone for instant access during critical situations.</p>
+       </div>
+       <div class="emergency-list">${list.map(e => `
+         <a class="emergency-card" href="tel:${e.number}">
+           <div>
+             <div class="emergency-country">${e.country}</div>
+             <div class="emergency-label">${e.label}</div>
+           </div>
+           <div class="emergency-num">${e.number}</div>
+         </a>`).join("")}
+       </div>
+
+       <div class="acct-card" style="margin-top:24px">
+         <div class="acct-section-title">Find Nearby Care</div>
+         <div style="display:flex;gap:12px;flex-wrap:wrap">
+           <button class="btn btn-ghost" style="flex:1;min-width:140px" onclick="navigate('hospitals')"><span style="font-size:18px;margin-right:6px">🏥</span> Hospitals &amp; Clinics</button>
+           <button class="btn btn-ghost" style="flex:1;min-width:140px" onclick="navigate('pharmacies')"><span style="font-size:18px;margin-right:6px">🏪</span> Pharmacies &amp; Drugstores</button>
+         </div>
+       </div>
+     </div>`;
+ }
 
 /* ═══════════════════════════════════════════════════
    ACCOUNT
@@ -926,6 +969,17 @@ function renderAccount() {
 
       <div id="pw-change-area"></div>
 
+      <div class="acct-card" style="margin-bottom:16px;border-color:rgba(239,68,68,0.3)">
+        <div class="acct-section-title" style="color:var(--danger)">Danger Zone</div>
+        <div style="margin-bottom:16px">
+          <div class="setting-label" style="color:var(--danger)">Delete Account</div>
+          <div class="setting-desc">Permanently delete your account and all associated data. This action cannot be undone.</div>
+        </div>
+        <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="deleteAccount()">
+          🗑️ Delete My Account
+        </button>
+      </div>
+
       <button class="btn btn-danger" style="width:100%;justify-content:center;margin-top:4px"
         onclick="if(confirm('Log out of Mendly?')){logout();}">
         🚪 Log Out
@@ -961,7 +1015,17 @@ async function changePassword() {
     if (res.status === "error" || res.detail) { errEl.textContent = res.detail || "Failed to update password."; errEl.classList.remove("hidden"); return; }
     alert(res.message || "Password updated successfully.");
     document.getElementById("pw-change-area").innerHTML = "";
-  } catch { errEl.textContent = "Network error."; errEl.classList.remove("hidden"); }
+   } catch { errEl.textContent = "Network error."; errEl.classList.remove("hidden"); }
+}
+
+async function deleteAccount() {
+  if (!confirm("⚠️ This will permanently delete your account and all associated data. This cannot be undone. Are you sure?")) return;
+  try {
+    const res = await authFetch("/profile", { method: "DELETE" });
+    if (res.status === "error" || res.detail) { alert(res.detail || "Failed to delete account."); return; }
+    alert(res.message || "Account deleted permanently.");
+    logout();
+  } catch { alert("Network error. Please try again."); }
 }
 
 /* ═══════════════════════════════════════════════════
