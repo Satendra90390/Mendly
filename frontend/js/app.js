@@ -840,46 +840,52 @@ function renderDashboard() {
 
 /* ── Live News Feed ── */
 const HEALTH_RSS_FEEDS = [
-  { url: "https://api.rss2json.com/v1/api.json?rss_url=https://www.who.int/rss-feeds/news-english.xml", tag: "WHO", color: "var(--danger)" },
-  { url: "https://api.rss2json.com/v1/api.json?rss_url=https://www.medicalnewstoday.com/newsrss", tag: "Medical News", color: "var(--primary)" },
+  { url: "https://api.rss2json.com/v1/api.json?rss_url=https://www.medicalnewstoday.com/newsrss", tag: "Medical" },
+  { url: "https://api.rss2json.com/v1/api.json?rss_url=https://www.healthline.com/rss/health-news", tag: "Health" },
+  { url: "https://api.rss2json.com/v1/api.json?rss_url=https://feeds.bbci.co.uk/news/health/rss.xml", tag: "BBC" },
 ];
 
 async function fetchLiveNews() {
   const el = document.getElementById("live-news-content");
   if (!el) return;
-  try {
-    const results = [];
-    for (const feed of HEALTH_RSS_FEEDS) {
-      try {
-        const r = await fetch(feed.url, { signal: AbortSignal.timeout(5000) });
-        const d = await r.json();
-        if (d.items) {
-          d.items.slice(0, 3).forEach(item => {
-            results.push({ title: item.title, link: item.link, pubDate: item.pubDate, tag: feed.tag, color: feed.color });
-          });
-        }
-      } catch(e) { /* skip failed feed */ }
-    }
-    if (!results.length) { el.innerHTML = `<span>Latest health news will appear here</span>`; return; }
-    results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-    el.innerHTML = results.slice(0, 5).map(n => {
-      const timeAgo = getTimeAgo(n.pubDate);
-      return `<a href="${n.link}" target="_blank" rel="noopener" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${n.color}">${n.tag}</span>
-          <span style="font-size:10px;color:var(--muted-2)">${timeAgo}</span>
-        </div>
-        <div style="font-size:13px;font-weight:600;color:var(--fg);line-height:1.4">${escapeHtml(n.title)}</div>
-      </a>`;
-    }).join("");
-  } catch(e) {
-    el.innerHTML = `<span>Unable to load live news</span>`;
-  }
+  const seen = new Set();
+  const results = [];
+  const promises = HEALTH_RSS_FEEDS.map(async (feed) => {
+    try {
+      const r = await fetch(feed.url, { signal: AbortSignal.timeout(8000) });
+      const d = await r.json();
+      if (d.items) {
+        d.items.slice(0, 5).forEach(item => {
+          const pubDate = new Date(item.pubDate);
+          const ageMs = Date.now() - pubDate.getTime();
+          const ageDays = ageMs / (1000 * 60 * 60 * 24);
+          if (ageDays <= 7 && !seen.has(item.title)) {
+            seen.add(item.title);
+            results.push({ title: item.title, link: item.link, pubDate: item.pubDate, tag: feed.tag });
+          }
+        });
+      }
+    } catch(e) { /* skip */ }
+  });
+  await Promise.allSettled(promises);
+  if (!results.length) { el.innerHTML = `<span>Fetching latest health news...</span>`; return; }
+  results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  el.innerHTML = results.slice(0, 6).map(n => {
+    const timeAgo = getTimeAgo(n.pubDate);
+    return `<a href="${n.link}" target="_blank" rel="noopener" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary)">${n.tag}</span>
+        <span style="font-size:10px;color:var(--muted-2)">${timeAgo}</span>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:var(--fg);line-height:1.4">${escapeHtml(n.title)}</div>
+    </a>`;
+  }).join("");
 }
 
 function getTimeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h ago`;
