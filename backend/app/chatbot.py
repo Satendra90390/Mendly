@@ -32,6 +32,7 @@ NVIDIA_TIMEOUT = float(os.getenv("NVIDIA_TIMEOUT", "45"))
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
+GROQ_VISION_MODEL = os.getenv("GROQ_VISION_MODEL", "qwen/qwen3.6-27b")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_TIMEOUT = float(os.getenv("GROQ_TIMEOUT", "15"))
 
@@ -225,12 +226,17 @@ async def chatbot_response(
     message: str,
     location: Optional[dict] = None,
     history: Optional[list] = None,
+    images: Optional[list] = None,
 ) -> str:
     msg = message.lower().strip()
 
     # 0. Crisis — always instant, no AI delay
     if any(phrase in msg for phrase in CRISIS_KEYWORDS):
         return _crisis_response()
+
+    # 0.5 Vision — if images attached, use Groq vision model
+    if images and _groq_is_configured():
+        return await _groq_vision_answer(message, images, history or [])
 
     # 1. Race all available providers in parallel, use first response
     tasks = []
@@ -335,7 +341,70 @@ async def _groq_answer(
     return text
 
 
-async def _nvidia_answer(
+# ── Groq vision answer ──────────────────────────────────────────────────────
+
+async def _groq_vision_answer(
+    message: str,
+    images: list,
+    history: list,
+) -> str:
+    """Process images (base64) via Groq vision model."""
+    content_parts = []
+
+    # Build conversation history
+    messages = [{"role": "system", "content": _SYSTEM_PROMPT}]
+    for turn in history[-10:]:
+        role = "user" if turn.role == "user" else "assistant"
+        messages.append({"role": role, "content": turn.content})
+
+    # Add images as base64 data URLs
+    for img_b64 in images[:5]:
+        content_parts.append({
+            "type": "image_url",
+            "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}
+        })
+
+    # Add text prompt
+    user_text = message or "Analyze this image and provide health-related insights. If it's a medical image (X-ray, prescription, lab report, skin condition, etc.), describe what you observe. Always remind the user to consult a healthcare professional."
+    content_parts.append({"type": "text", "text": user_text})
+
+    messages.append({"role": "user", "content": content_parts})
+
+    payload = {
+        "model": GROQ_VISION_MODEL,
+        "messages": messages,
+        "temperature": 0.3,
+        "max_tokens": 2048,
+    }
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    async with httpx.AsyncClient(timeout=GROQ_TIMEOUT) as client:
+        response = await client.post(GROQ_API_URL, headers=headers, json=payload)
+        response.raise_for_status()
+        data = response.json()
+
+    text = ""
+    if data.get("choices"):
+        choice = data["choices"][0]
+        if isinstance(choice.get("message"), dict):
+            text = choice["message"].get("content", "") or ""
+
+    text = (text or "").strip()
+    if not text:
+        raise ValueError(f"Empty vision response: {data}")
+
+    disclaimer = "\n\n*This is health information for awareness — not a diagnosis. Consult a qualified healthcare professional for personal medical advice.*"
+    if "disclaimer" not in text.lower() and "consult" not in text.lower()[-200:]:
+        text += disclaimer
+
+    return text
+
+
+# ── NVIDIA answer ───────────────────────────────────────────────────────────
     original: str,
     msg_lower: str,
     location: Optional[dict],

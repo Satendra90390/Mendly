@@ -921,8 +921,8 @@ function renderQuote() {
   const el = document.getElementById("dash-quote-text");
   const authorEl = document.getElementById("dash-quote-author");
   if (!el || !authorEl) return;
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-  const q = HEALTH_QUOTES[dayOfYear % HEALTH_QUOTES.length];
+  const idx = Math.floor(Math.random() * HEALTH_QUOTES.length);
+  const q = HEALTH_QUOTES[idx];
   el.textContent = `"${q.text}"`;
   authorEl.textContent = `— ${q.author}`;
 }
@@ -1104,7 +1104,7 @@ async function sendChat() {
   if ((!text && !chatFiles.length) || chatLoading) return;
   const files = [...chatFiles];
   chatFiles = [];
-  chatMsgs.push({ role: "user", content: text || "(file attached)", files: files.length ? files.map(f => ({ name: f.name })) : undefined });
+  chatMsgs.push({ role: "user", content: text || (files.some(f => f.type.startsWith("image/")) ? "(image attached)" : "(file attached)"), files: files.length ? files.map(f => ({ name: f.name })) : undefined });
   inp.value = ""; chatLoading = true; renderChat();
   let responded = false;
   const safetyTimer = setTimeout(() => { if (chatLoading && !responded) { responded = true; chatMsgs.push({ role: "bot", content: "The request is taking longer than expected. Please try again." }); chatLoading = false; renderChat(); } }, 60000);
@@ -1670,7 +1670,6 @@ function renderAccount() {
   const memberSince = u?.created_at
     ? new Date(u.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : "N/A";
-  const vitalsCount = getVitals().length;
 
   const acctEl = document.getElementById("view-account");
   if (!acctEl) return;
@@ -1686,10 +1685,6 @@ function renderAccount() {
         <div class="acct-name">${escapeHtml(u?.name || "User")}</div>
         <div class="acct-email">${escapeHtml(u?.email || "")}</div>
         <div class="acct-stats-row">
-          <div class="acct-stat">
-            <div class="acct-stat-val">${vitalsCount}</div>
-            <div class="acct-stat-label">Vitals Logged</div>
-          </div>
           <div class="acct-stat">
             <div class="acct-stat-val">${memberSince.split(" ")[0]}</div>
             <div class="acct-stat-label">Member Since</div>

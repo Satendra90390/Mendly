@@ -217,13 +217,20 @@ async def chat_upload_endpoint(
     if not message.strip() and not files:
         raise HTTPException(status_code=400, detail="Message or files required.")
 
+    image_b64_list = []
     file_descriptions = []
     for f in files[:5]:
         content = await f.read()
         if len(content) > 10 * 1024 * 1024:
             continue
-        desc = f"[Attached file: {f.filename} ({f.content_type}, {len(content)} bytes)]"
-        file_descriptions.append(desc)
+        # If it's an image, encode as base64 for vision model
+        if f.content_type and f.content_type.startswith("image/"):
+            import base64
+            b64 = base64.b64encode(content).decode("utf-8")
+            image_b64_list.append(b64)
+            file_descriptions.append(f"[Attached image: {f.filename} ({f.content_type})]")
+        else:
+            file_descriptions.append(f"[Attached file: {f.filename} ({f.content_type}, {len(content)} bytes)]")
 
     full_message = message
     if file_descriptions:
@@ -238,7 +245,7 @@ async def chat_upload_endpoint(
         except Exception:
             pass
 
-    reply = await chatbot.chatbot_response(full_message, None, hist[-10:])
+    reply = await chatbot.chatbot_response(full_message, None, hist[-10:], images=image_b64_list or None)
 
     now = _now()
     await insert_chat_message({"user_id": current_user["id"], "role": "user", "content": full_message[:2000], "created_at": now})
