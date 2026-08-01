@@ -338,6 +338,11 @@ async def _groq_answer(
     if not text:
         raise ValueError(f"Empty Groq response: {data}")
 
+    # Strip <think>...</think> thinking blocks
+    import re
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+    text = re.sub(r"<reasoning>.*?</reasoning>", "", text, flags=re.DOTALL).strip()
+
     disclaimer = "\n\n*This is health information for awareness — not a diagnosis. Consult a qualified healthcare professional for personal medical advice.*"
     if "disclaimer" not in text.lower() and "consult" not in text.lower()[-200:]:
         text += disclaimer
@@ -402,6 +407,12 @@ async def _groq_vision_answer(
     text = (text or "").strip()
     if not text:
         raise ValueError(f"Empty vision response: {data}")
+
+    # Strip <think>...</think> thinking blocks
+    import re
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+    # Also strip <think>...</think> blocks (some variants)
+    text = re.sub(r"<reasoning>.*?</reasoning>", "", text, flags=re.DOTALL).strip()
 
     logger.info(f"[Mendly] Vision response: {text[:120]}...")
     disclaimer = "\n\n*This is health information for awareness — not a diagnosis. Consult a qualified healthcare professional for personal medical advice.*"
