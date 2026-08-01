@@ -35,6 +35,7 @@ GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 GROQ_VISION_MODEL = os.getenv("GROQ_VISION_MODEL", "qwen/qwen3.6-27b")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_TIMEOUT = float(os.getenv("GROQ_TIMEOUT", "15"))
+GROQ_VISION_TIMEOUT = float(os.getenv("GROQ_VISION_TIMEOUT", "60"))
 
 def _is_placeholder_key(key: str) -> bool:
     k = key.strip().lower()
@@ -236,7 +237,10 @@ async def chatbot_response(
 
     # 0.5 Vision — if images attached, use Groq vision model
     if images and _groq_is_configured():
-        return await _groq_vision_answer(message, images, history or [])
+        try:
+            return await _groq_vision_answer(message, images, history or [])
+        except Exception as e:
+            logger.error(f"[Mendly] Vision failed, falling back to text: {e}")
 
     # 1. Race all available providers in parallel, use first response
     tasks = []
@@ -349,6 +353,7 @@ async def _groq_vision_answer(
     history: list,
 ) -> str:
     """Process images (base64) via Groq vision model."""
+    logger.info(f"[Mendly] Vision request: {len(images)} image(s), message={message[:80]}...")
     content_parts = []
 
     # Build conversation history
@@ -382,8 +387,9 @@ async def _groq_vision_answer(
         "Content-Type": "application/json",
     }
 
-    async with httpx.AsyncClient(timeout=GROQ_TIMEOUT) as client:
+    async with httpx.AsyncClient(timeout=GROQ_VISION_TIMEOUT) as client:
         response = await client.post(GROQ_API_URL, headers=headers, json=payload)
+        logger.info(f"[Mendly] Vision response status: {response.status_code}")
         response.raise_for_status()
         data = response.json()
 
@@ -397,6 +403,7 @@ async def _groq_vision_answer(
     if not text:
         raise ValueError(f"Empty vision response: {data}")
 
+    logger.info(f"[Mendly] Vision response: {text[:120]}...")
     disclaimer = "\n\n*This is health information for awareness — not a diagnosis. Consult a qualified healthcare professional for personal medical advice.*"
     if "disclaimer" not in text.lower() and "consult" not in text.lower()[-200:]:
         text += disclaimer

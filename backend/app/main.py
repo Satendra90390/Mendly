@@ -223,14 +223,18 @@ async def chat_upload_endpoint(
         content = await f.read()
         if len(content) > 10 * 1024 * 1024:
             continue
+        ct = f.content_type or ""
+        logger.info(f"[Mendly] Upload file: {f.filename}, content_type={ct}, size={len(content)}")
         # If it's an image, encode as base64 for vision model
-        if f.content_type and f.content_type.startswith("image/"):
+        if ct.startswith("image/"):
             import base64
             b64 = base64.b64encode(content).decode("utf-8")
             image_b64_list.append(b64)
-            file_descriptions.append(f"[Attached image: {f.filename} ({f.content_type})]")
+            file_descriptions.append(f"[Attached image: {f.filename} ({ct})]")
         else:
-            file_descriptions.append(f"[Attached file: {f.filename} ({f.content_type}, {len(content)} bytes)]")
+            file_descriptions.append(f"[Attached file: {f.filename} ({ct}, {len(content)} bytes)]")
+
+    logger.info(f"[Mendly] Upload: {len(image_b64_list)} image(s), {len(file_descriptions)} file(s) total")
 
     full_message = message
     if file_descriptions:
