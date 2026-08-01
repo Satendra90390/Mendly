@@ -116,7 +116,7 @@
           <h2 class="section-title">One place for all your <span class="gradient-text">health needs</span></h2>
         </div>
         <div class="features-grid-4">
-          <div class="feature-tile" onclick="navigate('chat')">
+          <div class="feature-tile" role="button" tabindex="0" onclick="navigate('chat')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigate('chat')}">
             <div class="feature-tile-img feature-tile-chat">
               <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             </div>
@@ -126,7 +126,7 @@
               <span class="tile-arrow">→</span>
             </div>
           </div>
-          <div class="feature-tile" onclick="navigate('medicines')">
+          <div class="feature-tile" role="button" tabindex="0" onclick="navigate('medicines')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigate('medicines')}">
             <div class="feature-tile-img feature-tile-meds">
               <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></div>
             </div>
@@ -136,7 +136,7 @@
               <span class="tile-arrow">→</span>
             </div>
           </div>
-          <div class="feature-tile" onclick="navigate('hospitals')">
+          <div class="feature-tile" role="button" tabindex="0" onclick="navigate('hospitals')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigate('hospitals')}">
             <div class="feature-tile-img feature-tile-nearby">
               <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
             </div>
@@ -146,7 +146,7 @@
               <span class="tile-arrow">→</span>
             </div>
           </div>
-          <div class="feature-tile" onclick="openAuth('signup')">
+          <div class="feature-tile" role="button" tabindex="0" onclick="openAuth('signup')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAuth('signup')}">
             <div class="feature-tile-img feature-tile-track">
               <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
             </div>

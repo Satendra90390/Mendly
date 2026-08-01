@@ -24,6 +24,8 @@ function authFetch(path, opts = {}) {
 function showToast(msg, type = "success") {
   const t = document.createElement("div");
   t.className = `toast toast-${type}`;
+  t.setAttribute("role", "alert");
+  t.setAttribute("aria-live", "assertive");
   const s = document.createElement("span");
   s.textContent = msg;
   t.appendChild(s);
@@ -59,8 +61,7 @@ function renderMd(text) {
   s = s.replace(/^## (.+)$/gm, "<h3>$1</h3>");
   s = s.replace(/^# (.+)$/gm, "<h2>$1</h2>");
   s = s.replace(/^- (.+)$/gm, "<li>$1</li>");
-  s = s.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
-  s = s.replace(/<\/ul>\s*<ul>/g, "");
+  s = s.replace(/((?:^<li>.*<\/li>\n?)+)/gm, "<ul>$1</ul>");
   s = s.replace(/\n/g, "<br>");
   s = s.replace(/(<br>){3,}/g, "<br><br>");
   return s;
@@ -127,7 +128,7 @@ const IC = {
   chat:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>`,
   pill:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 1.5l-8 8a4.95 4.95 0 0 0 7 7l8-8a4.95 4.95 0 0 0-7-7z"/><path d="M8.5 8.5l7 7"/></svg>`,
   hospital:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M10 10h4M12 8v4"/></svg>`,
-  pharmacy:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/><path d="M10 10h4M12 8v4"/></svg>`,
+  pharmacy:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8l4-2"/><path d="M8 10l4 2 4-2"/><path d="M12 12v10"/><path d="M6 22h12"/></svg>`,
   emergency: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01"/></svg>`,
   settings:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   logout:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
@@ -357,14 +358,14 @@ function renderSidebar(route) {
     <div class="sidebar-divider"></div>
     <div style="flex:1">
       ${items.map(i => `
-        <a class="sidebar-item ${route===i.h ? 'active' : ''}" href="#${i.h}" onclick="closeSidebar()">
+        <a class="sidebar-item ${route===i.h ? 'active' : ''}" href="#${i.h}" onclick="closeSidebar()" ${route===i.h ? 'aria-current="page"' : ''}>
           <span class="sidebar-icon">${i.icon}</span>${i.l}
         </a>`).join("")}
     </div>
     <div>
       <div class="sidebar-divider"></div>
       ${bottomItems.map(i => `
-        <a class="sidebar-item ${route===i.h ? 'active' : ''}" href="#${i.h}" onclick="closeSidebar()">
+        <a class="sidebar-item ${route===i.h ? 'active' : ''}" href="#${i.h}" onclick="closeSidebar()" ${route===i.h ? 'aria-current="page"' : ''}>
           <span class="sidebar-icon">${i.icon}</span>${i.l}
         </a>`).join("")}
       <a class="sidebar-item sidebar-logout" href="#" onclick="if(confirm('Log out?')){logout();}">
@@ -386,7 +387,7 @@ function renderMobileNav(route) {
     { h: "more",      l: "SOS",       i: IC.emergency },
   ];
   m.innerHTML = tabs.map(t => `
-    <a href="#${t.h}" class="${route===t.h ? 'active' : ''}" onclick="closeSidebar()">
+    <a href="#${t.h}" class="${route===t.h ? 'active' : ''}" onclick="closeSidebar()" ${route===t.h ? 'aria-current="page"' : ''}>
       <span class="nav-icon">${t.i}</span>${t.l}
     </a>`).join("");
 }
@@ -395,17 +396,33 @@ function renderMobileNav(route) {
    AUTH MODAL
 ════════════════════════════════════════════════════ */
 let authMode = "login";
-function openAuth(mode) { authMode = mode; renderAuthModal(); document.removeEventListener("keydown", authEscHandler); document.addEventListener("keydown", authEscHandler); }
+function openAuth(mode) {
+  authMode = mode;
+  renderAuthModal();
+  document.removeEventListener("keydown", authKeyHandler);
+  document.addEventListener("keydown", authKeyHandler);
+}
 function closeAuth() {
   const el = document.getElementById("auth-modal");
   if (el) el.innerHTML = "";
-  document.removeEventListener("keydown", authEscHandler);
+  document.removeEventListener("keydown", authKeyHandler);
   if (!state.user) {
     const active = document.querySelector(".view.active");
     if (!active) navigate("landing");
   }
 }
-function authEscHandler(e) { if (e.key === "Escape") closeAuth(); }
+function authKeyHandler(e) {
+  if (e.key === "Escape") { closeAuth(); return; }
+  if (e.key === "Tab") {
+    const modal = document.querySelector(".modal");
+    if (!modal) return;
+    const focusable = modal.querySelectorAll('input, button, a, [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+}
 
 function renderAuthModal() {
   const el = document.getElementById("auth-modal");
@@ -415,13 +432,13 @@ function renderAuthModal() {
       <div class="modal" role="dialog" aria-modal="true">
         <div class="modal-header">
           <h2 class="modal-title">${authMode === "login" ? "Welcome Back" : "Create Account"}</h2>
-          <button class="modal-close" onclick="closeAuth()" aria-label="Close">✕</button>
+          <button class="modal-close" onclick="closeAuth()" aria-label="Close" type="button">✕</button>
         </div>
         <div id="auth-error" class="form-error hidden"></div>
         ${authMode === "signup" ? `<div class="form-group"><input id="auth-name" class="form-input" placeholder="Full Name" autocomplete="name" /></div>` : ""}
         <div class="form-group"><input id="auth-email" class="form-input" type="email" placeholder="Email address" autocomplete="email" /></div>
         <div class="form-group"><input id="auth-pass" class="form-input" type="password" placeholder="Password (min 6 characters)" minlength="6" autocomplete="${authMode==="login"?"current":"new"}-password" /></div>
-        <button id="auth-submit" class="form-submit" onclick="submitAuth()">
+        <button id="auth-submit" class="form-submit" onclick="submitAuth()" type="button">
           ${authMode === "login" ? "Sign In" : "Create Account"}
         </button>
         <div class="form-switch">
@@ -570,7 +587,7 @@ function renderDashboard() {
           <input type="text" placeholder="Search medicines..." onkeydown="if(event.key==='Enter'){const v=this.value.trim();navigate('medicines');if(v)setTimeout(()=>{const el=document.getElementById('med-search');if(el){el.value=v;searchMedicines();}},100);}" />
         </div>
         <div class="dash-topbar-right">
-          <button class="dash-notif" aria-label="Notifications" title="Notifications" style="border:none;background:none;padding:0;cursor:pointer;font:inherit">${IC.bell}</button>
+          <button class="dash-notif" aria-label="Notifications" title="Notifications" onclick="showToast('No new notifications','info')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit">${IC.bell}</button>
           <button class="dash-user-chip" onclick="navigate('account')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit;text-align:left">
             <div class="chip-avatar">${initials}</div>
             <span>${escapeHtml(displayName)}</span>
@@ -845,17 +862,17 @@ function renderChat() {
         </div>
         <button class="chat-clear-btn" onclick="clearChatHistory()" title="Clear chat history">${IC.trash} Clear</button>
       </div>
-      <div class="chat-msgs" id="chat-msgs">${msgs}${typing}${prompts}</div>
+      <div class="chat-msgs" id="chat-msgs" role="log" aria-live="polite" aria-label="Chat messages">${msgs}${typing}${prompts}</div>
       ${filePreview}
       <div class="chat-input-bar">
-        <button class="chat-attach" onclick="triggerChatUpload()" title="Attach file" ${isGuest ? "disabled" : ""}>${IC.attach}</button>
+        <button class="chat-attach" onclick="triggerChatUpload()" title="Attach file" aria-label="Attach file" ${isGuest ? "disabled" : ""}>${IC.attach}</button>
         <input type="file" id="chat-file-input" multiple accept="image/*,.pdf,.txt,.doc,.docx" style="display:none" onchange="handleChatFiles(this.files)" />
         <textarea id="chat-input" class="chat-textarea" rows="1"
           placeholder="${isGuest ? "Ask Elix about your health, symptoms, or medications..." : "Ask about symptoms, medicines, drug interactions, and more..."}"
           oninput="autoResize(this)"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
           ${chatLoading ? "disabled" : ""}></textarea>
-        <button class="chat-send" id="chat-send" onclick="sendChat()" ${chatLoading ? "disabled" : ""}>${IC.send}</button>
+        <button class="chat-send" id="chat-send" onclick="sendChat()" aria-label="Send message" ${chatLoading ? "disabled" : ""}>${IC.send}</button>
       </div>
     </div>`;
 
@@ -949,7 +966,7 @@ function renderMedicines() {
         <button class="btn btn-primary" onclick="searchMedicines()">Search</button>
         <button class="btn btn-ghost" onclick="clearMedSearch()">Clear</button>
       </div>
-      <div id="med-results" class="search-results">
+      <div id="med-results" class="search-results" aria-live="polite">
         <div class="empty-state"><div class="empty-icon">${IC.search}</div><p>Search for a medicine to see results</p></div>
       </div>
     </div>`;
@@ -1048,7 +1065,7 @@ function renderDiseaseMedCard(m) {
   const commonSE = m.side_effects_common || [];
   const seriousSE = m.side_effects_serious || [];
 
-  let html = `<div class="med-card" onclick="this.classList.toggle('med-card-open')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){this.classList.toggle('med-card-open');event.preventDefault()}">
+  let html = `<div class="med-card" onclick="this.classList.toggle('med-card-open');this.setAttribute('aria-expanded',this.classList.contains('med-card-open'))" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' '){this.classList.toggle('med-card-open');this.setAttribute('aria-expanded',this.classList.contains('med-card-open'));event.preventDefault()}">
     <div class="med-card-header">
       <div>
         <h3 class="med-card-name">${name}</h3>
@@ -1111,7 +1128,7 @@ function renderMedicineCard(i) {
   const pregnancy = i.pregnancy;
   const storage = i.storage;
 
-  let html = `<div class="med-card" onclick="this.classList.toggle('med-card-open')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){this.classList.toggle('med-card-open');event.preventDefault()}">
+  let html = `<div class="med-card" onclick="this.classList.toggle('med-card-open');this.setAttribute('aria-expanded',this.classList.contains('med-card-open'))" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' '){this.classList.toggle('med-card-open');this.setAttribute('aria-expanded',this.classList.contains('med-card-open'));event.preventDefault()}">
     <div class="med-card-header">
       <div>
         <h3 class="med-card-name">${name}</h3>
@@ -1221,7 +1238,7 @@ function renderHospitals() {
         <button class="btn btn-primary" onclick="searchHospitals()">Search</button>
         <button class="btn btn-ghost" onclick="clearHospSearch()">Clear</button>
       </div>
-      <div id="hosp-results" class="search-results">
+      <div id="hosp-results" class="search-results" aria-live="polite">
         <div class="empty-state"><div class="empty-icon">${IC.hospital}</div><p>${userLat ? "Tap Search to find nearby hospitals" : "Tap \"Use My Location\" to find hospitals near you"}</p></div>
       </div>
     </div>`;
@@ -1311,7 +1328,7 @@ function renderPharmacies() {
         <button class="btn btn-primary" onclick="searchPharmacies()">Search</button>
         <button class="btn btn-ghost" onclick="clearPharmSearch()">Clear</button>
       </div>
-      <div id="pharm-results" class="search-results">
+      <div id="pharm-results" class="search-results" aria-live="polite">
         <div class="empty-state"><div class="empty-icon">${IC.pharmacy}</div><p>${userLat ? "Tap Search to find nearby pharmacies" : "Tap \"Use My Location\" to find pharmacies near you"}</p></div>
       </div>
     </div>`;
