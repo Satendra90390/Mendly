@@ -7,11 +7,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Mendly — Your AI Health Companion. Chat with Elix, search medicines, find nearby hospitals." />
+  <meta property="og:title" content="Mendly — AI Health Companion" />
+  <meta property="og:description" content="Chat with Elix AI, search medicines, find nearby hospitals, and track your health — all in one place." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mendlyapp.web.app" />
+  <meta property="og:image" content="https://mendlyapp.web.app/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mendly — AI Health Companion" />
+  <meta name="twitter:description" content="Chat with Elix AI, search medicines, find nearby hospitals, and track your health." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%231a8a7d'/><stop offset='1' stop-color='%230ea5e9'/></linearGradient></defs><rect width='40' height='40' rx='10' fill='url(%23g)'/><path d='M20 10 L20 30 M10 20 L30 20' stroke='white' stroke-width='4' stroke-linecap='round'/></svg>" />
   <title>Mendly — AI Medical Companion</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -54,10 +63,10 @@
             <button class="btn btn-ghost btn-lg" onclick="navigate('features')">Explore Mendly</button>
           </div>
           <div class="hero-trust">
-            <div class="trust-item"><span class="trust-icon">🤖</span> AI-Powered</div>
-            <div class="trust-item"><span class="trust-icon">🔒</span> Secure &amp; Private</div>
-            <div class="trust-item"><span class="trust-icon">✅</span> Trusted Information</div>
-            <div class="trust-item"><span class="trust-icon">💚</span> Free to Use</div>
+            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"/><path d="M12 6v6l4 2"/></svg></span> AI-Powered</div>
+            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> Secure &amp; Private</div>
+            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span> Trusted Info</div>
+            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/></svg></span> Free to Use</div>
           </div>
         </div>
         <div class="hero-visual">
@@ -75,21 +84,21 @@
               </div>
             </div>
             <div class="hero-feature-pill pill-top-right">
-              <span class="pill-icon">💊</span>
+              <span class="pill-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></span>
               <div>
                 <div class="pill-title">Medicine Guide</div>
                 <div class="pill-sub">Explore medicines and their uses</div>
               </div>
             </div>
             <div class="hero-feature-pill pill-mid-right">
-              <span class="pill-icon">📍</span>
+              <span class="pill-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
               <div>
                 <div class="pill-title">Nearby Care</div>
                 <div class="pill-sub">Hospitals, clinics &amp; pharmacies</div>
               </div>
             </div>
             <div class="hero-feature-pill pill-bot-right">
-              <span class="pill-icon">❤️</span>
+              <span class="pill-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span>
               <div>
                 <div class="pill-title">Health Tracking</div>
                 <div class="pill-sub">Track your health and improve</div>
@@ -109,7 +118,7 @@
         <div class="features-grid-4">
           <div class="feature-tile" onclick="navigate('chat')">
             <div class="feature-tile-img feature-tile-chat">
-              <div class="ft-icon-wrap">💬</div>
+              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             </div>
             <div class="feature-tile-body">
               <h3>AI Health Chat</h3>
@@ -119,7 +128,7 @@
           </div>
           <div class="feature-tile" onclick="navigate('medicines')">
             <div class="feature-tile-img feature-tile-meds">
-              <div class="ft-icon-wrap">💊</div>
+              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></div>
             </div>
             <div class="feature-tile-body">
               <h3>Medicine Guide</h3>
@@ -129,7 +138,7 @@
           </div>
           <div class="feature-tile" onclick="navigate('hospitals')">
             <div class="feature-tile-img feature-tile-nearby">
-              <div class="ft-icon-wrap">📍</div>
+              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
             </div>
             <div class="feature-tile-body">
               <h3>Nearby Care</h3>
@@ -139,7 +148,7 @@
           </div>
           <div class="feature-tile" onclick="openAuth('signup')">
             <div class="feature-tile-img feature-tile-track">
-              <div class="ft-icon-wrap">📈</div>
+              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
             </div>
             <div class="feature-tile-body">
               <h3>Health Tracking</h3>
@@ -178,11 +187,10 @@
                 <div class="ai-name">Elix</div>
                 <div class="ai-role">AI Health Companion</div>
               </div>
-              <button class="ai-close">✕</button>
             </div>
             <div class="ai-chat-body">
               <div class="ai-question-chip">What causes a headache?</div>
-              <div class="ai-msg ai-bot">
+              <div class="ai-msg">
                 Headaches can be caused by stress, dehydration, lack of sleep, eye strain, or certain medical conditions.
                 <br /><br />Would you like tips to feel better?
               </div>
@@ -191,7 +199,7 @@
               </div>
             </div>
             <div class="ai-chat-input-row">
-              <input placeholder="Ask Elix a health question..." />
+              <input placeholder="Ask Elix a health question..." onclick="navigate('chat')" readonly />
               <button onclick="navigate('chat')">➤</button>
             </div>
           </div>
@@ -223,11 +231,11 @@
             <button class="fd-btn" onclick="navigate('hospitals')">Find Nearby →</button>
             <div class="fd-visual map-visual">
               <div class="map-pin-card">
-                <div class="map-pin">📍</div>
+                <div class="map-pin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
                 <div class="map-label">City Hospital <span>2 miles</span></div>
               </div>
               <div class="map-pin-card small">
-                <div class="map-pin">🏥</div>
+                <div class="map-pin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
                 <div class="map-label">MedPlus Pharmacy</div>
               </div>
             </div>
@@ -261,21 +269,21 @@
         <div class="how-steps">
           <div class="how-step">
             <div class="how-step-num">01</div>
-            <div class="how-step-icon">💬</div>
+            <div class="how-step-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <h3>Ask</h3>
             <p>Ask Elix anything about your health or search what you need.</p>
           </div>
           <div class="how-step-line"></div>
           <div class="how-step">
             <div class="how-step-num">02</div>
-            <div class="how-step-icon">🔍</div>
+            <div class="how-step-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
             <h3>Understand</h3>
             <p>Get simple, reliable and easy to understand information.</p>
           </div>
           <div class="how-step-line"></div>
           <div class="how-step">
             <div class="how-step-num">03</div>
-            <div class="how-step-icon">🎯</div>
+            <div class="how-step-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
             <h3>Take Action</h3>
             <p>Find medicines, nearby care and track your health.</p>
           </div>
@@ -288,7 +296,7 @@
       <div class="container">
         <div class="safety-card">
           <div class="safety-icon-wrap">
-            <div class="safety-shield">🛡️</div>
+            <div class="safety-shield"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
           </div>
           <div class="safety-content">
             <h2>Safety First, <span class="gradient-text">Always</span></h2>
@@ -296,22 +304,22 @@
           </div>
           <div class="safety-grid">
             <div class="safety-item">
-              <div class="safety-item-icon">🩺</div>
+              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg></div>
               <div class="safety-item-title">Not a Diagnosis</div>
               <div class="safety-item-text">Elix does not diagnose or replace professional medical advice.</div>
             </div>
             <div class="safety-item">
-              <div class="safety-item-icon">🆘</div>
+              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div>
               <div class="safety-item-title">Crisis Support</div>
               <div class="safety-item-text">Get help in critical situations with crisis hotlines.</div>
             </div>
             <div class="safety-item">
-              <div class="safety-item-icon">📋</div>
+              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
               <div class="safety-item-title">Trusted Sources</div>
               <div class="safety-item-text">Information is curated from trusted medical sources.</div>
             </div>
             <div class="safety-item">
-              <div class="safety-item-icon">🔐</div>
+              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
               <div class="safety-item-title">Your Privacy</div>
               <div class="safety-item-text">Your data is encrypted and always kept confidential.</div>
             </div>
@@ -329,28 +337,28 @@
         </div>
         <div class="faq-grid">
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-1">
               <span>Is Mendly free to use?</span><span class="faq-icon">▼</span>
             </button>
-            <div class="faq-answer">Yes! Mendly is 100% free for AI health chat, medicine lookup, drug interaction checks, and emergency contact access. Creating a free account lets you save history and upload medical documents.</div>
+            <div class="faq-answer" id="faq-1">Yes! Mendly is 100% free for AI health chat, medicine lookup, drug interaction checks, and emergency contact access. Creating a free account lets you save history and upload medical documents.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-2">
               <span>Can Elix AI replace my doctor?</span><span class="faq-icon">▼</span>
             </button>
-            <div class="faq-answer">No. Elix is an educational AI designed to clarify medical terms, explain drug usage, and guide symptom research. It does not provide medical diagnoses. Always consult a licensed physician for medical advice.</div>
+            <div class="faq-answer" id="faq-2">No. Elix is an educational AI designed to clarify medical terms, explain drug usage, and guide symptom research. It does not provide medical diagnoses. Always consult a licensed physician for medical advice.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-3">
               <span>How does the Drug Interaction Checker work?</span><span class="faq-icon">▼</span>
             </button>
-            <div class="faq-answer">Our interaction checker cross-analyzes real-time OpenFDA drug labels with clinical interaction datasets to alert you to potential contraindications and severe reactions.</div>
+            <div class="faq-answer" id="faq-3">Our interaction checker cross-analyzes real-time OpenFDA drug labels with clinical interaction datasets to alert you to potential harmful drug combinations and severe reactions.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-4">
               <span>Is my personal health data safe?</span><span class="faq-icon">▼</span>
             </button>
-            <div class="faq-answer">Yes. We enforce SSL encryption, strict rate limiting, JWT token security, and CORS policies to keep your information secure and private.</div>
+            <div class="faq-answer" id="faq-4">Yes. We use industry-standard encryption, secure authentication, and strict access controls to keep your information safe and private.</div>
           </div>
         </div>
       </div>
@@ -362,7 +370,7 @@
         <div class="cta-banner">
           <div class="cta-banner-left">
             <div class="cta-logo">
-              <div class="logo-icon-wrap">${''/* injected by JS */}</div>
+              <div class="logo-icon-wrap" id="cta-logo-icon"></div>
               <span>Mendly</span>
             </div>
             <h2>Take control of your health<br />with Mendly</h2>
@@ -385,45 +393,29 @@
               <span>Mendly</span>
             </div>
             <p>Your AI-powered health companion for a healthier, happier you.</p>
-            <div class="footer-socials">
-              <a href="#" aria-label="Twitter">𝕏</a>
-              <a href="#" aria-label="Facebook">f</a>
-              <a href="#" aria-label="Instagram">📷</a>
-            </div>
           </div>
           <div class="footer-col">
             <h4>Product</h4>
-            <a href="#features">AI Health Chat</a>
-            <a href="#features">Medicine Guide</a>
-            <a href="#features">Nearby Care</a>
+            <a href="#chat">AI Health Chat</a>
+            <a href="#medicines">Medicine Guide</a>
+            <a href="#hospitals">Nearby Care</a>
             <a href="#features">Health Tracking</a>
           </div>
           <div class="footer-col">
             <h4>Company</h4>
             <a href="#about">About Us</a>
-            <a href="#">Careers</a>
-            <a href="#">Blog</a>
-            <a href="#">Press</a>
-            <a href="#">Contact</a>
+            <a href="#features">Features</a>
+            <a href="#how">How It Works</a>
+            <a href="#faq">FAQ</a>
           </div>
           <div class="footer-col">
             <h4>Support</h4>
-            <a href="#">Help Center</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Safety Center</a>
-            <a href="#">Contact Support</a>
-          </div>
-          <div class="footer-col">
-            <h4>Legal</h4>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Data Policy</a>
-            <a href="#">Disclaimer</a>
+            <a href="#faq">FAQ</a>
+            <a href="#about">About Mendly</a>
           </div>
         </div>
         <div class="footer-bottom">
-          <span>© 2026 Mendly. All rights reserved.</span>
+          <span>&copy; 2026 Mendly. All rights reserved.</span>
           <span>Not a substitute for professional medical advice.</span>
         </div>
       </div>
@@ -438,40 +430,10 @@
   <div id="view-medicines" class="view"></div>
 
    <!-- Hospitals view -->
-   <div id="view-hospitals" class="view">
-     <div class="page">
-       <div class="page-header">
-         <h2 class="page-title"><span class="page-title-icon">🏥</span> Nearby Hospitals &amp; Clinics</h2>
-         <p class="page-sub">Search by city or use your location. Finds hospitals, clinics, medical centers, and more.</p>
-       </div>
-       <div class="search-row">
-         <input id="hosp-search" class="search-input" placeholder="Search city, hospital, or medical center..." onkeydown="if(event.key==='Enter')searchHospitals()" />
-         <button class="btn btn-primary" onclick="searchHospitals()">Search</button>
-         <button class="btn btn-ghost" onclick="clearHospSearch()">Clear</button>
-       </div>
-       <div id="hosp-results" class="search-results">
-         <div class="empty-state"><div class="empty-icon">🔍</div><p>Search for hospitals and clinics in your area</p></div>
-       </div>
-     </div>
-   </div>
+   <div id="view-hospitals" class="view"></div>
 
    <!-- Pharmacies view -->
-   <div id="view-pharmacies" class="view">
-     <div class="page">
-       <div class="page-header">
-         <h2 class="page-title"><span class="page-title-icon">🏪</span> Nearby Pharmacies</h2>
-         <p class="page-sub">Find pharmacies, drugstores, and medical shops near you or by name.</p>
-       </div>
-       <div class="search-row">
-         <input id="pharm-search" class="search-input" placeholder="Search city, pharmacy, or medical store..." onkeydown="if(event.key==='Enter')searchPharmacies()" />
-         <button class="btn btn-primary" onclick="searchPharmacies()">Search</button>
-         <button class="btn btn-ghost" onclick="clearPharmSearch()">Clear</button>
-       </div>
-       <div id="pharm-results" class="search-results">
-         <div class="empty-state"><div class="empty-icon">🔍</div><p>Search for pharmacies and medical stores in your area</p></div>
-       </div>
-     </div>
-   </div>
+   <div id="view-pharmacies" class="view"></div>
 
   <div id="view-more" class="view"></div>
   <div id="view-account" class="view"></div>
@@ -480,11 +442,19 @@
   <div id="auth-modal"></div>
 
   <!-- Mobile Bottom Nav -->
-  <nav id="mobile-nav" class="mobile-nav"></nav>
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation"></nav>
 
   <!-- Mobile sidebar toggle (visible on mobile when logged in) -->
-  <button id="mobile-sidebar-toggle" class="mobile-sidebar-toggle" onclick="openSidebar()" aria-label="Open menu">☰</button>
+  <button id="mobile-sidebar-toggle" class="mobile-sidebar-toggle" onclick="openSidebar()" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 
+  <noscript>
+    <div style="text-align:center;padding:80px 24px;font-family:Inter,sans-serif">
+      <h1 style="color:#1a8a7d;margin-bottom:12px">Mendly requires JavaScript</h1>
+      <p style="color:#64748b">Please enable JavaScript in your browser to use this application.</p>
+    </div>
+  </noscript>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
