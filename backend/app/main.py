@@ -304,7 +304,7 @@ async def search_medicines(request: Request, payload: schemas.MedicineSearch):
     resolved = DRUG_ALIASES.get(q, q)
     alias_match = q
     for alias, real in DRUG_ALIASES.items():
-        if alias in q or q in alias:
+        if q == alias or alias in q.split() or q in alias.split():
             alias_match = real
             break
 
@@ -328,8 +328,9 @@ async def search_medicines(request: Request, payload: schemas.MedicineSearch):
     merged = local_results + [m for m in live_results if m["name"].lower() not in local_names]
 
     if not merged:
+        # Try disease/condition knowledge base
         for disease_name, info in DISEASE_KNOWLEDGE.items():
-            if q in disease_name or disease_name in q:
+            if q in disease_name or disease_name in q or any(q in sym.lower() for sym in info.get("symptoms", [])):
                 for med_name in info.get("treatment", []):
                     found = next((m for m in LOCAL_MEDICINES if m["name"].lower() in med_name.lower()), None)
                     if not found:
