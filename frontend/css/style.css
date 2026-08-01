@@ -683,6 +683,7 @@ body.logged-in { --header-h: 0; }
   flex: 1; overflow-y: auto; padding: 28px 28px 100px;
   background: var(--bg);
 }
+.dash-main-inner { max-width: 960px; margin: 0 auto; }
 @media (max-width: 768px) { .dash-sidebar { display: none; } .dash-main { padding: 16px 16px 100px; } }
 
 /* Top search & user bar */
@@ -753,8 +754,12 @@ body.logged-in { --header-h: 0; }
 .dash-section-title { font-size: 15px; font-weight: 700; color: var(--fg); margin-bottom: 14px; }
 
 /* ── Quick Actions in dashboard ── */
-.dash-quick-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
-@media (max-width: 700px) { .dash-quick-grid { grid-template-columns: repeat(2,1fr); } }
+.dash-quick-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; max-width: 640px; }
+@media (max-width: 700px) { .dash-quick-grid { grid-template-columns: repeat(2,1fr); max-width: 100%; } }
+.dash-content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dash-content-left { display: flex; flex-direction: column; gap: 20px; }
+.dash-content-right { display: flex; flex-direction: column; gap: 20px; }
+@media (max-width: 768px) { .dash-content-grid { grid-template-columns: 1fr; } }
 .dash-quick-card {
   background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
   padding: 18px 16px; cursor: pointer; transition: all var(--transition-slow);
@@ -1183,7 +1188,9 @@ body:not(.has-sidebar) .mobile-sidebar-toggle { display: none !important; }
   html { scroll-behavior: auto; }
 }
 
-/* ── Responsive section padding ── */
+/* ── Weather Widget Scroll ── */
+.dash-stat-card #dash-weather-content::-webkit-scrollbar { height: 0; }
+#dash-weather-content { scrollbar-width: none; }
 @media (max-width: 600px) {
   .section { padding: 56px 0; }
 }

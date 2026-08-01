@@ -252,7 +252,7 @@ function render() {
 
   switch (targetView) {
     case "landing":   injectStaticLogos(); break;
-    case "dashboard": renderDashboard(); fetchLiveWeather(); break;
+    case "dashboard": renderDashboard(); fetchLiveWeather(); fetchLiveNews(); renderQuote(); break;
     case "chat":      renderChat(); break;
     case "medicines": renderMedicines(); break;
     case "hospitals": renderHospitals(); break;
@@ -513,30 +513,194 @@ function getWeatherCategory() {
   return "mild";
 }
 
+/* ── Weather Unit State ── */
+let weatherUnit = "fahrenheit";
+let weatherData = null;
+
+function getWeatherIcon(code) {
+  if (code == null) return "☀️";
+  if (code <= 1) return "☀️";
+  if (code <= 3) return "⛅";
+  if (code <= 49) return "🌫️";
+  if (code <= 59) return "🌦️";
+  if (code <= 69) return "🌧️";
+  if (code <= 79) return "🌨️";
+  if (code <= 82) return "🌧️";
+  if (code <= 86) return "❄️";
+  if (code <= 99) return "⛈️";
+  return "🌤️";
+}
+function getWeatherDesc(code) {
+  if (code == null) return "Unknown";
+  if (code <= 0) return "Clear Sky";
+  if (code <= 1) return "Mainly Clear";
+  if (code <= 3) return "Partly Cloudy";
+  if (code <= 49) return "Foggy";
+  if (code <= 59) return "Drizzle";
+  if (code <= 69) return "Rain";
+  if (code <= 79) return "Snow";
+  if (code <= 82) return "Rain Showers";
+  if (code <= 86) return "Snow Showers";
+  if (code <= 99) return "Thunderstorm";
+  return "Unknown";
+}
+function convertTemp(celsiusF) {
+  if (weatherUnit === "celsius") return Math.round(celsiusF);
+  return Math.round(celsiusF * 9/5 + 32);
+}
+function unitLabel() { return weatherUnit === "celsius" ? "°C" : "°F"; }
+function toggleWeatherUnit(u) {
+  weatherUnit = u;
+  renderWeatherWidget();
+}
+
+function renderWeatherWidget() {
+  const el = document.getElementById("dash-weather-content");
+  if (!el || !weatherData) return;
+  const c = weatherData.current;
+  const hourly = weatherData.hourly;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+  const dateStr = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const code = c.weather_code || 0;
+  const temp = convertTemp(c.temperature_2m);
+  const feelsLike = c.apparent_temperature != null ? convertTemp(c.apparent_temperature) : null;
+  const humidity = c.relative_humidity_2m;
+  const wind = c.wind_speed_10m != null ? Math.round(c.wind_speed_10m) : null;
+  const windDir = c.wind_direction_10m;
+  const uvIndex = c.uv_index;
+  const visibility = c.visibility;
+
+  // Build hourly forecast (next 12 hours)
+  let hourlyHtml = "";
+  if (hourly && hourly.time) {
+    const currentHour = now.getHours();
+    const items = [];
+    for (let i = 0; i < hourly.time.length && items.length < 12; i++) {
+      const h = new Date(hourly.time[i]);
+      if (h <= now) continue;
+      items.push({
+        time: h.toLocaleTimeString("en-US", { hour: "numeric", hour12: true }),
+        temp: convertTemp(hourly.temperature_2m[i]),
+        code: hourly.weather_code[i],
+      });
+    }
+    hourlyHtml = items.map(h => `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:52px">
+        <span style="font-size:11px;color:var(--muted)">${h.time}</span>
+        <span style="font-size:20px">${getWeatherIcon(h.code)}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--fg)">${h.temp}°</span>
+      </div>`).join("");
+  }
+
+  // Build daily forecast (next 7 days)
+  let dailyHtml = "";
+  if (weatherData.daily && weatherData.daily.time) {
+    const days = weatherData.daily;
+    dailyHtml = days.time.slice(0, 7).map((d, i) => {
+      const dayDate = new Date(d + "T00:00:00");
+      const dayName = i === 0 ? "Today" : dayDate.toLocaleDateString("en-US", { weekday: "short" });
+      const hi = convertTemp(days.temperature_2m_max[i]);
+      const lo = convertTemp(days.temperature_2m_min[i]);
+      const code = days.weather_code[i];
+      return `
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;font-weight:600;width:50px;color:var(--fg)">${dayName}</span>
+          <span style="font-size:18px;width:28px;text-align:center">${getWeatherIcon(code)}</span>
+          <span style="flex:1;font-size:12px;color:var(--muted)">${getWeatherDesc(code)}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--fg)">${hi}°</span>
+          <span style="font-size:13px;color:var(--muted)">${lo}°</span>
+        </div>`;
+    }).join("");
+  }
+
+  // Build mini temperature graph (SVG)
+  let graphHtml = "";
+  if (hourly && hourly.time) {
+    const now2 = new Date();
+    const temps = [];
+    for (let i = 0; i < hourly.time.length && temps.length < 24; i++) {
+      const h = new Date(hourly.time[i]);
+      if (h <= now2) continue;
+      temps.push(convertTemp(hourly.temperature_2m[i]));
+    }
+    if (temps.length > 1) {
+      const min = Math.min(...temps);
+      const max = Math.max(...temps);
+      const range = max - min || 1;
+      const w = 100;
+      const h = 40;
+      const points = temps.map((t, i) => {
+        const x = (i / (temps.length - 1)) * w;
+        const y = h - ((t - min) / range) * (h - 8) - 4;
+        return `${x},${y}`;
+      }).join(" ");
+      const areaPoints = `0,${h} ${points} ${w},${h}`;
+      graphHtml = `
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:60px;margin:8px 0" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+          <polygon points="${areaPoints}" fill="url(#tempGrad)" />
+          <polyline points="${points}" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          ${temps.map((t, i) => {
+            const x = (i / (temps.length - 1)) * w;
+            const y = h - ((t - min) / range) * (h - 8) - 4;
+            return `<circle cx="${x}" cy="${y}" r="1.5" fill="var(--primary)" opacity="0.6"/>`;
+          }).join("")}
+        </svg>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)">
+          <span>${min}°</span><span>${Math.round((min+max)/2)}°</span><span>${max}°</span>
+        </div>`;
+    }
+  }
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:48px;line-height:1">${getWeatherIcon(code)}</span>
+          <span style="font-size:42px;font-weight:800;color:var(--fg);line-height:1">${temp}<span style="font-size:20px;font-weight:600">${unitLabel()}</span></span>
+        </div>
+        <div style="font-size:15px;font-weight:600;color:var(--fg);margin-bottom:2px">${getWeatherDesc(code)}</div>
+        ${feelsLike != null ? `<div style="font-size:13px;color:var(--muted)">Feels like ${feelsLike}${unitLabel()}</div>` : ""}
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:600;color:var(--fg)">${dateStr}</div>
+        <div style="font-size:12px;color:var(--muted)">${timeStr}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:2px;margin:12px 0;background:var(--bg);border-radius:999px;padding:3px;width:fit-content">
+      <button onclick="toggleWeatherUnit('fahrenheit')" style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:${weatherUnit==='fahrenheit'?'var(--primary)':'transparent'};color:${weatherUnit==='fahrenheit'?'#fff':'var(--muted)'}">°F</button>
+      <button onclick="toggleWeatherUnit('celsius')" style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:${weatherUnit==='celsius'?'var(--primary)':'transparent'};color:${weatherUnit==='celsius'?'#fff':'var(--muted)'}">°C</button>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 12px">
+      ${humidity != null ? `<div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)">${IC.thermometer} <b>${humidity}%</b> Humidity</div>` : ""}
+      ${wind != null ? `<div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)">💨 <b>${wind} mph</b> Wind</div>` : ""}
+      ${uvIndex != null ? `<div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)">☀️ UV <b>${Math.round(uvIndex)}</b></div>` : ""}
+    </div>
+    ${graphHtml}
+    ${hourlyHtml ? `<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:8px"><div style="font-size:12px;font-weight:700;color:var(--fg);margin-bottom:8px">Hourly Forecast</div><div style="display:flex;gap:4px;overflow-x:auto;padding-bottom:4px">${hourlyHtml}</div></div>` : ""}
+    ${dailyHtml ? `<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:12px"><div style="font-size:12px;font-weight:700;color:var(--fg);margin-bottom:8px">7-Day Forecast</div>${dailyHtml}</div>` : ""}`;
+}
+
 async function fetchLiveWeather() {
   const el = document.getElementById("dash-weather-content");
   if (!el) return;
   try {
     const pos = await new Promise((resolve, reject) => {
       if (!navigator.geolocation) { reject(new Error("no geo")); return; }
-      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
     });
     const lat = pos.coords.latitude, lng = pos.coords.longitude;
-    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit`);
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,uv_index,visibility&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=celsius&timezone=auto&forecast_days=7`);
     const d = await r.json();
-    const c = d.current;
-    if (!c || c.temperature_2m == null) { el.innerHTML = `<span style="font-size:13px">Weather data unavailable</span>`; return; }
-    const wmo = c.weather_code || 0;
-    const desc = wmo <= 1 ? "Clear" : wmo <= 3 ? "Cloudy" : wmo <= 49 ? "Fog" : wmo <= 59 ? "Drizzle" : wmo <= 69 ? "Rain" : wmo <= 79 ? "Snow" : wmo <= 99 ? "Storm" : "Unknown";
-    el.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-        <span style="font-size:28px;font-weight:800;color:var(--fg)">${Math.round(c.temperature_2m)}°F</span>
-        <span style="font-size:13px;color:var(--muted)">${desc}</span>
-      </div>
-      <div style="display:flex;gap:16px;font-size:12px;color:var(--muted)">
-        <span>${IC.thermometer} ${c.relative_humidity_2m ?? "—"}% humidity</span>
-        <span>${IC.shoe} ${c.wind_speed_10m != null ? Math.round(c.wind_speed_10m) : "—"} mph wind</span>
-      </div>`;
+    if (!d.current || d.current.temperature_2m == null) { el.innerHTML = `<span style="font-size:13px">Weather data unavailable</span>`; return; }
+    weatherData = d;
+    renderWeatherWidget();
   } catch(e) {
     el.innerHTML = `<span style="font-size:13px">Enable location for live weather</span>`;
   }
@@ -549,14 +713,6 @@ function renderDashboard() {
     : "Recent";
   const initials = (state.user?.name || state.user?.email || "U").charAt(0).toUpperCase();
   const displayName = (state.user?.name || "User").split(" ").slice(0, 2).join(" ");
-
-  const lv = getLatestVitals();
-  const hr = lv.heart_rate?.value || "—";
-  const bpSys = lv.bp_sys?.value || "—";
-  const bpDia = lv.bp_dia?.value || "—";
-  const wt = lv.weight?.value || "—";
-  const steps = lv.steps?.value || "—";
-  const temp = lv.temperature?.value || "—";
 
   const quickActions = [
     { icon: IC.chat,     label: "Elix AI",    hash: "chat",      color: "rgba(26,138,125,0.12)", iconColor: "var(--primary)" },
@@ -581,6 +737,7 @@ function renderDashboard() {
     </div>
 
     <div class="dash-main">
+      <div class="dash-main-inner">
       <div class="dash-topbar">
         <div class="dash-search">
           <span class="dash-search-icon">${IC.search}</span>
@@ -604,115 +761,38 @@ function renderDashboard() {
           </button>`).join("")}
       </div>
 
-      <!-- Quick Vitals Input -->
-      <div class="dash-stat-card" style="margin-bottom:20px">
-        <div class="dash-stat-title">Log Vitals <span style="font-size:12px;color:var(--muted);font-weight:400">tap to add</span></div>
-        <div class="vitals-input-grid">
-          <div class="vitals-input-item">
-            <label>${IC.heart} Heart Rate</label>
-            <div class="vitals-input-row">
-              <input type="number" id="v-hr" class="vitals-input" placeholder="72" min="30" max="250" />
-              <span class="vitals-unit">bpm</span>
-              <button class="btn btn-primary btn-sm" onclick="logVital('heart_rate','v-hr','bpm')">Save</button>
-            </div>
-          </div>
-          <div class="vitals-input-item">
-            <label>${IC.stethoscope} Blood Pressure</label>
-            <div class="vitals-input-row">
-              <input type="number" id="v-sys" class="vitals-input" placeholder="120" min="60" max="250" />
-              <span class="vitals-unit">/</span>
-              <input type="number" id="v-dia" class="vitals-input" placeholder="80" min="30" max="160" />
-              <span class="vitals-unit">mmHg</span>
-              <button class="btn btn-primary btn-sm" onclick="logBp()">Save</button>
-            </div>
-          </div>
-          <div class="vitals-input-item">
-            <label>${IC.scale} Weight</label>
-            <div class="vitals-input-row">
-              <input type="number" id="v-wt" class="vitals-input" placeholder="70" min="20" max="300" step="0.1" />
-              <span class="vitals-unit">kg</span>
-              <button class="btn btn-primary btn-sm" onclick="logVital('weight','v-wt','kg')">Save</button>
-            </div>
-          </div>
-          <div class="vitals-input-item">
-            <label>${IC.shoe} Steps</label>
-            <div class="vitals-input-row">
-              <input type="number" id="v-steps" class="vitals-input" placeholder="8000" min="0" max="100000" />
-              <span class="vitals-unit">steps</span>
-              <button class="btn btn-primary btn-sm" onclick="logVital('steps','v-steps','steps')">Save</button>
-            </div>
-          </div>
-          <div class="vitals-input-item">
-            <label>${IC.thermometer} Temperature</label>
-            <div class="vitals-input-row">
-              <input type="number" id="v-temp" class="vitals-input" placeholder="98.6" min="90" max="110" step="0.1" />
-              <span class="vitals-unit">°F</span>
-              <button class="btn btn-primary btn-sm" onclick="logVital('temperature','v-temp','°F')">Save</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Live Vitals Display -->
-      <div class="dash-grid">
-        <div class="dash-left-col">
-          <div class="dash-stat-card" style="margin-bottom:20px">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--danger)">${IC.heart} Heart Rate</span></div>
-            <div class="vital-big">${hr} <span class="vital-unit">${hr !== "—" ? "bpm" : ""}</span></div>
-            <div class="vital-sub">${lv.heart_rate ? new Date(lv.heart_rate.ts).toLocaleTimeString() : "No data yet"}</div>
-          </div>
-          <div class="dash-stat-card" style="margin-bottom:20px">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--accent)">${IC.stethoscope} Blood Pressure</span></div>
-            <div class="vital-big">${bpSys}/${bpDia} <span class="vital-unit">${bpSys !== "—" ? "mmHg" : ""}</span></div>
-            <div class="vital-sub">${lv.bp_sys ? new Date(lv.bp_sys.ts).toLocaleTimeString() : "No data yet"}</div>
-          </div>
-          <div class="dash-stat-card">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.thermometer} Temperature</span></div>
-            <div class="vital-big">${temp} <span class="vital-unit">${temp !== "—" ? "°F" : ""}</span></div>
-            <div class="vital-sub">${lv.temperature ? new Date(lv.temperature.ts).toLocaleTimeString() : "No data yet"}</div>
-          </div>
-        </div>
-
-        <div class="dash-center">
-          <div class="dash-stat-card">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--primary)">${IC.scale} Weight</span></div>
-            <div class="vital-big">${wt} <span class="vital-unit">${wt !== "—" ? "kg" : ""}</span></div>
-            <div class="vital-sub">${lv.weight ? new Date(lv.weight.ts).toLocaleTimeString() : "No data yet"}</div>
-          </div>
-          <div class="dash-stat-card">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#8b5cf6">${IC.shoe} Steps Today</span></div>
-            <div class="vital-big">${typeof steps === "number" ? steps.toLocaleString() : steps} <span class="vital-unit">${steps !== "—" ? "steps" : ""}</span></div>
-            <div class="vital-sub">${lv.steps ? new Date(lv.steps.ts).toLocaleTimeString() : "No data yet"}</div>
-          </div>
-
-          <div class="dash-stat-card" id="dash-weather-info" style="border-left:3px solid #f59e0b">
+      <div class="dash-content-grid">
+        <!-- Left Column -->
+        <div class="dash-content-left">
+          <!-- Weather Now -->
+          <div class="dash-stat-card" id="dash-weather-info">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} Weather Now</span></div>
             <div id="dash-weather-content" style="color:var(--muted);font-size:13px">Loading weather...</div>
           </div>
-        </div>
 
-        <div class="dash-right-col">
+          <!-- Weather Tips -->
           <div class="dash-stat-card">
-            <div class="dash-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.activity} Recent Logs</span></div>
-            <div id="vitals-log-list">
-              ${renderVitalsLog()}
-            </div>
-          </div>
-
-          <!-- Weather-Based Health -->
-          <div class="dash-stat-card" style="border-left:3px solid #f59e0b">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} ${weather.title}</span></div>
+            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} ${weather.title} Tips</span></div>
             <ul class="dash-health-list">
               ${weather.tips.map(t => `<li>${t}</li>`).join("")}
             </ul>
           </div>
 
-          <!-- Food Suggestions -->
-          <div class="dash-stat-card" style="border-left:3px solid var(--primary)">
+          <!-- What to Eat -->
+          <div class="dash-stat-card">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--primary)">${IC.pill} What to Eat Today</span></div>
             <ul class="dash-health-list">
               ${weather.food.map(f => `<li>${f}</li>`).join("")}
             </ul>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="dash-content-right">
+          <!-- Live Health News (fetched) -->
+          <div class="dash-stat-card" id="dash-live-news">
+            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px">${IC.info} Live Health News</span></div>
+            <div id="live-news-content" style="font-size:13px;color:var(--muted)">Loading latest news...</div>
           </div>
 
           <!-- Health News -->
@@ -727,14 +807,118 @@ function renderDashboard() {
             </div>
           </div>
 
-          <div style="background:var(--primary-light);border:1px solid var(--primary-mid);border-radius:var(--radius);padding:14px 16px;text-align:center">
+          <!-- Daily Health Tip -->
+          <div class="dash-stat-card">
+            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--primary)">${IC.shield} Daily Health Tip</span></div>
+            <ul class="dash-health-list">
+              <li>Drink at least 8 glasses of water daily</li>
+              <li>Aim for 7-9 hours of sleep each night</li>
+              <li>Take short walking breaks every hour</li>
+              <li>Include fruits and vegetables in every meal</li>
+              <li>Practice deep breathing for 5 minutes daily</li>
+            </ul>
+          </div>
+
+          <!-- Member Since -->
+          <div class="dash-stat-card" style="text-align:center">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:4px">Member Since</div>
             <div style="font-size:16px;font-weight:800;font-family:var(--font-display);color:var(--fg)">${memberSince}</div>
           </div>
+
+          <!-- Quote of the Day -->
+          <div class="dash-stat-card" style="background:var(--gradient);border:none;color:#fff;text-align:center">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;opacity:0.7;margin-bottom:10px">Quote of the Day</div>
+            <div id="dash-quote-text" style="font-size:15px;font-weight:600;line-height:1.5;font-style:italic;margin-bottom:8px"></div>
+            <div id="dash-quote-author" style="font-size:12px;opacity:0.7"></div>
+          </div>
         </div>
+      </div>
       </div>
     </div>
   </div>`;
+}
+
+/* ── Live News Feed ── */
+const HEALTH_RSS_FEEDS = [
+  { url: "https://api.rss2json.com/v1/api.json?rss_url=https://www.who.int/rss-feeds/news-english.xml", tag: "WHO", color: "var(--danger)" },
+  { url: "https://api.rss2json.com/v1/api.json?rss_url=https://www.medicalnewstoday.com/newsrss", tag: "Medical News", color: "var(--primary)" },
+];
+
+async function fetchLiveNews() {
+  const el = document.getElementById("live-news-content");
+  if (!el) return;
+  try {
+    const results = [];
+    for (const feed of HEALTH_RSS_FEEDS) {
+      try {
+        const r = await fetch(feed.url, { signal: AbortSignal.timeout(5000) });
+        const d = await r.json();
+        if (d.items) {
+          d.items.slice(0, 3).forEach(item => {
+            results.push({ title: item.title, link: item.link, pubDate: item.pubDate, tag: feed.tag, color: feed.color });
+          });
+        }
+      } catch(e) { /* skip failed feed */ }
+    }
+    if (!results.length) { el.innerHTML = `<span>Latest health news will appear here</span>`; return; }
+    results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    el.innerHTML = results.slice(0, 5).map(n => {
+      const timeAgo = getTimeAgo(n.pubDate);
+      return `<a href="${n.link}" target="_blank" rel="noopener" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${n.color}">${n.tag}</span>
+          <span style="font-size:10px;color:var(--muted-2)">${timeAgo}</span>
+        </div>
+        <div style="font-size:13px;font-weight:600;color:var(--fg);line-height:1.4">${escapeHtml(n.title)}</div>
+      </a>`;
+    }).join("");
+  } catch(e) {
+    el.innerHTML = `<span>Unable to load live news</span>`;
+  }
+}
+
+function getTimeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+/* ── Quote of the Day ── */
+const HEALTH_QUOTES = [
+  { text: "The greatest wealth is health.", author: "Virgil" },
+  { text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
+  { text: "Health is not valued till sickness comes.", author: "Thomas Fuller" },
+  { text: "A healthy outside starts from the inside.", author: "Robert Urich" },
+  { text: "The first wealth is health.", author: "Ralph Waldo Emerson" },
+  { text: "Happiness is nothing more than good health and a bad memory.", author: "Albert Schweitzer" },
+  { text: "He who has health has hope; and he who has hope has everything.", author: "Thomas Carlyle" },
+  { text: "To keep the body in good health is a duty, otherwise we shall not be able to keep our mind strong and clear.", author: "Buddha" },
+  { text: "Let food be thy medicine and medicine be thy food.", author: "Hippocrates" },
+  { text: "Good health is not something we can buy. However, it can be an extremely valuable savings account.", author: "Anne Wilson Schaef" },
+  { text: "Your body hears everything your mind says.", author: "Naomi Judd" },
+  { text: "Health is a state of complete harmony of the body, mind, and spirit.", author: "B.K.S. Iyengar" },
+  { text: "The human body is the best picture of the human soul.", author: "Tony Robbins" },
+  { text: "When the heart is at ease, the body is healthy.", author: "Chinese Proverb" },
+  { text: "An ounce of prevention is worth a pound of cure.", author: "Benjamin Franklin" },
+  { text: "Early to bed and early to rise makes a man healthy, wealthy, and wise.", author: "Benjamin Franklin" },
+  { text: "Movement is a medicine for creating change in a person's physical, emotional, and mental states.", author: "Carol Welch" },
+  { text: "Water is the driving force of all nature.", author: "Leonardo da Vinci" },
+  { text: "Sleep is the best meditation.", author: "Dalai Lama" },
+  { text: "The mind and body are not separate. What affects one, affects the other.", author: "Anonymous" },
+];
+
+function renderQuote() {
+  const el = document.getElementById("dash-quote-text");
+  const authorEl = document.getElementById("dash-quote-author");
+  if (!el || !authorEl) return;
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  const q = HEALTH_QUOTES[dayOfYear % HEALTH_QUOTES.length];
+  el.textContent = `"${q.text}"`;
+  authorEl.textContent = `— ${q.author}`;
 }
 
 function renderVitalsLog() {
