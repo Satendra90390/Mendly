@@ -412,6 +412,8 @@ async def _groq_vision_answer(
 
 
 # ── NVIDIA answer ───────────────────────────────────────────────────────────
+
+async def _nvidia_answer(
     original: str,
     msg_lower: str,
     location: Optional[dict],
