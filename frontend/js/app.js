@@ -1144,6 +1144,7 @@ async function sendChat() {
 function renderMedicines() {
   const el = document.getElementById("view-medicines");
   if (!el) return;
+  const popularSearches = ["paracetamol", "ibuprofen", "amoxicillin", "diabetes", "headache", "fever", "cough", "allergy", "blood pressure", "stomach"];
   el.innerHTML = `
     <div class="page">
       <div class="page-header">
@@ -1152,20 +1153,35 @@ function renderMedicines() {
       </div>
       <div class="search-row">
         <div class="search-icon-wrap">${IC.search}</div>
-        <input id="med-search" class="search-input has-icon" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" />
+        <div style="flex:1;position:relative">
+          <input id="med-search" class="search-input has-icon" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" oninput="showMedSuggestions(this.value)" autocomplete="off" />
+          <div id="med-suggestions" class="med-suggestions" style="display:none"></div>
+        </div>
         <button class="btn btn-primary" onclick="searchMedicines()">Search</button>
         <button class="btn btn-ghost" onclick="clearMedSearch()">Clear</button>
       </div>
       <div id="med-results" class="search-results" aria-live="polite">
-        <div class="empty-state"><div class="empty-icon">${IC.search}</div><p>Search for a medicine to see results</p></div>
+        <div class="med-browse-section">
+          <h3 class="med-browse-title">Popular Medicines</h3>
+          <div class="med-browse-grid">${popularSearches.map(s => `<button class="med-browse-chip" onclick="document.getElementById('med-search').value='${s}';searchMedicines()">${s}</button>`).join("")}</div>
+        </div>
+        <div class="med-browse-section">
+          <h3 class="med-browse-title">Drug Interactions</h3>
+          <p class="med-browse-sub">Check for interactions between medicines</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <input id="interact-input" class="search-input" placeholder="e.g. ibuprofen, aspirin, warfarin" style="flex:1;min-width:200px" />
+            <button class="btn btn-primary" onclick="checkInteractions()">Check</button>
+          </div>
+          <div id="interact-results" style="margin-top:12px"></div>
+        </div>
       </div>
     </div>`;
 }
 
 function clearMedSearch() {
   const el = document.getElementById("med-search"); if (el) el.value = "";
-  const r = document.getElementById("med-results");
-  if (r) r.innerHTML = `<div class="empty-state"><div class="empty-icon">${IC.search}</div><p>Search for a medicine to see results</p></div>`;
+  const s = document.getElementById("med-suggestions"); if (s) s.style.display = "none";
+  renderMedicines();
 }
 
 async function searchMedicines() {
@@ -1176,7 +1192,7 @@ async function searchMedicines() {
   const btn = document.querySelector('[onclick="searchMedicines()"]');
   if (btn?.disabled) return;
   if (btn) btn.disabled = true;
-  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Searching medicines database...</p></div>';
+  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Searching medicines database...</p></div>';
   try {
     const res = await fetch(`${API}/medicines/search`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q }),
@@ -1304,7 +1320,58 @@ function askElixAbout(query) {
   }, 200);
 }
 
+const MED_SUGGESTIONS = ["paracetamol","ibuprofen","amoxicillin","cetirizine","omeprazole","metformin","azithromycin","amlodipine","atorvastatin","losartan","pantoprazole","diclofenac","salbutamol","levothyroxine","sertraline","escitalopram","metoprolol","naproxen","ranitidine","metronidazole","ciprofloxacin","nimesulide","montelukast","loratadine","pheniramine","diabetes","headache","fever","cough","cold","allergy","asthma","hypertension","cholesterol","infection","stomach","depression","anxiety","pain","inflammation"];
+
+function showMedSuggestions(val) {
+  const box = document.getElementById("med-suggestions");
+  if (!box) return;
+  if (!val || val.length < 2) { box.style.display = "none"; return; }
+  const q = val.toLowerCase();
+  const matches = MED_SUGGESTIONS.filter(s => s.includes(q)).slice(0, 6);
+  if (!matches.length) { box.style.display = "none"; return; }
+  box.innerHTML = matches.map(m => `<div class="med-suggestion-item" onclick="document.getElementById('med-search').value='${m}';document.getElementById('med-suggestions').style.display='none';searchMedicines()">${m}</div>`).join("");
+  box.style.display = "block";
+}
+
+async function checkInteractions() {
+  const input = document.getElementById("interact-input");
+  const res = document.getElementById("interact-results");
+  if (!input || !res) return;
+  const meds = input.value.trim();
+  if (!meds) { res.innerHTML = `<p style="color:var(--muted);font-size:13px">Enter medicine names separated by commas</p>`; return; }
+  res.innerHTML = `<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><div class="spinner" style="width:16px;height:16px"></div><span style="color:var(--muted);font-size:13px">Checking interactions...</span></div>`;
+  try {
+    const r = await fetch(`${API}/medicines/interactions`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ medication: meds, conditions: [] }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) { res.innerHTML = `<p style="color:var(--danger);font-size:13px">${escapeHtml(data.detail || "Could not check interactions")}</p>`; return; }
+    const warnings = data.warnings || [];
+    const recs = data.recommendations || [];
+    if (!warnings.length) {
+      res.innerHTML = `<div class="med-interact-ok"><span style="color:var(--success)">No significant interactions found</span> between the entered medicines. ${recs[0] ? escapeHtml(recs[0]) : ""}</div>`;
+      return;
+    }
+    res.innerHTML = warnings.map(w => {
+      const isSevere = /severe|life-threatening|do not|contraindicat/i.test(w);
+      const cls = isSevere ? "med-interact-danger" : "med-interact-warn";
+      const sev = isSevere ? "Severe" : "Caution";
+      return `<div class="med-interact-card ${cls}"><div class="med-interact-sev">${sev}</div><p class="med-interact-text">${escapeHtml(w)}</p></div>`;
+    }).join("") + (recs.length ? `<p style="font-size:12px;color:var(--muted-2);margin-top:8px">${escapeHtml(recs[recs.length - 1])}</p>` : "");
+  } catch(e) {
+    res.innerHTML = `<p style="color:var(--danger);font-size:13px">Could not check interactions. Try again.</p>`;
+  }
+}
+
+function truncText(text, limit, id) {
+  if (!text || text.length <= limit) return `<p class="med-text">${escapeHtml(text || "")}</p>`;
+  const short = escapeHtml(text.substring(0, limit));
+  const full = escapeHtml(text);
+  return `<p class="med-text med-trunc" id="mt-${id}">${short}<span class="med-trunc-more" style="display:none">...${full.substring(limit)}</span></p><button class="med-show-more" onclick="event.stopPropagation();const el=document.getElementById('mt-${id}');const btn=this;const more=el.querySelector('.med-trunc-more');if(more.style.display==='none'){more.style.display='inline';btn.textContent='Show less'}else{more.style.display='none';btn.textContent='Show more'}">Show more</button>`;
+}
+
 function renderMedicineCard(i) {
+  const uid = Math.random().toString(36).slice(2, 8);
   const name = escapeHtml(i.name || i.brand_name || i.brand || "Unknown");
   const mfg = i.manufacturer_name || i.manufacturer;
   const cat = i.category;
@@ -1349,9 +1416,9 @@ function renderMedicineCard(i) {
     html += `<div class="med-section">
       <div class="med-section-title"><span style="color:#f59e0b">${IC.pill}</span> Dosage</div>
       <div class="med-dosage-grid">
-        ${dosage.adult ? `<div class="med-dosage-item"><div class="med-dosage-label">Adult</div><div class="med-dosage-text">${escapeHtml(String(dosage.adult).substring(0, 200))}${String(dosage.adult).length > 200 ? "..." : ""}</div></div>` : ""}
-        ${dosage.child ? `<div class="med-dosage-item"><div class="med-dosage-label">Children</div><div class="med-dosage-text">${escapeHtml(String(dosage.child).substring(0, 200))}${String(dosage.child).length > 200 ? "..." : ""}</div></div>` : ""}
-        ${dosage.elderly ? `<div class="med-dosage-item"><div class="med-dosage-label">Elderly</div><div class="med-dosage-text">${escapeHtml(String(dosage.elderly).substring(0, 200))}${String(dosage.elderly).length > 200 ? "..." : ""}</div></div>` : ""}
+        ${dosage.adult ? `<div class="med-dosage-item"><div class="med-dosage-label">Adult</div>${truncText(String(dosage.adult), 200, "da-" + uid)}</div>` : ""}
+        ${dosage.child ? `<div class="med-dosage-item"><div class="med-dosage-label">Children</div>${truncText(String(dosage.child), 200, "dc-" + uid)}</div>` : ""}
+        ${dosage.elderly ? `<div class="med-dosage-item"><div class="med-dosage-label">Elderly</div>${truncText(String(dosage.elderly), 200, "de-" + uid)}</div>` : ""}
       </div>
     </div>`;
   }
@@ -1359,7 +1426,7 @@ function renderMedicineCard(i) {
   if (howToUse) {
     html += `<div class="med-section">
       <div class="med-section-title"><span style="color:var(--primary)">${IC.activity}</span> How to Use</div>
-      <p class="med-text">${escapeHtml(howToUse.substring(0, 300))}${howToUse.length > 300 ? "..." : ""}</p>
+      ${truncText(howToUse, 300, "hu-" + uid)}
     </div>`;
   }
 
@@ -1390,14 +1457,14 @@ function renderMedicineCard(i) {
   if (pregnancy) {
     html += `<div class="med-section">
       <div class="med-section-title"><span style="color:#8b5cf6">${IC.heart}</span> Pregnancy &amp; Breastfeeding</div>
-      <p class="med-text">${escapeHtml(pregnancy.substring(0, 250))}${pregnancy.length > 250 ? "..." : ""}</p>
+      ${truncText(pregnancy, 250, "pg-" + uid)}
     </div>`;
   }
 
   if (storage) {
     html += `<div class="med-section">
       <div class="med-section-title"><span style="color:var(--muted)">${IC.settings}</span> Storage</div>
-      <p class="med-text">${escapeHtml(storage.substring(0, 200))}${storage.length > 200 ? "..." : ""}</p>
+      ${truncText(storage, 200, "st-" + uid)}
     </div>`;
   }
 
@@ -1428,11 +1495,35 @@ function renderHospitals() {
         <button class="btn btn-primary" onclick="searchHospitals()">Search</button>
         <button class="btn btn-ghost" onclick="clearHospSearch()">Clear</button>
       </div>
+      <div id="hosp-filters" class="nearby-filters">
+        <button class="nearby-filter-btn active" data-filter="all" onclick="filterNearby('hospital', this, 'all')">All</button>
+        <button class="nearby-filter-btn" data-filter="hospital" onclick="filterNearby('hospital', this, 'hospital')">Hospitals</button>
+        <button class="nearby-filter-btn" data-filter="pharmacy" onclick="filterNearby('hospital', this, 'pharmacy')">Pharmacies</button>
+        <button class="nearby-filter-btn" data-filter="clinic" onclick="filterNearby('hospital', this, 'clinic')">Clinics</button>
+      </div>
       <div id="hosp-results" class="search-results" aria-live="polite">
         <div class="empty-state"><div class="empty-icon">${IC.hospital}</div><p>${userLat ? "Tap Search to find nearby hospitals" : "Tap \"Use My Location\" to find hospitals near you"}</p></div>
       </div>
     </div>`;
   if (userLat) autoSearchNearby("hospital");
+}
+
+let nearbyCache = { hospital: [], pharmacy: [] };
+
+function filterNearby(context, btn, filter) {
+  document.querySelectorAll(`#${context === "hospital" ? "hosp" : "pharm"}-filters .nearby-filter-btn`).forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  const items = nearbyCache[context] || [];
+  const el = document.getElementById(`${context === "hospital" ? "hosp" : "pharm"}-results`);
+  if (!el) return;
+  const filtered = filter === "all" ? items : items.filter(it => {
+    const t = (it.types?.[0] || "").toLowerCase();
+    if (filter === "hospital") return /hospital|medical center|health/i.test(t) || /hospital|medical center|health/i.test(it.name);
+    if (filter === "pharmacy") return /pharmacy|chemist|drugstore/i.test(t) || /pharmacy|chemist|drugstore/i.test(it.name);
+    if (filter === "clinic") return /clinic|medical centre/i.test(t) || /clinic/i.test(it.name);
+    return true;
+  });
+  renderNearbyResults(el, filtered, context);
 }
 function clearHospSearch() {
   const el = document.getElementById("hosp-search"); if (el) el.value = "";
@@ -1518,6 +1609,11 @@ function renderPharmacies() {
         <button class="btn btn-primary" onclick="searchPharmacies()">Search</button>
         <button class="btn btn-ghost" onclick="clearPharmSearch()">Clear</button>
       </div>
+      <div id="pharm-filters" class="nearby-filters">
+        <button class="nearby-filter-btn active" data-filter="all" onclick="filterNearby('pharmacy', this, 'all')">All</button>
+        <button class="nearby-filter-btn" data-filter="pharmacy" onclick="filterNearby('pharmacy', this, 'pharmacy')">Pharmacies</button>
+        <button class="nearby-filter-btn" data-filter="clinic" onclick="filterNearby('pharmacy', this, 'clinic')">Clinics</button>
+      </div>
       <div id="pharm-results" class="search-results" aria-live="polite">
         <div class="empty-state"><div class="empty-icon">${IC.pharmacy}</div><p>${userLat ? "Tap Search to find nearby pharmacies" : "Tap \"Use My Location\" to find pharmacies near you"}</p></div>
       </div>
@@ -1557,68 +1653,88 @@ async function fetchMedicalPlaces(body, el, context) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">${IC.emergency}</div><p>${escapeHtml(data.detail || "Could not search nearby. Please try again.")}</p></div>`; return; }
     const items = data.results || data.places || data.hospitals || [];
+    nearbyCache[context] = items;
     if (!items.length) {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.search + '</div><p>No medical facilities found nearby. Try enabling location or searching by city name.</p></div>';
       return;
     }
-    const hasCoords = body.lat && body.lng && body.lat !== 0 && body.lng !== 0;
-    let mapHtml = hasCoords ? `<div id="nearby-map" class="nearby-map"></div>` : "";
-    const resultsHtml = `<div class="search-count">${items.length} result${items.length !== 1 ? "s" : ""} found — sorted by nearest</div>` +
-       items.map((it, idx) => {
-         const dist = it.distance != null ? formatDistance(it.distance) : "";
-          const typeLabel = it.facility_type || (it.types?.length ? it.types[0] : (context === "hospital" ? "Hospital" : "Pharmacy"));
-          const typeIcon = /pharmacy|chemist|drugstore/i.test(typeLabel) ? IC.pharmacy : /hospital|clinic/i.test(typeLabel) ? IC.hospital : IC.stethoscope;
-          return `
-          <div class="result-card result-card-clickable" ${it.lat && it.lng ? `data-lat="${it.lat}" data-lng="${it.lng}"` : ""}>
-            <div class="result-card-header">
-              <h3><span style="display:inline-flex;vertical-align:middle">${typeIcon}</span> ${escapeHtml(it.name)}</h3>
-              ${dist ? `<span class="result-distance">${dist}</span>` : ""}
+    renderNearbyResults(el, items, context, body.lat, body.lng);
+  } catch(e) { console.error("fetchMedicalPlaces error:", e); el.innerHTML = `<div class="empty-state"><div class="empty-icon">${IC.emergency}</div><p>Could not connect to server. Check your internet and try again.</p></div>`; }
+}
+
+function renderNearbyResults(el, items, context, centerLat, centerLng) {
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.search + '</div><p>No results match this filter.</p></div>';
+    return;
+  }
+  centerLat = centerLat || userLat;
+  centerLng = centerLng || userLng;
+  const hasCoords = centerLat && centerLng && centerLat !== 0 && centerLng !== 0;
+  let mapHtml = hasCoords ? `<div id="nearby-map" class="nearby-map"></div>` : "";
+  const resultsHtml = `<div class="search-count">${items.length} result${items.length !== 1 ? "s" : ""} found — sorted by nearest</div>` +
+     items.map((it, idx) => {
+       const dist = it.distance != null ? formatDistance(it.distance) : "";
+        const typeLabel = it.facility_type || (it.types?.length ? it.types[0] : (context === "hospital" ? "Hospital" : "Pharmacy"));
+        const typeIcon = /pharmacy|chemist|drugstore/i.test(typeLabel) ? IC.pharmacy : /hospital|clinic/i.test(typeLabel) ? IC.hospital : IC.stethoscope;
+        const typeClass = /pharmacy|chemist|drugstore/i.test(typeLabel) ? "type-pharmacy" : /hospital|clinic/i.test(typeLabel) ? "type-hospital" : "type-clinic";
+        const hours = it.opening_hours;
+        const isOpen = it.is_open;
+        return `
+        <div class="result-card result-card-clickable" ${it.lat && it.lng ? `data-lat="${it.lat}" data-lng="${it.lng}"` : ""}>
+          <div class="result-card-header">
+            <div class="result-card-title">
+              <span class="result-type-icon ${typeClass}">${typeIcon}</span>
+              <h3>${escapeHtml(it.name)}</h3>
             </div>
-            ${it.address ? `<p class="result-addr"><span style="display:inline-flex;vertical-align:middle">${IC.info}</span> ${escapeHtml(it.address)}</p>` : ""}
-            ${it.phone ? `<p class="result-phone"><span style="display:inline-flex;vertical-align:middle">${IC.chat}</span> <a href="tel:${it.phone}">${escapeHtml(it.phone)}</a></p>` : ""}
-           <div class="result-actions">
-              ${it.lat && it.lng ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}" target="_blank" rel="noopener" class="result-directions" onclick="event.stopPropagation()">${IC.directions} Directions</a>` : ""}
-             ${it.lat && it.lng ? `<a href="https://www.google.com/maps/search/?api=1&query=${it.lat},${it.lng}" target="_blank" rel="noopener" class="result-map-link" onclick="event.stopPropagation()">View on Map →</a>` : ""}
-           </div>
-         </div>`;
-       }).join("");
-    el.innerHTML = mapHtml + resultsHtml;
-    if (hasCoords && items.some(i => i.lat && i.lng)) {
-      requestAnimationFrame(() => {
-        const mapEl = document.getElementById("nearby-map");
-        if (!mapEl) return;
-        if (typeof L === "undefined") {
-          mapEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted)"><p>Map could not load. Check your connection.</p></div>';
-          return;
+            ${dist ? `<span class="result-distance">${dist}</span>` : ""}
+          </div>
+          ${it.address ? `<p class="result-addr"><span style="display:inline-flex;vertical-align:middle">${IC.info}</span> ${escapeHtml(it.address)}</p>` : ""}
+          <div class="result-meta-row">
+            ${hours ? `<span class="result-meta-tag ${isOpen === false ? 'closed' : 'open'}">${isOpen === false ? 'Closed' : 'Open'}${hours ? ' · ' + escapeHtml(hours) : ''}</span>` : ""}
+            ${it.phone && it.phone !== "N/A" ? `<a href="tel:${it.phone}" class="result-meta-tag result-call" onclick="event.stopPropagation()">${IC.chat} Call</a>` : ""}
+          </div>
+         <div class="result-actions">
+            ${it.lat && it.lng ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}" target="_blank" rel="noopener" class="result-directions" onclick="event.stopPropagation()">${IC.directions} Directions</a>` : ""}
+            ${it.lat && it.lng ? `<a href="tel:${it.phone && it.phone !== 'N/A' ? it.phone : ''}" class="result-call-btn" onclick="event.stopPropagation()">Call</a>` : ""}
+         </div>
+       </div>`;
+     }).join("");
+  el.innerHTML = mapHtml + resultsHtml;
+  if (hasCoords && items.some(i => i.lat && i.lng)) {
+    requestAnimationFrame(() => {
+      const mapEl = document.getElementById("nearby-map");
+      if (!mapEl) return;
+      if (typeof L === "undefined") {
+        mapEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted)"><p>Map could not load. Check your connection.</p></div>';
+        return;
+      }
+      const map = L.map("nearby-map").setView([centerLat, centerLng], 13);
+      activeMap = map;
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      L.marker([centerLat, centerLng]).addTo(map).bindPopup("You are here").openPopup();
+      const bounds = L.latLngBounds([centerLat, centerLng]);
+      items.forEach((it) => {
+        if (it.lat && it.lng) {
+          const icon = L.divIcon({ className: "map-marker-wrap", html: `<div class="map-marker">${/pharmacy|chemist/i.test(it.name) ? IC.pharmacy : IC.hospital}</div>`, iconSize: [32, 32], iconAnchor: [16, 32] });
+          L.marker([it.lat, it.lng], { icon }).addTo(map)
+            .bindPopup(`<b>${escapeHtml(it.name)}</b><br>${escapeHtml(it.address || "")}<br>${it.distance != null ? "<i>" + formatDistance(it.distance) + " away</i><br>" : ""}<a href="https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}" target="_blank" style="color:var(--primary)">Get Directions →</a>`);
+          bounds.extend([it.lat, it.lng]);
         }
-        const map = L.map("nearby-map").setView([body.lat, body.lng], 13);
-        activeMap = map;
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-        L.marker([body.lat, body.lng]).addTo(map).bindPopup("You are here").openPopup();
-        const bounds = L.latLngBounds([body.lat, body.lng]);
-        items.forEach((it) => {
-          if (it.lat && it.lng) {
-            const icon = L.divIcon({ className: "map-marker-wrap", html: `<div class="map-marker">${/pharmacy|chemist/i.test(it.name) ? IC.pharmacy : IC.hospital}</div>`, iconSize: [32, 32], iconAnchor: [16, 32] });
-            L.marker([it.lat, it.lng], { icon }).addTo(map)
-              .bindPopup(`<b>${escapeHtml(it.name)}</b><br>${escapeHtml(it.address || "")}<br>${it.distance != null ? "<i>" + formatDistance(it.distance) + " away</i><br>" : ""}<a href="https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}" target="_blank" style="color:var(--primary)">Get Directions →</a>`);
-            bounds.extend([it.lat, it.lng]);
-          }
-        });
-        map.fitBounds(bounds, { padding: [40, 40] });
-        el.querySelectorAll(".result-card-clickable[data-lat]").forEach(card => {
-          card.addEventListener("click", () => {
-            const lat = parseFloat(card.dataset.lat);
-            const lng = parseFloat(card.dataset.lng);
-            map.setView([lat, lng], 16);
-            el.querySelectorAll(".result-card-clickable").forEach(c => c.classList.remove("result-highlight"));
-            card.classList.add("result-highlight");
-          });
+      });
+      map.fitBounds(bounds, { padding: [40, 40] });
+      el.querySelectorAll(".result-card-clickable[data-lat]").forEach(card => {
+        card.addEventListener("click", () => {
+          const lat = parseFloat(card.dataset.lat);
+          const lng = parseFloat(card.dataset.lng);
+          map.setView([lat, lng], 16);
+          el.querySelectorAll(".result-card-clickable").forEach(c => c.classList.remove("result-highlight"));
+          card.classList.add("result-highlight");
         });
       });
-    }
-  } catch(e) { console.error("fetchMedicalPlaces error:", e); el.innerHTML = `<div class="empty-state"><div class="empty-icon">${IC.emergency}</div><p>Could not connect to server. Check your internet and try again.</p></div>`; }
+    });
+  }
 }
 
 /* ── Emergency ── */

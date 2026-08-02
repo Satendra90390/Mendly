@@ -729,6 +729,8 @@ async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int
             raw_address = item.get("display_name", "")
             address = ", ".join(raw_address.split(",")[:3]) if raw_address else "Address not available"
             osm_val = str(item.get("osm_value", "")).lower()
+            # Extract opening hours from OSM properties
+            hours = item.get("opening_hours") or item.get("address", {}).get("opening_hours") if isinstance(item.get("address"), dict) else None
             if place_type == "all":
                 if any(k in osm_val for k in ("pharmacy", "chemist", "drugstore", "medical_shop", "pharmacy_centre")):
                     facility_type = "Pharmacy"
@@ -743,6 +745,7 @@ async def get_nearby_places(lat: float, lng: float, place_type: str, radius: int
                 "address": address, "phone": "N/A", "distance": round(distance, 1),
                 "types": [facility_type], "available": True, "services": ["Near you"],
                 "osm_value": osm_val,
+                "opening_hours": hours,
                 "lat": float(item.get("lat", lat)),
                 "lng": float(item.get("lon", lng)),
             })
