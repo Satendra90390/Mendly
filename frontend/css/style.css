@@ -817,8 +817,10 @@ body.logged-in { --header-h: 0; }
 /* ── Search row ── */
 .search-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
 @media (max-width: 480px) { .search-row { gap: 8px; } .search-row .search-icon-wrap { display: none; } }
-.med-search-row { flex-wrap: wrap; }
-@media (max-width: 480px) { .med-search-row > div:first-of-type { flex: 1 1 100%; order: 1; } .med-search-row .btn { order: 2; flex: 1; min-width: 0; justify-content: center; } }
+.med-search-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.med-search-input-row { position: relative; }
+.med-search-btn-row { display: flex; gap: 10px; }
+.med-search-btn-row .btn { flex: 1; justify-content: center; }
 .location-bar {
   display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 10px 14px;
   background: var(--primary-light); border: 1px solid var(--primary-mid); border-radius: var(--radius);
