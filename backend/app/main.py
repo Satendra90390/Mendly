@@ -576,10 +576,65 @@ def _build_osm_viewbox(lat: float, lng: float, radius_km: float) -> str:
 
 
 async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: int = 10):
-    viewbox = _build_osm_viewbox(lat, lng, radius_km)
+    # Use Overpass API for proper radius-based search
+    amenity_map = {
+        "hospital": ["hospital", "clinic"],
+        "pharmacy": ["pharmacy"],
+        "clinic": ["clinic"],
+        "all": ["hospital", "clinic", "pharmacy"],
+    }
+    amenities = amenity_map.get(place_type, [place_type])
+    amenity_filter = "".join(f'["amenity"="{a}"]' for a in amenities)
+    # Build Overpass query for nearby places within radius
+    overpass_query = f"""
+    [out:json][timeout:8];
+    (
+      node{amenity_filter}(around:{radius_km * 1000},{lat},{lng});
+      way{amenity_filter}(around:{radius_km * 1000},{lat},{lng});
+      relation{amenity_filter}(around:{radius_km * 1000},{lat},{lng});
+    );
+    out center 30;
+    """
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                "https://overpass-api.de/api/interpreter",
+                data={"data": overpass_query},
+                headers={"User-Agent": "MendlyHealthPlatform/1.0"}
+            )
+            response.raise_for_status()
+            data = response.json()
+            elements = data.get("elements", [])
+            if elements:
+                results = []
+                for el in elements:
+                    el_lat = el.get("lat") or el.get("center", {}).get("lat")
+                    el_lon = el.get("lon") or el.get("center", {}).get("lon")
+                    if not el_lat or not el_lon:
+                        continue
+                    tags = el.get("tags", {})
+                    name = tags.get("name", tags.get("name:en", ""))
+                    if not name:
+                        continue
+                    street = tags.get("addr:street", "")
+                    city = tags.get("addr:city", "")
+                    display = ", ".join(filter(None, [name, street, city]))
+                    osm_type = tags.get("amenity", place_type)
+                    results.append({
+                        "lat": str(el_lat),
+                        "lon": str(el_lon),
+                        "display_name": display,
+                        "address": {"name": name, "street": street, "city": city},
+                        "osm_value": osm_type,
+                        "opening_hours": tags.get("opening_hours", ""),
+                        "phone": tags.get("phone", tags.get("contact:phone", "")),
+                    })
+                return results
+    except Exception as e:
+        logger.warning(f"Overpass search failed for {place_type}: {e}")
+
+    # Fallback to Photon
     headers = {"User-Agent": "MendlyHealthPlatform/1.0 (contact@mendlyhealth.com)", "Accept-Language": "en"}
-    
-    # Try Photon first (faster, OSM-based)
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
             response = await client.get(
@@ -610,9 +665,10 @@ async def _query_osm_places(lat: float, lng: float, place_type: str, radius_km: 
                     })
                 return results
     except Exception as e:
-        logger.warning(f"Photon nearby search failed, trying Nominatim: {e}")
+        logger.warning(f"Photon nearby search failed: {e}")
     
     # Fallback to Nominatim
+    viewbox = _build_osm_viewbox(lat, lng, radius_km)
     params = {"format": "json", "q": place_type, "addressdetails": 1, "limit": 50, "bounded": 1, "viewbox": viewbox}
     async with httpx.AsyncClient(timeout=10.0) as client:
         response = await client.get("https://nominatim.openstreetmap.org/search", params=params, headers=headers)

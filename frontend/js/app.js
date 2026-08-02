@@ -498,12 +498,138 @@ const HEALTH_NEWS = [
   { title: "Walking 8000 steps daily cuts heart disease risk by 50%", tag: "Fitness", color: "#8b5cf6" },
   { title: "Gut microbiome linked to depression and anxiety", tag: "Mental Health", color: "#f59e0b" },
   { title: "Flu season early warning: Vaccination recommended now", tag: "Prevention", color: "var(--danger)" },
+  { title: "Mediterranean diet reduces Alzheimer's risk by 35%", tag: "Nutrition", color: "#10b981" },
+  { title: "Dehydration linked to kidney stone risk increase", tag: "Urology", color: "#3b82f6" },
+  { title: "New study: Cold showers may boost immune response", tag: "Research", color: "var(--primary)" },
+  { title: "WHO warns about rising antibiotic resistance globally", tag: "Global Health", color: "var(--danger)" },
+  { title: "Screen time over 6 hours linked to chronic back pain", tag: "Lifestyle", color: "#8b5cf6" },
+  { title: "Regular flossing may reduce heart disease risk by 30%", tag: "Dental", color: "#10b981" },
+  { title: "India launches national nutrition awareness campaign", tag: "India", color: "#f59e0b" },
+  { title: "Study: Walking after meals helps control blood sugar", tag: "Diabetes", color: "var(--accent)" },
+  { title: "New breathing technique shown to reduce anxiety by 50%", tag: "Mental Health", color: "#8b5cf6" },
+  { title: "WHO: Air pollution causes 7 million premature deaths yearly", tag: "Global Health", color: "var(--danger)" },
+  { title: "Research: 8-minute daily exercise boosts longevity", tag: "Fitness", color: "var(--primary)" },
+  { title: "New vaccine shows 90% efficacy against dengue", tag: "Vaccines", color: "#10b981" },
+  { title: "Gut health: Fermented foods improve microbiome diversity", tag: "Nutrition", color: "#f59e0b" },
+  { title: "Sleep deprivation linked to increased cancer risk", tag: "Research", color: "var(--danger)" },
+  { title: "WHO recommends reduced sugar intake for children under 5", tag: "Guidelines", color: "var(--accent)" },
+  { title: "Study: Laughter therapy lowers blood pressure significantly", tag: "Wellness", color: "#8b5cf6" },
+  { title: "New guidelines for managing chronic pain without opioids", tag: "Guidelines", color: "var(--primary)" },
+  { title: "Regular meditation changes brain structure within 8 weeks", tag: "Neuroscience", color: "#3b82f6" },
 ];
 
 const WEATHER_TIPS = {
-  hot:  { title: "Hot Weather",  tips: ["Drink extra water — heat dehydrates you fast", "Wear light, loose clothing in cotton or linen", "Avoid outdoor exercise between 11am-3pm", "Eat water-rich foods: watermelon, cucumber, oranges", "Keep curtains closed during peak sun hours"], food: ["Watermelon, cucumber, coconut water", "Salads with leafy greens and citrus dressing", "Cold soups like gazpacho or chilled cucumber soup"] },
-  cold: { title: "Cold Weather", tips: ["Layer clothing — base layer wicks sweat, outer layer blocks wind", "Hot soups and warm fluids keep your body temperature up", "Cover your head and hands — you lose heat fastest there", "Indoor stretching or yoga is great when it's freezing outside", "Eat warm, hearty meals: oatmeal, stews, root vegetables"], food: ["Hot oatmeal with nuts and honey", "Chicken or vegetable soup with ginger", "Root vegetable stews with sweet potato and carrots"] },
-  mild: { title: "Pleasant Weather", tips: ["Perfect for outdoor walks — aim for 30 minutes", "Open windows for fresh air circulation", "Try outdoor exercise: jogging, cycling, or yoga in the park", "Eat seasonal fruits — they're fresher and more nutritious", "Stay active — mild weather is ideal for movement"], food: ["Fresh seasonal fruits and berries", "Grilled vegetables with olive oil", "Light grain bowls with fresh herbs"] },
+  hot: {
+    title: "Hot Weather",
+    allTips: [
+      "Drink extra water — heat dehydrates you fast",
+      "Wear light, loose clothing in cotton or linen",
+      "Avoid outdoor exercise between 11am-3pm",
+      "Eat water-rich foods: watermelon, cucumber, oranges",
+      "Keep curtains closed during peak sun hours",
+      "Use sunscreen SPF 30+ even on cloudy days",
+      "Carry a water bottle everywhere you go",
+      "Eat smaller, more frequent meals in extreme heat",
+      "Avoid caffeine and alcohol — they dehydrate you",
+      "Take cool (not cold) showers to lower body temperature",
+      "Wear a wide-brimmed hat when outdoors",
+      "Add electrolytes to water during prolonged heat exposure",
+      "Rest in shade during the hottest parts of the day",
+      "Light exercise like swimming is ideal in hot weather",
+      "Eat cold fruits: grapes, berries, melon slices",
+    ],
+    allFood: [
+      "Watermelon, cucumber, coconut water",
+      "Salads with leafy greens and citrus dressing",
+      "Cold soups like gazpacho or chilled cucumber soup",
+      "Fresh fruit smoothies with mint and ice",
+      "Yogurt with berries and honey",
+      "Cold pasta salads with olive oil and vegetables",
+      "Frozen grapes and banana popsicles",
+      "Ceviche or chilled shrimp salads",
+      "Chilled avocado soup with lime",
+      "Iced herbal teas: mint, hibiscus, chamomile",
+      "Water-rich fruits: oranges, pineapple, peaches",
+      "Light sandwiches with grilled vegetables",
+      "Sushi rolls with fresh vegetables",
+      "Chia seed pudding with coconut milk",
+      "Cold noodle salads with sesame dressing",
+    ],
+  },
+  cold: {
+    title: "Cold Weather",
+    allTips: [
+      "Layer clothing — base layer wicks sweat, outer layer blocks wind",
+      "Hot soups and warm fluids keep your body temperature up",
+      "Cover your head and hands — you lose heat fastest there",
+      "Indoor stretching or yoga is great when it's freezing outside",
+      "Eat warm, hearty meals: oatmeal, stews, root vegetables",
+      "Drink warm beverages: herbal tea, hot water with lemon",
+      "Keep your bedroom slightly cool for better sleep quality",
+      "Use a humidifier to prevent dry skin and respiratory issues",
+      "Don't skip exercise — indoor workouts keep circulation going",
+      "Wool or thermal socks prevent cold feet and improve sleep",
+      "Vitamin D supplements help during low-sunlight months",
+      "Eat ginger and turmeric — natural anti-inflammatory warmth",
+      "Moisturize skin daily to prevent winter dryness",
+      "Avoid going outside with wet hair — risk of hypothermia",
+      "Keep emergency warm blanket in your car during winter",
+    ],
+    allFood: [
+      "Hot oatmeal with nuts and honey",
+      "Chicken or vegetable soup with ginger",
+      "Root vegetable stews with sweet potato and carrots",
+      "Spicy lentil dal with warm naan bread",
+      "Hot chocolate with cinnamon and dark chocolate",
+      "Baked sweet potatoes with butter and herbs",
+      "Warm apple cider with cinnamon sticks",
+      "Mushroom risotto with parmesan",
+      "Turmeric golden milk with black pepper",
+      "Hearty minestrone soup with beans and pasta",
+      "Grilled cheese sandwiches with tomato soup",
+      "Warm porridge with dried fruits and nuts",
+      "Pumpkin soup with roasted seeds",
+      "Ginger garlic stir-fry with warm rice",
+      "Mulled wine or warm spiced cider",
+    ],
+  },
+  mild: {
+    title: "Pleasant Weather",
+    allTips: [
+      "Perfect for outdoor walks — aim for 30 minutes",
+      "Open windows for fresh air circulation",
+      "Try outdoor exercise: jogging, cycling, or yoga in the park",
+      "Eat seasonal fruits — they're fresher and more nutritious",
+      "Stay active — mild weather is ideal for movement",
+      "Morning walks boost mood and energy for the whole day",
+      "Eat more greens — spring and fall are peak salad season",
+      "Plan outdoor activities: hiking, picnics, gardening",
+      "Stay hydrated even when it doesn't feel hot",
+      "Use this time to build a fitness routine before summer",
+      "Fresh herbs from a garden add flavor and nutrition",
+      "Morning sunlight helps regulate your circadian rhythm",
+      "Try a new outdoor sport: badminton, frisbee, tennis",
+      "Eat lighter meals as your body doesn't need heavy warming",
+      "Take vitamin D supplements — transitional weather can be cloudy",
+    ],
+    allFood: [
+      "Fresh seasonal fruits and berries",
+      "Grilled vegetables with olive oil",
+      "Light grain bowls with fresh herbs",
+      "Mixed green salads with nuts and seeds",
+      "Fresh fruit parfaits with granola and yogurt",
+      "Grilled fish with lemon and asparagus",
+      "Spring rolls with fresh vegetables and peanut sauce",
+      "Pasta primavera with seasonal vegetables",
+      "Avocado toast with cherry tomatoes and microgreens",
+      "Mediterranean quinoa bowls with feta and olives",
+      "Smoothie bowls with fresh berries and coconut flakes",
+      "Fresh herb omelettes with seasonal vegetables",
+      "Light vegetable stir-fry with jasmine rice",
+      "Caprese salad with fresh mozzarella and basil",
+      "Couscous salad with roasted vegetables and feta",
+    ],
+  },
 };
 
 function getWeatherCategory() {
@@ -511,6 +637,39 @@ function getWeatherCategory() {
   if (month >= 4 && month <= 8) return "hot";
   if (month >= 10 || month <= 2) return "cold";
   return "mild";
+}
+
+function getDailyIndex(arr) {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  return dayOfYear % arr.length;
+}
+
+function getDailyTips() {
+  const cat = getWeatherCategory();
+  const data = WEATHER_TIPS[cat];
+  const idx = getDailyIndex(data.allTips);
+  const tips = [];
+  for (let i = 0; i < 5; i++) tips.push(data.allTips[(idx + i) % data.allTips.length]);
+  return { title: data.title, tips };
+}
+
+function getDailyFood() {
+  const cat = getWeatherCategory();
+  const data = WEATHER_TIPS[cat];
+  const idx = getDailyIndex(data.allFood);
+  const food = [];
+  for (let i = 0; i < 3; i++) food.push(data.allFood[(idx + i) % data.allFood.length]);
+  return food;
+}
+
+function getDailyNews() {
+  const idx = getDailyIndex(HEALTH_NEWS);
+  const news = [];
+  for (let i = 0; i < 6; i++) news.push(HEALTH_NEWS[(idx + i) % HEALTH_NEWS.length]);
+  return news;
 }
 
 /* ── Weather Unit State ── */
@@ -707,7 +866,9 @@ async function fetchLiveWeather() {
 }
 
 function renderDashboard() {
-  const weather = WEATHER_TIPS[getWeatherCategory()];
+  const dailyTips = getDailyTips();
+  const dailyFood = getDailyFood();
+  const dailyNews = getDailyNews();
   const memberSince = state.user?.created_at
     ? new Date(state.user.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "Recent";
@@ -772,9 +933,9 @@ function renderDashboard() {
 
           <!-- Weather Tips -->
           <div class="dash-stat-card">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} ${weather.title} Tips</span></div>
+            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} ${dailyTips.title} Tips</span></div>
             <ul class="dash-health-list">
-              ${weather.tips.map(t => `<li>${t}</li>`).join("")}
+              ${dailyTips.tips.map(t => `<li>${t}</li>`).join("")}
             </ul>
           </div>
 
@@ -782,7 +943,7 @@ function renderDashboard() {
           <div class="dash-stat-card">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--primary)">${IC.pill} What to Eat Today</span></div>
             <ul class="dash-health-list">
-              ${weather.food.map(f => `<li>${f}</li>`).join("")}
+              ${dailyFood.map(f => `<li>${f}</li>`).join("")}
             </ul>
           </div>
         </div>
@@ -799,7 +960,7 @@ function renderDashboard() {
           <div class="dash-stat-card">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px">${IC.chat} Health News</span></div>
             <div class="dash-health-news">
-              ${HEALTH_NEWS.map(n => `
+              ${dailyNews.map(n => `
                 <div class="dash-news-item">
                   <span class="dash-news-tag" style="color:${n.color}">${n.tag}</span>
                   <div class="dash-news-title">${n.title}</div>
@@ -921,7 +1082,7 @@ function renderQuote() {
   const el = document.getElementById("dash-quote-text");
   const authorEl = document.getElementById("dash-quote-author");
   if (!el || !authorEl) return;
-  const idx = Math.floor(Math.random() * HEALTH_QUOTES.length);
+  const idx = getDailyIndex(HEALTH_QUOTES);
   const q = HEALTH_QUOTES[idx];
   el.textContent = `"${q.text}"`;
   authorEl.textContent = `— ${q.author}`;
