@@ -1345,9 +1345,9 @@ function renderMedicines() {
         <h2 class="page-title"><span class="page-title-icon" style="color:var(--accent)">${IC.pill}</span> Medicine Search</h2>
         <p class="page-sub">Search by medicine name (paracetamol) or condition (headache, diabetes, fever).</p>
       </div>
-      <div class="search-row">
+      <div class="search-row med-search-row">
         <div class="search-icon-wrap">${IC.search}</div>
-        <div style="flex:1;position:relative">
+        <div style="flex:1;position:relative;min-width:0">
           <input id="med-search" class="search-input has-icon" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" oninput="showMedSuggestions(this.value)" autocomplete="off" />
           <div id="med-suggestions" class="med-suggestions" style="display:none"></div>
         </div>
