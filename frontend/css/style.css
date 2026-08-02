@@ -1196,6 +1196,8 @@ body.logged-in { --header-h: 0; }
 .modal-close { font-size: 18px; color: var(--muted); padding: 4px 8px; border-radius: var(--radius-sm); transition: background var(--transition); }
 .modal-close:hover { background: var(--bg); }
 .form-group { margin-bottom: 14px; }
+.acct-profile-row { display: flex; gap: 12px; }
+@media (max-width: 480px) { .acct-profile-row { flex-direction: column; gap: 0; } }
 .form-input {
   width: 100%; padding: 13px 16px; border-radius: var(--radius); border: 1.5px solid var(--border);
   background: var(--bg); color: var(--fg); font-size: 15px; transition: border-color var(--transition);

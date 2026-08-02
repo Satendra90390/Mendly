@@ -2052,7 +2052,7 @@ function renderAccount() {
           <label class="form-label">Full Name</label>
           <input id="prof-name" class="form-input" type="text" value="${escapeHtml(u?.name || "")}" placeholder="Your name" />
         </div>
-        <div style="display:flex;gap:12px">
+        <div class="acct-profile-row">
           <div class="form-group" style="flex:1">
             <label class="form-label">Age</label>
             <input id="prof-dob" class="form-input" type="date" value="${u?.date_of_birth || ""}" max="${new Date().toISOString().split('T')[0]}" />
