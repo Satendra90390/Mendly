@@ -633,6 +633,17 @@ const WEATHER_TIPS = {
 };
 
 function getWeatherCategory() {
+  if (weatherData && weatherData.current && weatherData.current.temperature_2m != null) {
+    const tempC = weatherData.current.temperature_2m;
+    const code = weatherData.current.weather_code || 0;
+    const isRainy = [51,53,55,61,63,65,80,81,82,95,96,99].includes(code);
+    const isSnowy = [71,73,75,77,85,86].includes(code);
+    if (isSnowy || tempC <= 5) return "cold";
+    if (isRainy || tempC <= 15) return "mild";
+    if (tempC >= 30) return "hot";
+    if (tempC >= 20) return "mild";
+    return "hot";
+  }
   const month = new Date().getMonth();
   if (month >= 4 && month <= 8) return "hot";
   if (month >= 10 || month <= 2) return "cold";
@@ -670,6 +681,19 @@ function getDailyNews() {
   const news = [];
   for (let i = 0; i < 6; i++) news.push(HEALTH_NEWS[(idx + i) % HEALTH_NEWS.length]);
   return news;
+}
+
+function refreshWeatherTips() {
+  const tipsEl = document.getElementById("dash-tips-content");
+  const foodEl = document.getElementById("dash-food-content");
+  if (tipsEl) {
+    const dailyTips = getDailyTips();
+    tipsEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;color:#f59e0b;margin-bottom:8px">${IC.sun} ${dailyTips.title} Tips</div><ul class="dash-health-list">${dailyTips.tips.map(t => `<li>${t}</li>`).join("")}</ul>`;
+  }
+  if (foodEl) {
+    const dailyFood = getDailyFood();
+    foodEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;color:var(--primary);margin-bottom:8px">${IC.pill} What to Eat Today</div><ul class="dash-health-list">${dailyFood.map(f => `<li>${f}</li>`).join("")}</ul>`;
+  }
 }
 
 /* ── Weather Unit State ── */
@@ -860,6 +884,7 @@ async function fetchLiveWeather() {
     if (!d.current || d.current.temperature_2m == null) { el.innerHTML = `<span style="font-size:13px">Weather data unavailable</span>`; return; }
     weatherData = d;
     renderWeatherWidget();
+    refreshWeatherTips();
   } catch(e) {
     el.innerHTML = `<span style="font-size:13px">Enable location for live weather</span>`;
   }
@@ -932,16 +957,16 @@ function renderDashboard() {
           </div>
 
           <!-- Weather Tips -->
-          <div class="dash-stat-card">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} ${dailyTips.title} Tips</span></div>
+          <div class="dash-stat-card" id="dash-tips-content">
+            <div style="display:flex;align-items:center;gap:8px;color:#f59e0b;margin-bottom:8px">${IC.sun} ${dailyTips.title} Tips</div>
             <ul class="dash-health-list">
               ${dailyTips.tips.map(t => `<li>${t}</li>`).join("")}
             </ul>
           </div>
 
           <!-- What to Eat -->
-          <div class="dash-stat-card">
-            <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--primary)">${IC.pill} What to Eat Today</span></div>
+          <div class="dash-stat-card" id="dash-food-content">
+            <div style="display:flex;align-items:center;gap:8px;color:var(--primary);margin-bottom:8px">${IC.pill} What to Eat Today</div>
             <ul class="dash-health-list">
               ${dailyFood.map(f => `<li>${f}</li>`).join("")}
             </ul>
