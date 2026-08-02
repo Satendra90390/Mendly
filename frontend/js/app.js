@@ -236,9 +236,11 @@ function render() {
   }
 
   /* sidebar body class —
-     dashboard has its own built-in icon sidebar, so aside sidebar only shows on
-     other logged-in pages (chat, medicines, hospitals, more, account) */
-  if (state.user && targetView !== "dashboard" && targetView !== "landing") {
+     dashboard has its own built-in icon sidebar on desktop, so aside sidebar only shows on
+     other logged-in pages. On mobile the icon sidebar is hidden, so we add has-sidebar
+     for the dashboard too, allowing the hamburger menu (with logout) to appear. */
+  const isMobile = window.innerWidth <= 768;
+  if (state.user && (targetView !== "dashboard" || isMobile) && targetView !== "landing") {
     document.body.classList.add("has-sidebar");
   } else {
     document.body.classList.remove("has-sidebar");
@@ -936,8 +938,10 @@ function renderDashboard() {
             <div class="chip-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials}</div>
             <span>${escapeHtml(displayName)}</span>
             <span class="chip-caret">▾</span>
-          </div>
+          </button>
         </div>
+      </div>
+
       </div>
 
       <div class="dash-quick-grid">
