@@ -823,9 +823,9 @@ async def get_emergency_contacts(country: Optional[str] = None):
 
 @app.post("/api/emergency/hospitals/nearby")
 async def get_nearby_hospitals(location: schemas.LocationRequest):
-    radius = location.radius or 50
+    radius = location.radius if location.radius is not None else 35
     if location.lat != 0 and location.lng != 0:
-        hospitals = await get_nearby_places(location.lat, location.lng, "hospital", radius)
+        hospitals = await get_nearby_places(location.lat, location.lng, "hospital", radius if radius > 0 else 100)
         if hospitals:
             return {"hospitals": hospitals, "count": len(hospitals)}
     return {"hospitals": demo_hospitals, "count": len(demo_hospitals)}
@@ -839,10 +839,10 @@ async def get_hospitals():
 @app.post("/api/emergency/hospitals/search")
 async def search_hospitals(request: schemas.LocationRequest):
     q = request.query.lower() if request.query else ""
-    radius = request.radius or 50
+    radius = request.radius if request.radius is not None else 35
     hospitals = []
     if request.lat != 0 and request.lng != 0:
-        hospitals = await get_nearby_places(request.lat, request.lng, "hospital", radius)
+        hospitals = await get_nearby_places(request.lat, request.lng, "hospital", radius if radius > 0 else 100)
     if q:
         name_results = await _search_osm_by_name(request.query, "hospital")
         existing_names = {h["name"].lower() for h in hospitals}
@@ -857,9 +857,9 @@ async def search_hospitals(request: schemas.LocationRequest):
 
 @app.post("/api/emergency/pharmacies/nearby")
 async def get_nearby_pharmacies(location: schemas.LocationRequest):
-    radius = location.radius or 50
+    radius = location.radius if location.radius is not None else 35
     if location.lat != 0 and location.lng != 0:
-        pharmacies = await get_nearby_places(location.lat, location.lng, "pharmacy", radius)
+        pharmacies = await get_nearby_places(location.lat, location.lng, "pharmacy", radius if radius > 0 else 100)
         if pharmacies:
             return {"pharmacies": pharmacies, "count": len(pharmacies)}
     return {"pharmacies": demo_pharmacies, "count": len(demo_pharmacies)}
@@ -873,10 +873,10 @@ async def get_pharmacies():
 @app.post("/api/emergency/pharmacies/search")
 async def search_pharmacies(request: schemas.LocationRequest):
     q = request.query.lower() if request.query else ""
-    radius = request.radius or 50
+    radius = request.radius if request.radius is not None else 35
     pharmacies = []
     if request.lat != 0 and request.lng != 0:
-        pharmacies = await get_nearby_places(request.lat, request.lng, "pharmacy", radius)
+        pharmacies = await get_nearby_places(request.lat, request.lng, "pharmacy", radius if radius > 0 else 100)
     if q:
         name_results = await _search_osm_by_name(request.query, "pharmacy")
         existing_names = {p["name"].lower() for p in pharmacies}
@@ -891,9 +891,9 @@ async def search_pharmacies(request: schemas.LocationRequest):
 
 @app.post("/api/emergency/nearby")
 async def get_nearby_medical(location: schemas.LocationRequest):
-    radius = location.radius or 50
+    radius = location.radius if location.radius is not None else 35
     if location.lat != 0 and location.lng != 0:
-        places = await get_nearby_places(location.lat, location.lng, "all", radius)
+        places = await get_nearby_places(location.lat, location.lng, "all", radius if radius > 0 else 100)
         if places:
             return {"places": places, "count": len(places)}
     return {"places": demo_hospitals + demo_pharmacies, "count": len(demo_hospitals) + len(demo_pharmacies)}
@@ -902,10 +902,10 @@ async def get_nearby_medical(location: schemas.LocationRequest):
 @app.post("/api/emergency/search")
 async def search_medical(request: schemas.LocationRequest):
     q = request.query.lower() if request.query else ""
-    radius = request.radius or 50
+    radius = request.radius if request.radius is not None else 35
     places = []
     if request.lat != 0 and request.lng != 0:
-        places = await get_nearby_places(request.lat, request.lng, "all", radius)
+        places = await get_nearby_places(request.lat, request.lng, "all", radius if radius > 0 else 100)
     if q:
         name_results = await _search_osm_by_name(request.query, "all")
         existing_names = {p["name"].lower() for p in places}

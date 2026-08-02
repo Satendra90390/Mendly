@@ -1697,7 +1697,7 @@ async function searchHospitals() {
   if (!el) return;
   el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby hospitals...</p></div>';
   if (!q && !userLat) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.search + '</div><p>Use your location or type a city name</p></div>'; return; }
-  const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: 50 };
+  const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: q ? 0 : 35 };
   if (userLat === null && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       pos => { body.lat = pos.coords.latitude; body.lng = pos.coords.longitude; userLat = body.lat; userLng = body.lng; fetchMedicalPlaces(body, el, "hospital"); },
@@ -1742,7 +1742,7 @@ function autoSearchNearby(context) {
   const el = document.getElementById(`${context === "hospital" ? "hosp" : "pharm"}-results`);
   if (!el) return;
   el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby facilities...</p></div>';
-  const body = { lat: userLat, lng: userLng, query: null, radius: 50 };
+  const body = { lat: userLat, lng: userLng, query: null, radius: 35 };
   fetchMedicalPlaces(body, el, context);
 }
 
@@ -1788,7 +1788,7 @@ async function searchPharmacies() {
   if (!el) return;
   el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby pharmacies...</p></div>';
   if (!q && !userLat) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.pharmacy + '</div><p>Use your location or type a city name</p></div>'; return; }
-  const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: 50 };
+  const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: q ? 0 : 35 };
   if (userLat === null && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       pos => { body.lat = pos.coords.latitude; body.lng = pos.coords.longitude; userLat = body.lat; userLng = body.lng; fetchMedicalPlaces(body, el, "pharmacy"); },
