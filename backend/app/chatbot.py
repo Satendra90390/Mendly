@@ -229,6 +229,7 @@ async def chatbot_response(
     location: Optional[dict] = None,
     history: Optional[list] = None,
     images: Optional[list] = None,
+    user_profile: Optional[dict] = None,
 ) -> str:
     msg = message.lower().strip()
 
@@ -247,10 +248,10 @@ async def chatbot_response(
     tasks = []
     task_names = []
     if _nvidia_is_configured():
-        tasks.append(_nvidia_answer(message, msg, location, history or []))
+        tasks.append(_nvidia_answer(message, msg, location, history or [], user_profile))
         task_names.append("nvidia")
     if _groq_is_configured():
-        tasks.append(_groq_answer(message, msg, location, history or []))
+        tasks.append(_groq_answer(message, msg, location, history or [], user_profile))
         task_names.append("groq")
 
     if tasks:
@@ -275,6 +276,7 @@ async def _groq_answer(
     msg_lower: str,
     location: Optional[dict],
     history: list,
+    user_profile: Optional[dict] = None,
 ) -> str:
     kb_ctx = _build_kb_context(msg_lower)
     fda_ctx = await _build_fda_context(msg_lower)
@@ -300,6 +302,24 @@ async def _groq_answer(
     system_msg = _SYSTEM_PROMPT
     if context_block:
         system_msg += context_block
+    if user_profile:
+        profile_hint = "\n[USER PROFILE]\n"
+        if user_profile.get("name"):
+            profile_hint += f"Name: {user_profile['name']}\n"
+        if user_profile.get("gender"):
+            profile_hint += f"Gender: {user_profile['gender']}\n"
+        if user_profile.get("date_of_birth"):
+            try:
+                from datetime import datetime, timezone
+                dob = datetime.fromisoformat(user_profile["date_of_birth"].replace("Z", "+00:00"))
+                age = (datetime.now(timezone.utc) - dob).days // 365
+                profile_hint += f"Age: {age} years\n"
+            except Exception:
+                pass
+        if user_profile.get("blood_type"):
+            profile_hint += f"Blood Type: {user_profile['blood_type']}\n"
+        profile_hint += "[END USER PROFILE — greet by name on first message, use age/gender for health context]\n"
+        system_msg += profile_hint
 
     messages = [{"role": "system", "content": system_msg}]
     for turn in history:
@@ -430,6 +450,7 @@ async def _nvidia_answer(
     msg_lower: str,
     location: Optional[dict],
     history: list,
+    user_profile: Optional[dict] = None,
 ) -> str:
     kb_ctx = _build_kb_context(msg_lower)
     fda_ctx = await _build_fda_context(msg_lower)
@@ -455,6 +476,24 @@ async def _nvidia_answer(
     system_msg = _SYSTEM_PROMPT
     if context_block:
         system_msg += context_block
+    if user_profile:
+        profile_hint = "\n[USER PROFILE]\n"
+        if user_profile.get("name"):
+            profile_hint += f"Name: {user_profile['name']}\n"
+        if user_profile.get("gender"):
+            profile_hint += f"Gender: {user_profile['gender']}\n"
+        if user_profile.get("date_of_birth"):
+            try:
+                from datetime import datetime, timezone
+                dob = datetime.fromisoformat(user_profile["date_of_birth"].replace("Z", "+00:00"))
+                age = (datetime.now(timezone.utc) - dob).days // 365
+                profile_hint += f"Age: {age} years\n"
+            except Exception:
+                pass
+        if user_profile.get("blood_type"):
+            profile_hint += f"Blood Type: {user_profile['blood_type']}\n"
+        profile_hint += "[END USER PROFILE — greet by name on first message, use age/gender for health context]\n"
+        system_msg += profile_hint
 
     messages = [{"role": "system", "content": system_msg}]
     for turn in history:

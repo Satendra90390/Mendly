@@ -41,6 +41,7 @@ class UserOut(BaseModel):
     date_of_birth: Optional[str] = None
     blood_type: Optional[str] = None
     profile_photo: Optional[str] = None
+    gender: Optional[str] = None
     auth_provider: Optional[str] = "email"
     phone: Optional[str] = None
 
@@ -59,6 +60,7 @@ class ProfileUpdateRequest(BaseModel):
     date_of_birth: Optional[str] = None
     blood_type: Optional[str] = None
     profile_photo: Optional[str] = None
+    gender: Optional[str] = None
 
 
 class PasswordChangeRequest(BaseModel):

@@ -254,6 +254,8 @@ async def update_profile_route(payload: schemas.ProfileUpdateRequest, request: R
         updates["blood_type"] = payload.blood_type
     if payload.profile_photo is not None:
         updates["profile_photo"] = payload.profile_photo
+    if payload.gender is not None:
+        updates["gender"] = payload.gender
 
     if updates:
         await update_profile(current_user["id"], updates)

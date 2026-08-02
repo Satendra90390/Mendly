@@ -151,6 +151,7 @@ const IC = {
   activity:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
   trash:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
   chevron:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
+  user:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
 };
 
 /* inject logo into footer on page load */
@@ -1999,6 +2000,7 @@ function renderAccount() {
   const memberSince = u?.created_at
     ? new Date(u.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : "N/A";
+  const age = u?.date_of_birth ? calcAge(u.date_of_birth) : "";
 
   const acctEl = document.getElementById("view-account");
   if (!acctEl) return;
@@ -2010,7 +2012,11 @@ function renderAccount() {
 
       <!-- Profile Card -->
       <div class="acct-card acct-profile">
-        <div class="acct-avatar">${initials}</div>
+        <div class="acct-avatar" style="cursor:pointer;position:relative" onclick="document.getElementById('profile-photo-input').click()">
+          ${u?.profile_photo ? `<img src="${escapeHtml(u.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials}
+          <input type="file" id="profile-photo-input" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
+          <div style="position:absolute;bottom:0;right:0;background:var(--primary);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid var(--bg)">${IC.settings}</div>
+        </div>
         <div class="acct-name">${escapeHtml(u?.name || "User")}</div>
         <div class="acct-email">${escapeHtml(u?.email || "")}</div>
         <div class="acct-stats-row">
@@ -2023,6 +2029,40 @@ function renderAccount() {
             <div class="acct-stat-label">Theme</div>
           </div>
         </div>
+      </div>
+
+      <!-- Edit Profile -->
+      <div class="acct-card">
+        <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.user} Edit Profile</span></div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input id="prof-name" class="form-input" type="text" value="${escapeHtml(u?.name || "")}" placeholder="Your name" />
+        </div>
+        <div style="display:flex;gap:12px">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Age</label>
+            <input id="prof-dob" class="form-input" type="date" value="${u?.date_of_birth || ""}" max="${new Date().toISOString().split('T')[0]}" />
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">${age ? `Age: ${age} years` : 'Set birthday'}</div>
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Gender</label>
+            <select id="prof-gender" class="form-input">
+              <option value="">Select</option>
+              <option value="male" ${u?.gender === 'male' ? 'selected' : ''}>Male</option>
+              <option value="female" ${u?.gender === 'female' ? 'selected' : ''}>Female</option>
+              <option value="other" ${u?.gender === 'other' ? 'selected' : ''}>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Blood Type</label>
+          <select id="prof-blood" class="form-input">
+            <option value="">Select</option>
+            ${["A+","A-","B+","B-","AB+","AB-","O+","O-"].map(b => `<option value="${b}" ${u?.blood_type === b ? 'selected' : ''}>${b}</option>`).join("")}
+          </select>
+        </div>
+        <div id="prof-save-msg" style="font-size:12px;margin-bottom:8px"></div>
+        <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Profile</button>
       </div>
 
       <!-- Appearance -->
@@ -2076,6 +2116,57 @@ function renderAccount() {
         <span style="display:flex;align-items:center;gap:8px">${IC.logout} Log Out</span>
       </button>
     </div>`;
+}
+
+function calcAge(dob) {
+  if (!dob) return null;
+  const birth = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
+}
+
+async function saveProfile() {
+  const name = document.getElementById("prof-name")?.value.trim();
+  const dob = document.getElementById("prof-dob")?.value;
+  const gender = document.getElementById("prof-gender")?.value;
+  const blood = document.getElementById("prof-blood")?.value;
+  const msgEl = document.getElementById("prof-save-msg");
+  if (!name) { if (msgEl) msgEl.innerHTML = '<span style="color:var(--danger)">Name is required</span>'; return; }
+  try {
+    const res = await fetch(`${API}/profile`, {
+      method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+      body: JSON.stringify({ name, date_of_birth: dob || null, gender: gender || null, blood_type: blood || null }),
+    });
+    const data = await res.json();
+    if (!res.ok) { if (msgEl) msgEl.innerHTML = `<span style="color:var(--danger)">${escapeHtml(data.detail || "Failed to save")}</span>`; return; }
+    state.user = data;
+    saveState();
+    if (msgEl) msgEl.innerHTML = '<span style="color:var(--primary)">Profile saved!</span>';
+    renderAccount();
+    updateNav();
+  } catch(e) { if (msgEl) msgEl.innerHTML = '<span style="color:var(--danger)">Network error</span>'; }
+}
+
+async function handleProfilePhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { alert("Image must be under 2MB"); return; }
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = reader.result;
+    try {
+      const res = await fetch(`${API}/profile`, {
+        method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+        body: JSON.stringify({ profile_photo: base64 }),
+      });
+      const data = await res.json();
+      if (res.ok) { state.user = data; saveState(); renderAccount(); updateNav(); }
+    } catch(e) { console.error("Photo upload failed:", e); }
+  };
+  reader.readAsDataURL(file);
 }
 
 function showPasswordChange() {

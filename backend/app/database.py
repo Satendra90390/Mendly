@@ -78,7 +78,7 @@ async def update_profile(user_id: str, data: dict) -> dict:
     allowed_fields = {
         "name", "email", "avatar_color", "date_of_birth", "blood_type",
         "profile_photo", "phone", "password_hash", "is_blocked", "is_admin",
-        "auth_provider", "last_login",
+        "auth_provider", "last_login", "gender",
     }
     safe_data = {k: v for k, v in data.items() if k in allowed_fields}
     await users.update_one({"_id": _obj_id(user_id)}, {"$set": safe_data})

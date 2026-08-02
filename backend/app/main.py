@@ -195,7 +195,7 @@ async def chat_endpoint(
     if not history and payload.history:
         history = payload.history[-10:]
 
-    reply = await chatbot.chatbot_response(payload.message, payload.location, history)
+    reply = await chatbot.chatbot_response(payload.message, payload.location, history, user_profile=current_user)
 
     if user_id:
         now = _now()
@@ -249,7 +249,7 @@ async def chat_upload_endpoint(
         except Exception:
             pass
 
-    reply = await chatbot.chatbot_response(full_message, None, hist[-10:], images=image_b64_list or None)
+    reply = await chatbot.chatbot_response(full_message, None, hist[-10:], images=image_b64_list or None, user_profile=current_user)
 
     now = _now()
     await insert_chat_message({"user_id": current_user["id"], "role": "user", "content": full_message[:2000], "created_at": now})
