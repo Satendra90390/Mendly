@@ -992,6 +992,17 @@ body.logged-in { --header-h: 0; }
   border: 1px solid var(--primary-mid); text-decoration: none; transition: all var(--transition); margin-top: 4px;
 }
 .result-call-btn:hover { background: var(--primary); color: #fff; }
+
+@media (max-width: 480px) {
+  .nearby-filters { gap: 6px; }
+  .nearby-filter-btn { padding: 6px 12px; font-size: 12px; }
+  .result-card-header { flex-direction: column; gap: 6px; }
+  .result-card-title h3 { font-size: 14px; }
+  .result-actions { flex-direction: column; gap: 6px; }
+  .result-directions { width: 100%; justify-content: center; }
+  .result-call-btn { width: 100%; justify-content: center; }
+  .nearby-map { height: 200px !important; }
+}
 .result-map-link { font-size: 12px; color: var(--muted); text-decoration: underline; margin-left: 12px; }
 .result-map-link:hover { color: var(--primary); }
 .result-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }

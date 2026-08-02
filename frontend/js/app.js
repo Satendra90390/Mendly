@@ -1527,15 +1527,14 @@ function filterNearby(context, btn, filter) {
 }
 function clearHospSearch() {
   const el = document.getElementById("hosp-search"); if (el) el.value = "";
-  const r = document.getElementById("hosp-results");
-  if (r) r.innerHTML = `<div class="empty-state"><div class="empty-icon">${IC.hospital}</div><p>Search for hospitals, clinics, or medical centers near you</p></div>`;
+  renderHospitals();
 }
 
 async function searchHospitals() {
   const q = document.getElementById("hosp-search")?.value.trim() || "";
   const el = document.getElementById("hosp-results");
   if (!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby hospitals...</p></div>';
+  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby hospitals...</p></div>';
   if (!q && !userLat) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.search + '</div><p>Use your location or type a city name</p></div>'; return; }
   const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: 50 };
   if (userLat === null && navigator.geolocation) {
@@ -1549,8 +1548,10 @@ async function searchHospitals() {
 /* ── Pharmacies ── */
 /* ── Location Detection ── */
 function detectLocation(context) {
-  const btn = document.getElementById(`${context === "hospital" ? "hosp" : "pharm"}-loc-btn`);
+  const prefix = context === "hospital" ? "hosp" : "pharm";
+  const btn = document.getElementById(`${prefix}-loc-btn`);
   if (btn) btn.innerHTML = `${IC.search} <span>Detecting...</span>`;
+  const bar = document.getElementById(`${prefix}-location-bar`);
 
   if (!navigator.geolocation) {
     if (btn) btn.innerHTML = `${IC.search} <span>Geolocation not supported — search manually</span>`;
@@ -1560,7 +1561,12 @@ function detectLocation(context) {
     pos => {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
-      reverseGeocode(userLat, userLng, context);
+      if (bar) {
+        bar.innerHTML = `
+          <span class="location-status" style="color:var(--primary)">${IC.info} Location detected</span>
+          <button class="btn btn-ghost btn-sm" onclick="detectLocation('${context}')">Refresh</button>`;
+      }
+      autoSearchNearby(context);
     },
     err => {
       const msg = err.code === 1 ? "Location permission denied — enable in browser settings" : "Could not detect location — try searching manually";
@@ -1570,21 +1576,11 @@ function detectLocation(context) {
   );
 }
 
-function reverseGeocode(lat, lng, context) {
-  const bar = document.getElementById(`${context === "hospital" ? "hosp" : "pharm"}-location-bar`);
-  if (bar) {
-    bar.innerHTML = `
-      <span class="location-status" style="color:var(--primary)">${IC.info} Location detected</span>
-      <button class="btn btn-ghost btn-sm" onclick="detectLocation('${context}')">Update</button>`;
-  }
-  autoSearchNearby(context);
-}
-
 function autoSearchNearby(context) {
   if (userLat === null || userLng === null) return;
   const el = document.getElementById(`${context === "hospital" ? "hosp" : "pharm"}-results`);
   if (!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby facilities...</p></div>';
+  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby facilities...</p></div>';
   const body = { lat: userLat, lng: userLng, query: null, radius: 50 };
   fetchMedicalPlaces(body, el, context);
 }
@@ -1622,15 +1618,14 @@ function renderPharmacies() {
 }
 function clearPharmSearch() {
   const el = document.getElementById("pharm-search"); if (el) el.value = "";
-  const r = document.getElementById("pharm-results");
-  if (r) r.innerHTML = `<div class="empty-state"><div class="empty-icon">${IC.pharmacy}</div><p>Search for pharmacies, drugstores, or medical shops near you</p></div>`;
+  renderPharmacies();
 }
 
 async function searchPharmacies() {
   const q = document.getElementById("pharm-search")?.value.trim() || "";
   const el = document.getElementById("pharm-results");
   if (!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby pharmacies...</p></div>';
+  el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby pharmacies...</p></div>';
   if (!q && !userLat) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.pharmacy + '</div><p>Use your location or type a city name</p></div>'; return; }
   const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: 50 };
   if (userLat === null && navigator.geolocation) {
@@ -1695,7 +1690,7 @@ function renderNearbyResults(el, items, context, centerLat, centerLng) {
           </div>
          <div class="result-actions">
             ${it.lat && it.lng ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}" target="_blank" rel="noopener" class="result-directions" onclick="event.stopPropagation()">${IC.directions} Directions</a>` : ""}
-            ${it.lat && it.lng ? `<a href="tel:${it.phone && it.phone !== 'N/A' ? it.phone : ''}" class="result-call-btn" onclick="event.stopPropagation()">Call</a>` : ""}
+            ${it.lat && it.lng && it.phone && it.phone !== "N/A" ? `<a href="tel:${it.phone}" class="result-call-btn" onclick="event.stopPropagation()">Call</a>` : ""}
          </div>
        </div>`;
      }).join("");
