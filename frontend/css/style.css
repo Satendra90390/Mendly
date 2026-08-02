@@ -750,7 +750,7 @@ body.logged-in { --header-h: 0; }
 .dash-center { display: flex; flex-direction: column; gap: 20px; }
 
 /* ── Right Column ── */
-.dash-right-col { display: flex; flex-direction: column; gap: 20px; }
+.dash-right-col { display: flex; flex-direction: column; gap: 20px; overflow: hidden; }
 .dash-section-title { font-size: 15px; font-weight: 700; color: var(--fg); margin-bottom: 14px; }
 
 /* ── Quick Actions in dashboard ── */
@@ -780,7 +780,7 @@ body.logged-in { --header-h: 0; }
 .dash-news-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
 .dash-news-item:last-child { border-bottom: none; }
 .dash-news-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-.dash-news-title { font-size: 13px; color: var(--fg); margin-top: 3px; line-height: 1.4; }
+.dash-news-title { font-size: 13px; color: var(--fg); margin-top: 3px; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; }
 .dash-health-list li {
   font-size: 13px; color: var(--muted); line-height: 1.5; padding-left: 14px; position: relative;
 }

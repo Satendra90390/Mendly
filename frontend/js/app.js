@@ -933,7 +933,7 @@ function renderDashboard() {
         <div class="dash-topbar-right">
           <button class="dash-notif" aria-label="Notifications" title="Notifications" onclick="showToast('No new notifications','info')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit">${IC.bell}</button>
           <button class="dash-user-chip" onclick="navigate('account')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit;text-align:left">
-            <div class="chip-avatar">${initials}</div>
+            <div class="chip-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials}</div>
             <span>${escapeHtml(displayName)}</span>
             <span class="chip-caret">▾</span>
           </div>
@@ -1158,12 +1158,19 @@ function logBp() {
 /* ═══════════════════════════════════════════════════
    CHAT
 ════════════════════════════════════════════════════ */
-let chatMsgs = [{ role: "bot", content: "Hi! I'm Elix, your personal health companion. Ask me anything about symptoms, medicines, or wellness — I'm here to help." }];
+function getChatGreeting() {
+  const name = state.user?.name?.split(" ")[0];
+  const hour = new Date().getHours();
+  let timeGreeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const namePart = name ? `, ${escapeHtml(name)}` : "";
+  return `${timeGreeting}${namePart}! I'm Elix, your personal health companion. Ask me anything about symptoms, medicines, or wellness — I'm here to help.`;
+}
+let chatMsgs = [{ role: "bot", content: getChatGreeting() }];
 let chatLoading = false;
 let chatFiles = [];
 
 function resetChat() {
-  chatMsgs = [{ role: "bot", content: "Hi! I'm Elix, your personal health companion. Ask me anything about symptoms, medicines, or wellness — I'm here to help." }];
+  chatMsgs = [{ role: "bot", content: getChatGreeting() }];
   chatFiles = [];
   chatLoading = false;
 }
@@ -1231,7 +1238,7 @@ function renderChat() {
       ${guestBanner}
       <div class="chat-header-bar">
         <div class="chat-header-left">
-          <div class="chat-header-avatar">${IC.chat}</div>
+          <div class="chat-header-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : IC.chat}</div>
           <div>
             <div class="chat-header-name">Elix AI</div>
             <div class="chat-header-status">${chatMsgs.length <= 1 ? "New conversation" : chatMsgs.length + " messages"}</div>
@@ -1499,7 +1506,9 @@ function renderDiseaseMedCard(m) {
 }
 
 function askElixAbout(query) {
-  chatMsgs = [{ role: "bot", content: "Hi! I'm Elix, your personal health companion. I see you're looking for information about a medicine. What would you like to know?" }];
+  const name = state.user?.name?.split(" ")[0];
+  const greeting = name ? `Hi ${escapeHtml(name)}! ` : "Hi! ";
+  chatMsgs = [{ role: "bot", content: `${greeting}I see you're looking for information about a medicine. What would you like to know?` }];
   navigate("chat");
   setTimeout(() => {
     const inp = document.getElementById("chat-input");
