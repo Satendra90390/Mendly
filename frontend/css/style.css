@@ -273,7 +273,7 @@ body.logged-in { --header-h: 0; }
 .has-sidebar .sidebar.open ~ .mobile-sidebar-toggle { display: none !important; }
 
 /* App layout when sidebar active */
-.has-sidebar .view.active { padding-top: calc(var(--header-h) + 24px); }
+.has-sidebar .view.active { padding-top: calc(var(--header-h) + 24px); overflow-x: hidden; }
 #view-chat.active { padding-top: 0; }
 @media (min-width: 769px) {
   .has-sidebar .view.active { margin-left: var(--sidebar-w); }
