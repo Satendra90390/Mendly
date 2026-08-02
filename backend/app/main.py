@@ -844,12 +844,10 @@ async def search_hospitals(request: schemas.LocationRequest):
     if request.lat != 0 and request.lng != 0:
         hospitals = await get_nearby_places(request.lat, request.lng, "hospital", radius if radius > 0 else 100)
     if q:
-        name_results = await _search_osm_by_name(request.query, "hospital")
-        existing_names = {h["name"].lower() for h in hospitals}
-        for nr in name_results:
-            if nr["name"].lower() not in existing_names:
-                hospitals.append(nr)
         hospitals = [h for h in hospitals if q in h["name"].lower() or q in h["address"].lower()]
+        if not hospitals:
+            name_results = await _search_osm_by_name(request.query, "hospital")
+            hospitals = name_results
     elif not hospitals:
         hospitals = demo_hospitals
     return {"hospitals": hospitals, "count": len(hospitals)}
@@ -878,12 +876,10 @@ async def search_pharmacies(request: schemas.LocationRequest):
     if request.lat != 0 and request.lng != 0:
         pharmacies = await get_nearby_places(request.lat, request.lng, "pharmacy", radius if radius > 0 else 100)
     if q:
-        name_results = await _search_osm_by_name(request.query, "pharmacy")
-        existing_names = {p["name"].lower() for p in pharmacies}
-        for nr in name_results:
-            if nr["name"].lower() not in existing_names:
-                pharmacies.append(nr)
         pharmacies = [p for p in pharmacies if q in p["name"].lower() or q in p["address"].lower()]
+        if not pharmacies:
+            name_results = await _search_osm_by_name(request.query, "pharmacy")
+            pharmacies = name_results
     elif not pharmacies:
         pharmacies = demo_pharmacies
     return {"pharmacies": pharmacies, "count": len(pharmacies)}
@@ -907,12 +903,10 @@ async def search_medical(request: schemas.LocationRequest):
     if request.lat != 0 and request.lng != 0:
         places = await get_nearby_places(request.lat, request.lng, "all", radius if radius > 0 else 100)
     if q:
-        name_results = await _search_osm_by_name(request.query, "all")
-        existing_names = {p["name"].lower() for p in places}
-        for nr in name_results:
-            if nr["name"].lower() not in existing_names:
-                places.append(nr)
         places = [p for p in places if q in p["name"].lower() or q in p["address"].lower()]
+        if not places:
+            name_results = await _search_osm_by_name(request.query, "all")
+            places = name_results
     elif not places:
         places = demo_hospitals + demo_pharmacies
     return {"places": places, "count": len(places)}

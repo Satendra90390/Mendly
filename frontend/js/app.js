@@ -1697,8 +1697,24 @@ async function searchHospitals() {
   if (!el) return;
   el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby hospitals...</p></div>';
   if (!q && !userLat) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.search + '</div><p>Use your location or type a city name</p></div>'; return; }
-  const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: q ? 0 : 35 };
-  if (userLat === null && navigator.geolocation) {
+
+  let searchLat = userLat ?? 0;
+  let searchLng = userLng ?? 0;
+
+  if (q && searchLat === 0) {
+    try {
+      const geoRes = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=1&lang=en`);
+      const geoData = await geoRes.json();
+      if (geoData.features && geoData.features.length) {
+        const coords = geoData.features[0].geometry.coordinates;
+        searchLng = coords[0];
+        searchLat = coords[1];
+      }
+    } catch(e) { /* geocode failed, continue with name search only */ }
+  }
+
+  const body = { lat: searchLat, lng: searchLng, query: q || null, radius: 35 };
+  if (searchLat === 0 && userLat === null && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       pos => { body.lat = pos.coords.latitude; body.lng = pos.coords.longitude; userLat = body.lat; userLng = body.lng; fetchMedicalPlaces(body, el, "hospital"); },
       () => { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.search + '</div><p>Could not detect your location. Please type a city name to search.</p></div>'; }, { timeout: 5000 }
@@ -1788,8 +1804,24 @@ async function searchPharmacies() {
   if (!el) return;
   el.innerHTML = '<div style="text-align:center;padding:32px 0"><div class="spinner" role="status" aria-label="Loading"></div><p style="color:var(--muted);font-size:13px;margin-top:8px">Finding nearby pharmacies...</p></div>';
   if (!q && !userLat) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.pharmacy + '</div><p>Use your location or type a city name</p></div>'; return; }
-  const body = { lat: userLat ?? 0, lng: userLng ?? 0, query: q || null, radius: q ? 0 : 35 };
-  if (userLat === null && navigator.geolocation) {
+
+  let searchLat = userLat ?? 0;
+  let searchLng = userLng ?? 0;
+
+  if (q && searchLat === 0) {
+    try {
+      const geoRes = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=1&lang=en`);
+      const geoData = await geoRes.json();
+      if (geoData.features && geoData.features.length) {
+        const coords = geoData.features[0].geometry.coordinates;
+        searchLng = coords[0];
+        searchLat = coords[1];
+      }
+    } catch(e) { /* geocode failed */ }
+  }
+
+  const body = { lat: searchLat, lng: searchLng, query: q || null, radius: 35 };
+  if (searchLat === 0 && userLat === null && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       pos => { body.lat = pos.coords.latitude; body.lng = pos.coords.longitude; userLat = body.lat; userLng = body.lng; fetchMedicalPlaces(body, el, "pharmacy"); },
       () => { el.innerHTML = '<div class="empty-state"><div class="empty-icon">' + IC.pharmacy + '</div><p>Could not detect your location. Please type a city name to search.</p></div>'; }, { timeout: 5000 }
