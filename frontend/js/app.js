@@ -1866,11 +1866,24 @@ function renderHospitals() {
         <button class="btn btn-primary" onclick="searchHospitals()">Search</button>
         <button class="btn btn-ghost" onclick="clearHospSearch()">Clear</button>
       </div>
-      <div id="hosp-filters" class="nearby-filters">
-        <button class="nearby-filter-btn active" data-filter="all" onclick="filterNearby('hospital', this, 'all')">All</button>
-        <button class="nearby-filter-btn" data-filter="hospital" onclick="filterNearby('hospital', this, 'hospital')">Hospitals</button>
-        <button class="nearby-filter-btn" data-filter="pharmacy" onclick="filterNearby('hospital', this, 'pharmacy')">Pharmacies</button>
-        <button class="nearby-filter-btn" data-filter="clinic" onclick="filterNearby('hospital', this, 'clinic')">Clinics</button>
+      <div class="nearby-filters-row">
+        <div id="hosp-filters" class="nearby-filters">
+          <button class="nearby-filter-btn active" data-filter="all" onclick="filterNearby('hospital', this, 'all')">All</button>
+          <button class="nearby-filter-btn" data-filter="hospital" onclick="filterNearby('hospital', this, 'hospital')">Hospitals</button>
+          <button class="nearby-filter-btn" data-filter="pharmacy" onclick="filterNearby('hospital', this, 'pharmacy')">Pharmacies</button>
+          <button class="nearby-filter-btn" data-filter="clinic" onclick="filterNearby('hospital', this, 'clinic')">Clinics</button>
+        </div>
+        <div id="hosp-view-toggle" class="view-toggle-group" role="radiogroup" aria-label="View mode">
+          <button class="view-toggle-btn active" data-mode="both" onclick="setNearbyView('hospital','both')" aria-label="Map and list" role="radio" aria-checked="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button class="view-toggle-btn" data-mode="map" onclick="setNearbyView('hospital','map')" aria-label="Map only" role="radio" aria-checked="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          </button>
+          <button class="view-toggle-btn" data-mode="list" onclick="setNearbyView('hospital','list')" aria-label="List only" role="radio" aria-checked="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
       </div>
       <div id="hosp-results" class="search-results" aria-live="polite">
         <div class="empty-state"><div class="empty-icon">${IC.hospital}</div><p>${userLat ? "Tap Search to find nearby hospitals" : "Tap \"Use My Location\" to find hospitals near you"}</p></div>
@@ -1880,6 +1893,19 @@ function renderHospitals() {
 }
 
 let nearbyCache = { hospital: [], pharmacy: [] };
+let nearbyViewMode = { hospital: "both", pharmacy: "both" }; // "map" | "list" | "both"
+
+function setNearbyView(context, mode) {
+  nearbyViewMode[context] = mode;
+  document.querySelectorAll(`#${context === "hospital" ? "hosp" : "pharm"}-view-toggle .view-toggle-btn`).forEach(b => {
+    const isActive = b.dataset.mode === mode;
+    b.classList.toggle("active", isActive);
+    b.setAttribute("aria-checked", isActive);
+  });
+  const items = nearbyCache[context] || [];
+  const el = document.getElementById(`${context === "hospital" ? "hosp" : "pharm"}-results`);
+  if (el && items.length) renderNearbyResults(el, items, context);
+}
 
 function filterNearby(context, btn, filter) {
   document.querySelectorAll(`#${context === "hospital" ? "hosp" : "pharm"}-filters .nearby-filter-btn`).forEach(b => b.classList.remove("active"));
@@ -1943,7 +1969,9 @@ function detectLocation(context) {
   const bar = document.getElementById(`${prefix}-location-bar`);
 
   if (!navigator.geolocation) {
-    if (btn) btn.innerHTML = `${IC.search} <span>Geolocation not supported — search manually</span>`;
+    if (bar) bar.innerHTML = `
+      <span class="location-status location-denied" role="alert">${IC.emergency} Geolocation is not supported by your browser</span>
+      <button class="btn btn-ghost btn-sm" onclick="detectLocation('${context}')">Retry</button>`;
     return;
   }
   navigator.geolocation.getCurrentPosition(
@@ -1952,14 +1980,18 @@ function detectLocation(context) {
       userLng = pos.coords.longitude;
       if (bar) {
         bar.innerHTML = `
-          <span class="location-status" style="color:var(--primary)">${IC.info} Location detected</span>
+          <span class="location-status" style="color:var(--color-primary)">${IC.info} Location detected</span>
           <button class="btn btn-ghost btn-sm" onclick="detectLocation('${context}')">Refresh</button>`;
       }
       autoSearchNearby(context);
     },
     err => {
-      const msg = err.code === 1 ? "Location permission denied — enable in browser settings" : "Could not detect location — try searching manually";
-      if (btn) btn.innerHTML = `${IC.search} <span>${msg}</span>`;
+      const msg = err.code === 1
+        ? "Location permission denied — enable location access in your browser settings and try again"
+        : "Could not detect your location — try searching by city name instead";
+      if (bar) bar.innerHTML = `
+        <span class="location-status location-denied" role="alert">${IC.emergency} ${msg}</span>
+        <button class="btn btn-ghost btn-sm" onclick="detectLocation('${context}')">Retry</button>`;
     },
     { timeout: 10000, maximumAge: 300000 }
   );
@@ -1994,10 +2026,23 @@ function renderPharmacies() {
         <button class="btn btn-primary" onclick="searchPharmacies()">Search</button>
         <button class="btn btn-ghost" onclick="clearPharmSearch()">Clear</button>
       </div>
-      <div id="pharm-filters" class="nearby-filters">
-        <button class="nearby-filter-btn active" data-filter="all" onclick="filterNearby('pharmacy', this, 'all')">All</button>
-        <button class="nearby-filter-btn" data-filter="pharmacy" onclick="filterNearby('pharmacy', this, 'pharmacy')">Pharmacies</button>
-        <button class="nearby-filter-btn" data-filter="clinic" onclick="filterNearby('pharmacy', this, 'clinic')">Clinics</button>
+      <div class="nearby-filters-row">
+        <div id="pharm-filters" class="nearby-filters">
+          <button class="nearby-filter-btn active" data-filter="all" onclick="filterNearby('pharmacy', this, 'all')">All</button>
+          <button class="nearby-filter-btn" data-filter="pharmacy" onclick="filterNearby('pharmacy', this, 'pharmacy')">Pharmacies</button>
+          <button class="nearby-filter-btn" data-filter="clinic" onclick="filterNearby('pharmacy', this, 'clinic')">Clinics</button>
+        </div>
+        <div id="pharm-view-toggle" class="view-toggle-group" role="radiogroup" aria-label="View mode">
+          <button class="view-toggle-btn active" data-mode="both" onclick="setNearbyView('pharmacy','both')" aria-label="Map and list" role="radio" aria-checked="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button class="view-toggle-btn" data-mode="map" onclick="setNearbyView('pharmacy','map')" aria-label="Map only" role="radio" aria-checked="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          </button>
+          <button class="view-toggle-btn" data-mode="list" onclick="setNearbyView('pharmacy','list')" aria-label="List only" role="radio" aria-checked="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
       </div>
       <div id="pharm-results" class="search-results" aria-live="polite">
         <div class="empty-state"><div class="empty-icon">${IC.pharmacy}</div><p>${userLat ? "Tap Search to find nearby pharmacies" : "Tap \"Use My Location\" to find pharmacies near you"}</p></div>
@@ -2070,16 +2115,18 @@ function renderNearbyResults(el, items, context, centerLat, centerLng) {
   centerLat = centerLat || userLat;
   centerLng = centerLng || userLng;
   const hasCoords = centerLat && centerLng && centerLat !== 0 && centerLng !== 0;
-  let mapHtml = hasCoords ? `<div id="nearby-map" class="nearby-map"></div>` : "";
-  const resultsHtml = `<div class="search-count">${items.length} result${items.length !== 1 ? "s" : ""} found — sorted by nearest</div>` +
-     items.map((it, idx) => {
-       const dist = it.distance != null ? formatDistance(it.distance) : "";
-        const typeLabel = it.facility_type || (it.types?.length ? it.types[0] : (context === "hospital" ? "Hospital" : "Pharmacy"));
-        const typeIcon = /pharmacy|chemist|drugstore/i.test(typeLabel) ? IC.pharmacy : /hospital|clinic/i.test(typeLabel) ? IC.hospital : IC.stethoscope;
-        const typeClass = /pharmacy|chemist|drugstore/i.test(typeLabel) ? "type-pharmacy" : /hospital|clinic/i.test(typeLabel) ? "type-hospital" : "type-clinic";
-        const hours = it.opening_hours;
-        const isOpen = it.is_open;
-        return `
+  const viewMode = nearbyViewMode[context] || "both";
+  const showMap = hasCoords && viewMode !== "list";
+  const showList = viewMode !== "map";
+  let mapHtml = showMap ? `<div id="nearby-map" class="nearby-map"></div>` : "";
+  const listHtml = showList ? `<div class="nearby-list">${items.map((it, idx) => {
+        const dist = it.distance != null ? formatDistance(it.distance) : "";
+         const typeLabel = it.facility_type || (it.types?.length ? it.types[0] : (context === "hospital" ? "Hospital" : "Pharmacy"));
+         const typeIcon = /pharmacy|chemist|drugstore/i.test(typeLabel) ? IC.pharmacy : /hospital|clinic/i.test(typeLabel) ? IC.hospital : IC.stethoscope;
+         const typeClass = /pharmacy|chemist|drugstore/i.test(typeLabel) ? "type-pharmacy" : /hospital|clinic/i.test(typeLabel) ? "type-hospital" : "type-clinic";
+         const hours = it.opening_hours;
+         const isOpen = it.is_open;
+         return `
         <div class="result-card result-card-clickable" ${it.lat && it.lng ? `data-lat="${it.lat}" data-lng="${it.lng}"` : ""}>
           <div class="result-card-header">
             <div class="result-card-title">
@@ -2098,9 +2145,10 @@ function renderNearbyResults(el, items, context, centerLat, centerLng) {
             ${it.lat && it.lng && it.phone && it.phone !== "N/A" ? `<a href="tel:${it.phone}" class="result-call-btn" onclick="event.stopPropagation()">Call</a>` : ""}
          </div>
        </div>`;
-     }).join("");
-  el.innerHTML = mapHtml + resultsHtml;
-  if (hasCoords && items.some(i => i.lat && i.lng)) {
+     }).join("")}</div>` : "";
+  const countHtml = `<div class="search-count">${items.length} result${items.length !== 1 ? "s" : ""} found — sorted by nearest</div>`;
+  el.innerHTML = mapHtml + countHtml + listHtml;
+  if (showMap && hasCoords && items.some(i => i.lat && i.lng)) {
     requestAnimationFrame(() => {
       const mapEl = document.getElementById("nearby-map");
       if (!mapEl) return;
