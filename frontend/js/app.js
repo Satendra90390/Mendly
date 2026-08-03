@@ -1287,6 +1287,7 @@ let chatLoading = false;
 let chatFiles = [];
 let chatHistory = [];
 let chatActiveId = null;
+let interactionMeds = [];
 
 function newChat() {
   chatMsgs = [{ role: "bot", content: ELIX_GREETING }];
@@ -1546,10 +1547,17 @@ function renderMedicines() {
         </div>
         <div class="med-browse-section">
           <h3 class="med-browse-title">Drug Interactions</h3>
-          <p class="med-browse-sub">Check for interactions between medicines</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-            <input id="interact-input" class="search-input" placeholder="e.g. ibuprofen, aspirin, warfarin" style="flex:1;min-width:200px" />
-            <button class="btn btn-primary" onclick="checkInteractions()">Check</button>
+          <p class="med-browse-sub">Add two or more medicines to check for interactions</p>
+          <div style="margin-top:12px">
+            <div id="interact-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:24px">
+              ${interactionMeds.map((m, i) => `<span class="med-tag" style="display:inline-flex;align-items:center;gap:4px;background:var(--color-primary-bg);color:var(--primary);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600">${escapeHtml(m)}<button onclick="removeInteractionMed(${i})" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:14px;line-height:1;padding:0" aria-label="Remove ${escapeHtml(m)}">&times;</button></span>`).join("")}
+            </div>
+            <div style="display:flex;gap:8px">
+              <input id="interact-input" class="search-input" placeholder="Type a medicine name and press Add" style="flex:1;min-width:200px"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addInteractionMed()}" />
+              <button class="btn btn-primary btn-sm" onclick="addInteractionMed()">Add</button>
+              <button class="btn btn-ghost btn-sm" onclick="checkInteractions()" ${interactionMeds.length < 2 ? "disabled" : ""} style="${interactionMeds.length < 2 ? 'opacity:0.5;pointer-events:none' : ''}">Check</button>
+            </div>
           </div>
           <div id="interact-results" style="margin-top:12px"></div>
           <div style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic">Do not stop or change prescribed medication based only on this result. Speak with a doctor or pharmacist.</div>
@@ -1717,12 +1725,28 @@ function showMedSuggestions(val) {
   box.style.display = "block";
 }
 
-async function checkInteractions() {
+function addInteractionMed() {
   const input = document.getElementById("interact-input");
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) return;
+  if (interactionMeds.some(m => m.toLowerCase() === name.toLowerCase())) { input.value = ""; return; }
+  if (interactionMeds.length >= 6) { showToast("Maximum 6 medicines at a time", "error"); return; }
+  interactionMeds.push(name);
+  input.value = "";
+  renderMedicines();
+  setTimeout(() => { const inp = document.getElementById("interact-input"); if (inp) inp.focus(); }, 0);
+}
+function removeInteractionMed(idx) {
+  interactionMeds.splice(idx, 1);
+  renderMedicines();
+}
+
+async function checkInteractions() {
   const res = document.getElementById("interact-results");
-  if (!input || !res) return;
-  const meds = input.value.trim();
-  if (!meds) { res.innerHTML = `<p style="color:var(--muted);font-size:13px">Enter medicine names separated by commas</p>`; return; }
+  if (!res) return;
+  const meds = interactionMeds.join(", ");
+  if (interactionMeds.length < 2) { res.innerHTML = `<p style="color:var(--muted);font-size:13px">Add at least two medicines to check interactions</p>`; return; }
   res.innerHTML = `<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><div class="spinner" style="width:16px;height:16px"></div><span style="color:var(--muted);font-size:13px">Checking interactions...</span></div>`;
   try {
     const r = await fetch(`${API}/medicines/interactions`, {
@@ -2214,6 +2238,14 @@ function renderEmergency() {
     { country: "Japan",     number: "110", label: "Police" },
     { country: "Japan",     number: "119", label: "Fire / Ambulance" },
   ];
+  const scenarios = [
+    { icon: "❤️", title: "Chest pain or heart attack signs", steps: ["Call emergency services immediately", "Chew an aspirin if available and not allergic", "Sit or lie down in a comfortable position", "Do not drive yourself — call for an ambulance"] },
+    { icon: "🫁", title: "Difficulty breathing", steps: ["Call emergency services if breathing is severely restricted", "Sit upright to ease breathing", "Loosen tight clothing", "If prescribed, use rescue inhaler or medication"] },
+    { icon: "🩸", title: "Severe bleeding", steps: ["Apply firm, direct pressure with a clean cloth", "Do not remove the cloth — add more on top if needed", "Elevate the injured area above the heart if possible", "Call emergency services if bleeding does not stop"] },
+    { icon: "🧠", title: "Stroke signs (FAST)", steps: ["Face — is one side drooping?", "Arms — can the person raise both arms?", "Speech — is speech slurred or confused?", "Time — call emergency services immediately"] },
+    { icon: "⚡", title: "Severe allergic reaction", steps: ["Use an epinephrine auto-injector (EpiPen) if available", "Call emergency services", "Lay the person flat and elevate their legs", "Do not give anything by mouth if they are struggling to breathe"] },
+    { icon: "🔥", title: "Burns", steps: ["Run cool (not cold) water over the burn for 10-20 minutes", "Remove jewelry or tight items from the burned area", "Do not pop blisters or apply butter/cream", "Cover loosely with a sterile dressing and seek care"] },
+  ];
   const emergencyEl = document.getElementById("view-emergency");
   if (!emergencyEl) return;
   emergencyEl.innerHTML = `
@@ -2227,14 +2259,34 @@ function renderEmergency() {
          <p style="font-size:13.5px;color:var(--fg);line-height:1.6;margin:0">If you are in immediate danger or have severe symptoms, contact your local emergency number or go to the nearest emergency department immediately.</p>
        </div>
 
-       <div class="emergency-list" style="margin-bottom:24px">${list.map(e => `
-         <a class="emergency-card" href="tel:${e.number}" aria-label="Call ${e.country} ${e.label}: ${e.number}">
-           <div>
-             <div class="emergency-country">${escapeHtml(e.country)}</div>
-             <div class="emergency-label">${escapeHtml(e.label)}</div>
-           </div>
-           <div class="emergency-num">${e.number}</div>
-         </a>`).join("")}
+       <div style="margin-bottom:28px">
+         <h3 style="font-size:15px;font-weight:700;color:var(--fg);margin:0 0 12px">Emergency Numbers</h3>
+         <div class="emergency-list">${list.map(e => `
+           <a class="emergency-card" href="tel:${e.number}" aria-label="Call ${e.country} ${e.label}: ${e.number}">
+             <div>
+               <div class="emergency-country">${escapeHtml(e.country)}</div>
+               <div class="emergency-label">${escapeHtml(e.label)}</div>
+             </div>
+             <div class="emergency-num">${e.number}</div>
+           </a>`).join("")}
+         </div>
+       </div>
+
+       <div style="margin-bottom:28px">
+         <h3 style="font-size:15px;font-weight:700;color:var(--fg);margin:0 0 4px">What to do in a crisis</h3>
+         <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Basic first-aid steps while waiting for emergency services. This is general guidance — always follow the advice of a medical professional.</p>
+         <div style="display:grid;gap:12px">
+           ${scenarios.map(s => `
+             <div class="acct-card" style="margin:0;padding:16px 18px">
+               <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                 <span style="font-size:20px">${s.icon}</span>
+                 <span style="font-size:14px;font-weight:700;color:var(--fg)">${s.title}</span>
+               </div>
+               <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--fg-secondary);line-height:1.7">
+                 ${s.steps.map(st => `<li>${st}</li>`).join("")}
+               </ol>
+             </div>`).join("")}
+         </div>
        </div>
 
        <div class="acct-card" style="margin-top:24px">
