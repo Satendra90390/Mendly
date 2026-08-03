@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="1" x2="0.4" y2="0">
+      <stop offset="0%" stop-color="#2B9680"/>
+      <stop offset="50%" stop-color="#3BAA91"/>
+      <stop offset="100%" stop-color="#52C4A8"/>
+    </linearGradient>
+    <linearGradient id="rg" x1="1" y1="1" x2="0.6" y2="0">
+      <stop offset="0%" stop-color="#8EE8CB"/>
+      <stop offset="100%" stop-color="#C8F7E5"/>
+    </linearGradient>
+  </defs>
+  <!-- Left form: bottom-left → top-left peak → center valley -->
+  <path d="M105 440 C105 440, 70 360, 90 290 C110 220, 155 150, 200 120 C230 100, 252 110, 256 140 C260 170, 258 230, 256 290" stroke="url(#lg)" stroke-width="62" stroke-linecap="round" fill="none"/>
+  <!-- Right form: bottom-right → top-right peak → center valley -->
+  <path d="M407 440 C407 440, 442 360, 422 290 C402 220, 357 150, 312 120 C282 100, 260 110, 256 140 C252 170, 254 230, 256 290" stroke="url(#rg)" stroke-width="44" stroke-linecap="round" fill="none" opacity="0.52"/>
+  <!-- Center: white halo + coral dot -->
+  <circle cx="256" cy="260" r="30" fill="#FFFFFF"/>
+  <circle cx="256" cy="260" r="17" fill="#F28C78"/>
+</svg>

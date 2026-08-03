@@ -6,24 +6,32 @@
   <meta name="theme-color" content="#0d9488" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="description" content="Use Mendly to understand health topics, explore medicine information, find nearby care, and track your health with support from Elix, your AI health companion." />
-  <meta property="og:title" content="Mendly — AI Health Companion for Clearer Health Information" />
-  <meta property="og:description" content="Understand health topics, explore medicine information, find nearby care, and track your health with Elix, your AI companion." />
+  <meta name="description" content="Mendly is your personal health platform. Elix is your AI health companion inside Mendly. Understand health topics, explore medicine information, find nearby care, and track your health." />
+  <meta property="og:title" content="Mendly — Your Personal Health Platform" />
+  <meta property="og:description" content="Mendly is your personal health platform. Elix is your AI health companion inside Mendly." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://mendlyapp.web.app" />
   <meta property="og:image" content="https://mendlyapp.web.app/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Mendly — AI Health Companion" />
-  <meta name="twitter:description" content="Understand health topics, explore medicine information, find nearby care, and track your health with Elix, your AI companion." />
+  <meta name="twitter:title" content="Mendly — Your Personal Health Platform" />
+  <meta name="twitter:description" content="Mendly is your personal health platform. Elix is your AI health companion inside Mendly." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="assets/icon/mendly-favicon.svg" />
-  <title>Mendly — AI Health Companion for Clearer Health Information</title>
+  <link rel="apple-touch-icon" href="assets/icon/mendly-icon-bg.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#102A43" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Mendly — Your Personal Health Platform</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <!-- Skip to main content -->
+  <a href="#app-main" class="skip-link" onclick="event.preventDefault();document.getElementById('app-main').focus()">Skip to main content</a>
+
   <!-- Header -->
   <header id="header" class="header" role="banner"></header>
   <!-- Sidebar (logged-in) -->
@@ -35,12 +43,21 @@
     <div class="app-loading-inner">
       <div class="app-loading-logo" aria-hidden="true">
         <svg width="48" height="48" viewBox="0 0 64 64" fill="none">
-          <defs><clipPath id="rcL"><rect width="64" height="64" rx="14"/></clipPath></defs>
+          <defs>
+            <clipPath id="rcL"><rect width="64" height="64" rx="14"/></clipPath>
+            <linearGradient id="lgrL" x1="0" y1="1" x2="0.4" y2="0">
+              <stop offset="0%" stop-color="#2B9680"/><stop offset="50%" stop-color="#3BAA91"/><stop offset="100%" stop-color="#52C4A8"/>
+            </linearGradient>
+            <linearGradient id="rgrL" x1="1" y1="1" x2="0.6" y2="0">
+              <stop offset="0%" stop-color="#8EE8CB"/><stop offset="100%" stop-color="#C8F7E5"/>
+            </linearGradient>
+          </defs>
           <g clip-path="url(#rcL)">
             <rect width="64" height="64" fill="#102A43"/>
-            <path d="M 10 54 C 8 35, 14 10, 22 8 C 28 7, 32 17, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-            <path d="M 54 54 C 56 35, 50 10, 42 8 C 36 7, 32 17, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
-            <circle cx="32" cy="25" r="2" fill="#F28C78"/>
+            <path d="M13.1 55C13.1 55, 8.8 45, 11.3 36.2C13.8 27.5, 19.4 18.8, 25 15C28.8 12.5, 31.5 13.8, 32 17.5C32.5 21.2, 32.3 28.8, 32 36.2" stroke="url(#lgrL)" stroke-width="7.8" stroke-linecap="round" fill="none"/>
+            <path d="M50.9 55C50.9 55, 55.3 45, 52.8 36.2C50.3 27.5, 44.6 18.8, 39 15C35.2 12.5, 32.5 13.8, 32 17.5C31.5 21.2, 31.7 28.8, 32 36.2" stroke="url(#rgrL)" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0.52"/>
+            <circle cx="32" cy="32.5" r="3.8" fill="#FFFFFF"/>
+            <circle cx="32" cy="32.5" r="2.1" fill="#F28C78"/>
           </g>
         </svg>
       </div>
@@ -59,6 +76,7 @@
       <div class="hero-bg" aria-hidden="true">
         <div class="hero-orb hero-orb-1"></div>
         <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
       </div>
       <div class="hero-inner">
         <div class="hero-text">
@@ -67,7 +85,7 @@
             finally made <span class="gradient-text">simple.</span>
           </h1>
           <p class="hero-subtitle">
-            Mendly brings AI health guidance, medicine information, nearby care, and health tracking together in one simple place.
+            <strong class="gradient-text">Mendly</strong> is your personal health platform. Elix is your AI health companion inside Mendly. Understand health topics, explore medicine information, find nearby care, and track your health.
           </p>
           <div class="hero-actions">
             <button class="btn btn-primary btn-lg" onclick="openAuth('signup')" aria-label="Get started free with Mendly">
@@ -87,7 +105,7 @@
           <div class="hero-demo-card">
             <div class="demo-header">
               <div class="demo-avatar">
-                <svg width="20" height="20" viewBox="0 0 64 64" fill="none"><defs><clipPath id="rcDav"><rect width="64" height="64" rx="14"/></clipPath></defs><g clip-path="url(#rcDav)"><rect width="64" height="64" fill="#102A43"/><path d="M 10 54 C 8 35, 14 10, 22 8 C 28 7, 32 17, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/><path d="M 54 54 C 56 35, 50 10, 42 8 C 36 7, 32 17, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/><circle cx="32" cy="25" r="2" fill="#F28C78"/></g></svg>
+                <svg width="20" height="20" viewBox="0 0 64 64" fill="none"><defs><clipPath id="rcDav"><rect width="64" height="64" rx="14"/></clipPath><linearGradient id="lgrD" x1="0" y1="1" x2="0.4" y2="0"><stop offset="0%" stop-color="#2B9680"/><stop offset="50%" stop-color="#3BAA91"/><stop offset="100%" stop-color="#52C4A8"/></linearGradient><linearGradient id="rgrD" x1="1" y1="1" x2="0.6" y2="0"><stop offset="0%" stop-color="#8EE8CB"/><stop offset="100%" stop-color="#C8F7E5"/></linearGradient></defs><g clip-path="url(#rcDav)"><rect width="64" height="64" fill="#102A43"/><path d="M13.1 55C13.1 55, 8.8 45, 11.3 36.2C13.8 27.5, 19.4 18.8, 25 15C28.8 12.5, 31.5 13.8, 32 17.5C32.5 21.2, 32.3 28.8, 32 36.2" stroke="url(#lgrD)" stroke-width="7.8" stroke-linecap="round" fill="none"/><path d="M50.9 55C50.9 55, 55.3 45, 52.8 36.2C50.3 27.5, 44.6 18.8, 39 15C35.2 12.5, 32.5 13.8, 32 17.5C31.5 21.2, 31.7 28.8, 32 36.2" stroke="url(#rgrD)" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0.52"/><circle cx="32" cy="32.5" r="3.8" fill="#FFFFFF"/><circle cx="32" cy="32.5" r="2.1" fill="#F28C78"/></g></svg>
               </div>
               <div class="demo-header-text">
                 <span class="demo-name">Elix</span>
@@ -126,14 +144,14 @@
             <div class="trust-strip-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
             <div>
               <div class="trust-strip-title">Source transparency</div>
-              <div class="trust-strip-desc">Medical references and source categories visible where possible</div>
+              <div class="trust-strip-desc">Medical sources and references shown wherever available</div>
             </div>
           </div>
           <div class="trust-strip-item">
             <div class="trust-strip-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <div>
               <div class="trust-strip-title">Your data, your control</div>
-              <div class="trust-strip-desc">Health information stored securely with privacy controls</div>
+              <div class="trust-strip-desc">Access controls protect your data. Delete your account anytime.</div>
             </div>
           </div>
           <div class="trust-strip-item">
@@ -179,12 +197,12 @@
             <p class="feature-card-desc">Find hospitals, clinics, pharmacies, and other care options near you.</p>
             <span class="feature-card-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
           </a>
-          <a href="#dashboard" class="feature-card" role="article">
-            <div class="feature-card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <a href="#emergency" class="feature-card" role="article">
+            <div class="feature-card-icon" style="background:rgba(220,38,38,0.08);color:var(--color-danger)">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01"/></svg>
             </div>
-            <h3 class="feature-card-title">Health Tracking</h3>
-            <p class="feature-card-desc">Log vitals and track important health information over time.</p>
+            <h3 class="feature-card-title">Emergency</h3>
+            <p class="feature-card-desc">Access emergency numbers, first-aid guidance, and find emergency departments near you.</p>
             <span class="feature-card-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
           </a>
         </div>
@@ -197,20 +215,20 @@
         <div class="elix-text">
           <div class="section-label-pill">Meet Elix</div>
           <h2 class="section-title">Your AI health<br /><span class="gradient-text">companion</span></h2>
-          <p class="section-sub">Elix helps you understand health topics in simple language, prepare questions for a healthcare professional, and find useful next steps.</p>
+          <p class="section-sub">Elix is your AI health companion inside Mendly. Elix helps you understand health topics in simple language, prepare questions for a healthcare professional, and find useful next steps.</p>
           <ul class="elix-benefits" role="list">
             <li role="listitem"><span class="benefit-check" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Understand medical terms more easily</li>
             <li role="listitem"><span class="benefit-check" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Prepare for conversations with healthcare professionals</li>
             <li role="listitem"><span class="benefit-check" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Explore medicines and health topics in one place</li>
           </ul>
           <button class="btn btn-primary btn-lg" onclick="navigate('chat')" style="margin-top:28px" aria-label="Try Elix free">Try Elix free</button>
-          <p class="elix-disclaimer">Always seek professional medical advice for diagnosis, treatment, or urgent concerns.</p>
+          <p class="elix-disclaimer">Mendly provides educational health information and care-navigation support. It does not diagnose or replace a healthcare professional.</p>
         </div>
         <div class="elix-visual" aria-hidden="true">
           <div class="ai-chat-demo">
             <div class="ai-chat-header">
               <div class="ai-avatar-sm">
-                <svg width="18" height="18" viewBox="0 0 64 64" fill="none"><defs><clipPath id="rcLav"><rect width="64" height="64" rx="14"/></clipPath></defs><g clip-path="url(#rcLav)"><rect width="64" height="64" fill="#102A43"/><path d="M 10 54 C 8 35, 14 10, 22 8 C 28 7, 32 17, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/><path d="M 54 54 C 56 35, 50 10, 42 8 C 36 7, 32 17, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/><circle cx="32" cy="25" r="2" fill="#F28C78"/></g></svg>
+                <svg width="18" height="18" viewBox="0 0 64 64" fill="none"><defs><clipPath id="rcLav"><rect width="64" height="64" rx="14"/></clipPath><linearGradient id="lgrLav" x1="0" y1="1" x2="0.4" y2="0"><stop offset="0%" stop-color="#2B9680"/><stop offset="50%" stop-color="#3BAA91"/><stop offset="100%" stop-color="#52C4A8"/></linearGradient><linearGradient id="rgrLav" x1="1" y1="1" x2="0.6" y2="0"><stop offset="0%" stop-color="#8EE8CB"/><stop offset="100%" stop-color="#C8F7E5"/></linearGradient></defs><g clip-path="url(#rcLav)"><rect width="64" height="64" fill="#102A43"/><path d="M13.1 55C13.1 55, 8.8 45, 11.3 36.2C13.8 27.5, 19.4 18.8, 25 15C28.8 12.5, 31.5 13.8, 32 17.5C32.5 21.2, 32.3 28.8, 32 36.2" stroke="url(#lgrLav)" stroke-width="7.8" stroke-linecap="round" fill="none"/><path d="M50.9 55C50.9 55, 55.3 45, 52.8 36.2C50.3 27.5, 44.6 18.8, 39 15C35.2 12.5, 32.5 13.8, 32 17.5C31.5 21.2, 31.7 28.8, 32 36.2" stroke="url(#rgrLav)" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0.52"/><circle cx="32" cy="32.5" r="3.8" fill="#FFFFFF"/><circle cx="32" cy="32.5" r="2.1" fill="#F28C78"/></g></svg>
               </div>
               <div>
                 <div class="ai-name">Elix</div>
@@ -293,14 +311,14 @@
           <div class="safety-card-item">
             <div class="safety-card-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <h3>Privacy controls</h3>
-            <p>Your health information is stored securely. You control your data and can delete your account at any time.</p>
+            <p>Your data is protected by authentication and access controls. You control your data and can delete your account at any time.</p>
           </div>
         </div>
         <div class="safety-links">
-          <a href="#" onclick="showToast('Privacy Policy coming soon','info');return false;">Privacy Policy</a>
-          <a href="#" onclick="showToast('Terms of Use coming soon','info');return false;">Terms of Use</a>
-          <a href="#" onclick="showToast('Medical Disclaimer coming soon','info');return false;">Medical Disclaimer</a>
-          <a href="#" onclick="showToast('Account deletion available in Settings','info');return false;">Delete Account &amp; Data</a>
+          <a href="#privacy" onclick="navigate('privacy')">Privacy Policy</a>
+          <a href="#terms" onclick="navigate('terms')">Terms of Use</a>
+          <a href="#disclaimer" onclick="navigate('disclaimer')">Medical Disclaimer</a>
+          <a href="#emergency" onclick="navigate('emergency')">Emergency Information</a>
         </div>
       </div>
     </section>
@@ -314,9 +332,9 @@
           </div>
           <div class="emergency-notice-text">
             <h3>Need urgent help?</h3>
-            <p>Mendly is not an emergency service. If you may be experiencing a medical emergency, contact your local emergency number or go to the nearest emergency department immediately.</p>
+            <p>Mendly is not an emergency service and cannot assess life-threatening situations. If you are in immediate danger or have severe symptoms, contact your local emergency number or go to the nearest emergency department immediately.</p>
           </div>
-          <a href="#emergency" class="btn btn-danger btn-sm" onclick="navigate('emergency')" role="button">View emergency information</a>
+          <a href="#emergency" class="btn btn-danger btn-sm" role="button">View emergency information</a>
         </div>
       </div>
     </section>
@@ -356,7 +374,7 @@
             <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-5" type="button">
               <span>Is my health data private?</span><span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer" id="faq-5" role="region">Your health data is stored using secure authentication and access controls. We do not sell your data. You can review our Privacy Policy for details on how information is stored, protected, and used.</div>
+            <div class="faq-answer" id="faq-5" role="region">Your data is protected by authentication and authorization controls — only you can access your information. We do not sell your data. You can review our Privacy Policy and delete your account and data at any time from Settings.</div>
           </div>
           <div class="faq-item">
             <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-6" type="button">
@@ -372,7 +390,7 @@
     <section class="section cta-section" aria-label="Get started">
       <div class="container">
         <div class="cta-card">
-          <h2>Take control of your health information</h2>
+          <h2>Take control of your <span class="gradient-text">health information</span></h2>
           <p>Understand more, prepare better questions, and find the right next step with Mendly.</p>
           <button class="btn btn-primary btn-lg" onclick="openAuth('signup')" aria-label="Get started free with Mendly">Get started free</button>
         </div>
@@ -387,14 +405,14 @@
             <div class="footer-logo" id="footer-logo-wrap">
               <span class="footer-wordmark">Mendly</span>
             </div>
-            <p>Your AI-powered health companion. Understand health topics, explore medicines, find nearby care, and track your health.</p>
+            <p>Your personal health platform. Elix is your AI health companion inside Mendly. Understand health topics, explore medicines, find nearby care, and track your health.</p>
           </div>
           <div class="footer-col">
             <h4>Product</h4>
             <a href="#chat">AI Health Chat</a>
             <a href="#medicines">Medicine Guide</a>
             <a href="#hospitals">Nearby Care</a>
-            <a href="#dashboard">Health Tracking</a>
+            <a href="#emergency">Emergency</a>
           </div>
           <div class="footer-col">
             <h4>Company</h4>
@@ -405,9 +423,9 @@
           </div>
           <div class="footer-col">
             <h4>Legal</h4>
-            <a href="#" onclick="showToast('Privacy Policy coming soon','info');return false;">Privacy Policy</a>
-            <a href="#" onclick="showToast('Terms of Use coming soon','info');return false;">Terms of Use</a>
-            <a href="#" onclick="showToast('Medical Disclaimer coming soon','info');return false;">Medical Disclaimer</a>
+            <a href="#privacy" onclick="navigate('privacy')">Privacy Policy</a>
+            <a href="#terms" onclick="navigate('terms')">Terms of Use</a>
+            <a href="#disclaimer" onclick="navigate('disclaimer')">Medical Disclaimer</a>
             <a href="#safety">Safety</a>
           </div>
         </div>
@@ -430,6 +448,9 @@
     <div id="view-pharmacies" class="view"></div>
     <div id="view-emergency" class="view"></div>
     <div id="view-account" class="view"></div>
+    <div id="view-privacy" class="view"></div>
+    <div id="view-terms" class="view"></div>
+    <div id="view-disclaimer" class="view"></div>
   </main>
 
   <!-- Floating Emergency Button (logged-in) -->
@@ -455,5 +476,21 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").then((reg) => {
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          if (newWorker) {
+            newWorker.addEventListener("statechange", () => {
+              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                newWorker.postMessage("skipWaiting");
+              }
+            });
+          }
+        });
+      });
+    }
+  </script>
 </body>
 </html>

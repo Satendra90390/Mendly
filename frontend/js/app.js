@@ -38,6 +38,7 @@ function authFetch(path, opts = {}) {
   });
 }
 /* ── Toast Notifications ── */
+/* ── Legal Page Modals ── */
 function showToast(msg, type = "success") {
   const t = document.createElement("div");
   t.className = `toast toast-${type}`;
@@ -149,19 +150,39 @@ function applyTheme() {
 }
 function toggleTheme() {
   state.theme = state.theme === "dark" ? "light" : state.theme === "light" ? "system" : "dark";
-  saveState(); applyTheme(); renderHeader();
+  saveState(); applyTheme(); renderHeader(); renderSidebar(state.route);
 }
-function setTheme(mode) { state.theme = mode; saveState(); applyTheme(); renderAccount(); renderHeader(); }
+function setTheme(mode) { state.theme = mode; saveState(); applyTheme(); renderAccount(); renderHeader(); renderSidebar(state.route); }
 
 /* ── Logo SVG (Mendly Care Loop) ── */
-function logoHtml(size = 22) {
+function logoHtml(size = 22, dark = false) {
+  if (dark) {
+    return `<div class="logo-icon-wrap"><svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none">
+      <defs><clipPath id="rcd${size}"><rect width="64" height="64" rx="14"/></clipPath></defs>
+      <g clip-path="url(#rcd${size})">
+        <rect width="64" height="64" fill="#102A43"/>
+        <path d="M13.1 55C13.1 55, 8.8 45, 11.3 36.2C13.8 27.5, 19.4 18.8, 25 15C28.8 12.5, 31.5 13.8, 32 17.5C32.5 21.2, 32.3 28.8, 32 36.2" stroke="#FFFFFF" stroke-width="7.8" stroke-linecap="round" fill="none"/>
+        <path d="M50.9 55C50.9 55, 55.3 45, 52.8 36.2C50.3 27.5, 44.6 18.8, 39 15C35.2 12.5, 32.5 13.8, 32 17.5C31.5 21.2, 31.7 28.8, 32 36.2" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0.38"/>
+        <circle cx="32" cy="32.5" r="3.8" fill="#FFFFFF"/>
+      </g>
+    </svg></div>`;
+  }
   return `<div class="logo-icon-wrap"><svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none">
-    <defs><clipPath id="rc${size}"><rect width="64" height="64" rx="14"/></clipPath></defs>
+    <defs>
+      <clipPath id="rc${size}"><rect width="64" height="64" rx="14"/></clipPath>
+      <linearGradient id="lgr${size}" x1="0" y1="1" x2="0.4" y2="0">
+        <stop offset="0%" stop-color="#2B9680"/><stop offset="50%" stop-color="#3BAA91"/><stop offset="100%" stop-color="#52C4A8"/>
+      </linearGradient>
+      <linearGradient id="rgr${size}" x1="1" y1="1" x2="0.6" y2="0">
+        <stop offset="0%" stop-color="#8EE8CB"/><stop offset="100%" stop-color="#C8F7E5"/>
+      </linearGradient>
+    </defs>
     <g clip-path="url(#rc${size})">
       <rect width="64" height="64" fill="#102A43"/>
-      <path d="M 10 54 C 8 35, 14 10, 22 8 C 28 7, 32 17, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-      <path d="M 54 54 C 56 35, 50 10, 42 8 C 36 7, 32 17, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
-      <circle cx="32" cy="25" r="2" fill="#F28C78"/>
+      <path d="M13.1 55C13.1 55, 8.8 45, 11.3 36.2C13.8 27.5, 19.4 18.8, 25 15C28.8 12.5, 31.5 13.8, 32 17.5C32.5 21.2, 32.3 28.8, 32 36.2" stroke="url(#lgr${size})" stroke-width="7.8" stroke-linecap="round" fill="none"/>
+      <path d="M50.9 55C50.9 55, 55.3 45, 52.8 36.2C50.3 27.5, 44.6 18.8, 39 15C35.2 12.5, 32.5 13.8, 32 17.5C31.5 21.2, 31.7 28.8, 32 36.2" stroke="url(#rgr${size})" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0.52"/>
+      <circle cx="32" cy="32.5" r="3.8" fill="#FFFFFF"/>
+      <circle cx="32" cy="32.5" r="2.1" fill="#F28C78"/>
     </g>
   </svg></div>`;
 }
@@ -205,9 +226,9 @@ function injectStaticLogos() {
     <defs><clipPath id="rcFoot"><rect width="64" height="64" rx="14"/></clipPath></defs>
     <g clip-path="url(#rcFoot)">
       <rect width="64" height="64" fill="#102A43"/>
-      <path d="M 10 54 C 8 35, 14 10, 22 8 C 28 7, 32 17, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-      <path d="M 54 54 C 56 35, 50 10, 42 8 C 36 7, 32 17, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
-      <circle cx="32" cy="25" r="2" fill="#F28C78"/>
+      <path d="M13.1 55C13.1 55, 8.8 45, 11.3 36.2C13.8 27.5, 19.4 18.8, 25 15C28.8 12.5, 31.5 13.8, 32 17.5C32.5 21.2, 32.3 28.8, 32 36.2" stroke="#FFFFFF" stroke-width="7.8" stroke-linecap="round" fill="none"/>
+      <path d="M50.9 55C50.9 55, 55.3 45, 52.8 36.2C50.3 27.5, 44.6 18.8, 39 15C35.2 12.5, 32.5 13.8, 32 17.5C31.5 21.2, 31.7 28.8, 32 36.2" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0.38"/>
+      <circle cx="32" cy="32.5" r="3.8" fill="#FFFFFF"/>
     </g>
   </svg>`;
   document.querySelectorAll("#footer-logo-icon, #cta-logo-icon").forEach(el => {
@@ -226,7 +247,7 @@ function injectStaticLogos() {
    ROUTER
 ════════════════════════════════════════════════════ */
 const AUTH_REQUIRED = new Set(["dashboard", "account"]);
-const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "pharmacies", "emergency", "features", "about", "faq", "how", "safety"]);
+const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "pharmacies", "emergency", "features", "about", "faq", "how", "safety", "privacy", "terms", "disclaimer"]);
 const LANDING_SECTIONS = new Set(["features", "about", "faq", "how", "safety"]);
 
 function navigate(hash, replace) {
@@ -312,10 +333,13 @@ function render() {
     case "pharmacies": renderPharmacies(); break;
     case "emergency":  renderEmergency(); break;
     case "account":   renderAccount(); break;
+    case "privacy":   renderLegalPage("privacy"); break;
+    case "terms":     renderLegalPage("terms"); break;
+    case "disclaimer": renderLegalPage("disclaimer"); break;
   }
 
   const fab = document.getElementById("emergency-fab");
-  if (fab) fab.classList.toggle("fab-visible", !!state.user && targetView !== "emergency" && targetView !== "landing");
+  if (fab) fab.classList.toggle("fab-visible", targetView !== "emergency" && targetView !== "landing" && targetView !== "features" && targetView !== "about" && targetView !== "faq" && targetView !== "how" && targetView !== "safety" && targetView !== "privacy" && targetView !== "terms" && targetView !== "disclaimer");
 
   if (!state.user && LANDING_SECTIONS.has(route)) {
     setTimeout(() => {
@@ -348,7 +372,7 @@ function renderHeader() {
     ];
     h.innerHTML = `
       <div class="header-inner">
-        <a href="#landing" class="logo">${logoHtml(22)}<span>Mendly</span></a>
+        <a href="#landing" class="logo">${logoHtml(22, document.documentElement.classList.contains("dark"))}<span>Mendly</span></a>
         <nav class="header-nav">
           ${guestLinks.map(l => `<a href="#${l.h}" class="${route===l.h ? 'active' : ''}">${l.l}</a>`).join("")}
         </nav>
@@ -408,7 +432,7 @@ function renderSidebar(route) {
 
   s.innerHTML = `
     <button class="sidebar-brand" onclick="navigate('dashboard')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit;text-align:left" aria-label="Go to dashboard">
-      ${logoHtml(28)}<span>Mendly</span>
+      ${logoHtml(28, document.documentElement.classList.contains("dark"))}<span>Mendly</span>
     </button>
     <div class="sidebar-divider"></div>
     <div style="flex:1">
@@ -922,7 +946,8 @@ function renderWeatherWidget() {
     </div>
     ${graphHtml}
     ${hourlyHtml ? `<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:8px"><div style="font-size:12px;font-weight:700;color:var(--fg);margin-bottom:8px">Hourly Forecast</div><div style="display:flex;gap:4px;overflow-x:auto;padding-bottom:4px">${hourlyHtml}</div></div>` : ""}
-    ${dailyHtml ? `<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:12px"><div style="font-size:12px;font-weight:700;color:var(--fg);margin-bottom:8px">7-Day Forecast</div>${dailyHtml}</div>` : ""}`;
+    ${dailyHtml ? `<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:12px"><div style="font-size:12px;font-weight:700;color:var(--fg);margin-bottom:8px">7-Day Forecast</div>${dailyHtml}</div>` : ""}
+    <div style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic">General wellness information — not personalized medical advice.</div>`;
 }
 
 async function fetchLiveWeather() {
@@ -988,12 +1013,12 @@ function renderDashboard() {
       </div>
 
       <!-- Main Elix Card -->
-      <div class="dash-stat-card" style="margin-bottom:20px;border:2px solid var(--color-primary)">
+      <div class="dash-stat-card dash-elix-card" style="margin-bottom:20px;border:2px solid var(--color-primary)">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
           <span style="color:var(--primary)">${IC.chat}</span>
-          <span style="font-size:16px;font-weight:700;color:var(--fg)">How can Elix help today?</span>
+          <span style="font-size:16px;font-weight:700;color:var(--fg)">Ask Elix</span>
         </div>
-        <p style="font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 14px">Ask about health topics, medicines, medical terms, or possible next steps. Elix provides educational information and does not diagnose conditions.</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 14px">Elix provides educational health information and does not diagnose conditions or replace a healthcare professional.</p>
         <div style="display:flex;gap:8px;margin-bottom:12px">
           <input id="dash-elix-input" class="search-input" placeholder="Ask Elix a health question..."
             onkeydown="if(event.key==='Enter')dashAskElix()" style="flex:1;font-size:14px;padding:12px 16px" aria-label="Ask Elix a health question" />
@@ -1009,7 +1034,7 @@ function renderDashboard() {
           ${IC.info} Educational information — not a diagnosis
         </div>
         <div style="margin-top:10px">
-          <button class="btn btn-ghost btn-sm" onclick="navigate('chat')" style="font-size:12px;padding:4px 10px">Open full chat</button>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('chat')" style="font-size:12px;padding:4px 10px">Open full chat →</button>
         </div>
       </div>
 
@@ -1026,29 +1051,17 @@ function renderDashboard() {
         </div>
       </div>
 
-      <!-- Personal Activity -->
-      <div class="dash-stat-card" style="margin-bottom:20px">
-        <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px">${IC.info} Your Health Space</span></div>
-        <p style="font-size:14px;color:var(--fg);font-weight:600;margin:0 0 4px">Your health space is ready.</p>
-        <p style="font-size:13px;color:var(--muted);margin:0 0 14px">Start by asking Elix a question or exploring a medicine.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-primary btn-sm" onclick="navigate('chat')">Ask Elix</button>
-          <button class="btn btn-ghost btn-sm" onclick="navigate('medicines')">Search medicines</button>
-        </div>
-      </div>
-
+      <!-- Weather & Weather Tips -->
       <div class="dash-content-grid">
-        <!-- Left Column -->
         <div class="dash-content-left">
-          <!-- Weather Now -->
           <div class="dash-stat-card" id="dash-weather-info">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} Weather Now</span></div>
             <div id="dash-weather-content" style="color:var(--muted);font-size:13px" aria-live="polite">
               <div style="display:flex;align-items:center;gap:8px"><div class="spinner" style="width:16px;height:16px;margin:0"></div> Loading weather...</div>
             </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
 
-          <!-- Weather Tips -->
           <div class="dash-stat-card" id="dash-tips-content">
             <div style="display:flex;align-items:center;gap:8px;color:#f59e0b;margin-bottom:8px">${IC.sun} ${dailyTips.title} Tips</div>
             <ul class="dash-health-list">
@@ -1056,18 +1069,8 @@ function renderDashboard() {
             </ul>
             <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
-
-          <!-- What to Eat -->
-          <div class="dash-stat-card" id="dash-food-content">
-            <div style="display:flex;align-items:center;gap:8px;color:var(--primary);margin-bottom:8px">${IC.pill} What to Eat Today</div>
-            <ul class="dash-health-list">
-              ${dailyFood.map(f => `<li>${f}</li>`).join("")}
-            </ul>
-            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
-          </div>
         </div>
 
-        <!-- Right Column -->
         <div class="dash-content-right">
           <!-- Live Health News (fetched) -->
           <div class="dash-stat-card" id="dash-live-news">
@@ -1075,6 +1078,7 @@ function renderDashboard() {
             <div id="live-news-content" style="font-size:13px;color:var(--muted)" aria-live="polite">
               <div style="display:flex;align-items:center;gap:8px"><div class="spinner" style="width:16px;height:16px;margin:0"></div> Loading latest news...</div>
             </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
 
           <!-- Health News -->
@@ -1087,9 +1091,24 @@ function renderDashboard() {
                   <div class="dash-news-title">${escapeHtml(n.title)}</div>
                 </div>`).join("")}
             </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
+        </div>
+      </div>
 
-          <!-- Daily Health Tip -->
+      <!-- What to Eat & Daily Tip -->
+      <div class="dash-content-grid" style="margin-top:18px">
+        <div class="dash-content-left">
+          <div class="dash-stat-card" id="dash-food-content">
+            <div style="display:flex;align-items:center;gap:8px;color:var(--primary);margin-bottom:8px">${IC.pill} What to Eat Today</div>
+            <ul class="dash-health-list">
+              ${dailyFood.map(f => `<li>${f}</li>`).join("")}
+            </ul>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
+          </div>
+        </div>
+
+        <div class="dash-content-right">
           <div class="dash-stat-card">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:var(--primary)">${IC.shield} Daily Health Tip</span></div>
             <ul class="dash-health-list">
@@ -1101,14 +1120,19 @@ function renderDashboard() {
             </ul>
             <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
+        </div>
+      </div>
 
-          <!-- Member Since -->
+      <!-- Member Since & Quote -->
+      <div class="dash-content-grid" style="margin-top:18px">
+        <div class="dash-content-left">
           <div class="dash-stat-card" style="text-align:center">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:4px">Member Since</div>
             <div style="font-size:16px;font-weight:800;font-family:var(--font-display);color:var(--fg)">${memberSince}</div>
           </div>
+        </div>
 
-          <!-- Quote of the Day -->
+        <div class="dash-content-right">
           <div class="dash-stat-card" style="background:var(--gradient);border:none;color:#fff;text-align:center">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;opacity:0.7;margin-bottom:10px">Quote of the Day</div>
             <div id="dash-quote-text" style="font-size:15px;font-weight:600;line-height:1.5;font-style:italic;margin-bottom:8px"></div>
@@ -1185,14 +1209,14 @@ async function fetchLiveNews() {
   el.innerHTML = results.slice(0, 6).map(n => {
     const timeAgo = getTimeAgo(n.pubDate);
     const safeUrl = escapeHtml(/^https?:\/\//.test(n.link) ? n.link : "#");
-    return `<a href="${safeUrl}" target="_blank" rel="noopener" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+    return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary)">${escapeHtml(n.tag)}</span>
         <span style="font-size:10px;color:var(--muted-2)">${timeAgo}</span>
       </div>
       <div style="font-size:13px;font-weight:600;color:var(--fg);line-height:1.4">${escapeHtml(n.title)}</div>
     </a>`;
-  }).join("");
+  }).join("") + `<div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>`;
 }
 
 function getTimeAgo(dateStr) {
@@ -1284,7 +1308,7 @@ function logBp() {
 /* ═══════════════════════════════════════════════════
    CHAT
 ════════════════════════════════════════════════════ */
-const ELIX_GREETING = "Hi, I'm Elix.\n\nI can help explain health topics, medicines, medical terms, and possible next steps. I cannot diagnose conditions or replace a healthcare professional.\n\nWhat would you like to know?";
+  const ELIX_GREETING = "Hi, I'm Elix.\n\nI can help explain health topics, medicines, medical terms, and possible next steps. I cannot diagnose conditions or replace a healthcare professional.\n\nWhat would you like to know?";
 let chatMsgs = [{ role: "bot", content: ELIX_GREETING }];
 let chatLoading = false;
 let chatFiles = [];
@@ -1359,14 +1383,14 @@ function renderChat() {
 
   const msgs = chatMsgs.map(m => `
     <div class="chat-msg ${m.role === "user" ? "chat-user" : "chat-bot"}">
-      ${m.role === "bot" ? '<div class="chat-bot-label">Elix AI</div>' : ""}
+      ${m.role === "bot" ? '<div class="chat-bot-label">Elix</div>' : ""}
       <div class="chat-msg-text">${m.role === "bot" ? (m.isHtml ? m.content : renderMd(m.content)) : nl2br(escapeHtml(m.content))}</div>
-      ${m.role === "bot" ? '<div class="chat-disclaimer">Educational information — not a diagnosis</div>' : ""}
+      ${m.role === "bot" ? '<div class="chat-disclaimer">Educational information — not a diagnosis. Confirm with a healthcare professional.</div>' : ""}
       ${m.files?.length ? `<div class="chat-files">${m.files.map(f => `<span class="chat-file-badge">📎 ${escapeHtml(f.name)}</span>`).join("")}</div>` : ""}
     </div>`).join("");
 
   const typing = chatLoading
-    ? '<div class="chat-msg chat-bot"><div class="chat-bot-label">Elix AI</div><div class="typing-dots"><span></span><span></span><span></span></div><div class="thinking-text">Thinking...</div></div>'
+    ? '<div class="chat-msg chat-bot"><div class="chat-bot-label">Elix</div><div class="typing-dots"><span></span><span></span><span></span></div><div class="thinking-text">Thinking...</div></div>'
     : "";
 
   const prompts = chatMsgs.length <= 1 && !chatLoading
@@ -1410,8 +1434,8 @@ function renderChat() {
             ${!isGuest ? `<button class="chat-sidebar-toggle" onclick="toggleChatSidebar()" aria-label="Toggle conversation history" aria-expanded="false">${IC.menu}</button>` : ""}
             <div class="chat-header-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : IC.chat}</div>
             <div>
-              <div class="chat-header-name">Elix AI</div>
-              <div class="chat-header-status">${chatMsgs.length <= 1 ? "New conversation" : chatMsgs.length + " messages"}</div>
+              <div class="chat-header-name">Elix</div>
+              <div class="chat-header-status">AI Health Companion · ${chatMsgs.length <= 1 ? "New conversation" : chatMsgs.length + " messages"}</div>
             </div>
           </div>
           <button class="chat-clear-btn" onclick="clearChatHistory()" title="Clear chat history">${IC.trash} Clear</button>
@@ -1509,7 +1533,7 @@ async function sendChat() {
       if (!responded) chatMsgs.push({ role: "bot", content: reply });
       const emergencyKeywords = /suicid|self.?harm|overdos|heart.?attack|stroke|choking|severe.?bleed|anaphyla|can.?not.?breath|unconscious|seizure|chest.?pain|emergency/i;
       if (emergencyKeywords.test(text) || emergencyKeywords.test(reply)) {
-        chatMsgs.push({ role: "bot", content: `<div class="chat-emergency-warning" role="alert"><strong>This may require urgent medical attention.</strong> Mendly cannot assess emergencies. Contact your local emergency number or go to the nearest emergency department now.</div>`, isHtml: true });
+        chatMsgs.push({ role: "bot", content: `<div class="chat-emergency-warning" role="alert"><strong>This may require urgent medical attention.</strong> Mendly cannot assess emergencies. Contact your local emergency number or go to the nearest emergency department now.<div style="margin-top:10px"><button class="btn btn-danger btn-sm" onclick="navigate('emergency')" style="font-size:12px;padding:6px 14px">View emergency information</button></div></div>`, isHtml: true });
       }
     }
   } catch(e) { console.error("sendChat error:", e); if (!responded) chatMsgs.push({ role: "bot", content: "I'm having trouble connecting to my servers. Please check your connection and try again in a moment." }); }
@@ -1533,7 +1557,10 @@ function renderMedicines() {
         <p class="page-sub">Search by medicine name (paracetamol) or condition (headache, diabetes, fever).</p>
       </div>
       <div style="background:var(--color-primary-bg);border:1px solid rgba(13,148,136,0.15);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--fg-secondary);display:flex;align-items:center;gap:8px">
-        ${IC.info} This information is educational. Confirm medicine decisions with a doctor or pharmacist.
+        ${IC.info} This information is educational. Confirm medicine decisions with a doctor or pharmacist. Medical sources and references will be shown wherever available.
+      </div>
+      <div class="med-source-note">
+        ${IC.info} Medical sources and references will be shown wherever available. Dosage information is for reference only — confirm dosage with a doctor or pharmacist.
       </div>
       ${isGuest() ? `<div class="guest-banner"><span style="font-weight:600">Guest mode.</span> <span style="color:var(--muted);font-size:12px">${guestRemaining("medicines")} of ${GUEST_LIMITS.medicines} free searches left.</span> <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Sign Up</button></div>` : ""}
       <div class="med-search-inline">
@@ -1564,7 +1591,7 @@ function renderMedicines() {
             </div>
           </div>
           <div id="interact-results" style="margin-top:12px"></div>
-          <div style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic">Do not stop or change prescribed medication based only on this result. Speak with a doctor or pharmacist.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic">Do not stop or change prescribed medication based only on this result. Confirm dosage and medicine decisions with a doctor or pharmacist.</div>
         </div>
       </div>
     </div>`;
@@ -1701,6 +1728,9 @@ function renderDiseaseMedCard(m) {
     </div>`;
   }
 
+  html += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+    <div style="font-size:11px;color:var(--muted);font-style:italic;line-height:1.5">This information is educational. Confirm medicine decisions with a doctor or pharmacist.</div>
+  </div>`;
   html += `</div></div>`;
   return html;
 }
@@ -1880,6 +1910,10 @@ function renderMedicineCard(i) {
     </div>`;
   }
 
+  html += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+    <div style="font-size:11px;color:var(--muted);font-style:italic;line-height:1.5">This information is educational. Confirm medicine decisions with a doctor or pharmacist. Sources: OpenFDA, local drug references.</div>
+  </div>`;
+
   html += `</div></div>`;
   return html;
 }
@@ -1904,7 +1938,7 @@ function renderHospitals() {
         <button class="btn btn-ghost btn-sm" onclick="detectLocation('hospital')" id="hosp-loc-btn">
           ${IC.search} <span>${userLat ? "Location detected" : "Use My Location"}</span>
         </button>
-        ${userLat ? `<span class="location-status">${IC.info} Showing results near you</span>` : ""}
+        ${userLat ? `<span class="location-status">${IC.info} Showing results near you</span>` : `<span class="location-status" style="font-size:12px;color:var(--muted)">Location is used only to find nearby care. You can also search by city name.</span>`}
       </div>
       <div class="search-row">
         <input id="hosp-search" class="search-input" placeholder="Or search by city name..." onkeydown="if(event.key==='Enter')searchHospitals()" maxlength="200" aria-label="Search hospitals by city" />
@@ -2064,7 +2098,7 @@ function renderPharmacies() {
         <button class="btn btn-ghost btn-sm" onclick="detectLocation('pharmacy')" id="pharm-loc-btn">
           ${IC.search} <span>${userLat ? "Location detected" : "Use My Location"}</span>
         </button>
-        ${userLat ? `<span class="location-status">${IC.info} Showing results near you</span>` : ""}
+        ${userLat ? `<span class="location-status">${IC.info} Showing results near you</span>` : `<span class="location-status" style="font-size:12px;color:var(--muted)">Location is used only to find nearby care. You can also search by city name.</span>`}
       </div>
       <div class="search-row">
         <input id="pharm-search" class="search-input" placeholder="Or search by city name..." onkeydown="if(event.key==='Enter')searchPharmacies()" maxlength="200" aria-label="Search pharmacies by city" />
@@ -2192,7 +2226,8 @@ function renderNearbyResults(el, items, context, centerLat, centerLng) {
        </div>`;
      }).join("")}</div>` : "";
   const countHtml = `<div class="search-count">${items.length} result${items.length !== 1 ? "s" : ""} found — sorted by nearest</div>`;
-  el.innerHTML = mapHtml + countHtml + listHtml;
+  const sourceHtml = `<div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">Listings sourced from OpenStreetMap. Call ahead to confirm availability.</div>`;
+  el.innerHTML = mapHtml + countHtml + listHtml + sourceHtml;
   if (showMap && hasCoords && items.some(i => i.lat && i.lng)) {
     requestAnimationFrame(() => {
       const mapEl = document.getElementById("nearby-map");
@@ -2242,6 +2277,11 @@ function renderEmergency() {
     { country: "Japan",     number: "110", label: "Police" },
     { country: "Japan",     number: "119", label: "Fire / Ambulance" },
   ];
+  const crisisResources = [
+    { name: "988 Suicide & Crisis Lifeline (US)", number: "988", desc: "Free, confidential support 24/7" },
+    { name: "Crisis Text Line (US)", number: "Text HOME to 741741", desc: "Free crisis counseling via text" },
+    { name: "International Association for Suicide Prevention", number: "https://www.iasp.info/resources/Crisis_Centres/", desc: "Directory of crisis centres worldwide" },
+  ];
   const scenarios = [
     { icon: "❤️", title: "Chest pain or heart attack signs", steps: ["Call emergency services immediately", "Chew an aspirin if available and not allergic", "Sit or lie down in a comfortable position", "Do not drive yourself — call for an ambulance"] },
     { icon: "🫁", title: "Difficulty breathing", steps: ["Call emergency services if breathing is severely restricted", "Sit upright to ease breathing", "Loosen tight clothing", "If prescribed, use rescue inhaler or medication"] },
@@ -2258,15 +2298,15 @@ function renderEmergency() {
          <h2 class="page-title"><span class="page-title-icon" style="color:var(--danger)">${IC.emergency}</span> Get urgent help</h2>
        </div>
 
-       <div role="alert" style="background:rgba(239,68,68,0.06);border:2px solid var(--color-danger);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px">
-         <p style="font-size:14px;font-weight:700;color:var(--danger);margin:0 0 8px">Mendly is not an emergency service.</p>
+       <div role="alert" class="emergency-disclaimer-box">
+         <p style="font-size:14px;font-weight:700;color:var(--danger);margin:0 0 8px">Mendly is not an emergency service and cannot assess life-threatening situations.</p>
          <p style="font-size:13.5px;color:var(--fg);line-height:1.6;margin:0">If you are in immediate danger or have severe symptoms, contact your local emergency number or go to the nearest emergency department immediately.</p>
        </div>
 
-       <div style="margin-bottom:28px">
+       <section style="margin-bottom:28px" aria-label="Emergency numbers">
          <h3 style="font-size:15px;font-weight:700;color:var(--fg);margin:0 0 12px">Emergency Numbers</h3>
-         <div class="emergency-list">${list.map(e => `
-           <a class="emergency-card" href="tel:${e.number}" aria-label="Call ${e.country} ${e.label}: ${e.number}">
+         <div class="emergency-list" role="list">${list.map(e => `
+           <a class="emergency-card" href="tel:${e.number}" role="listitem" aria-label="Call ${e.country} ${e.label}: ${e.number}">
              <div>
                <div class="emergency-country">${escapeHtml(e.country)}</div>
                <div class="emergency-label">${escapeHtml(e.label)}</div>
@@ -2274,16 +2314,31 @@ function renderEmergency() {
              <div class="emergency-num">${e.number}</div>
            </a>`).join("")}
          </div>
-       </div>
+       </section>
 
-       <div style="margin-bottom:28px">
+       <section style="margin-bottom:28px" aria-label="Crisis resources">
+         <h3 style="font-size:15px;font-weight:700;color:var(--fg);margin:0 0 4px">Crisis Resources</h3>
+         <p style="font-size:12px;color:var(--muted);margin:0 0 14px">If you or someone you know is in crisis, these resources are available.</p>
+         <div style="display:grid;gap:10px">
+           ${crisisResources.map(r => `
+             <div class="acct-card" style="margin:0;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+               <div>
+                 <div style="font-size:13px;font-weight:700;color:var(--fg)">${escapeHtml(r.name)}</div>
+                 <div style="font-size:11.5px;color:var(--muted);margin-top:2px">${escapeHtml(r.desc)}</div>
+               </div>
+               <div style="font-size:14px;font-weight:800;color:var(--color-primary);font-family:var(--font-display);white-space:nowrap">${escapeHtml(r.number)}</div>
+             </div>`).join("")}
+         </div>
+       </section>
+
+       <section style="margin-bottom:28px" aria-label="First aid guidance">
          <h3 style="font-size:15px;font-weight:700;color:var(--fg);margin:0 0 4px">What to do in a crisis</h3>
          <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Basic first-aid steps while waiting for emergency services. This is general guidance — always follow the advice of a medical professional.</p>
          <div style="display:grid;gap:12px">
            ${scenarios.map(s => `
              <div class="acct-card" style="margin:0;padding:16px 18px">
                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-                 <span style="font-size:20px">${s.icon}</span>
+                 <span style="font-size:20px" aria-hidden="true">${s.icon}</span>
                  <span style="font-size:14px;font-weight:700;color:var(--fg)">${s.title}</span>
                </div>
                <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--fg-secondary);line-height:1.7">
@@ -2291,14 +2346,20 @@ function renderEmergency() {
                </ol>
              </div>`).join("")}
          </div>
-       </div>
+       </section>
 
-       <div class="acct-card" style="margin-top:24px">
-         <div class="acct-section-title">Find Nearby Care</div>
-         <div class="emergency-nearby-btns">
-           <button class="btn btn-ghost" onclick="navigate('hospitals')"><span style="display:flex;align-items:center;gap:6px">${IC.hospital} Hospitals &amp; Clinics</span></button>
-           <button class="btn btn-ghost" onclick="navigate('pharmacies')"><span style="display:flex;align-items:center;gap:6px">${IC.pharmacy} Pharmacies &amp; Drugstores</span></button>
+       <section style="margin-bottom:28px" aria-label="Find nearby care">
+         <div class="acct-card" style="margin-top:0">
+           <div class="acct-section-title">Find Nearby Care</div>
+           <div class="emergency-nearby-btns">
+             <button class="btn btn-ghost" onclick="navigate('hospitals')"><span style="display:flex;align-items:center;gap:6px">${IC.hospital} Hospitals &amp; Clinics</span></button>
+             <button class="btn btn-ghost" onclick="navigate('pharmacies')"><span style="display:flex;align-items:center;gap:6px">${IC.pharmacy} Pharmacies &amp; Drugstores</span></button>
+           </div>
          </div>
+       </section>
+
+       <div style="padding:16px 20px;background:var(--bg-alt);border-radius:var(--radius);border:1px solid var(--border)">
+         <p style="font-size:12px;color:var(--muted);line-height:1.6;margin:0;font-style:italic">Mendly provides educational health information and care-navigation support. It does not diagnose or replace a healthcare professional. In an emergency, always contact your local emergency services first.</p>
        </div>
      </div>`;
  }
@@ -2422,7 +2483,7 @@ function renderAccount() {
       <!-- Privacy -->
       <div class="acct-card">
         <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.shield} Privacy &amp; Data</span></div>
-        <p style="font-size:13px;color:var(--fg-secondary);line-height:1.6;margin:0 0 14px">Mendly stores your health information securely and uses it only to provide the features you use. We do not sell your data to third parties. Your chat history, medicine searches, and health data are private.</p>
+        <p style="font-size:13px;color:var(--fg-secondary);line-height:1.6;margin:0 0 14px">Your data is protected by authentication and access controls — only you can access your information. We do not sell your data to third parties. You can delete your account and all associated data at any time. Deleted data cannot be recovered.</p>
         <div class="setting-row" style="margin-bottom:12px">
           <div>
             <div class="setting-label">Chat History</div>
@@ -2451,9 +2512,9 @@ function renderAccount() {
         <div class="acct-section-title" style="color:var(--danger)"><span style="display:flex;align-items:center;gap:8px">${IC.emergency} Danger Zone</span></div>
         <div style="margin-bottom:16px">
           <div class="setting-label" style="color:var(--danger)">Delete Account</div>
-          <div class="setting-desc">Permanently delete your account and all associated data. This action cannot be undone.</div>
+          <div class="setting-desc">Permanently delete your account and all associated data. This includes your profile, chat history, and any stored health information. Deleted data cannot be recovered.</div>
         </div>
-        <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="showConfirmDialog('Delete your account?', 'This will permanently delete your account and all associated data. This action cannot be undone.', 'Delete my account', deleteAccount)">
+        <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="showConfirmDialog('Delete your account?', 'This will permanently delete your account and all associated data. This action cannot be undone. Deleted data cannot be recovered.', 'Delete my account', deleteAccount)">
           Delete My Account
         </button>
       </div>
@@ -2557,6 +2618,139 @@ async function deleteAccount() {
     showToast(res.message || "Account deleted.");
     logout();
   } catch(e) { console.error("deleteAccount error:", e); showToast("Could not connect to server. Try again.", "error"); }
+}
+
+/* ═══════════════════════════════════════════════════
+   LEGAL PAGES
+════════════════════════════════════════════════════ */
+function renderLegalPage(type) {
+  const el = document.getElementById(`view-${type}`);
+  if (!el) return;
+  const pages = {
+    privacy: {
+      title: "Privacy Policy",
+      lastUpdated: "August 4, 2026",
+      content: `
+        <h3>1. Information We Collect</h3>
+        <p>Mendly collects information you provide directly, including your account details (name, email), health questions submitted to Elix, medicine searches, and any profile information you choose to add. We also collect limited technical data such as browser type and usage patterns to improve the service.</p>
+
+        <h3>2. How We Use Your Information</h3>
+        <p>We use your information to provide and improve Mendly's features, including AI-powered health information through Elix, medicine lookup, nearby care search, and health tracking. Your data helps personalize your experience and maintain your chat history across sessions.</p>
+
+        <h3>3. Health Information</h3>
+        <p>Health questions you ask Elix and health data you store are processed to provide educational information. We do not sell your health data. Your health information is accessible only to you and is protected by authentication and authorization controls.</p>
+
+        <h3>4. Data Storage and Security</h3>
+        <p>Your data is stored using secure database systems with authentication-based access controls. Users can only access their own data. We implement standard web security practices including HTTPS, security headers, and input validation.</p>
+
+        <h3>5. Data Sharing</h3>
+        <p>We do not sell, rent, or share your personal health information with third parties for marketing purposes. Anonymous, aggregated data may be used to improve the service. We may disclose information only when required by law or to protect the safety of our users.</p>
+
+        <h3>6. Your Rights</h3>
+        <p>You can access, update, or delete your account and data at any time through the Settings page. Account deletion permanently removes your profile, chat history, and associated data. Deleted data cannot be recovered.</p>
+
+        <h3>7. Cookies and Local Storage</h3>
+        <p>Mendly uses browser local storage to save your theme preference and limited session data. We do not use tracking cookies or third-party analytics that compromise your privacy.</p>
+
+        <h3>8. Children's Privacy</h3>
+        <p>Mendly is not intended for users under 13 years of age. We do not knowingly collect information from children under 13.</p>
+
+        <h3>9. Changes to This Policy</h3>
+        <p>We may update this Privacy Policy from time to time. Significant changes will be communicated through the application or by email.</p>
+
+        <h3>10. Contact</h3>
+        <p>For questions about this Privacy Policy, please contact us through the application.</p>
+
+        <div class="legal-review-notice">This privacy policy is a draft for review. Final version should be reviewed by a legal professional before public launch.</div>
+      `
+    },
+    terms: {
+      title: "Terms of Use",
+      lastUpdated: "August 4, 2026",
+      content: `
+        <h3>1. Acceptance of Terms</h3>
+        <p>By using Mendly, you agree to these Terms of Use. If you do not agree, please do not use the service.</p>
+
+        <h3>2. Description of Service</h3>
+        <p>Mendly is a personal health information and care-navigation platform. Elix, the AI health companion inside Mendly, provides educational health information and care-navigation support. Mendly does not diagnose conditions, prescribe treatment, or replace a healthcare professional.</p>
+
+        <h3>3. Not Medical Advice</h3>
+        <p>All information provided by Mendly and Elix is for educational and informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of a qualified healthcare provider with any questions regarding a medical condition.</p>
+
+        <h3>4. Emergency Disclaimer</h3>
+        <p>Mendly is not an emergency service and cannot assess life-threatening situations. If you are in immediate danger or have severe symptoms, contact your local emergency number or go to the nearest emergency department immediately.</p>
+
+        <h3>5. User Responsibilities</h3>
+        <p>You are responsible for the accuracy of information you provide, protecting your account credentials, and using Mendly in compliance with applicable laws. You must be at least 13 years old to use the service.</p>
+
+        <h3>6. Account and Data</h3>
+        <p>You may delete your account and data at any time through Settings. Account deletion is permanent and cannot be undone. You are responsible for backing up any information you wish to keep.</p>
+
+        <h3>7. Intellectual Property</h3>
+        <p>Mendly and its content, features, and design are owned by Mendly and protected by copyright and other intellectual property laws.</p>
+
+        <h3>8. Limitation of Liability</h3>
+        <p>Mendly is provided "as is" without warranties of any kind. We are not liable for any damages arising from the use or inability to use the service, including reliance on health information provided.</p>
+
+        <h3>9. Changes to Terms</h3>
+        <p>We may update these Terms of Use. Continued use of Mendly after changes constitutes acceptance of the updated terms.</p>
+
+        <div class="legal-review-notice">These Terms of Use are a draft for review. Final version should be reviewed by a legal professional before public launch.</div>
+      `
+    },
+    disclaimer: {
+      title: "Medical Disclaimer",
+      lastUpdated: "August 4, 2026",
+      content: `
+        <div role="alert" style="background:rgba(220,38,38,0.06);border:1.5px solid rgba(220,38,38,0.2);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px">
+          <p style="font-size:14px;font-weight:700;color:var(--danger);margin:0 0 6px">Important: Read Before Using Mendly</p>
+          <p style="font-size:13px;color:var(--fg);line-height:1.6;margin:0">Mendly provides educational health information and care-navigation support. It does not diagnose or replace a healthcare professional.</p>
+        </div>
+
+        <h3>No Medical Diagnosis</h3>
+        <p>Elix, the AI health companion inside Mendly, provides general health information for educational purposes only. Elix does not provide medical diagnoses, medical opinions, or personalized medical recommendations. The information provided should not be used as a basis for diagnosis or treatment.</p>
+
+        <h3>Not a Substitute for Professional Care</h3>
+        <p>Mendly is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of a physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of information you have read or received through Mendly.</p>
+
+        <h3>Emergency Situations</h3>
+        <p>Mendly is not an emergency service. If you think you may have a medical emergency, call your local emergency number or go to the nearest emergency department immediately. Do not rely on electronic communications or Elix for medical emergencies.</p>
+
+        <h3>Medicine Information</h3>
+        <p>Medicine information provided through Mendly is for educational reference only. Do not start, stop, or change any medication based solely on information from Mendly. Confirm all medicine decisions, including dosage, with a doctor or pharmacist.</p>
+
+        <h3>Accuracy of Information</h3>
+        <p>While we strive to provide accurate and up-to-date health information, we make no representations or warranties about the accuracy, completeness, or reliability of any information provided. Medical knowledge evolves rapidly, and information may become outdated.</p>
+
+        <h3>Sources and References</h3>
+        <p>Medical sources and references will be shown wherever available. When sources are not displayed, information is generated by AI and should be independently verified with a healthcare professional.</p>
+
+        <h3>Assumption of Risk</h3>
+        <p>By using Mendly, you acknowledge that you do so at your own risk and that Mendly, its developers, and its affiliates are not responsible for any decisions or actions taken based on the information provided through the service.</p>
+
+        <div class="legal-review-notice">This Medical Disclaimer is a draft for review. Final version should be reviewed by a legal and medical professional before public launch.</div>
+      `
+    }
+  };
+
+  const page = pages[type];
+  if (!page) return;
+
+  el.innerHTML = `
+    <div class="page" style="max-width:720px">
+      <div class="page-header">
+        <h2 class="page-title">${escapeHtml(page.title)}</h2>
+        <p class="page-sub">Last updated: ${page.lastUpdated}</p>
+      </div>
+      <div class="legal-content">
+        ${page.content}
+      </div>
+      <div style="margin-top:32px;padding-top:20px;border-top:1px solid var(--border)">
+        <a href="#safety" onclick="navigate('safety')" style="color:var(--color-primary);font-size:13px;font-weight:600">← Back to Safety</a>
+        <span style="margin:0 12px;color:var(--border)">|</span>
+        <a href="#landing" onclick="navigate('landing')" style="color:var(--color-primary);font-size:13px;font-weight:600">Home</a>
+      </div>
+    </div>`;
 }
 
 /* ═══════════════════════════════════════════════════
