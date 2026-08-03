@@ -174,11 +174,11 @@ ul, ol { list-style: none; }
 .logo-icon-wrap {
   width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  background: var(--gradient); box-shadow: 0 3px 10px rgba(13,148,136,0.3);
+  overflow: hidden;
 }
-.logo-icon-wrap svg { width: 20px; height: 20px; display: block; }
+.logo-icon-wrap svg { width: 100%; height: 100%; display: block; border-radius: 10px; }
 .logo-icon-wrap.sm { width: 28px; height: 28px; border-radius: 8px; }
-.logo-icon-wrap.sm svg { width: 16px; height: 16px; }
+.logo-icon-wrap.sm svg { width: 100%; height: 100%; border-radius: 8px; }
 
 /* ═══════════════════════════════════════════════════
    HEADER
@@ -1330,7 +1330,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* ═══════════════════════════════════════════════════
    APP MAIN LANDMARK
 ═══════════════════════════════════════════════════ */
-.app-main { min-height: 100vh; }
+.app-main { min-height: 0; }
+body:not(.logged-in) .app-main { display: none; }
 
 /* ═══════════════════════════════════════════════════
    FLOATING EMERGENCY BUTTON
