@@ -8,6 +8,23 @@ const API = location.hostname === "localhost"
 
 let state = { user: null, token: null, theme: "light" };
 
+/* ── Guest Limits ── */
+const GUEST_LIMITS = { chat: 3, nearby: 2, medicines: 2 };
+let guestUsage = { chat: 0, nearby: 0, medicines: 0 };
+function isGuest() { return !state.user; }
+function guestReachedLimit(feature) { return isGuest() && guestUsage[feature] >= GUEST_LIMITS[feature]; }
+function guestUse(feature) { if (isGuest()) guestUsage[feature]++; }
+function guestRemaining(feature) { return isGuest() ? Math.max(0, GUEST_LIMITS[feature] - guestUsage[feature]) : Infinity; }
+function showGuestLimitToast(feature) {
+  const names = { chat: "Elix AI chat", nearby: "Nearby search", medicines: "Medicine search" };
+  const remaining = guestRemaining(feature);
+  if (remaining > 0) {
+    showToast(`${remaining} free ${names[feature]} use${remaining !== 1 ? "s" : ""} left. Sign up for unlimited access!`, "info");
+  } else {
+    showToast(`Free limit reached for ${names[feature]}. Create an account to continue!`, "warning");
+  }
+}
+
 /* ── Helpers ── */
 function apiFetch(path, opts = {}) {
   return fetch(`${API}${path}`, opts).then(r => r.json().catch(() => ({ detail: "Could not reach server. Please check your connection." })));
@@ -108,17 +125,15 @@ function toggleTheme() {
   saveState(); applyTheme(); renderHeader();
 }
 
-/* ── Logo SVG (medical cross + leaf) ── */
+/* ── Logo SVG (heartbeat M pulse) ── */
 function logoHtml(size = 22) {
-  return `<div class="logo-icon-wrap"><svg width="${size}" height="${size}" viewBox="0 0 40 40" fill="none">
-    <defs><linearGradient id="lg${size}" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#1a8a7d"/><stop offset="1" stop-color="#0ea5e9"/>
+  return `<div class="logo-icon-wrap"><svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none">
+    <defs><linearGradient id="lg${size}" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#059669"/><stop offset=".5" stop-color="#0d9488"/><stop offset="1" stop-color="#0284c7"/>
     </linearGradient></defs>
-    <rect width="40" height="40" rx="10" fill="url(#lg${size})"/>
-    <path d="M20 10 L20 30" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
-    <path d="M10 20 L30 20" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
-    <circle cx="28" cy="13" r="3.5" fill="rgba(255,255,255,0.35)"/>
-    <circle cx="28" cy="13" r="1.8" fill="white"/>
+    <rect width="64" height="64" rx="16" fill="url(#lg${size})"/>
+    <path d="M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="54" cy="30" r="2.5" fill="#5eead4"/>
   </svg></div>`;
 }
 
@@ -1207,8 +1222,8 @@ function renderChat() {
   const guestBanner = isGuest ? `
     <div class="guest-banner">
       <span style="font-weight:600">You're chatting as a guest.</span>
+      <span style="color:var(--muted);font-size:12px">${guestRemaining("chat")} of ${GUEST_LIMITS.chat} free messages left</span>
       <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Create Account</button>
-      <span style="color:var(--muted);font-size:12px">Sign up to save chats &amp; upload files</span>
     </div>` : "";
 
   const msgs = chatMsgs.map(m => `
@@ -1300,6 +1315,8 @@ async function sendChat() {
   if (!inp) return;
   const text = inp.value.trim();
   if ((!text && !chatFiles.length) || chatLoading) return;
+  if (guestReachedLimit("chat")) { showGuestLimitToast("chat"); openAuth("signup"); return; }
+  guestUse("chat");
   const files = [...chatFiles];
   chatFiles = [];
   chatMsgs.push({ role: "user", content: text || (files.some(f => f.type.startsWith("image/")) ? "(image attached)" : "(file attached)"), files: files.length ? files.map(f => ({ name: f.name })) : undefined });
@@ -1334,6 +1351,7 @@ async function sendChat() {
   responded = true;
   clearTimeout(safetyTimer);
   chatLoading = false; renderChat();
+  if (isGuest() && guestUsage.chat >= GUEST_LIMITS.chat) showGuestLimitToast("chat");
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1349,6 +1367,7 @@ function renderMedicines() {
         <h2 class="page-title"><span class="page-title-icon" style="color:var(--accent)">${IC.pill}</span> Medicine Search</h2>
         <p class="page-sub">Search by medicine name (paracetamol) or condition (headache, diabetes, fever).</p>
       </div>
+      ${isGuest() ? `<div class="guest-banner"><span style="font-weight:600">Guest mode.</span> <span style="color:var(--muted);font-size:12px">${guestRemaining("medicines")} of ${GUEST_LIMITS.medicines} free searches left.</span> <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Sign Up</button></div>` : ""}
       <div class="med-search-row">
         <div class="med-search-input-row">
           <input id="med-search" class="search-input has-icon" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" oninput="showMedSuggestions(this.value)" autocomplete="off" />
@@ -1384,6 +1403,8 @@ function clearMedSearch() {
 }
 
 async function searchMedicines() {
+  if (guestReachedLimit("medicines")) { showGuestLimitToast("medicines"); openAuth("signup"); return; }
+  guestUse("medicines");
   const q = document.getElementById("med-search")?.value.trim();
   if (!q) return;
   const el = document.getElementById("med-results");
@@ -1685,6 +1706,7 @@ function renderHospitals() {
         <h2 class="page-title"><span class="page-title-icon" style="color:var(--primary)">${IC.hospital}</span> Nearby Hospitals &amp; Clinics</h2>
         <p class="page-sub">Find hospitals, clinics, and medical centers near you.</p>
       </div>
+      ${isGuest() ? `<div class="guest-banner"><span style="font-weight:600">Guest mode.</span> <span style="color:var(--muted);font-size:12px">${guestRemaining("nearby")} of ${GUEST_LIMITS.nearby} free searches left.</span> <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Sign Up</button></div>` : ""}
       <div class="location-bar" id="hosp-location-bar">
         <button class="btn btn-ghost btn-sm" onclick="detectLocation('hospital')" id="hosp-loc-btn">
           ${IC.search} <span>${userLat ? "Location detected" : "Use My Location"}</span>
@@ -1732,6 +1754,8 @@ function clearHospSearch() {
 }
 
 async function searchHospitals() {
+  if (guestReachedLimit("nearby")) { showGuestLimitToast("nearby"); openAuth("signup"); return; }
+  guestUse("nearby");
   const q = document.getElementById("hosp-search")?.value.trim() || "";
   const el = document.getElementById("hosp-results");
   if (!el) return;
