@@ -787,10 +787,15 @@ body.logged-in { --header-h: 0; }
 /* Search */
 .search-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
 @media (max-width: 480px) { .search-row { gap: 8px; } .search-row .search-icon-wrap { display: none; } }
-.med-search-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
-.med-search-input-row { position: relative; }
-.med-search-btn-row { display: flex; gap: 10px; }
-.med-search-btn-row .btn { flex: 1; justify-content: center; }
+.med-search-inline { display: flex; gap: 10px; margin-bottom: 18px; align-items: stretch; }
+.med-search-inline .med-search-input-row { flex: 1; position: relative; min-width: 0; }
+.med-search-inline .search-input { width: 100%; height: 100%; box-sizing: border-box; }
+.med-search-inline .btn { flex-shrink: 0; white-space: nowrap; }
+@media (max-width: 480px) {
+  .med-search-inline { flex-wrap: wrap; }
+  .med-search-inline .med-search-input-row { flex-basis: 100%; }
+  .med-search-inline .btn { flex: 1; justify-content: center; }
+}
 .location-bar {
   display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 10px 14px;
   background: var(--color-primary-bg); border: 1px solid rgba(13,148,136,0.15); border-radius: var(--radius);
@@ -1009,7 +1014,7 @@ body.logged-in { --header-h: 0; }
 }
 .chat-clear-btn svg { width: 14px; height: 14px; }
 .chat-clear-btn:hover { color: var(--color-danger); border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.04); }
-.chat-msgs { flex: 1; overflow-y: auto; padding: 20px 18px; display: flex; flex-direction: column; scroll-behavior: smooth; }
+.chat-msgs { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 18px; display: flex; flex-direction: column; scroll-behavior: smooth; }
 @media (max-width: 480px) { .chat-msgs { padding: 14px; justify-content: flex-start; } }
 .chat-msg { max-width: 78%; padding: 12px 16px; border-radius: var(--radius-lg); margin-bottom: 10px; line-height: 1.5; font-size: 14.5px; word-wrap: break-word; animation: msgIn 0.2s var(--ease); }
 @media (max-width: 480px) { .chat-msg { max-width: 88%; font-size: 13.5px; padding: 10px 13px; } }
@@ -1020,14 +1025,14 @@ body.logged-in { --header-h: 0; }
 .thinking-text { font-size: 11.5px; color: var(--fg-muted); font-style: italic; margin-top: 4px; }
 .chat-msg-text { white-space: pre-wrap; }
 .chat-user .chat-msg-text { color: #fff; }
-.chat-input-bar { border-top: 1px solid var(--border); padding: 12px 16px; display: flex; gap: 8px; background: var(--bg-card); align-items: flex-end; }
+.chat-input-bar { border-top: 1px solid var(--border); padding: 12px 16px; display: flex; gap: 8px; background: var(--bg-card); align-items: flex-end; flex-shrink: 0; }
 @media (max-width: 480px) { .chat-input-bar { padding: 8px 10px; gap: 6px; } }
 .chat-textarea {
-  flex: 1; min-width: 0; padding: 10px 14px; border-radius: var(--radius); border: 1.5px solid var(--border);
+  flex: 1; min-width: 0; min-height: 42px; padding: 10px 14px; border-radius: var(--radius); border: 1.5px solid var(--border);
   background: var(--bg); color: var(--fg); font-size: 14.5px; resize: none;
   max-height: 120px; line-height: 1.5; transition: border-color var(--duration) var(--ease);
 }
-@media (max-width: 480px) { .chat-textarea { font-size: 13.5px; padding: 9px 11px; } }
+@media (max-width: 480px) { .chat-textarea { font-size: 13.5px; padding: 9px 11px; min-height: 40px; } }
 .chat-textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-bg); }
 .chat-send {
   width: 42px; height: 42px; border-radius: 50%; background: var(--gradient);
@@ -1136,6 +1141,9 @@ body.logged-in { --header-h: 0; }
 .emergency-country { font-size: 14.5px; font-weight: 700; color: var(--fg); display: flex; align-items: center; gap: 8px; }
 .emergency-label { font-size: 11.5px; color: var(--fg-secondary); margin-top: 2px; }
 .emergency-num { font-size: clamp(18px, 5vw, 24px); font-weight: 900; color: var(--color-danger); letter-spacing: 1px; font-family: var(--font-display); }
+.emergency-nearby-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.emergency-nearby-btns .btn { flex: 1; min-width: 140px; justify-content: center; }
+@media (max-width: 480px) { .emergency-nearby-btns { flex-direction: column; } .emergency-nearby-btns .btn { min-width: 0; } }
 
 /* ═══════════════════════════════════════════════════
    ACCOUNT

@@ -1359,15 +1359,13 @@ function renderMedicines() {
         <p class="page-sub">Search by medicine name (paracetamol) or condition (headache, diabetes, fever).</p>
       </div>
       ${isGuest() ? `<div class="guest-banner"><span style="font-weight:600">Guest mode.</span> <span style="color:var(--muted);font-size:12px">${guestRemaining("medicines")} of ${GUEST_LIMITS.medicines} free searches left.</span> <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Sign Up</button></div>` : ""}
-      <div class="med-search-row">
+      <div class="med-search-inline">
         <div class="med-search-input-row">
-          <input id="med-search" class="search-input has-icon" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" oninput="showMedSuggestions(this.value)" autocomplete="off" />
+          <input id="med-search" class="search-input" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" oninput="showMedSuggestions(this.value)" autocomplete="off" />
           <div id="med-suggestions" class="med-suggestions" style="display:none"></div>
         </div>
-        <div class="med-search-btn-row">
-          <button class="btn btn-primary" onclick="searchMedicines()">Search</button>
-          <button class="btn btn-ghost" onclick="clearMedSearch()">Clear</button>
-        </div>
+        <button class="btn btn-primary" onclick="searchMedicines()">Search</button>
+        <button class="btn btn-ghost" onclick="clearMedSearch()">Clear</button>
       </div>
       <div id="med-results" class="search-results" aria-live="polite">
         <div class="med-browse-section">
@@ -2012,9 +2010,9 @@ function renderMore() {
 
        <div class="acct-card" style="margin-top:24px">
          <div class="acct-section-title">Find Nearby Care</div>
-         <div style="display:flex;gap:12px;flex-wrap:wrap">
-           <button class="btn btn-ghost" style="flex:1;min-width:140px" onclick="navigate('hospitals')"><span style="display:flex;align-items:center;gap:6px">${IC.hospital} Hospitals &amp; Clinics</span></button>
-           <button class="btn btn-ghost" style="flex:1;min-width:140px" onclick="navigate('pharmacies')"><span style="display:flex;align-items:center;gap:6px">${IC.pharmacy} Pharmacies &amp; Drugstores</span></button>
+         <div class="emergency-nearby-btns">
+           <button class="btn btn-ghost" onclick="navigate('hospitals')"><span style="display:flex;align-items:center;gap:6px">${IC.hospital} Hospitals &amp; Clinics</span></button>
+           <button class="btn btn-ghost" onclick="navigate('pharmacies')"><span style="display:flex;align-items:center;gap:6px">${IC.pharmacy} Pharmacies &amp; Drugstores</span></button>
          </div>
        </div>
      </div>`;
