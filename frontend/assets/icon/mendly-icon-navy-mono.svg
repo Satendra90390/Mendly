@@ -1,11 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <defs><clipPath id="rc"><rect width="512" height="512" rx="108"/></clipPath></defs>
-  <g clip-path="url(#rc)">
-    <rect width="512" height="512" fill="#F8FAFB"/>
-    <path d="M 82 432 C 62 275, 115 72, 180 58 C 225 48, 255 128, 264 215"
-          stroke="#102A43" stroke-width="60" stroke-linecap="round" fill="none"/>
-    <path d="M 430 432 C 450 275, 397 72, 332 58 C 287 48, 257 128, 248 215"
-          stroke="#102A43" stroke-width="38" stroke-linecap="round" fill="none" opacity="0.30"/>
-    <circle cx="256" cy="200" r="17" fill="#102A43"/>
-  </g>
+  <!-- One-color deep navy on light background -->
+  <path d="M 78 435 C 60 280, 112 80, 180 62 C 218 50, 252 132, 260 220"
+        stroke="#102A43" stroke-width="56" stroke-linecap="round" fill="none"/>
+  <path d="M 434 435 C 452 280, 400 80, 332 62 C 294 50, 260 132, 252 220"
+        stroke="#102A43" stroke-width="36" stroke-linecap="round" fill="none" opacity="0.30"/>
+  <circle cx="256" cy="205" r="16" fill="#102A43"/>
 </svg>

@@ -159,9 +159,9 @@ function logoHtml(size = 22) {
     <defs><clipPath id="rc${size}"><rect width="64" height="64" rx="14"/></clipPath></defs>
     <g clip-path="url(#rc${size})">
       <rect width="64" height="64" fill="#102A43"/>
-      <path d="M 10 54 C 8 35, 14 9, 22 7 C 28 6, 32 16, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-      <path d="M 54 54 C 56 35, 50 9, 42 7 C 36 6, 32 16, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
-      <circle cx="32" cy="25" r="2.2" fill="#F28C78"/>
+      <path d="M 10 54 C 8 35, 14 10, 22 8 C 28 7, 32 17, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
+      <path d="M 54 54 C 56 35, 50 10, 42 8 C 36 7, 32 17, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
+      <circle cx="32" cy="25" r="2" fill="#F28C78"/>
     </g>
   </svg></div>`;
 }
@@ -205,9 +205,9 @@ function injectStaticLogos() {
     <defs><clipPath id="rcFoot"><rect width="64" height="64" rx="14"/></clipPath></defs>
     <g clip-path="url(#rcFoot)">
       <rect width="64" height="64" fill="#102A43"/>
-      <path d="M 10 54 C 8 35, 14 9, 22 7 C 28 6, 32 16, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-      <path d="M 54 54 C 56 35, 50 9, 42 7 C 36 6, 32 16, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
-      <circle cx="32" cy="25" r="2.2" fill="#F28C78"/>
+      <path d="M 10 54 C 8 35, 14 10, 22 8 C 28 7, 32 17, 33 27" stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
+      <path d="M 54 54 C 56 35, 50 10, 42 8 C 36 7, 32 17, 31 27" stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
+      <circle cx="32" cy="25" r="2" fill="#F28C78"/>
     </g>
   </svg>`;
   document.querySelectorAll("#footer-logo-icon, #cta-logo-icon").forEach(el => {

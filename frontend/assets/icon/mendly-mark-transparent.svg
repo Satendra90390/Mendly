@@ -1,11 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- Standalone full-color: two flowing ribbons forming M + Elix coral dot -->
-  <!-- Primary ribbon: bottom-left → left peak → center valley -->
+  <!-- Full-color on transparent background -->
   <path d="M 78 435 C 60 280, 112 80, 180 62 C 218 50, 252 132, 260 220"
         stroke="#3BAA91" stroke-width="56" stroke-linecap="round" fill="none"/>
-  <!-- Secondary ribbon: bottom-right → right peak → center valley -->
   <path d="M 434 435 C 452 280, 400 80, 332 62 C 294 50, 260 132, 252 220"
         stroke="#B9F3DF" stroke-width="36" stroke-linecap="round" fill="none" opacity="0.50"/>
-  <!-- Elix spark -->
   <circle cx="256" cy="205" r="16" fill="#F28C78"/>
 </svg>

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- White on transparent -->
-  <path d="M 82 432 C 62 275, 115 72, 180 58 C 225 48, 255 128, 264 215"
-        stroke="#FFFFFF" stroke-width="60" stroke-linecap="round" fill="none"/>
-  <path d="M 430 432 C 450 275, 397 72, 332 58 C 287 48, 257 128, 248 215"
-        stroke="#FFFFFF" stroke-width="38" stroke-linecap="round" fill="none" opacity="0.4"/>
-  <circle cx="256" cy="200" r="17" fill="#FFFFFF"/>
+  <!-- One-color white on transparent -->
+  <path d="M 78 435 C 60 280, 112 80, 180 62 C 218 50, 252 132, 260 220"
+        stroke="#FFFFFF" stroke-width="56" stroke-linecap="round" fill="none"/>
+  <path d="M 434 435 C 452 280, 400 80, 332 62 C 294 50, 260 132, 252 220"
+        stroke="#FFFFFF" stroke-width="36" stroke-linecap="round" fill="none" opacity="0.40"/>
+  <circle cx="256" cy="205" r="16" fill="#FFFFFF"/>
 </svg>
