@@ -257,12 +257,7 @@ function render() {
     return;
   }
 
-  /* sidebar body class —
-     dashboard has its own built-in icon sidebar on desktop, so aside sidebar only shows on
-     other logged-in pages. On mobile the icon sidebar is hidden, so we add has-sidebar
-     for the dashboard too, allowing the hamburger menu (with logout) to appear. */
-  const isMobile = window.innerWidth <= 768;
-  if (state.user && (targetView !== "dashboard" || isMobile) && targetView !== "landing") {
+  if (state.user && targetView !== "landing") {
     document.body.classList.add("has-sidebar");
   } else {
     document.body.classList.remove("has-sidebar");
@@ -408,7 +403,7 @@ function renderMobileNav(route) {
     { h: "chat",      l: "Elix",      i: IC.chat },
     { h: "medicines", l: "Medicines", i: IC.pill },
     { h: "hospitals", l: "Nearby",    i: IC.hospital },
-    { h: "more",      l: "SOS",       i: IC.emergency },
+    { h: "more",      l: "Emergency", i: IC.emergency },
   ];
   m.innerHTML = tabs.map(t => `
     <a href="#${t.h}" class="${route===t.h ? 'active' : ''}" onclick="closeSidebar()" ${route===t.h ? 'aria-current="page"' : ''}>
@@ -923,48 +918,39 @@ function renderDashboard() {
     : "Recent";
   const initials = (state.user?.name || state.user?.email || "U").charAt(0).toUpperCase();
   const displayName = (state.user?.name || "User").split(" ").slice(0, 2).join(" ");
+  const firstName = (state.user?.name || "there").split(" ")[0];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const quickActions = [
     { icon: IC.chat,     label: "Elix AI",    hash: "chat",      color: "rgba(26,138,125,0.12)", iconColor: "var(--primary)" },
     { icon: IC.pill,     label: "Medicines",  hash: "medicines", color: "rgba(14,165,233,0.12)", iconColor: "var(--accent)" },
-    { icon: IC.hospital,  label: "Hospitals",  hash: "hospitals", color: "rgba(245,158,11,0.12)", iconColor: "#f59e0b" },
+    { icon: IC.hospital,  label: "Nearby",     hash: "hospitals", color: "rgba(245,158,11,0.12)", iconColor: "#f59e0b" },
     { icon: IC.emergency, label: "Emergency",  hash: "more",      color: "rgba(239,68,68,0.12)",  iconColor: "var(--danger)" },
   ];
 
   const dashEl = document.getElementById("view-dashboard");
   if (!dashEl) return;
   dashEl.innerHTML = `
-  <div class="dash-layout">
-    <div class="dash-sidebar">
-      <div class="dash-sidebar-logo" onclick="navigate('dashboard')">${logoHtml(30)}</div>
-      <button class="dash-sidebar-btn active" onclick="navigate('dashboard')" title="Dashboard" aria-label="Dashboard">${IC.home}</button>
-      <button class="dash-sidebar-btn" onclick="navigate('chat')" title="Elix AI" aria-label="Elix AI">${IC.chat}</button>
-      <button class="dash-sidebar-btn" onclick="navigate('medicines')" title="Medicines" aria-label="Medicines">${IC.pill}</button>
-      <button class="dash-sidebar-btn" onclick="navigate('hospitals')" title="Hospitals" aria-label="Hospitals">${IC.hospital}</button>
-      <div style="margin-top:auto">
-        <button class="dash-sidebar-btn" onclick="navigate('account')" title="Settings" aria-label="Settings">${IC.settings}</button>
-      </div>
-    </div>
+  <div class="dash-main">
+    <div class="dash-main-inner">
 
-    <div class="dash-main">
-      <div class="dash-main-inner">
-      <div class="dash-topbar">
-        <div class="dash-search">
-          <span class="dash-search-icon">${IC.search}</span>
-          <input type="text" placeholder="Search medicines..." onkeydown="if(event.key==='Enter'){const v=this.value.trim();navigate('medicines');if(v)setTimeout(()=>{const el=document.getElementById('med-search');if(el){el.value=v;searchMedicines();}},100);}" />
-        </div>
-        <div class="dash-topbar-right">
-          <button class="dash-notif" aria-label="Notifications" title="Notifications" onclick="showToast('No new notifications','info')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit">${IC.bell}</button>
-          <button class="dash-user-chip" onclick="navigate('account')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit;text-align:left">
-            <div class="chip-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials}</div>
-            <span>${escapeHtml(displayName)}</span>
-            <span class="chip-caret">▾</span>
+      <!-- Welcome + Elix Card -->
+      <div class="dash-welcome-card">
+        <div class="dash-welcome-left">
+          <div style="font-size:14px;color:var(--muted);margin-bottom:4px">${greeting},</div>
+          <div style="font-size:26px;font-weight:800;font-family:var(--font-display);color:var(--fg);margin-bottom:6px">${escapeHtml(firstName)}</div>
+          <p style="font-size:14px;color:var(--muted);line-height:1.5;margin:0 0 16px">What can I help you with today?</p>
+          <button class="btn btn-primary" onclick="navigate('chat')" style="display:inline-flex;align-items:center;gap:6px">
+            ${IC.chat} Chat with Elix
           </button>
         </div>
+        <div class="dash-welcome-elix" aria-hidden="true">
+          <div class="dash-elix-avatar">${IC.chat}</div>
+        </div>
       </div>
 
-      </div>
-
+      <!-- Quick Actions -->
       <div class="dash-quick-grid">
         ${quickActions.map(c => `
           <button class="dash-quick-card" onclick="navigate('${c.hash}')">
@@ -1046,8 +1032,7 @@ function renderDashboard() {
         </div>
       </div>
       </div>
-    </div>
-  </div>`;
+    </div>`;
 }
 
 /* ── Live News Feed ── */
