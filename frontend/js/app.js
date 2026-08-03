@@ -1172,9 +1172,10 @@ async function fetchLiveNews() {
   results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
   el.innerHTML = results.slice(0, 6).map(n => {
     const timeAgo = getTimeAgo(n.pubDate);
-    return `<a href="${n.link}" target="_blank" rel="noopener" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+    const safeUrl = /^https?:\/\//.test(n.link) ? n.link : "#";
+    return `<a href="${safeUrl}" target="_blank" rel="noopener" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary)">${n.tag}</span>
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary)">${escapeHtml(n.tag)}</span>
         <span style="font-size:10px;color:var(--muted-2)">${timeAgo}</span>
       </div>
       <div style="font-size:13px;font-weight:600;color:var(--fg);line-height:1.4">${escapeHtml(n.title)}</div>
@@ -1367,12 +1368,14 @@ function renderChat() {
       ).join("")}</div>`
     : "";
 
-  const historyItems = (chatHistory || []).map(h => `
-    <div class="chat-history-item ${h.id === chatActiveId ? 'active' : ''}" onclick="loadChatHistory('${h.id}')" role="button" tabindex="0" aria-label="Open conversation: ${escapeHtml(h.title || 'Conversation')}">
+  const historyItems = (chatHistory || []).map(h => {
+    const safeId = String(h.id).replace(/[^a-zA-Z0-9_-]/g, "");
+    return `
+    <div class="chat-history-item ${h.id === chatActiveId ? 'active' : ''}" onclick="loadChatHistory('${safeId}')" role="button" tabindex="0" aria-label="Open conversation: ${escapeHtml(h.title || 'Conversation')}">
       <div class="chat-history-title">${escapeHtml(h.title || 'New conversation')}</div>
       <div class="chat-history-time">${h.time || ''}</div>
-      <button class="chat-history-delete" onclick="event.stopPropagation();deleteChatHistory('${h.id}')" aria-label="Delete conversation" title="Delete">✕</button>
-    </div>`).join("");
+      <button class="chat-history-delete" onclick="event.stopPropagation();deleteChatHistory('${safeId}')" aria-label="Delete conversation" title="Delete">✕</button>
+    </div>`;}).join("");
 
   const chatEl = document.getElementById("view-chat");
   if (!chatEl) return;
@@ -2463,7 +2466,6 @@ async function changePassword() {
 }
 
 async function deleteAccount() {
-  if (!confirm("This will permanently delete your account and all data. This cannot be undone.\n\nAre you sure?")) return;
   try {
     const res = await authFetch("/profile", { method: "DELETE" });
     if (res.status === "error" || res.detail) { showToast(res.detail || "Could not delete account. Try again.", "error"); return; }
