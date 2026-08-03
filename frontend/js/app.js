@@ -153,15 +153,16 @@ function toggleTheme() {
 }
 function setTheme(mode) { state.theme = mode; saveState(); applyTheme(); renderAccount(); renderHeader(); }
 
-/* ── Logo SVG (heartbeat M pulse) ── */
+/* ── Logo SVG (Mendly Care Loop) ── */
 function logoHtml(size = 22) {
   return `<div class="logo-icon-wrap"><svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none">
-    <defs><linearGradient id="lg${size}" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#059669"/><stop offset=".5" stop-color="#0d9488"/><stop offset="1" stop-color="#0284c7"/>
-    </linearGradient></defs>
-    <rect width="64" height="64" rx="16" fill="url(#lg${size})"/>
-    <path d="M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="54" cy="30" r="2.5" fill="#5eead4"/>
+    <defs><clipPath id="rc${size}"><rect width="64" height="64" rx="14"/></clipPath></defs>
+    <g clip-path="url(#rc${size})">
+      <rect width="64" height="64" fill="#102A43"/>
+      <path d="M10 52 C10 52 10 22 18 16 C23 12 27 15 32 19 C37 15 41 12 46 16 C54 22 54 52 54 52" fill="none" stroke="#3BAA91" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 51 C14 51 14.5 27 21 22 C25 19 28 19.5 32 22 C36 19.5 39 19 43 22 C49.5 27 50 51 50 51" fill="none" stroke="#B9F3DF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+      <circle cx="32" cy="24" r="2.5" fill="#F28C78"/>
+    </g>
   </svg></div>`;
 }
 
@@ -201,11 +202,13 @@ const IC = {
 /* inject logo into footer on page load */
 function injectStaticLogos() {
   const svgLogo = `<svg width="20" height="20" viewBox="0 0 64 64" fill="none">
-    <defs><linearGradient id="lgFoot" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#059669"/><stop offset=".5" stop-color="#0d9488"/><stop offset="1" stop-color="#0284c7"/>
-    </linearGradient></defs>
-    <rect width="64" height="64" rx="16" fill="url(#lgFoot)"/>
-    <path d="M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <defs><clipPath id="rcFoot"><rect width="64" height="64" rx="14"/></clipPath></defs>
+    <g clip-path="url(#rcFoot)">
+      <rect width="64" height="64" fill="#102A43"/>
+      <path d="M10 52 C10 52 10 22 18 16 C23 12 27 15 32 19 C37 15 41 12 46 16 C54 22 54 52 54 52" fill="none" stroke="#3BAA91" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 51 C14 51 14.5 27 21 22 C25 19 28 19.5 32 22 C36 19.5 39 19 43 22 C49.5 27 50 51 50 51" fill="none" stroke="#B9F3DF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+      <circle cx="32" cy="24" r="2.5" fill="#F28C78"/>
+    </g>
   </svg>`;
   document.querySelectorAll("#footer-logo-icon, #cta-logo-icon").forEach(el => {
     el.innerHTML = svgLogo;

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <clipPath id="rc"><rect width="512" height="512" rx="108"/></clipPath>
+  </defs>
+  <g clip-path="url(#rc)">
+    <rect width="512" height="512" fill="#102A43"/>
+    <!-- Left care loop ribbon -->
+    <path d="M96 400 C96 400 96 200 168 148 C210 118 240 142 256 172 C272 142 302 118 344 148 C416 200 416 400 416 400" fill="none" stroke="#3BAA91" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Right care loop ribbon (offset, lighter) -->
+    <path d="M120 395 C120 395 122 228 182 182 C218 155 242 162 256 180 C270 162 294 155 330 182 C390 228 392 395 392 395" fill="none" stroke="#B9F3DF" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+    <!-- Central Elix spark dot -->
+    <circle cx="256" cy="198" r="16" fill="#F28C78"/>
+  </g>
+</svg>
