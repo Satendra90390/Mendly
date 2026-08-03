@@ -51,6 +51,29 @@ function showToast(msg, type = "success") {
   setTimeout(() => { t.classList.remove("toast-show"); setTimeout(() => t.remove(), 300); }, 2500);
 }
 
+function showConfirmDialog(title, message, confirmLabel, onConfirm) {
+  const el = document.getElementById("auth-modal");
+  if (!el) return;
+  el.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeAuth()">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+        <div class="modal-header">
+          <h2 class="modal-title" style="font-size:17px">${escapeHtml(title)}</h2>
+          <button class="modal-close" onclick="closeAuth()" aria-label="Close" type="button">✕</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--fg-secondary);line-height:1.5;margin:0 0 20px">${escapeHtml(message)}</p>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="btn btn-ghost btn-sm" onclick="closeAuth()">Cancel</button>
+          <button class="btn btn-danger btn-sm" id="confirm-dialog-action">${escapeHtml(confirmLabel)}</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById("confirm-dialog-action")?.addEventListener("click", () => {
+    closeAuth();
+    if (onConfirm) onConfirm();
+  });
+}
+
 function escapeHtml(t) {
   if (t == null) return "";
   return String(t)
@@ -194,7 +217,7 @@ function injectStaticLogos() {
    ROUTER
 ════════════════════════════════════════════════════ */
 const AUTH_REQUIRED = new Set(["dashboard", "account"]);
-const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "pharmacies", "more", "features", "about", "faq", "how", "safety"]);
+const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "pharmacies", "emergency", "features", "about", "faq", "how", "safety"]);
 const LANDING_SECTIONS = new Set(["features", "about", "faq", "how", "safety"]);
 
 function navigate(hash, replace) {
@@ -237,6 +260,7 @@ function render() {
   applyTheme();
   document.body.classList.toggle("logged-in", !!state.user);
   const route = location.hash.slice(1) || (state.user ? "dashboard" : "landing");
+  if (route === "more") { history.replaceState(null, "", "#emergency"); return render(); }
 
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
 
@@ -277,7 +301,7 @@ function render() {
     case "medicines": renderMedicines(); break;
     case "hospitals": renderHospitals(); break;
     case "pharmacies": renderPharmacies(); break;
-    case "more":      renderMore(); break;
+    case "emergency":  renderEmergency(); break;
     case "account":   renderAccount(); break;
   }
 
@@ -364,7 +388,7 @@ function renderSidebar(route) {
     { h: "chat",      icon: IC.chat,     l: "Elix AI" },
     { h: "medicines", icon: IC.pill,     l: "Medicines" },
     { h: "hospitals", icon: IC.hospital,  l: "Nearby" },
-    { h: "more",      icon: IC.emergency, l: "Emergency" },
+    { h: "emergency", icon: IC.emergency, l: "Emergency" },
   ];
   const bottomItems = [
     { h: "account", icon: IC.settings, l: "Settings" },
@@ -403,7 +427,7 @@ function renderMobileNav(route) {
     { h: "chat",      l: "Elix",      i: IC.chat },
     { h: "medicines", l: "Medicines", i: IC.pill },
     { h: "hospitals", l: "Nearby",    i: IC.hospital },
-    { h: "more",      l: "Emergency", i: IC.emergency },
+    { h: "emergency", l: "Emergency", i: IC.emergency },
   ];
   m.innerHTML = tabs.map(t => `
     <a href="#${t.h}" class="${route===t.h ? 'active' : ''}" onclick="closeSidebar()" ${route===t.h ? 'aria-current="page"' : ''}>
@@ -916,17 +940,21 @@ function renderDashboard() {
   const memberSince = state.user?.created_at
     ? new Date(state.user.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "Recent";
-  const initials = (state.user?.name || state.user?.email || "U").charAt(0).toUpperCase();
-  const displayName = (state.user?.name || "User").split(" ").slice(0, 2).join(" ");
   const firstName = (state.user?.name || "there").split(" ")[0];
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const quickActions = [
-    { icon: IC.chat,     label: "Elix AI",    hash: "chat",      color: "rgba(26,138,125,0.12)", iconColor: "var(--primary)" },
-    { icon: IC.pill,     label: "Medicines",  hash: "medicines", color: "rgba(14,165,233,0.12)", iconColor: "var(--accent)" },
-    { icon: IC.hospital,  label: "Nearby",     hash: "hospitals", color: "rgba(245,158,11,0.12)", iconColor: "#f59e0b" },
-    { icon: IC.emergency, label: "Emergency",  hash: "more",      color: "rgba(239,68,68,0.12)",  iconColor: "var(--danger)" },
+    { icon: IC.pill,     label: "Medicines",  desc: "Search medicines and drug info",  hash: "medicines", color: "rgba(14,165,233,0.12)", iconColor: "var(--accent)" },
+    { icon: IC.hospital,  label: "Nearby Care", desc: "Find hospitals, clinics, pharmacies", hash: "hospitals", color: "rgba(245,158,11,0.12)", iconColor: "#f59e0b" },
+    { icon: IC.emergency, label: "Emergency",   desc: "Emergency numbers and guidance",  hash: "emergency", color: "rgba(239,68,68,0.12)",  iconColor: "var(--danger)" },
+    { icon: IC.settings,  label: "Account",     desc: "Profile, privacy, and settings",  hash: "account",  color: "rgba(100,116,139,0.12)", iconColor: "var(--fg-secondary)" },
+  ];
+
+  const elixPrompts = [
+    "What causes a headache?",
+    "Explain this medicine",
+    "What does this medical term mean?",
+    "What questions should I ask my doctor?",
+    "Find care near me"
   ];
 
   const dashEl = document.getElementById("view-dashboard");
@@ -935,28 +963,66 @@ function renderDashboard() {
   <div class="dash-main">
     <div class="dash-main-inner">
 
-      <!-- Welcome + Elix Card -->
+      <!-- Welcome Section -->
       <div class="dash-welcome-card">
         <div class="dash-welcome-left">
-          <div style="font-size:14px;color:var(--muted);margin-bottom:4px">${greeting},</div>
-          <div style="font-size:26px;font-weight:800;font-family:var(--font-display);color:var(--fg);margin-bottom:6px">${escapeHtml(firstName)}</div>
-          <p style="font-size:14px;color:var(--muted);line-height:1.5;margin:0 0 16px">What can I help you with today?</p>
-          <button class="btn btn-primary" onclick="navigate('chat')" style="display:inline-flex;align-items:center;gap:6px">
-            ${IC.chat} Chat with Elix
-          </button>
+          <div style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:4px">Welcome back,</div>
+          <div style="font-size:26px;font-weight:800;font-family:var(--font-display);color:#fff;margin-bottom:6px">${escapeHtml(firstName)}</div>
+          <p style="font-size:14px;color:rgba(255,255,255,0.85);line-height:1.5;margin:0">What would you like to understand about your health today?</p>
         </div>
         <div class="dash-welcome-elix" aria-hidden="true">
           <div class="dash-elix-avatar">${IC.chat}</div>
         </div>
       </div>
 
+      <!-- Main Elix Card -->
+      <div class="dash-stat-card" style="margin-bottom:20px;border:2px solid var(--color-primary)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <span style="color:var(--primary)">${IC.chat}</span>
+          <span style="font-size:16px;font-weight:700;color:var(--fg)">How can Elix help today?</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 14px">Ask about health topics, medicines, medical terms, or possible next steps. Elix provides educational information and does not diagnose conditions.</p>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input id="dash-elix-input" class="search-input" placeholder="Ask Elix a health question..."
+            onkeydown="if(event.key==='Enter')dashAskElix()" style="flex:1;font-size:14px;padding:12px 16px" aria-label="Ask Elix a health question" />
+          <button class="btn btn-primary" onclick="dashAskElix()" id="dash-elix-btn" style="padding:12px 20px">
+            <span style="display:flex;align-items:center;gap:6px">${IC.chat} Ask Elix</span>
+          </button>
+        </div>
+        <div id="dash-elix-status" style="display:none;margin-bottom:12px"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+          ${elixPrompts.map(p => `<button class="dash-prompt-chip" onclick="document.getElementById('dash-elix-input').value='${escapeHtml(p)}';dashAskElix()" aria-label="Ask: ${escapeHtml(p)}">${escapeHtml(p)}</button>`).join("")}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
+          ${IC.info} Educational information — not a diagnosis
+        </div>
+        <div style="margin-top:10px">
+          <button class="btn btn-ghost btn-sm" onclick="navigate('chat')" style="font-size:12px;padding:4px 10px">Open full chat</button>
+        </div>
+      </div>
+
       <!-- Quick Actions -->
-      <div class="dash-quick-grid">
-        ${quickActions.map(c => `
-          <button class="dash-quick-card" onclick="navigate('${c.hash}')">
-            <div class="dash-quick-icon" style="background:${c.color};color:${c.iconColor}">${c.icon}</div>
-            <div class="dash-quick-label">${c.label}</div>
-          </button>`).join("")}
+      <div style="margin-bottom:24px">
+        <div style="font-size:14px;font-weight:700;color:var(--fg);margin-bottom:12px">Quick Actions</div>
+        <div class="dash-quick-grid">
+          ${quickActions.map(c => `
+            <button class="dash-quick-card" onclick="navigate('${c.hash}')" aria-label="${c.label}: ${c.desc}">
+              <div class="dash-quick-icon" style="background:${c.color};color:${c.iconColor}">${c.icon}</div>
+              <div class="dash-quick-label">${c.label}</div>
+              <div style="font-size:11px;color:var(--muted);line-height:1.3">${c.desc}</div>
+            </button>`).join("")}
+        </div>
+      </div>
+
+      <!-- Personal Activity -->
+      <div class="dash-stat-card" style="margin-bottom:20px">
+        <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px">${IC.info} Your Health Space</span></div>
+        <p style="font-size:14px;color:var(--fg);font-weight:600;margin:0 0 4px">Your health space is ready.</p>
+        <p style="font-size:13px;color:var(--muted);margin:0 0 14px">Start by asking Elix a question or exploring a medicine.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="navigate('chat')">Ask Elix</button>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('medicines')">Search medicines</button>
+        </div>
       </div>
 
       <div class="dash-content-grid">
@@ -965,7 +1031,9 @@ function renderDashboard() {
           <!-- Weather Now -->
           <div class="dash-stat-card" id="dash-weather-info">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} Weather Now</span></div>
-            <div id="dash-weather-content" style="color:var(--muted);font-size:13px">Loading weather...</div>
+            <div id="dash-weather-content" style="color:var(--muted);font-size:13px">
+              <div style="display:flex;align-items:center;gap:8px"><div class="spinner" style="width:16px;height:16px;margin:0"></div> Loading weather...</div>
+            </div>
           </div>
 
           <!-- Weather Tips -->
@@ -974,6 +1042,7 @@ function renderDashboard() {
             <ul class="dash-health-list">
               ${dailyTips.tips.map(t => `<li>${t}</li>`).join("")}
             </ul>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
 
           <!-- What to Eat -->
@@ -982,6 +1051,7 @@ function renderDashboard() {
             <ul class="dash-health-list">
               ${dailyFood.map(f => `<li>${f}</li>`).join("")}
             </ul>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
         </div>
 
@@ -990,7 +1060,9 @@ function renderDashboard() {
           <!-- Live Health News (fetched) -->
           <div class="dash-stat-card" id="dash-live-news">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px">${IC.info} Live Health News</span></div>
-            <div id="live-news-content" style="font-size:13px;color:var(--muted)">Loading latest news...</div>
+            <div id="live-news-content" style="font-size:13px;color:var(--muted)">
+              <div style="display:flex;align-items:center;gap:8px"><div class="spinner" style="width:16px;height:16px;margin:0"></div> Loading latest news...</div>
+            </div>
           </div>
 
           <!-- Health News -->
@@ -999,8 +1071,8 @@ function renderDashboard() {
             <div class="dash-health-news">
               ${dailyNews.map(n => `
                 <div class="dash-news-item">
-                  <span class="dash-news-tag" style="color:${n.color}">${n.tag}</span>
-                  <div class="dash-news-title">${n.title}</div>
+                  <span class="dash-news-tag" style="color:${n.color}">${escapeHtml(n.tag)}</span>
+                  <div class="dash-news-title">${escapeHtml(n.title)}</div>
                 </div>`).join("")}
             </div>
           </div>
@@ -1015,6 +1087,7 @@ function renderDashboard() {
               <li>Include fruits and vegetables in every meal</li>
               <li>Practice deep breathing for 5 minutes daily</li>
             </ul>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">General wellness information — not personalized medical advice.</div>
           </div>
 
           <!-- Member Since -->
@@ -1033,6 +1106,36 @@ function renderDashboard() {
       </div>
       </div>
     </div>`;
+}
+
+async function dashAskElix() {
+  const inp = document.getElementById("dash-elix-input");
+  const btn = document.getElementById("dash-elix-btn");
+  const status = document.getElementById("dash-elix-status");
+  if (!inp || !btn || !status) return;
+  const text = inp.value.trim();
+  if (!text) { inp.focus(); return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:flex;align-items:center;gap:6px"><div class="spinner" style="width:14px;height:14px;margin:0;border-width:2px"></div> Asking...</span>';
+  status.style.display = "block";
+  status.innerHTML = '<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)"><div class="spinner" style="width:14px;height:14px;margin:0;border-width:2px"></div> Elix is thinking...</div>';
+  try {
+    const history = [];
+    const res = await fetch(`${API}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}) },
+      body: JSON.stringify({ message: text, history }),
+    });
+    const data = await res.json().catch(() => ({}));
+    const reply = res.ok ? (data.response || data.reply || "I'd like to help with that. Could you provide a bit more detail?") : (data.detail || "We couldn't load this information. Check your connection and try again.");
+    status.innerHTML = `<div style="background:var(--color-primary-bg);border:1px solid rgba(13,148,136,0.15);border-radius:var(--radius);padding:14px;font-size:13px;line-height:1.6;color:var(--fg)">${renderMd(reply)}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">${IC.info} Educational information — not a diagnosis</div>
+      <div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="navigate('chat')">Continue in full chat</button></div>`;
+  } catch(e) {
+    status.innerHTML = `<div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:var(--radius);padding:14px;font-size:13px;color:var(--danger)">We couldn't load this information. Check your connection and try again. <button class="btn btn-ghost btn-sm" onclick="dashAskElix()" style="margin-left:8px;font-size:12px">Try again</button></div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<span style="display:flex;align-items:center;gap:6px">${IC.chat} Ask Elix</span>`;
 }
 
 /* ── Live News Feed ── */
@@ -1168,44 +1271,67 @@ function logBp() {
 /* ═══════════════════════════════════════════════════
    CHAT
 ════════════════════════════════════════════════════ */
-function getChatGreeting() {
-  const name = state.user?.name?.split(" ")[0];
-  const hour = new Date().getHours();
-  let timeGreeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const namePart = name ? `, ${escapeHtml(name)}` : "";
-  return `${timeGreeting}${namePart}! I'm Elix, your personal health companion. Ask me anything about symptoms, medicines, or wellness — I'm here to help.`;
-}
-let chatMsgs = [{ role: "bot", content: getChatGreeting() }];
+const ELIX_GREETING = "Hi, I'm Elix.\n\nI can help explain health topics, medicines, medical terms, and possible next steps. I cannot diagnose conditions or replace a healthcare professional.\n\nWhat would you like to know?";
+let chatMsgs = [{ role: "bot", content: ELIX_GREETING }];
 let chatLoading = false;
 let chatFiles = [];
+let chatHistory = [];
+let chatActiveId = null;
+
+function newChat() {
+  chatMsgs = [{ role: "bot", content: ELIX_GREETING }];
+  chatFiles = [];
+  chatLoading = false;
+  chatActiveId = null;
+  renderChat();
+}
+function loadChatHistory(id) {
+  chatActiveId = id;
+  renderChat();
+}
+function deleteChatHistory(id) {
+  showConfirmDialog("Delete this conversation?", "This will permanently remove this conversation from your history.", "Delete", () => {
+    chatHistory = chatHistory.filter(h => h.id !== id);
+    if (chatActiveId === id) { chatActiveId = null; chatMsgs = [{ role: "bot", content: ELIX_GREETING }]; }
+    renderChat();
+  });
+}
+function toggleChatSidebar() {
+  const sb = document.getElementById("chat-sidebar");
+  if (sb) sb.classList.toggle("open");
+}
 
 function resetChat() {
-  chatMsgs = [{ role: "bot", content: getChatGreeting() }];
+  chatMsgs = [{ role: "bot", content: ELIX_GREETING }];
   chatFiles = [];
   chatLoading = false;
 }
 
 async function clearChatHistory() {
-  if (!confirm("Clear all messages in this chat? This cannot be undone.")) return;
-  if (state.user && state.token) {
-    try {
-      await fetch(`${API}/chat/history`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${state.token}` },
-      });
-    } catch(e) { console.error("Failed to clear server history:", e); }
-  }
-  resetChat();
-  renderChat();
+  showConfirmDialog(
+    "Clear this conversation?",
+    "This action will remove the current conversation from your chat history.",
+    "Clear conversation",
+    async () => {
+      if (state.user && state.token) {
+        try {
+          await fetch(`${API}/chat/history`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${state.token}` },
+          });
+        } catch(e) { console.error("Failed to clear server history:", e); }
+      }
+      resetChat();
+      renderChat();
+    }
+  );
 }
-
 const CHAT_PROMPTS = [
-  "What are the side effects of lisinopril?",
-  "Find a pharmacy near downtown",
-  "What is the difference between ibuprofen and naproxen?",
-  "Drug interactions with metformin and alcohol",
-  "How should I store my blood pressure medication?",
-  "What are the warning signs of dehydration?",
+  "What causes a headache?",
+  "Explain this medicine",
+  "What does this medical term mean?",
+  "What questions should I ask my doctor?",
+  "Find care near me",
 ];
 
 function renderChat() {
@@ -1221,6 +1347,7 @@ function renderChat() {
     <div class="chat-msg ${m.role === "user" ? "chat-user" : "chat-bot"}">
       ${m.role === "bot" ? '<div class="chat-bot-label">Elix AI</div>' : ""}
       <div class="chat-msg-text">${m.role === "bot" ? renderMd(m.content) : nl2br(escapeHtml(m.content))}</div>
+      ${m.role === "bot" ? '<div class="chat-disclaimer">Educational information — not a diagnosis</div>' : ""}
       ${m.files?.length ? `<div class="chat-files">${m.files.map(f => `<span class="chat-file-badge">📎 ${escapeHtml(f.name)}</span>`).join("")}</div>` : ""}
     </div>`).join("");
 
@@ -1240,33 +1367,54 @@ function renderChat() {
       ).join("")}</div>`
     : "";
 
+  const historyItems = (chatHistory || []).map(h => `
+    <div class="chat-history-item ${h.id === chatActiveId ? 'active' : ''}" onclick="loadChatHistory('${h.id}')" role="button" tabindex="0" aria-label="Open conversation: ${escapeHtml(h.title || 'Conversation')}">
+      <div class="chat-history-title">${escapeHtml(h.title || 'New conversation')}</div>
+      <div class="chat-history-time">${h.time || ''}</div>
+      <button class="chat-history-delete" onclick="event.stopPropagation();deleteChatHistory('${h.id}')" aria-label="Delete conversation" title="Delete">✕</button>
+    </div>`).join("");
+
   const chatEl = document.getElementById("view-chat");
   if (!chatEl) return;
   const prevText = document.getElementById("chat-input")?.value || "";
   chatEl.innerHTML = `
-    <div class="chat-wrap">
-      ${guestBanner}
-      <div class="chat-header-bar">
-        <div class="chat-header-left">
-          <div class="chat-header-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : IC.chat}</div>
-          <div>
-            <div class="chat-header-name">Elix AI</div>
-            <div class="chat-header-status">${chatMsgs.length <= 1 ? "New conversation" : chatMsgs.length + " messages"}</div>
-          </div>
+    <div class="chat-layout">
+      ${!isGuest ? `<div class="chat-sidebar" id="chat-sidebar">
+        <div class="chat-sidebar-header">
+          <button class="btn btn-primary btn-sm" onclick="newChat()" style="width:100%;justify-content:center">+ New conversation</button>
         </div>
-        <button class="chat-clear-btn" onclick="clearChatHistory()" title="Clear chat history">${IC.trash} Clear</button>
-      </div>
-      <div class="chat-msgs" id="chat-msgs" role="log" aria-live="polite" aria-label="Chat messages">${msgs}${typing}${prompts}</div>
-      ${filePreview}
-      <div class="chat-input-bar">
-        <button class="chat-attach" onclick="triggerChatUpload()" title="Attach file" aria-label="Attach file" ${isGuest ? "disabled" : ""}>${IC.attach}</button>
-        <input type="file" id="chat-file-input" multiple accept="image/*,.pdf,.txt,.doc,.docx" style="display:none" onchange="handleChatFiles(this.files)" />
-        <textarea id="chat-input" class="chat-textarea" rows="1"
-          placeholder="${isGuest ? "Ask Elix about your health, symptoms, or medications..." : "Ask about symptoms, medicines, drug interactions, and more..."}"
-          oninput="autoResize(this)"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
-          ${chatLoading ? "disabled" : ""}></textarea>
-        <button class="chat-send" id="chat-send" onclick="sendChat()" aria-label="Send message" ${chatLoading ? "disabled" : ""}>${IC.send}</button>
+        <div class="chat-history-list" id="chat-history-list">
+          ${historyItems || '<div style="padding:20px 16px;text-align:center;font-size:12px;color:var(--muted)">No conversations yet</div>'}
+        </div>
+      </div>` : ""}
+      <div class="chat-wrap">
+        ${guestBanner}
+        <div class="chat-header-bar">
+          <div class="chat-header-left">
+            ${!isGuest ? `<button class="chat-sidebar-toggle" onclick="toggleChatSidebar()" aria-label="Toggle conversation history">${IC.menu}</button>` : ""}
+            <div class="chat-header-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : IC.chat}</div>
+            <div>
+              <div class="chat-header-name">Elix AI</div>
+              <div class="chat-header-status">${chatMsgs.length <= 1 ? "New conversation" : chatMsgs.length + " messages"}</div>
+            </div>
+          </div>
+          <button class="chat-clear-btn" onclick="clearChatHistory()" title="Clear chat history">${IC.trash} Clear</button>
+        </div>
+        <div class="chat-msgs" id="chat-msgs" role="log" aria-live="polite" aria-label="Chat messages">${msgs}${typing}${prompts}</div>
+        ${filePreview}
+        <div class="chat-file-disclaimer" id="chat-file-disclaimer" style="display:none">
+          ${IC.info} Uploaded information may contain errors. Confirm important medical details with a healthcare professional.
+        </div>
+        <div class="chat-input-bar">
+          <button class="chat-attach" onclick="triggerChatUpload()" title="Attach file" aria-label="Attach file" ${isGuest ? "disabled" : ""}>${IC.attach}</button>
+          <input type="file" id="chat-file-input" multiple accept="image/*,.pdf,.txt,.doc,.docx" style="display:none" onchange="handleChatFiles(this.files)" />
+          <textarea id="chat-input" class="chat-textarea" rows="1"
+            placeholder="${isGuest ? "Ask Elix about your health, symptoms, or medications..." : "Ask about symptoms, medicines, drug interactions, and more..."}"
+            oninput="autoResize(this)"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
+            ${chatLoading ? "disabled" : ""}></textarea>
+          <button class="chat-send" id="chat-send" onclick="sendChat()" aria-label="Send message" ${chatLoading ? "disabled" : ""}>${IC.send}</button>
+        </div>
       </div>
     </div>`;
 
@@ -1276,6 +1424,10 @@ function renderChat() {
   if (inp) {
     if (prevText) { inp.value = prevText; autoResize(inp); }
     if (!chatLoading) inp.focus();
+  }
+  if (chatFiles.length) {
+    const fd = document.getElementById("chat-file-disclaimer");
+    if (fd) fd.style.display = "flex";
   }
 }
 
@@ -1358,6 +1510,9 @@ function renderMedicines() {
         <h2 class="page-title"><span class="page-title-icon" style="color:var(--accent)">${IC.pill}</span> Medicine Search</h2>
         <p class="page-sub">Search by medicine name (paracetamol) or condition (headache, diabetes, fever).</p>
       </div>
+      <div style="background:var(--color-primary-bg);border:1px solid rgba(13,148,136,0.15);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--fg-secondary);display:flex;align-items:center;gap:8px">
+        ${IC.info} This information is educational. Confirm medicine decisions with a doctor or pharmacist.
+      </div>
       ${isGuest() ? `<div class="guest-banner"><span style="font-weight:600">Guest mode.</span> <span style="color:var(--muted);font-size:12px">${guestRemaining("medicines")} of ${GUEST_LIMITS.medicines} free searches left.</span> <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Sign Up</button></div>` : ""}
       <div class="med-search-inline">
         <div class="med-search-input-row">
@@ -1380,6 +1535,7 @@ function renderMedicines() {
             <button class="btn btn-primary" onclick="checkInteractions()">Check</button>
           </div>
           <div id="interact-results" style="margin-top:12px"></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic">Do not stop or change prescribed medication based only on this result. Speak with a doctor or pharmacist.</div>
         </div>
       </div>
     </div>`;
@@ -1695,6 +1851,9 @@ function renderHospitals() {
         <h2 class="page-title"><span class="page-title-icon" style="color:var(--primary)">${IC.hospital}</span> Nearby Hospitals &amp; Clinics</h2>
         <p class="page-sub">Find hospitals, clinics, and medical centers near you.</p>
       </div>
+      <div role="alert" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--danger);display:flex;align-items:center;gap:8px">
+        ${IC.emergency} If you may be experiencing a medical emergency, contact your local emergency number immediately.
+      </div>
       ${isGuest() ? `<div class="guest-banner"><span style="font-weight:600">Guest mode.</span> <span style="color:var(--muted);font-size:12px">${guestRemaining("nearby")} of ${GUEST_LIMITS.nearby} free searches left.</span> <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Sign Up</button></div>` : ""}
       <div class="location-bar" id="hosp-location-bar">
         <button class="btn btn-ghost btn-sm" onclick="detectLocation('hospital')" id="hosp-loc-btn">
@@ -1979,30 +2138,35 @@ function renderNearbyResults(el, items, context, centerLat, centerLng) {
 }
 
 /* ── Emergency ── */
-function renderMore() {
+function renderEmergency() {
   const list = [
-    { country: "🇮🇳 India",     number: "112", label: "All Emergencies" },
-    { country: "🇺🇸 USA",       number: "911", label: "All Emergencies" },
-    { country: "🇬🇧 UK",        number: "999", label: "All Emergencies" },
-    { country: "🇦🇺 Australia", number: "000", label: "All Emergencies" },
-    { country: "🇨🇦 Canada",    number: "911", label: "All Emergencies" },
-    { country: "🇩🇪 Germany",  number: "112", label: "All Emergencies" },
-    { country: "🇯🇵 Japan",     number: "110", label: "Police" },
-    { country: "🇯🇵 Japan",     number: "119", label: "Fire / Ambulance" },
+    { country: "India",     number: "112", label: "All Emergencies" },
+    { country: "USA",       number: "911", label: "All Emergencies" },
+    { country: "UK",        number: "999", label: "All Emergencies" },
+    { country: "Australia", number: "000", label: "All Emergencies" },
+    { country: "Canada",    number: "911", label: "All Emergencies" },
+    { country: "Germany",   number: "112", label: "All Emergencies" },
+    { country: "Japan",     number: "110", label: "Police" },
+    { country: "Japan",     number: "119", label: "Fire / Ambulance" },
   ];
-  const moreEl = document.getElementById("view-more");
-  if (!moreEl) return;
-  moreEl.innerHTML = `
+  const emergencyEl = document.getElementById("view-emergency");
+  if (!emergencyEl) return;
+  emergencyEl.innerHTML = `
      <div class="page">
        <div class="page-header">
-         <h2 class="page-title"><span class="page-title-icon" style="color:var(--danger)">${IC.emergency}</span> Emergency Contacts</h2>
-         <p class="page-sub">Quick-dial emergency numbers organized by country. Save these in your phone for instant access during critical situations.</p>
+         <h2 class="page-title"><span class="page-title-icon" style="color:var(--danger)">${IC.emergency}</span> Get urgent help</h2>
        </div>
-       <div class="emergency-list">${list.map(e => `
-         <a class="emergency-card" href="tel:${e.number}">
+
+       <div role="alert" style="background:rgba(239,68,68,0.06);border:2px solid var(--color-danger);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px">
+         <p style="font-size:14px;font-weight:700;color:var(--danger);margin:0 0 8px">Mendly is not an emergency service.</p>
+         <p style="font-size:13.5px;color:var(--fg);line-height:1.6;margin:0">If you are in immediate danger or have severe symptoms, contact your local emergency number or go to the nearest emergency department immediately.</p>
+       </div>
+
+       <div class="emergency-list" style="margin-bottom:24px">${list.map(e => `
+         <a class="emergency-card" href="tel:${e.number}" aria-label="Call ${e.country} ${e.label}: ${e.number}">
            <div>
-             <div class="emergency-country">${e.country}</div>
-             <div class="emergency-label">${e.label}</div>
+             <div class="emergency-country">${escapeHtml(e.country)}</div>
+             <div class="emergency-label">${escapeHtml(e.label)}</div>
            </div>
            <div class="emergency-num">${e.number}</div>
          </a>`).join("")}
@@ -2106,9 +2270,9 @@ function renderAccount() {
         </div>
       </div>
 
-      <!-- Account -->
+      <!-- Account / Security -->
       <div class="acct-card">
-        <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.shield} Account</span></div>
+        <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.shield} Security</span></div>
         <div class="setting-row" style="margin-bottom:16px">
           <div>
             <div class="setting-label">Change Password</div>
@@ -2126,6 +2290,26 @@ function renderAccount() {
 
       <div id="pw-change-area"></div>
 
+      <!-- Privacy -->
+      <div class="acct-card">
+        <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.shield} Privacy &amp; Data</span></div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 14px">Your health data is stored securely and used only to provide Mendly features. We do not sell your data.</p>
+        <div class="setting-row" style="margin-bottom:12px">
+          <div>
+            <div class="setting-label">Chat History</div>
+            <div class="setting-desc">Your conversations are stored to provide continuity</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('chat')">Manage</button>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Clear Chat History</div>
+            <div class="setting-desc">Remove all saved conversations</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="showConfirmDialog('Clear chat history?', 'This will remove all your saved conversations. This cannot be undone.', 'Clear all', async()=>{try{await fetch(API+'/chat/history',{method:'DELETE',headers:{Authorization:'Bearer '+state.token}})}catch(e){};showToast('Chat history cleared')})">Clear</button>
+        </div>
+      </div>
+
       <!-- Danger Zone -->
       <div class="acct-card acct-card-danger">
         <div class="acct-section-title" style="color:var(--danger)"><span style="display:flex;align-items:center;gap:8px">${IC.emergency} Danger Zone</span></div>
@@ -2133,13 +2317,13 @@ function renderAccount() {
           <div class="setting-label" style="color:var(--danger)">Delete Account</div>
           <div class="setting-desc">Permanently delete your account and all associated data. This action cannot be undone.</div>
         </div>
-        <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="deleteAccount()">
+        <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="showConfirmDialog('Delete your account?', 'This will permanently delete your account and all associated data. This action cannot be undone.', 'Delete my account', deleteAccount)">
           Delete My Account
         </button>
       </div>
 
       <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:4px;border-color:var(--danger);color:var(--danger)"
-        onclick="if(confirm('Log out of Mendly?')){logout();}">
+        onclick="showConfirmDialog('Log out of Mendly?', 'You will need to sign in again to access your account.', 'Log out', logout)">
         <span style="display:flex;align-items:center;gap:8px">${IC.logout} Log Out</span>
       </button>
     </div>`;
