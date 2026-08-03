@@ -171,24 +171,31 @@ const IC = {
 
 /* inject logo into footer on page load */
 function injectStaticLogos() {
-  document.querySelectorAll("#footer-logo-icon, #cta-logo-icon, .cta-logo .logo-icon-wrap").forEach(el => {
-    el.innerHTML = `<svg width="20" height="20" viewBox="0 0 40 40" fill="none">
-      <defs><linearGradient id="lgf" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#1a8a7d"/><stop offset="1" stop-color="#0ea5e9"/>
-      </linearGradient></defs>
-      <rect width="40" height="40" rx="10" fill="url(#lgf)"/>
-      <path d="M20 10 L20 30" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
-      <path d="M10 20 L30 20" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
-    </svg>`;
+  const svgLogo = `<svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+    <defs><linearGradient id="lgFoot" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#059669"/><stop offset=".5" stop-color="#0d9488"/><stop offset="1" stop-color="#0284c7"/>
+    </linearGradient></defs>
+    <rect width="64" height="64" rx="16" fill="url(#lgFoot)"/>
+    <path d="M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+  document.querySelectorAll("#footer-logo-icon, #cta-logo-icon").forEach(el => {
+    el.innerHTML = svgLogo;
   });
+  const footerWrap = document.getElementById("footer-logo-wrap");
+  if (footerWrap && !footerWrap.querySelector(".logo-icon-wrap")) {
+    const icon = document.createElement("div");
+    icon.className = "logo-icon-wrap sm";
+    icon.innerHTML = svgLogo;
+    footerWrap.prepend(icon);
+  }
 }
 
 /* ═══════════════════════════════════════════════════
    ROUTER
 ════════════════════════════════════════════════════ */
 const AUTH_REQUIRED = new Set(["dashboard", "account"]);
-const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "pharmacies", "more", "features", "about", "faq", "how"]);
-const LANDING_SECTIONS = new Set(["features", "about", "faq", "how"]);
+const GUEST_ALLOWED = new Set(["landing", "chat", "medicines", "hospitals", "pharmacies", "more", "features", "about", "faq", "how", "safety"]);
+const LANDING_SECTIONS = new Set(["features", "about", "faq", "how", "safety"]);
 
 function navigate(hash, replace) {
   const target = hash || location.hash.slice(1) || (state.user ? "dashboard" : "landing");
@@ -303,10 +310,9 @@ function renderHeader() {
 
   if (!state.user) {
     const guestLinks = [
-      { h: "landing",  l: "Home" },
       { h: "features", l: "Features" },
-      { h: "how",      l: "How It Works" },
-      { h: "about",    l: "About" },
+      { h: "how",      l: "How it works" },
+      { h: "safety",   l: "Safety" },
       { h: "faq",      l: "FAQ" }
     ];
     h.innerHTML = `

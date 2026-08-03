@@ -3,32 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#1a8a7d" />
+  <meta name="theme-color" content="#0d9488" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="description" content="Mendly — Your AI Health Companion. Chat with Elix, search medicines, find nearby hospitals." />
-  <meta property="og:title" content="Mendly — AI Health Companion" />
-  <meta property="og:description" content="Chat with Elix AI, search medicines, find nearby hospitals, and track your health — all in one place." />
+  <meta name="description" content="Use Mendly to understand health topics, explore medicine information, find nearby care, and track your health with support from Elix, your AI health companion." />
+  <meta property="og:title" content="Mendly — AI Health Companion for Clearer Health Information" />
+  <meta property="og:description" content="Understand health topics, explore medicine information, find nearby care, and track your health with Elix, your AI companion." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://mendlyapp.web.app" />
   <meta property="og:image" content="https://mendlyapp.web.app/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Mendly — AI Health Companion" />
-  <meta name="twitter:description" content="Chat with Elix AI, search medicines, find nearby hospitals, and track your health." />
+  <meta name="twitter:description" content="Understand health topics, explore medicine information, find nearby care, and track your health with Elix, your AI companion." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='64' y2='64' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='%23059669'/><stop offset='.5' stop-color='%230d9488'/><stop offset='1' stop-color='%230284c7'/></linearGradient></defs><rect width='64' height='64' rx='16' fill='url(%23g)'/><path d='M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/><circle cx='54' cy='30' r='2.5' fill='%235eead4'/></svg>" />
-  <title>Mendly — AI Medical Companion</title>
+  <title>Mendly — AI Health Companion for Clearer Health Information</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <!-- Header -->
-  <header id="header" class="header"></header>
+  <header id="header" class="header" role="banner"></header>
   <!-- Sidebar (logged-in) -->
-  <aside id="sidebar" class="sidebar"></aside>
-  <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+  <aside id="sidebar" class="sidebar" role="complementary"></aside>
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()" aria-hidden="true"></div>
 
   <!-- ═══════════════════════════════════════════
        LANDING PAGE
@@ -36,72 +36,55 @@
   <div id="view-landing" class="view">
 
     <!-- HERO -->
-    <section class="hero">
-      <div class="hero-bg">
+    <section class="hero" aria-label="Introduction">
+      <div class="hero-bg" aria-hidden="true">
         <div class="hero-orb hero-orb-1"></div>
         <div class="hero-orb hero-orb-2"></div>
-        <div class="hero-grid"></div>
       </div>
       <div class="hero-inner">
         <div class="hero-text">
-          <div class="hero-badge">
-            <span class="hero-badge-dot"></span>
-            AI-Powered Healthcare Companion
-          </div>
           <h1 class="hero-title">
             Healthcare,<br />
             finally made <span class="gradient-text">simple.</span>
           </h1>
           <p class="hero-subtitle">
-            Mendly is your all-in-one AI health companion. Get trusted health information, understand your medicines, find nearby care, and track your health — all in one place.
+            Mendly brings AI health guidance, medicine information, nearby care, and health tracking together in one simple place.
           </p>
           <div class="hero-actions">
-            <button class="btn btn-primary btn-lg" onclick="navigate('chat')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8l4 4-4 4"/></svg>
-              Try Elix Free
+            <button class="btn btn-primary btn-lg" onclick="openAuth('signup')" aria-label="Get started free with Mendly">
+              Get started free
             </button>
-            <button class="btn btn-ghost btn-lg" onclick="navigate('features')">Explore Mendly</button>
+            <button class="btn btn-ghost btn-lg" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})" aria-label="Meet Elix, the AI health companion">
+              Meet Elix
+            </button>
           </div>
-          <div class="hero-trust">
-            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"/><path d="M12 6v6l4 2"/></svg></span> AI-Powered</div>
-            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> Secure &amp; Private</div>
-            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span> Trusted Info</div>
-            <div class="trust-item"><span class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/></svg></span> Free to Use</div>
+          <div class="hero-trust" role="list">
+            <div class="trust-item" role="listitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Free to use</div>
+            <div class="trust-item" role="listitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Privacy-focused</div>
+            <div class="trust-item" role="listitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Not a diagnosis</div>
           </div>
         </div>
-        <div class="hero-visual">
-          <div class="hero-robot-card">
-            <div class="robot-bubble">
-              <div class="robot-avatar">
-                <div class="robot-face">
-                  <div class="robot-eyes"><span></span><span></span></div>
-                  <div class="robot-smile"></div>
-                </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-demo-card">
+            <div class="demo-header">
+              <div class="demo-avatar">
+                <svg width="20" height="20" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="dav" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#059669"/><stop offset=".5" stop-color="#0d9488"/><stop offset="1" stop-color="#0284c7"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#dav)"/><path d="M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
-              <div class="robot-chat">
-                <span class="robot-name">Hi, I'm Elix</span>
-                <span class="robot-msg">How can I help you today?</span>
+              <div class="demo-header-text">
+                <span class="demo-name">Elix</span>
+                <span class="demo-status">AI Health Companion</span>
               </div>
             </div>
-            <div class="hero-feature-pill pill-top-right">
-              <span class="pill-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></span>
-              <div>
-                <div class="pill-title">Medicine Guide</div>
-                <div class="pill-sub">Explore medicines and their uses</div>
+            <div class="demo-body">
+              <div class="demo-msg demo-user">
+                <span>What can cause a headache?</span>
               </div>
-            </div>
-            <div class="hero-feature-pill pill-mid-right">
-              <span class="pill-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-              <div>
-                <div class="pill-title">Nearby Care</div>
-                <div class="pill-sub">Hospitals, clinics &amp; pharmacies</div>
+              <div class="demo-msg demo-bot">
+                <p>Headaches can have many causes, including dehydration, stress, lack of sleep, or eye strain. If your headache is sudden, severe, or accompanied by other concerning symptoms, seek medical care.</p>
               </div>
-            </div>
-            <div class="hero-feature-pill pill-bot-right">
-              <span class="pill-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span>
-              <div>
-                <div class="pill-title">Health Tracking</div>
-                <div class="pill-sub">Track your health and improve</div>
+              <div class="demo-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Educational information — not a diagnosis
               </div>
             </div>
           </div>
@@ -109,78 +92,106 @@
       </div>
     </section>
 
-    <!-- FEATURES OVERVIEW -->
-    <section class="section features-overview" id="features">
+    <!-- TRUST INDICATORS -->
+    <section class="section trust-section" aria-label="Trust indicators">
+      <div class="container">
+        <div class="trust-strip">
+          <div class="trust-strip-item">
+            <div class="trust-strip-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div>
+              <div class="trust-strip-title">Safety-first design</div>
+              <div class="trust-strip-desc">Built with medical disclaimers and source transparency</div>
+            </div>
+          </div>
+          <div class="trust-strip-item">
+            <div class="trust-strip-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+            <div>
+              <div class="trust-strip-title">Source transparency</div>
+              <div class="trust-strip-desc">Medical references and source categories visible where possible</div>
+            </div>
+          </div>
+          <div class="trust-strip-item">
+            <div class="trust-strip-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div>
+              <div class="trust-strip-title">Your data, your control</div>
+              <div class="trust-strip-desc">Health information stored securely with privacy controls</div>
+            </div>
+          </div>
+          <div class="trust-strip-item">
+            <div class="trust-strip-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+            <div>
+              <div class="trust-strip-title">Always educational</div>
+              <div class="trust-strip-desc">Information to help you prepare — never a replacement for professional care</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section features-section" id="features" aria-label="Features">
       <div class="container">
         <div class="section-head centered">
-          <h2 class="section-title">One place for all your <span class="gradient-text">health needs</span></h2>
+          <h2 class="section-title">Everything you need to make better <span class="gradient-text">health decisions</span></h2>
+          <p class="section-sub centered-sub">Tools and information to help you understand your health, prepare for appointments, and find the care you need.</p>
         </div>
         <div class="features-grid-4">
-          <div class="feature-tile" role="button" tabindex="0" onclick="navigate('chat')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigate('chat')}">
-            <div class="feature-tile-img feature-tile-chat">
-              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <a href="#chat" class="feature-card" role="article">
+            <div class="feature-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <div class="feature-tile-body">
-              <h3>AI Health Chat</h3>
-              <p>Ask anything about your symptoms, conditions, treatments and more.</p>
-              <span class="tile-arrow">→</span>
+            <h3 class="feature-card-title">AI Health Chat</h3>
+            <p class="feature-card-desc">Ask health questions and get clear, easy-to-understand information from Elix.</p>
+            <span class="feature-card-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+          </a>
+          <a href="#medicines" class="feature-card" role="article">
+            <div class="feature-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
             </div>
-          </div>
-          <div class="feature-tile" role="button" tabindex="0" onclick="navigate('medicines')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigate('medicines')}">
-            <div class="feature-tile-img feature-tile-meds">
-              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></div>
+            <h3 class="feature-card-title">Medicine Guide</h3>
+            <p class="feature-card-desc">Learn about medicine uses, common side effects, precautions, and important questions to ask your doctor.</p>
+            <span class="feature-card-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+          </a>
+          <a href="#hospitals" class="feature-card" role="article">
+            <div class="feature-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
-            <div class="feature-tile-body">
-              <h3>Medicine Guide</h3>
-              <p>Know your medicines better with uses, dosage, side effects &amp; more.</p>
-              <span class="tile-arrow">→</span>
+            <h3 class="feature-card-title">Nearby Care</h3>
+            <p class="feature-card-desc">Find hospitals, clinics, pharmacies, and other care options near you.</p>
+            <span class="feature-card-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+          </a>
+          <a href="#chat" class="feature-card" role="article">
+            <div class="feature-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
-          </div>
-          <div class="feature-tile" role="button" tabindex="0" onclick="navigate('hospitals')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigate('hospitals')}">
-            <div class="feature-tile-img feature-tile-nearby">
-              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
-            </div>
-            <div class="feature-tile-body">
-              <h3>Nearby Care</h3>
-              <p>Find hospitals, clinics and pharmacies near you with ease.</p>
-              <span class="tile-arrow">→</span>
-            </div>
-          </div>
-          <div class="feature-tile" role="button" tabindex="0" onclick="openAuth('signup')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAuth('signup')}">
-            <div class="feature-tile-img feature-tile-track">
-              <div class="ft-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-            </div>
-            <div class="feature-tile-body">
-              <h3>Health Tracking</h3>
-              <p>Track your vital signs and health progress over time.</p>
-              <span class="tile-arrow">→</span>
-            </div>
-          </div>
+            <h3 class="feature-card-title">Health Tracking</h3>
+            <p class="feature-card-desc">Track important health information and notice changes over time.</p>
+            <span class="feature-card-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- AI COMPANION SECTION -->
-    <section class="section ai-companion" id="about">      <div class="container ai-companion-inner">
-        <div class="ai-companion-left">
+    <!-- ELIX AI SECTION -->
+    <section class="section elix-section" id="about" aria-label="Meet Elix">
+      <div class="container elix-inner">
+        <div class="elix-text">
           <div class="section-label-pill">Meet Elix</div>
-          <h2 class="section-title">Your AI Health<br /><span class="gradient-text">Companion</span></h2>
-          <p class="section-sub">Elix understands your health questions and provides easy-to-understand information. It's like having a health expert in your pocket.</p>
-          <ul class="ai-benefits">
-            <li><span class="benefit-check">✓</span> Instant, accurate answers</li>
-            <li><span class="benefit-check">✓</span> Understand symptoms clearly</li>
-            <li><span class="benefit-check">✓</span> Drug interaction warnings</li>
-            <li><span class="benefit-check">✓</span> Health guidance you can trust</li>
+          <h2 class="section-title">Your AI health<br /><span class="gradient-text">companion</span></h2>
+          <p class="section-sub">Elix helps you understand health topics in simple language, prepare questions for a healthcare professional, and find useful next steps.</p>
+          <ul class="elix-benefits" role="list">
+            <li role="listitem"><span class="benefit-check" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Understand medical terms more easily</li>
+            <li role="listitem"><span class="benefit-check" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Prepare for conversations with healthcare professionals</li>
+            <li role="listitem"><span class="benefit-check" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Explore medicines and health topics in one place</li>
           </ul>
+          <button class="btn btn-primary btn-lg" onclick="navigate('chat')" style="margin-top:28px" aria-label="Try Elix free">Try Elix free</button>
+          <p class="elix-disclaimer">Always seek professional medical advice for diagnosis, treatment, or urgent concerns.</p>
         </div>
-        <div class="ai-companion-right">
+        <div class="elix-visual" aria-hidden="true">
           <div class="ai-chat-demo">
             <div class="ai-chat-header">
               <div class="ai-avatar-sm">
-                <div class="robot-face sm">
-                  <div class="robot-eyes sm"><span></span><span></span></div>
-                  <div class="robot-smile sm"></div>
-                </div>
+                <svg width="18" height="18" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="lav" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#059669"/><stop offset=".5" stop-color="#0d9488"/><stop offset="1" stop-color="#0284c7"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lav)"/><path d="M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <div>
                 <div class="ai-name">Elix</div>
@@ -188,18 +199,17 @@
               </div>
             </div>
             <div class="ai-chat-body">
-              <div class="ai-question-chip">What causes a headache?</div>
+              <div class="ai-question-chip">What can cause a headache?</div>
               <div class="ai-msg">
-                Headaches can be caused by stress, dehydration, lack of sleep, eye strain, or certain medical conditions.
-                <br /><br />Would you like tips to feel better?
+                Headaches can have many causes, including dehydration, stress, lack of sleep, or eye strain. If your headache is sudden, severe, or accompanied by other concerning symptoms, seek medical care.
+              </div>
+              <div class="ai-safety-note">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Educational information — not a diagnosis
               </div>
               <div class="ai-action-row">
-                <button class="ai-yes-btn" onclick="navigate('chat')">Yes, please</button>
+                <button class="ai-action-btn" onclick="navigate('chat')">Try Elix</button>
               </div>
-            </div>
-            <div class="ai-chat-input-row">
-              <input placeholder="Ask Elix a health question..." onclick="navigate('chat')" readonly />
-              <button onclick="navigate('chat')">➤</button>
             </div>
           </div>
         </div>
@@ -207,162 +217,184 @@
     </section>
 
     <!-- HOW IT WORKS -->
-    <section class="section how-it-works" id="how">
+    <section class="section how-section" id="how" aria-label="How Mendly works">
       <div class="container">
         <div class="section-head centered">
-          <h2 class="section-title">How <span class="gradient-text">Mendly</span> Works</h2>
+          <h2 class="section-title">How <span class="gradient-text">Mendly</span> works</h2>
+          <p class="section-sub centered-sub">Three simple steps to better understand your health.</p>
         </div>
         <div class="how-steps">
           <div class="how-step">
-            <div class="how-step-num">01</div>
-            <div class="how-step-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="how-step-num" aria-hidden="true">01</div>
+            <div class="how-step-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <h3>Ask</h3>
-            <p>Ask Elix anything about your health or search what you need.</p>
+            <p>Ask Elix a health question or search for the information you need.</p>
           </div>
-          <div class="how-step-line"></div>
+          <div class="how-step-line" aria-hidden="true"></div>
           <div class="how-step">
-            <div class="how-step-num">02</div>
-            <div class="how-step-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+            <div class="how-step-num" aria-hidden="true">02</div>
+            <div class="how-step-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
             <h3>Understand</h3>
-            <p>Get simple, reliable and easy to understand information.</p>
+            <p>Read clear explanations and review relevant safety information.</p>
           </div>
-          <div class="how-step-line"></div>
+          <div class="how-step-line" aria-hidden="true"></div>
           <div class="how-step">
-            <div class="how-step-num">03</div>
-            <div class="how-step-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
-            <h3>Take Action</h3>
-            <p>Find medicines, nearby care and track your health.</p>
+            <div class="how-step-num" aria-hidden="true">03</div>
+            <div class="how-step-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+            <h3>Take action</h3>
+            <p>Use the information to prepare questions, find nearby care, or track your health.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SAFETY -->
-    <section class="section safety-section">
+    <!-- SAFETY & PRIVACY -->
+    <section class="section safety-section" id="safety" aria-label="Safety and privacy">
       <div class="container">
-        <div class="safety-card">
-          <div class="safety-icon-wrap">
-            <div class="safety-shield"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="section-head centered">
+          <h2 class="section-title">Designed with <span class="gradient-text">safety</span> in mind</h2>
+          <p class="section-sub centered-sub">Mendly is built to inform, not to diagnose. Your health and privacy matter to us.</p>
+        </div>
+        <div class="safety-grid">
+          <div class="safety-card-item">
+            <div class="safety-card-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+            <h3>Not a diagnosis</h3>
+            <p>Elix provides educational information. It does not diagnose conditions or prescribe treatment.</p>
           </div>
-          <div class="safety-content">
-            <h2>Safety First, <span class="gradient-text">Always</span></h2>
-            <p>Elix provides information, not diagnoses. We encourage you to consult a medical professional for medical advice.</p>
+          <div class="safety-card-item">
+            <div class="safety-card-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div>
+            <h3>Professional care matters</h3>
+            <p>Use Mendly to prepare and learn, but consult a licensed healthcare professional for personal medical advice.</p>
           </div>
-          <div class="safety-grid">
-            <div class="safety-item">
-              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg></div>
-              <div class="safety-item-title">Not a Diagnosis</div>
-              <div class="safety-item-text">Elix does not diagnose or replace professional medical advice.</div>
-            </div>
-            <div class="safety-item">
-              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div>
-              <div class="safety-item-title">Crisis Support</div>
-              <div class="safety-item-text">Get help in critical situations with crisis hotlines.</div>
-            </div>
-            <div class="safety-item">
-              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
-              <div class="safety-item-title">Trusted Sources</div>
-              <div class="safety-item-text">Information is curated from trusted medical sources.</div>
-            </div>
-            <div class="safety-item">
-              <div class="safety-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-              <div class="safety-item-title">Your Privacy</div>
-              <div class="safety-item-text">Your data is encrypted and always kept confidential.</div>
-            </div>
+          <div class="safety-card-item">
+            <div class="safety-card-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+            <h3>Source transparency</h3>
+            <p>We show the medical sources and references used wherever possible so you can verify information.</p>
           </div>
+          <div class="safety-card-item">
+            <div class="safety-card-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <h3>Privacy controls</h3>
+            <p>Your health information is stored securely. You control your data and can delete your account at any time.</p>
+          </div>
+        </div>
+        <div class="safety-links">
+          <a href="#" onclick="showToast('Privacy Policy coming soon','info');return false;">Privacy Policy</a>
+          <a href="#" onclick="showToast('Terms of Use coming soon','info');return false;">Terms of Use</a>
+          <a href="#" onclick="showToast('Medical Disclaimer coming soon','info');return false;">Medical Disclaimer</a>
+          <a href="#" onclick="showToast('Account deletion available in Settings','info');return false;">Delete Account &amp; Data</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMERGENCY NOTICE -->
+    <section class="section emergency-notice-section" aria-label="Emergency notice">
+      <div class="container">
+        <div class="emergency-notice-card">
+          <div class="emergency-notice-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div class="emergency-notice-text">
+            <h3>Need urgent help?</h3>
+            <p>Mendly is not an emergency service. If you may be experiencing a medical emergency, contact your local emergency number or go to the nearest emergency department immediately.</p>
+          </div>
+          <a href="#more" class="btn btn-danger btn-sm" onclick="navigate('more')" role="button">View emergency information</a>
         </div>
       </div>
     </section>
 
     <!-- FAQ -->
-    <section class="section" id="faq">
+    <section class="section faq-section" id="faq" aria-label="Frequently asked questions">
       <div class="container">
         <div class="section-head centered">
-          <div class="section-label-pill">FAQ</div>
-          <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
+          <h2 class="section-title">Frequently asked <span class="gradient-text">questions</span></h2>
         </div>
         <div class="faq-grid">
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-1">
-              <span>Is Mendly free to use?</span><span class="faq-icon">▼</span>
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-1" type="button">
+              <span>Is Mendly free to use?</span><span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer" id="faq-1">Yes! Mendly is 100% free for AI health chat, medicine lookup, drug interaction checks, and emergency contact access. Creating a free account lets you save history and upload medical documents.</div>
+            <div class="faq-answer" id="faq-1" role="region">Mendly is free for AI health chat, medicine lookup, drug interaction checks, and emergency contact access. Guests have limited uses per session. Creating a free account gives you unlimited access and lets you save chat history and upload medical documents.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-2">
-              <span>Can Elix AI replace my doctor?</span><span class="faq-icon">▼</span>
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-2" type="button">
+              <span>Can Elix diagnose me?</span><span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer" id="faq-2">No. Elix is an educational AI designed to clarify medical terms, explain drug usage, and guide symptom research. It does not provide medical diagnoses. Always consult a licensed physician for medical advice.</div>
+            <div class="faq-answer" id="faq-2" role="region">No. Elix provides educational information and does not diagnose, prescribe, or replace a licensed healthcare professional. Always consult a doctor or pharmacist for personal medical advice.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-3">
-              <span>How does the Drug Interaction Checker work?</span><span class="faq-icon">▼</span>
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-3" type="button">
+              <span>Can I use Mendly for an emergency?</span><span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer" id="faq-3">Our interaction checker cross-analyzes real-time OpenFDA drug labels with clinical interaction datasets to alert you to potential harmful drug combinations and severe reactions.</div>
+            <div class="faq-answer" id="faq-3" role="region">No. Mendly is not an emergency service. Contact your local emergency services for urgent or life-threatening concerns. Mendly can help you find nearby emergency departments.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-4">
-              <span>Is my personal health data safe?</span><span class="faq-icon">▼</span>
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-4" type="button">
+              <span>How does the medicine guide work?</span><span class="faq-icon" aria-hidden="true"></span>
             </button>
-            <div class="faq-answer" id="faq-4">Yes. We use industry-standard encryption, secure authentication, and strict access controls to keep your information safe and private.</div>
+            <div class="faq-answer" id="faq-4" role="region">The medicine guide provides information sourced from publicly available drug databases and references. It covers uses, dosage, side effects, and precautions. Always confirm medicine decisions with your doctor or pharmacist.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-5" type="button">
+              <span>Is my health data private?</span><span class="faq-icon" aria-hidden="true"></span>
+            </button>
+            <div class="faq-answer" id="faq-5" role="region">Your health data is stored using secure authentication and access controls. We do not sell your data. You can review our Privacy Policy for details on how information is stored, protected, and used.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false" aria-controls="faq-6" type="button">
+              <span>Can I delete my account and data?</span><span class="faq-icon" aria-hidden="true"></span>
+            </button>
+            <div class="faq-answer" id="faq-6" role="region">Yes. You can delete your account and associated data from the Settings page. Once deleted, your data cannot be recovered.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA BANNER -->
-    <section class="section cta-section">
+    <!-- FINAL CTA -->
+    <section class="section cta-section" aria-label="Get started">
       <div class="container">
-        <div class="cta-banner">
-          <div class="cta-banner-left">
-            <div class="cta-logo">
-              <div class="logo-icon-wrap" id="cta-logo-icon"></div>
-              <span>Mendly</span>
-            </div>
-            <h2>Take control of your health<br />with Mendly</h2>
-            <p>Better information. Smarter tools. One companion.</p>
-          </div>
-          <button class="btn btn-primary btn-lg cta-btn" onclick="openAuth('signup')">
-            Try Mendly Free →
-          </button>
+        <div class="cta-card">
+          <h2>Take control of your health information</h2>
+          <p>Understand more, prepare better questions, and find the right next step with Mendly.</p>
+          <button class="btn btn-primary btn-lg" onclick="openAuth('signup')" aria-label="Get started free with Mendly">Get started free</button>
         </div>
       </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
       <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <div class="footer-logo">
-              <div class="logo-icon-wrap sm" id="footer-logo-icon"></div>
-              <span>Mendly</span>
+            <div class="footer-logo" id="footer-logo-wrap">
+              <span class="footer-wordmark">Mendly</span>
             </div>
-            <p>Your AI-powered health companion for a healthier, happier you.</p>
+            <p>Your AI-powered health companion. Understand health topics, explore medicines, find nearby care, and track your health.</p>
           </div>
           <div class="footer-col">
             <h4>Product</h4>
             <a href="#chat">AI Health Chat</a>
             <a href="#medicines">Medicine Guide</a>
             <a href="#hospitals">Nearby Care</a>
-            <a href="#features">Health Tracking</a>
+            <a href="#chat">Health Tracking</a>
           </div>
           <div class="footer-col">
             <h4>Company</h4>
-            <a href="#about">About Us</a>
+            <a href="#about">About Mendly</a>
             <a href="#features">Features</a>
             <a href="#how">How It Works</a>
             <a href="#faq">FAQ</a>
           </div>
           <div class="footer-col">
-            <h4>Support</h4>
-            <a href="#faq">FAQ</a>
-            <a href="#about">About Mendly</a>
+            <h4>Legal</h4>
+            <a href="#" onclick="showToast('Privacy Policy coming soon','info');return false;">Privacy Policy</a>
+            <a href="#" onclick="showToast('Terms of Use coming soon','info');return false;">Terms of Use</a>
+            <a href="#" onclick="showToast('Medical Disclaimer coming soon','info');return false;">Medical Disclaimer</a>
+            <a href="#safety">Safety</a>
           </div>
         </div>
         <div class="footer-bottom">
           <span>&copy; 2026 Mendly. All rights reserved.</span>
-          <span>Not a substitute for professional medical advice.</span>
+          <span>Not a substitute for professional medical advice, diagnosis, or treatment.</span>
         </div>
       </div>
     </footer>
@@ -374,13 +406,8 @@
   <div id="view-dashboard" class="view"></div>
   <div id="view-chat" class="view"></div>
   <div id="view-medicines" class="view"></div>
-
-   <!-- Hospitals view -->
-   <div id="view-hospitals" class="view"></div>
-
-   <!-- Pharmacies view -->
-   <div id="view-pharmacies" class="view"></div>
-
+  <div id="view-hospitals" class="view"></div>
+  <div id="view-pharmacies" class="view"></div>
   <div id="view-more" class="view"></div>
   <div id="view-account" class="view"></div>
 
@@ -390,12 +417,12 @@
   <!-- Mobile Bottom Nav -->
   <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation"></nav>
 
-  <!-- Mobile sidebar toggle (visible on mobile when logged in) -->
+  <!-- Mobile sidebar toggle -->
   <button id="mobile-sidebar-toggle" class="mobile-sidebar-toggle" onclick="openSidebar()" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 
   <noscript>
     <div style="text-align:center;padding:80px 24px;font-family:Inter,sans-serif">
-      <h1 style="color:#1a8a7d;margin-bottom:12px">Mendly requires JavaScript</h1>
+      <h1 style="color:#0d9488;margin-bottom:12px">Mendly requires JavaScript</h1>
       <p style="color:#64748b">Please enable JavaScript in your browser to use this application.</p>
     </div>
   </noscript>
