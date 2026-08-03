@@ -407,7 +407,7 @@ function renderSidebar(route) {
   ];
 
   s.innerHTML = `
-    <button class="sidebar-brand" onclick="navigate('dashboard')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit;text-align:left">
+    <button class="sidebar-brand" onclick="navigate('dashboard')" style="border:none;background:none;padding:0;cursor:pointer;font:inherit;text-align:left" aria-label="Go to dashboard">
       ${logoHtml(28)}<span>Mendly</span>
     </button>
     <div class="sidebar-divider"></div>
@@ -423,7 +423,7 @@ function renderSidebar(route) {
         <a class="sidebar-item ${route===i.h ? 'active' : ''}" href="#${i.h}" onclick="closeSidebar()" ${route===i.h ? 'aria-current="page"' : ''}>
           <span class="sidebar-icon">${i.icon}</span>${i.l}
         </a>`).join("")}
-      <a class="sidebar-item sidebar-logout" href="#" onclick="if(confirm('Log out?')){logout();}">
+      <a class="sidebar-item sidebar-logout" href="#" onclick="showConfirmDialog('Log Out','Are you sure you want to log out?','Log Out',()=>{logout();})">
         <span class="sidebar-icon">${IC.logout}</span>Log Out
       </a>
     </div>`;
@@ -490,9 +490,9 @@ function renderAuthModal() {
           <button class="modal-close" onclick="closeAuth()" aria-label="Close" type="button">✕</button>
         </div>
         <div id="auth-error" class="form-error hidden"></div>
-        ${authMode === "signup" ? `<div class="form-group"><input id="auth-name" class="form-input" placeholder="Full Name" autocomplete="name" /></div>` : ""}
-        <div class="form-group"><input id="auth-email" class="form-input" type="email" placeholder="Email address" autocomplete="email" /></div>
-        <div class="form-group"><input id="auth-pass" class="form-input" type="password" placeholder="Password (min 6 characters)" minlength="6" autocomplete="${authMode==="login"?"current":"new"}-password" /></div>
+        ${authMode === "signup" ? `<div class="form-group"><input id="auth-name" class="form-input" placeholder="Full Name" autocomplete="name" maxlength="100" aria-label="Full name" /></div>` : ""}
+        <div class="form-group"><input id="auth-email" class="form-input" type="email" placeholder="Email address" autocomplete="email" maxlength="254" aria-label="Email address" /></div>
+        <div class="form-group"><input id="auth-pass" class="form-input" type="password" placeholder="Password (min 6 characters)" minlength="6" maxlength="128" autocomplete="${authMode==="login"?"current":"new"}-password" aria-label="Password" /></div>
         <button id="auth-submit" class="form-submit" onclick="submitAuth()" type="button">
           ${authMode === "login" ? "Sign In" : "Create Account"}
         </button>
@@ -912,8 +912,8 @@ function renderWeatherWidget() {
       </div>
     </div>
     <div style="display:flex;gap:2px;margin:12px 0;background:var(--bg);border-radius:999px;padding:3px;width:fit-content">
-      <button onclick="toggleWeatherUnit('fahrenheit')" style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:${weatherUnit==='fahrenheit'?'var(--primary)':'transparent'};color:${weatherUnit==='fahrenheit'?'#fff':'var(--muted)'}">°F</button>
-      <button onclick="toggleWeatherUnit('celsius')" style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:${weatherUnit==='celsius'?'var(--primary)':'transparent'};color:${weatherUnit==='celsius'?'#fff':'var(--muted)'}">°C</button>
+      <button onclick="toggleWeatherUnit('fahrenheit')" style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:${weatherUnit==='fahrenheit'?'var(--primary)':'transparent'};color:${weatherUnit==='fahrenheit'?'#fff':'var(--muted)'}" aria-pressed="${weatherUnit==='fahrenheit'}" aria-label="Fahrenheit">°F</button>
+      <button onclick="toggleWeatherUnit('celsius')" style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:${weatherUnit==='celsius'?'var(--primary)':'transparent'};color:${weatherUnit==='celsius'?'#fff':'var(--muted)'}" aria-pressed="${weatherUnit==='celsius'}" aria-label="Celsius">°C</button>
     </div>
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 12px">
       ${humidity != null ? `<div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)">${IC.thermometer} <b>${humidity}%</b> Humidity</div>` : ""}
@@ -1043,7 +1043,7 @@ function renderDashboard() {
           <!-- Weather Now -->
           <div class="dash-stat-card" id="dash-weather-info">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px;color:#f59e0b">${IC.sun} Weather Now</span></div>
-            <div id="dash-weather-content" style="color:var(--muted);font-size:13px">
+            <div id="dash-weather-content" style="color:var(--muted);font-size:13px" aria-live="polite">
               <div style="display:flex;align-items:center;gap:8px"><div class="spinner" style="width:16px;height:16px;margin:0"></div> Loading weather...</div>
             </div>
           </div>
@@ -1072,7 +1072,7 @@ function renderDashboard() {
           <!-- Live Health News (fetched) -->
           <div class="dash-stat-card" id="dash-live-news">
             <div class="dash-stat-title"><span style="display:flex;align-items:center;gap:8px">${IC.info} Live Health News</span></div>
-            <div id="live-news-content" style="font-size:13px;color:var(--muted)">
+            <div id="live-news-content" style="font-size:13px;color:var(--muted)" aria-live="polite">
               <div style="display:flex;align-items:center;gap:8px"><div class="spinner" style="width:16px;height:16px;margin:0"></div> Loading latest news...</div>
             </div>
           </div>
@@ -1184,7 +1184,7 @@ async function fetchLiveNews() {
   results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
   el.innerHTML = results.slice(0, 6).map(n => {
     const timeAgo = getTimeAgo(n.pubDate);
-    const safeUrl = /^https?:\/\//.test(n.link) ? n.link : "#";
+    const safeUrl = escapeHtml(/^https?:\/\//.test(n.link) ? n.link : "#");
     return `<a href="${safeUrl}" target="_blank" rel="noopener" style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary)">${escapeHtml(n.tag)}</span>
@@ -1360,7 +1360,7 @@ function renderChat() {
   const msgs = chatMsgs.map(m => `
     <div class="chat-msg ${m.role === "user" ? "chat-user" : "chat-bot"}">
       ${m.role === "bot" ? '<div class="chat-bot-label">Elix AI</div>' : ""}
-      <div class="chat-msg-text">${m.role === "bot" ? renderMd(m.content) : nl2br(escapeHtml(m.content))}</div>
+      <div class="chat-msg-text">${m.role === "bot" ? (m.isHtml ? m.content : renderMd(m.content)) : nl2br(escapeHtml(m.content))}</div>
       ${m.role === "bot" ? '<div class="chat-disclaimer">Educational information — not a diagnosis</div>' : ""}
       ${m.files?.length ? `<div class="chat-files">${m.files.map(f => `<span class="chat-file-badge">📎 ${escapeHtml(f.name)}</span>`).join("")}</div>` : ""}
     </div>`).join("");
@@ -1384,7 +1384,7 @@ function renderChat() {
   const historyItems = (chatHistory || []).map(h => {
     const safeId = String(h.id).replace(/[^a-zA-Z0-9_-]/g, "");
     return `
-    <div class="chat-history-item ${h.id === chatActiveId ? 'active' : ''}" onclick="loadChatHistory('${safeId}')" role="button" tabindex="0" aria-label="Open conversation: ${escapeHtml(h.title || 'Conversation')}">
+    <div class="chat-history-item ${h.id === chatActiveId ? 'active' : ''}" onclick="loadChatHistory('${safeId}')" role="button" tabindex="0" aria-label="Open conversation: ${escapeHtml(h.title || 'Conversation')}" onkeydown="if(event.key==='Enter'||event.key===' '){loadChatHistory('${safeId}');event.preventDefault()}">
       <div class="chat-history-title">${escapeHtml(h.title || 'New conversation')}</div>
       <div class="chat-history-time">${h.time || ''}</div>
       <button class="chat-history-delete" onclick="event.stopPropagation();deleteChatHistory('${safeId}')" aria-label="Delete conversation" title="Delete">✕</button>
@@ -1407,7 +1407,7 @@ function renderChat() {
         ${guestBanner}
         <div class="chat-header-bar">
           <div class="chat-header-left">
-            ${!isGuest ? `<button class="chat-sidebar-toggle" onclick="toggleChatSidebar()" aria-label="Toggle conversation history">${IC.menu}</button>` : ""}
+            ${!isGuest ? `<button class="chat-sidebar-toggle" onclick="toggleChatSidebar()" aria-label="Toggle conversation history" aria-expanded="false">${IC.menu}</button>` : ""}
             <div class="chat-header-avatar">${state.user?.profile_photo ? `<img src="${escapeHtml(state.user.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : IC.chat}</div>
             <div>
               <div class="chat-header-name">Elix AI</div>
@@ -1428,6 +1428,7 @@ function renderChat() {
             placeholder="${isGuest ? "Ask Elix about your health, symptoms, or medications..." : "Ask about symptoms, medicines, drug interactions, and more..."}"
             oninput="autoResize(this)"
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
+            maxlength="5000" aria-label="Chat message"
             ${chatLoading ? "disabled" : ""}></textarea>
           <button class="chat-send" id="chat-send" onclick="sendChat()" aria-label="Send message" ${chatLoading ? "disabled" : ""}>${IC.send}</button>
         </div>
@@ -1508,7 +1509,7 @@ async function sendChat() {
       if (!responded) chatMsgs.push({ role: "bot", content: reply });
       const emergencyKeywords = /suicid|self.?harm|overdos|heart.?attack|stroke|choking|severe.?bleed|anaphyla|can.?not.?breath|unconscious|seizure|chest.?pain|emergency/i;
       if (emergencyKeywords.test(text) || emergencyKeywords.test(reply)) {
-        chatMsgs.push({ role: "bot", content: `<div class="chat-emergency-warning" role="alert"><strong>This may require urgent medical attention.</strong> Mendly cannot assess emergencies. Contact your local emergency number or go to the nearest emergency department now.</div>` });
+        chatMsgs.push({ role: "bot", content: `<div class="chat-emergency-warning" role="alert"><strong>This may require urgent medical attention.</strong> Mendly cannot assess emergencies. Contact your local emergency number or go to the nearest emergency department now.</div>`, isHtml: true });
       }
     }
   } catch(e) { console.error("sendChat error:", e); if (!responded) chatMsgs.push({ role: "bot", content: "I'm having trouble connecting to my servers. Please check your connection and try again in a moment." }); }
@@ -1537,7 +1538,7 @@ function renderMedicines() {
       ${isGuest() ? `<div class="guest-banner"><span style="font-weight:600">Guest mode.</span> <span style="color:var(--muted);font-size:12px">${guestRemaining("medicines")} of ${GUEST_LIMITS.medicines} free searches left.</span> <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Sign Up</button></div>` : ""}
       <div class="med-search-inline">
         <div class="med-search-input-row">
-          <input id="med-search" class="search-input" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" oninput="showMedSuggestions(this.value)" autocomplete="off" />
+          <input id="med-search" class="search-input" placeholder="Search medicine or condition..." onkeydown="if(event.key==='Enter')searchMedicines()" oninput="showMedSuggestions(this.value)" autocomplete="off" maxlength="200" aria-label="Search medicine or condition" />
           <div id="med-suggestions" class="med-suggestions" style="display:none"></div>
         </div>
         <button class="btn btn-primary" onclick="searchMedicines()">Search</button>
@@ -1557,7 +1558,7 @@ function renderMedicines() {
             </div>
             <div style="display:flex;gap:8px">
               <input id="interact-input" class="search-input" placeholder="Type a medicine name and press Add" style="flex:1;min-width:200px"
-                onkeydown="if(event.key==='Enter'){event.preventDefault();addInteractionMed()}" />
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addInteractionMed()}" maxlength="100" aria-label="Add medicine for interaction check" />
               <button class="btn btn-primary btn-sm" onclick="addInteractionMed()">Add</button>
               <button class="btn btn-ghost btn-sm" onclick="checkInteractions()" ${interactionMeds.length < 2 ? "disabled" : ""} style="${interactionMeds.length < 2 ? 'opacity:0.5;pointer-events:none' : ''}">Check</button>
             </div>
@@ -1906,7 +1907,7 @@ function renderHospitals() {
         ${userLat ? `<span class="location-status">${IC.info} Showing results near you</span>` : ""}
       </div>
       <div class="search-row">
-        <input id="hosp-search" class="search-input" placeholder="Or search by city name..." onkeydown="if(event.key==='Enter')searchHospitals()" />
+        <input id="hosp-search" class="search-input" placeholder="Or search by city name..." onkeydown="if(event.key==='Enter')searchHospitals()" maxlength="200" aria-label="Search hospitals by city" />
         <button class="btn btn-primary" onclick="searchHospitals()">Search</button>
         <button class="btn btn-ghost" onclick="clearHospSearch()">Clear</button>
       </div>
@@ -2066,7 +2067,7 @@ function renderPharmacies() {
         ${userLat ? `<span class="location-status">${IC.info} Showing results near you</span>` : ""}
       </div>
       <div class="search-row">
-        <input id="pharm-search" class="search-input" placeholder="Or search by city name..." onkeydown="if(event.key==='Enter')searchPharmacies()" />
+        <input id="pharm-search" class="search-input" placeholder="Or search by city name..." onkeydown="if(event.key==='Enter')searchPharmacies()" maxlength="200" aria-label="Search pharmacies by city" />
         <button class="btn btn-primary" onclick="searchPharmacies()">Search</button>
         <button class="btn btn-ghost" onclick="clearPharmSearch()">Clear</button>
       </div>
@@ -2171,7 +2172,7 @@ function renderNearbyResults(el, items, context, centerLat, centerLng) {
          const hours = it.opening_hours;
          const isOpen = it.is_open;
          return `
-        <div class="result-card result-card-clickable" ${it.lat && it.lng ? `data-lat="${it.lat}" data-lng="${it.lng}"` : ""}>
+        <div class="result-card result-card-clickable" ${it.lat && it.lng ? `data-lat="${Number(it.lat)}" data-lng="${Number(it.lng)}"` : ""}>
           <div class="result-card-header">
             <div class="result-card-title">
               <span class="result-type-icon ${typeClass}">${typeIcon}</span>
@@ -2185,7 +2186,7 @@ function renderNearbyResults(el, items, context, centerLat, centerLng) {
             ${it.phone && it.phone !== "N/A" ? `<a href="tel:${it.phone}" class="result-meta-tag result-call" onclick="event.stopPropagation()">${IC.chat} Call</a>` : ""}
           </div>
          <div class="result-actions">
-            ${it.lat && it.lng ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${it.lat},${it.lng}" target="_blank" rel="noopener" class="result-directions" onclick="event.stopPropagation()">${IC.directions} Directions</a>` : ""}
+            ${it.lat && it.lng ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(it.lat)},${encodeURIComponent(it.lng)}" target="_blank" rel="noopener" class="result-directions" onclick="event.stopPropagation()">${IC.directions} Directions</a>` : ""}
             ${it.lat && it.lng && it.phone && it.phone !== "N/A" ? `<a href="tel:${it.phone}" class="result-call-btn" onclick="event.stopPropagation()">Call</a>` : ""}
          </div>
        </div>`;
@@ -2323,7 +2324,7 @@ function renderAccount() {
 
       <!-- Profile Card -->
       <div class="acct-card acct-profile">
-        <div class="acct-avatar" style="cursor:pointer;position:relative" onclick="document.getElementById('profile-photo-input').click()">
+        <div class="acct-avatar" style="cursor:pointer;position:relative" onclick="document.getElementById('profile-photo-input').click()" tabindex="0" role="button" aria-label="Upload profile photo" onkeydown="if(event.key==='Enter'||event.key===' '){document.getElementById('profile-photo-input').click();event.preventDefault()}">
           ${u?.profile_photo ? `<img src="${escapeHtml(u.profile_photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials}
           <input type="file" id="profile-photo-input" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
           <div style="position:absolute;bottom:0;right:0;background:var(--primary);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid var(--bg)">${IC.settings}</div>
@@ -2347,7 +2348,7 @@ function renderAccount() {
         <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.user} Edit Profile</span></div>
         <div class="form-group">
           <label class="form-label">Full Name</label>
-          <input id="prof-name" class="form-input" type="text" value="${escapeHtml(u?.name || "")}" placeholder="Your name" />
+          <input id="prof-name" class="form-input" type="text" value="${escapeHtml(u?.name || "")}" placeholder="Your name" maxlength="100" />
         </div>
         <div class="acct-profile-row">
           <div class="form-group" style="flex:1">
@@ -2492,14 +2493,14 @@ async function saveProfile() {
     saveState();
     if (msgEl) msgEl.innerHTML = '<span style="color:var(--primary)">Profile saved!</span>';
     renderAccount();
-    updateNav();
+    renderHeader(); renderSidebar(); renderMobileNav(state.route);
   } catch(e) { if (msgEl) msgEl.innerHTML = '<span style="color:var(--danger)">Network error</span>'; }
 }
 
 async function handleProfilePhoto(event) {
   const file = event.target.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { alert("Image must be under 2MB"); return; }
+  if (file.size > 2 * 1024 * 1024) { showToast("Image must be under 2MB", "error"); return; }
   const reader = new FileReader();
   reader.onload = async () => {
     const base64 = reader.result;
@@ -2509,8 +2510,8 @@ async function handleProfilePhoto(event) {
         body: JSON.stringify({ profile_photo: base64 }),
       });
       const data = await res.json();
-      if (res.ok) { state.user = data; saveState(); renderAccount(); updateNav(); }
-    } catch(e) { console.error("Photo upload failed:", e); }
+      if (res.ok) { state.user = data; saveState(); renderAccount(); renderHeader(); renderSidebar(); renderMobileNav(state.route); }
+    } catch(e) { console.error("Photo upload failed:", e); showToast("Photo upload failed. Try again.", "error"); }
   };
   reader.readAsDataURL(file);
 }
@@ -2522,8 +2523,8 @@ function showPasswordChange() {
   area.innerHTML = `
     <div class="acct-card" style="margin-bottom:16px">
       <div class="acct-section-title">Change Password</div>
-      <div class="form-group"><input id="pw-current" class="form-input" type="password" placeholder="Current password" autocomplete="current-password" /></div>
-      <div class="form-group"><input id="pw-new" class="form-input" type="password" placeholder="New password (min 6 chars)" autocomplete="new-password" /></div>
+      <div class="form-group"><input id="pw-current" class="form-input" type="password" placeholder="Current password" autocomplete="current-password" maxlength="128" aria-label="Current password" /></div>
+      <div class="form-group"><input id="pw-new" class="form-input" type="password" placeholder="New password (min 6 chars)" autocomplete="new-password" maxlength="128" aria-label="New password" /></div>
       <div id="pw-error" class="form-error hidden"></div>
       <button class="btn btn-primary btn-sm" onclick="changePassword()">Save Password</button>
     </div>`;
@@ -2563,8 +2564,8 @@ async function deleteAccount() {
 ═══════════════════════════════════════════════════ */
 loadState();
 applyTheme();
-window.addEventListener("unhandledrejection", e => { e.preventDefault(); });
-window.addEventListener("error", e => { e.preventDefault(); });
+window.addEventListener("unhandledrejection", e => { console.error("Unhandled rejection:", e.reason); e.preventDefault(); });
+window.addEventListener("error", e => { console.error("Unhandled error:", e.message); e.preventDefault(); });
 document.addEventListener("DOMContentLoaded", () => {
   render();
   const loader = document.getElementById("app-loading");
