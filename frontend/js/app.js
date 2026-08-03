@@ -142,11 +142,16 @@ function login(token, user) { state.token = token; state.user = user; saveState(
 function logout() { state.token = null; state.user = null; saveState(); history.replaceState(null, "", "/"); render(); }
 
 /* ── Theme ── */
-function applyTheme() { document.documentElement.classList.toggle("dark", state.theme === "dark"); }
+function getSystemTheme() { return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+function applyTheme() {
+  const effective = state.theme === "system" ? getSystemTheme() : state.theme;
+  document.documentElement.classList.toggle("dark", effective === "dark");
+}
 function toggleTheme() {
-  state.theme = state.theme === "dark" ? "light" : "dark";
+  state.theme = state.theme === "dark" ? "light" : state.theme === "light" ? "system" : "dark";
   saveState(); applyTheme(); renderHeader();
 }
+function setTheme(mode) { state.theme = mode; saveState(); applyTheme(); renderAccount(); renderHeader(); }
 
 /* ── Logo SVG (heartbeat M pulse) ── */
 function logoHtml(size = 22) {
@@ -190,6 +195,7 @@ const IC = {
   trash:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
   chevron:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
   user:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  monitor:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
 };
 
 /* inject logo into footer on page load */
@@ -344,7 +350,7 @@ function renderHeader() {
           ${guestLinks.map(l => `<a href="#${l.h}" class="${route===l.h ? 'active' : ''}">${l.l}</a>`).join("")}
         </nav>
         <div class="header-actions">
-          <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">${state.theme==="dark" ? IC.sun : IC.moon}</button>
+          <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme" title="Theme: ${state.theme}">${state.theme==="dark" ? IC.sun : state.theme==="system" ? IC.monitor : IC.moon}</button>
           <button class="btn btn-ghost btn-sm" onclick="openAuth('login')">Log In</button>
           <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Get Started Free</button>
           <button class="hamb-btn" onclick="toggleMobileDrawer()" aria-label="Menu">${IC.menu}</button>
@@ -1171,7 +1177,7 @@ async function fetchLiveNews() {
     } catch(e) { /* skip */ }
   });
   await Promise.allSettled(promises);
-  if (!results.length) { el.innerHTML = `<span>Fetching latest health news...</span>`; return; }
+  if (!results.length) { el.innerHTML = `<div style="text-align:center;padding:16px 0"><div style="font-size:13px;color:var(--muted);margin-bottom:6px">No health news available right now</div><div style="font-size:12px;color:var(--muted-2)">Check back later for the latest health updates.</div></div>`; return; }
   results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
   el.innerHTML = results.slice(0, 6).map(n => {
     const timeAgo = getTimeAgo(n.pubDate);
@@ -2275,7 +2281,7 @@ function renderAccount() {
             <div class="acct-stat-label">Member Since</div>
           </div>
           <div class="acct-stat">
-            <div class="acct-stat-val">${state.theme === "dark" ? "Dark" : "Light"}</div>
+            <div class="acct-stat-val">${state.theme === "dark" ? "Dark" : state.theme === "system" ? "System" : "Light"}</div>
             <div class="acct-stat-label">Theme</div>
           </div>
         </div>
@@ -2320,12 +2326,20 @@ function renderAccount() {
         <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.sun} Appearance</span></div>
         <div class="setting-row">
           <div>
-            <div class="setting-label">Dark Mode</div>
-            <div class="setting-desc">Switch between light and dark themes</div>
+            <div class="setting-label">Theme</div>
+            <div class="setting-desc">Choose your preferred display mode</div>
           </div>
-          <div class="toggle ${state.theme === "dark" ? "on" : "off"}" onclick="toggleTheme();renderAccount()" role="switch" aria-checked="${state.theme === "dark"}">
-            <div class="toggle-knob"></div>
-          </div>
+        </div>
+        <div class="theme-options" role="radiogroup" aria-label="Theme selection" style="display:flex;gap:8px;margin-top:8px">
+          <button class="theme-opt ${state.theme === "light" ? "active" : ""}" onclick="setTheme('light')" role="radio" aria-checked="${state.theme === "light"}" style="flex:1;padding:10px 8px;border:2px solid ${state.theme === "light" ? "var(--primary)" : "var(--border)"};border-radius:var(--radius);background:${state.theme === "light" ? "var(--color-primary-bg)" : "var(--bg-card)"};cursor:pointer;font-size:13px;font-weight:600;color:${state.theme === "light" ? "var(--primary)" : "var(--fg-muted)"};display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s">
+            <span style="font-size:18px">☀️</span> Light
+          </button>
+          <button class="theme-opt ${state.theme === "dark" ? "active" : ""}" onclick="setTheme('dark')" role="radio" aria-checked="${state.theme === "dark"}" style="flex:1;padding:10px 8px;border:2px solid ${state.theme === "dark" ? "var(--primary)" : "var(--border)"};border-radius:var(--radius);background:${state.theme === "dark" ? "var(--color-primary-bg)" : "var(--bg-card)"};cursor:pointer;font-size:13px;font-weight:600;color:${state.theme === "dark" ? "var(--primary)" : "var(--fg-muted)"};display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s">
+            <span style="font-size:18px">🌙</span> Dark
+          </button>
+          <button class="theme-opt ${state.theme === "system" ? "active" : ""}" onclick="setTheme('system')" role="radio" aria-checked="${state.theme === "system"}" style="flex:1;padding:10px 8px;border:2px solid ${state.theme === "system" ? "var(--primary)" : "var(--border)"};border-radius:var(--radius);background:${state.theme === "system" ? "var(--color-primary-bg)" : "var(--bg-card)"};cursor:pointer;font-size:13px;font-weight:600;color:${state.theme === "system" ? "var(--primary)" : "var(--fg-muted)"};display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s">
+            <span style="font-size:18px">💻</span> System
+          </button>
         </div>
       </div>
 
@@ -2500,4 +2514,5 @@ document.addEventListener("DOMContentLoaded", () => {
   render();
   const loader = document.getElementById("app-loading");
   if (loader) { loader.classList.add("hide"); setTimeout(() => loader.remove(), 400); }
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (state.theme === "system") applyTheme(); });
 });
