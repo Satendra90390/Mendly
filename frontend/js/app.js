@@ -305,6 +305,9 @@ function render() {
     case "account":   renderAccount(); break;
   }
 
+  const fab = document.getElementById("emergency-fab");
+  if (fab) fab.classList.toggle("fab-visible", !!state.user && targetView !== "emergency" && targetView !== "landing");
+
   if (!state.user && LANDING_SECTIONS.has(route)) {
     setTimeout(() => {
       const sec = document.getElementById(route);
@@ -1491,7 +1494,12 @@ async function sendChat() {
         body: JSON.stringify({ message: text, history }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!responded) chatMsgs.push({ role: "bot", content: res.ok ? (data.response || data.reply || "I'd like to help with that. Could you provide a bit more detail about what you're looking for?") : (data.detail || "I'm experiencing a brief service interruption. Please try once more.") });
+      const reply = res.ok ? (data.response || data.reply || "I'd like to help with that. Could you provide a bit more detail about what you're looking for?") : (data.detail || "I'm experiencing a brief service interruption. Please try once more.");
+      if (!responded) chatMsgs.push({ role: "bot", content: reply });
+      const emergencyKeywords = /suicid|self.?harm|overdos|heart.?attack|stroke|choking|severe.?bleed|anaphyla|can.?not.?breath|unconscious|seizure|chest.?pain|emergency/i;
+      if (emergencyKeywords.test(text) || emergencyKeywords.test(reply)) {
+        chatMsgs.push({ role: "bot", content: `<div class="chat-emergency-warning" role="alert"><strong>This may require urgent medical attention.</strong> Mendly cannot assess emergencies. Contact your local emergency number or go to the nearest emergency department now.</div>` });
+      }
     }
   } catch(e) { console.error("sendChat error:", e); if (!responded) chatMsgs.push({ role: "bot", content: "I'm having trouble connecting to my servers. Please check your connection and try again in a moment." }); }
   responded = true;
@@ -2344,7 +2352,7 @@ function renderAccount() {
       <!-- Privacy -->
       <div class="acct-card">
         <div class="acct-section-title"><span style="display:flex;align-items:center;gap:8px">${IC.shield} Privacy &amp; Data</span></div>
-        <p style="font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 14px">Your health data is stored securely and used only to provide Mendly features. We do not sell your data.</p>
+        <p style="font-size:13px;color:var(--fg-secondary);line-height:1.6;margin:0 0 14px">Mendly stores your health information securely and uses it only to provide the features you use. We do not sell your data to third parties. Your chat history, medicine searches, and health data are private.</p>
         <div class="setting-row" style="margin-bottom:12px">
           <div>
             <div class="setting-label">Chat History</div>
@@ -2352,10 +2360,17 @@ function renderAccount() {
           </div>
           <button class="btn btn-ghost btn-sm" onclick="navigate('chat')">Manage</button>
         </div>
+        <div class="setting-row" style="margin-bottom:12px">
+          <div>
+            <div class="setting-label">Profile Information</div>
+            <div class="setting-desc">Name, age, gender, and blood type (all optional)</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('prof-name')?.focus()">Edit</button>
+        </div>
         <div class="setting-row">
           <div>
             <div class="setting-label">Clear Chat History</div>
-            <div class="setting-desc">Remove all saved conversations</div>
+            <div class="setting-desc">Remove all saved conversations from your account</div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="showConfirmDialog('Clear chat history?', 'This will remove all your saved conversations. This cannot be undone.', 'Clear all', async()=>{try{await fetch(API+'/chat/history',{method:'DELETE',headers:{Authorization:'Bearer '+state.token}})}catch(e){};showToast('Chat history cleared')})">Clear</button>
         </div>
@@ -2476,7 +2491,13 @@ async function deleteAccount() {
 
 /* ═══════════════════════════════════════════════════
    INIT
-════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 loadState();
 applyTheme();
-document.addEventListener("DOMContentLoaded", () => render());
+window.addEventListener("unhandledrejection", e => { e.preventDefault(); });
+window.addEventListener("error", e => { e.preventDefault(); });
+document.addEventListener("DOMContentLoaded", () => {
+  render();
+  const loader = document.getElementById("app-loading");
+  if (loader) { loader.classList.add("hide"); setTimeout(() => loader.remove(), 400); }
+});

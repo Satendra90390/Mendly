@@ -24,6 +24,8 @@
   --fg: #0f172a;
   --fg-secondary: #475569;
   --fg-muted: #94a3b8;
+  --muted: #94a3b8;
+  --muted-2: #64748b;
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
 
@@ -79,6 +81,8 @@
   --fg: #f1f5f9;
   --fg-secondary: #94a3b8;
   --fg-muted: #64748b;
+  --muted: #64748b;
+  --muted-2: #475569;
   --border: #1e293b;
   --border-strong: #334155;
   --color-primary-bg: rgba(13,148,136,0.12);
@@ -1133,6 +1137,12 @@ body.logged-in { --header-h: 0; }
 .chat-files { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
 .chat-file-badge { display: inline-block; padding: 2px 10px; border-radius: var(--radius-full); background: rgba(255,255,255,0.18); font-size: 10.5px; }
 .chat-bot .chat-file-badge { background: var(--color-primary-bg); color: var(--color-primary); }
+.chat-emergency-warning {
+  background: rgba(220,38,38,0.08); border: 1.5px solid rgba(220,38,38,0.3);
+  border-radius: var(--radius); padding: 14px 16px; margin-top: 8px;
+  color: var(--color-danger); font-size: 13.5px; line-height: 1.5;
+}
+.chat-emergency-warning strong { display: block; margin-bottom: 4px; font-size: 14px; }
 
 /* ═══════════════════════════════════════════════════
    AUTH MODAL
@@ -1296,4 +1306,68 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+/* ═══════════════════════════════════════════════════
+   LOADING SCREEN
+═══════════════════════════════════════════════════ */
+.app-loading {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); transition: opacity 0.3s var(--ease);
+}
+.app-loading.hide { opacity: 0; pointer-events: none; }
+.app-loading-inner { text-align: center; }
+.app-loading-logo { margin-bottom: 16px; animation: loadPulse 1.5s ease-in-out infinite; }
+@keyframes loadPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.app-loading-spinner {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 3px solid var(--border); border-top-color: var(--color-primary);
+  animation: spin 0.7s linear infinite; margin: 0 auto 12px;
+}
+.app-loading-text { font-size: 13px; color: var(--fg-muted); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════════
+   APP MAIN LANDMARK
+═══════════════════════════════════════════════════ */
+.app-main { min-height: 100vh; }
+
+/* ═══════════════════════════════════════════════════
+   FLOATING EMERGENCY BUTTON
+═══════════════════════════════════════════════════ */
+.emergency-fab {
+  display: none; position: fixed; bottom: 80px; right: 16px; z-index: 160;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--color-danger); color: #fff;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(220,38,38,0.35);
+  transition: all var(--duration) var(--ease);
+  text-decoration: none;
+}
+.emergency-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(220,38,38,0.45); }
+.emergency-fab:active { transform: scale(0.95); }
+.emergency-fab { display: none; }
+.emergency-fab.fab-visible { display: flex; }
+@media (min-width: 769px) { .emergency-fab { bottom: 24px; right: 24px; } }
+@media (max-width: 768px) {
+  .emergency-fab { bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .emergency-fab { transition: none; }
+  .emergency-fab:hover { transform: none; }
+}
+
+/* ═══════════════════════════════════════════════════
+   PRINT STYLES
+═══════════════════════════════════════════════════ */
+@media print {
+  .header, .sidebar, .sidebar-overlay, .mobile-nav, .mobile-sidebar-toggle,
+  .emergency-fab, .chat-sidebar, #auth-modal, .app-loading { display: none !important; }
+  body { background: #fff; color: #000; }
+  .view { display: block !important; }
+  .page, .acct-card, .dash-stat-card, .result-card, .med-card, .emergency-card {
+    break-inside: avoid; border: 1px solid #ccc; box-shadow: none;
+  }
+  a { color: #000; text-decoration: underline; }
+  a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #666; }
 }

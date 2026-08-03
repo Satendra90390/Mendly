@@ -30,6 +30,24 @@
   <aside id="sidebar" class="sidebar" role="complementary"></aside>
   <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()" aria-hidden="true"></div>
 
+  <!-- Loading Screen -->
+  <div id="app-loading" class="app-loading" role="status" aria-label="Loading Mendly">
+    <div class="app-loading-inner">
+      <div class="app-loading-logo" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 64 64" fill="none">
+          <defs><linearGradient id="lgLoad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#059669"/><stop offset=".5" stop-color="#0d9488"/><stop offset="1" stop-color="#0284c7"/>
+          </linearGradient></defs>
+          <rect width="64" height="64" rx="16" fill="url(#lgLoad)"/>
+          <path d="M10 38 L18 38 L22 22 L28 46 L34 18 L38 38 L44 38 L48 30 L54 30" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="54" cy="30" r="2.5" fill="#5eead4"/>
+        </svg>
+      </div>
+      <div class="app-loading-spinner"></div>
+      <p class="app-loading-text">Loading Mendly...</p>
+    </div>
+  </div>
+
   <!-- ═══════════════════════════════════════════
        LANDING PAGE
   ════════════════════════════════════════════ -->
@@ -403,13 +421,20 @@
   <!-- ═══════════════════════════════════════════
        APP VIEWS (rendered by JS)
   ════════════════════════════════════════════ -->
-  <div id="view-dashboard" class="view"></div>
-  <div id="view-chat" class="view"></div>
-  <div id="view-medicines" class="view"></div>
-  <div id="view-hospitals" class="view"></div>
-  <div id="view-pharmacies" class="view"></div>
-  <div id="view-emergency" class="view"></div>
-  <div id="view-account" class="view"></div>
+  <main id="app-main" class="app-main" role="main">
+    <div id="view-dashboard" class="view"></div>
+    <div id="view-chat" class="view"></div>
+    <div id="view-medicines" class="view"></div>
+    <div id="view-hospitals" class="view"></div>
+    <div id="view-pharmacies" class="view"></div>
+    <div id="view-emergency" class="view"></div>
+    <div id="view-account" class="view"></div>
+  </main>
+
+  <!-- Floating Emergency Button (logged-in) -->
+  <a href="#emergency" id="emergency-fab" class="emergency-fab" aria-label="Emergency information" title="Get emergency help">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+  </a>
 
   <!-- Auth Modal -->
   <div id="auth-modal"></div>
