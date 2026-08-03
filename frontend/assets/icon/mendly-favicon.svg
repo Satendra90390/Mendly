@@ -2,8 +2,10 @@
   <defs><clipPath id="rc"><rect width="64" height="64" rx="14"/></clipPath></defs>
   <g clip-path="url(#rc)">
     <rect width="64" height="64" fill="#102A43"/>
-    <path d="M10 52 C10 52 10 22 18 16 C23 12 27 15 32 19 C37 15 41 12 46 16 C54 22 54 52 54 52" fill="none" stroke="#3BAA91" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M14 51 C14 51 14.5 27 21 22 C25 19 28 19.5 32 22 C36 19.5 39 19 43 22 C49.5 27 50 51 50 51" fill="none" stroke="#B9F3DF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
-    <circle cx="32" cy="24" r="2.5" fill="#F28C78"/>
+    <path d="M 10 54 C 8 35, 14 9, 22 7 C 28 6, 32 16, 33 27"
+          stroke="#3BAA91" stroke-width="7.5" stroke-linecap="round" fill="none"/>
+    <path d="M 54 54 C 56 35, 50 9, 42 7 C 36 6, 32 16, 31 27"
+          stroke="#B9F3DF" stroke-width="4.8" stroke-linecap="round" fill="none" opacity="0.50"/>
+    <circle cx="32" cy="25" r="2.2" fill="#F28C78"/>
   </g>
 </svg>

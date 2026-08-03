@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- Standalone mark without container -->
-  <!-- Left care loop ribbon -->
-  <path d="M72 420 C72 420 72 190 152 132 C200 98 236 126 256 160 C276 126 312 98 360 132 C440 190 440 420 440 420" fill="none" stroke="#3BAA91" stroke-width="60" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Right care loop ribbon (lighter, offset) -->
-  <path d="M100 412 C100 412 102 218 172 168 C214 138 240 148 256 168 C272 148 298 138 340 168 C410 218 412 412 412 412" fill="none" stroke="#B9F3DF" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
-  <!-- Central Elix spark -->
-  <circle cx="256" cy="186" r="18" fill="#F28C78"/>
+  <!-- Standalone mark: two organic flowing ribbons forming M, Elix dot at valley -->
+  <!-- Primary ribbon: bottom-left → left peak → center valley -->
+  <path d="M 82 432 C 62 275, 115 72, 180 58 C 225 48, 255 128, 264 215"
+        stroke="#3BAA91" stroke-width="60" stroke-linecap="round" fill="none"/>
+  <!-- Secondary ribbon: bottom-right → right peak → center valley -->
+  <path d="M 430 432 C 450 275, 397 72, 332 58 C 287 48, 257 128, 248 215"
+        stroke="#B9F3DF" stroke-width="38" stroke-linecap="round" fill="none" opacity="0.50"/>
+  <!-- Elix spark at the valley -->
+  <circle cx="256" cy="200" r="17" fill="#F28C78"/>
 </svg>
